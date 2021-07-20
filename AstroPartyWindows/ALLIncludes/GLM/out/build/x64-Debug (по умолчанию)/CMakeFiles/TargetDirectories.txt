@@ -1,0 +1,2 @@
+D:/Documents/VS/ALLIncludes/GLM/out/build/x64-Debug (по умолчанию)/CMakeFiles/edit_cache.dir
+D:/Documents/VS/ALLIncludes/GLM/out/build/x64-Debug (по умолчанию)/CMakeFiles/rebuild_cache.dir

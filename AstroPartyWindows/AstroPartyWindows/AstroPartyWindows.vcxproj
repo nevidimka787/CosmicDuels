@@ -81,8 +81,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\Documents\VS\ALLIncludes;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\Documents\VS\AllLibs;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\Documents\GItHub\AstroParty\AstroPartyWindows\ALLIncludes;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\Documents\GItHub\AstroParty\AstroPartyWindows\AllLibs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
