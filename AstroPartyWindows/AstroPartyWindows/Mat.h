@@ -1,4 +1,5 @@
-#pragma once
+#ifndef MAT_H
+#define MAT_H
 #include <math.h>
 #include "Vec.h"
 
@@ -34,3 +35,4 @@ public:
 	Mat2D InverseNotNormalize();
 	void InverseThisNotNormalize();
 };
+#endif

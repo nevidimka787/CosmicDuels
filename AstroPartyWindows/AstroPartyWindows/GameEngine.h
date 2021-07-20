@@ -1,4 +1,5 @@
-#pragma once
+#ifndef GAME_ENGINE_H
+#define GAME_ENGINE_H
 #include <iostream>
 #include "Vec.h"
 #include "Line.h"
@@ -357,3 +358,4 @@ public:
 	~Map();
 };
 
+#endif //GAME_ENGINE_H

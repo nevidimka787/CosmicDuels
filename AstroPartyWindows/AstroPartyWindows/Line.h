@@ -1,4 +1,5 @@
-#pragma once
+#ifndef LINE_H
+#define LINE_H
 #include "Vec.h"
 #include "Mat.h"
 #include <iostream>
@@ -86,3 +87,5 @@ public:
 
 	~Segment();
 };
+
+#endif //LINE_H

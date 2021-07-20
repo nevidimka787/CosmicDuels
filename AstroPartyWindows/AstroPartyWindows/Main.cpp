@@ -2,51 +2,38 @@
 #include <GLFW/glfw3.h>
 
 #include <iostream>
+#include <thread>
+#include <shared_mutex>
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void processInput(GLFWwindow* window);
+#include "OpenGLRealisation.h"
+#include "Vec.h"
+#include "Line.h"
+#include "Mat.h"
+#include "GameEngine.h"
 
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+#define SCR_WIDTH 800
+#define SCR_HEIGHT 600
+
+std::shared_mutex timer_mtx;
+uint64_t global_timer = 0;
+
+void TikUpdate();
+void PhysicsCalculation();
 
 int main()
 {
-    glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    OpenGL::InitOpneGL();
+    GLFWwindow* window = OpenGL::CreateWindows(SCR_WIDTH, SCR_HEIGHT, "AstroParty", nullptr, nullptr);
+    OpenGL::InitGlad();
 
-    std::cout << "OpenGl Initializate" << std::endl;
+    std::thread timer(TikUpdate);
+    std::thread physic(PhysicsCalculation);
 
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "OpenGL", NULL, NULL);
-    if (window == NULL)
-    {
-        std::cout << "Failed to create GLFW window" << std::endl;
-        glfwTerminate();
-        return -1;
-    }
-
-    std::cout << "Window create." << std::endl;
-
-    glfwMakeContextCurrent(window);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-    
-    std::cout << "Window link." << std::endl;
-
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
-        std::cout << "Failed to initialize GLAD" << std::endl;
-        return -1;
-    }
-
-    std::cout << "GLAD initializate." << std::endl;
-    std::cout << "Frames drowing start." << std::endl;
     while (!glfwWindowShouldClose(window))
     {
-        processInput(window);
+        OpenGL::ProcessInput(window);
 
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        OpenGL::DrawFrame();
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -56,13 +43,37 @@ int main()
     return 0;
 }
 
-void processInput(GLFWwindow* window)
+void TikUpdate()
 {
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
+    while (true)
+    {
+        std::unique_lock<std::shared_mutex> ul(timer_mtx);
+
+        global_timer++;
+
+        timer_mtx.unlock();
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
 }
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+void PhysicsCalculation()
 {
-    glViewport(0, 0, width, height);
+    std::shared_lock<std::shared_mutex> sl(timer_mtx);
+    uint64_t current_tik = global_timer;
+    timer_mtx.unlock();
+    while (true)
+    {
+        std::shared_lock<std::shared_mutex> sl(timer_mtx);
+
+        //start physics calculation
+
+
+
+        //end physics calculation
+
+        while (current_tik >= global_timer);
+        current_tik = global_timer;
+
+        timer_mtx.unlock();
+    }
 }

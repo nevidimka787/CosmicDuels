@@ -151,12 +151,14 @@
     <ClCompile Include="Line.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Mat.cpp" />
+    <ClCompile Include="OpenGLRealisation.cpp" />
     <ClCompile Include="Vec.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine.h" />
     <ClInclude Include="Line.h" />
     <ClInclude Include="Mat.h" />
+    <ClInclude Include="OpenGLRealisation.h" />
     <ClInclude Include="Vec.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
