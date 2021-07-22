@@ -10,15 +10,24 @@
 #include "Line.h"
 #include "Mat.h"
 #include "GameEngine.h"
+#include "GameRealisation.h"
 
 #define SCR_WIDTH 800
 #define SCR_HEIGHT 600
 
+#define TIK_UPDATE_INIT 0x01
+#define PHYSICS_CALCULATION_INIT 0x02
+
+std::shared_mutex init_mtx;
+uint8_t init = 0x00;
+
 std::shared_mutex timer_mtx;
-uint64_t global_timer = 0;
+std::shared_mutex physic_calculation_mtx;
+uint32_t global_timer = 0;
 
 void TikUpdate();
 void PhysicsCalculation();
+void Draw(GLFWwindow* window);
 
 int main()
 {
@@ -26,28 +35,56 @@ int main()
     GLFWwindow* window = OpenGL::CreateWindows(SCR_WIDTH, SCR_HEIGHT, "AstroParty", nullptr, nullptr);
     OpenGL::InitGlad();
 
-    std::thread timer(TikUpdate);
-    std::thread physic(PhysicsCalculation);
+    bool start_game = false;
 
-    while (!glfwWindowShouldClose(window))
+    while (true)
     {
-        OpenGL::ProcessInput(window);
-
-        OpenGL::DrawFrame();
-
-        glfwSwapBuffers(window);
-        glfwPollEvents();
+        if (start_game == true)
+        {
+            std::thread physic(PhysicsCalculation);
+            std::thread draw(Draw, window);
+            physic.join();
+        }
     }
 
     glfwTerminate();
     return 0;
 }
 
+void Draw(GLFWwindow* window)
+{
+    init_mtx.lock();
+    while ((init & (TIK_UPDATE_INIT | PHYSICS_CALCULATION_INIT)) != (TIK_UPDATE_INIT | PHYSICS_CALCULATION_INIT))
+    {
+        init_mtx.unlock();
+        init_mtx.lock();
+    }
+    init_mtx.unlock();
+
+    while (!glfwWindowShouldClose(window))
+    {
+        OpenGL::ProcessInput(window);
+
+        physic_calculation_mtx.lock();
+        OpenGL::DrawFrame();
+        physic_calculation_mtx.unlock();
+
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
+}
+
 void TikUpdate()
 {
+    init_mtx.lock();
+    timer_mtx.lock();
+    global_timer = 0;
+    timer_mtx.unlock();
+    init |= TIK_UPDATE_INIT;
+    init_mtx.unlock();
     while (true)
     {
-        std::unique_lock<std::shared_mutex> ul(timer_mtx);
+        timer_mtx.lock();
 
         global_timer++;
 
@@ -58,22 +95,47 @@ void TikUpdate()
 
 void PhysicsCalculation()
 {
-    std::shared_lock<std::shared_mutex> sl(timer_mtx);
+    std::thread timer(TikUpdate);
+
+    init_mtx.lock();
+    while (!(init & TIK_UPDATE_INIT))
+    {
+        init_mtx.unlock();
+        init_mtx.lock();
+    }
+    physic_calculation_mtx.lock();
+    //start initialisate all entities and variables
+
+    //Game::Init();
+
+    //start initialisate all entities and variables
+    physic_calculation_mtx.unlock();
+    init |= PHYSICS_CALCULATION_INIT;
+    init_mtx.unlock();
+
+
+    timer_mtx.lock();
     uint64_t current_tik = global_timer;
     timer_mtx.unlock();
+
     while (true)
     {
-        std::shared_lock<std::shared_mutex> sl(timer_mtx);
-
+        physic_calculation_mtx.lock();
         //start physics calculation
 
-
+        Game::Recalculate();
 
         //end physics calculation
+        physic_calculation_mtx.unlock();
 
-        while (current_tik >= global_timer);
+        timer_mtx.lock();
+        while (current_tik >= global_timer)
+        {
+            timer_mtx.unlock();
+            timer_mtx.lock();
+        }
         current_tik = global_timer;
-
         timer_mtx.unlock();
+
     }
 }

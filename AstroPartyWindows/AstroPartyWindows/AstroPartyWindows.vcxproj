@@ -148,6 +148,7 @@
   <ItemGroup>
     <ClCompile Include="gald.c" />
     <ClCompile Include="GameEngine.cpp" />
+    <ClCompile Include="GameRealisation.cpp" />
     <ClCompile Include="Line.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Mat.cpp" />
@@ -156,6 +157,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine.h" />
+    <ClInclude Include="GameRealisation.h" />
     <ClInclude Include="Line.h" />
     <ClInclude Include="Mat.h" />
     <ClInclude Include="OpenGLRealisation.h" />

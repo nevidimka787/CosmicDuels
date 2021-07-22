@@ -1,4 +1,3 @@
-#pragma once
 #include "Vec.h"
 
 Vec2D::Vec2D() : x(0.0), y(0.0)
@@ -130,5 +129,139 @@ void Vec2D::RotateThis(double angle)
 {
 	double temp = x * cos(angle) + y * sin(angle);
 	y = y * cos(angle) - x * sin(angle);
+	x = temp;
+}
+
+
+
+Vec2F::Vec2F() : x(0.0), y(0.0)
+{
+}
+
+Vec2F::Vec2F(float x, float y) : x(x), y(y)
+{
+}
+
+Vec2F Vec2F::operator+(Vec2F add_vector)
+{
+	return Vec2F(this->x + add_vector.x, this->y + add_vector.y);
+}
+
+Vec2F Vec2F::operator-(Vec2F add_vector)
+{
+	return Vec2F(this->x - add_vector.x, this->y - add_vector.y);
+}
+
+Vec2F Vec2F::operator-()
+{
+	return Vec2F(-this->x, -this->y);
+}
+
+Vec2F Vec2F::operator*(float mult)
+{
+	return Vec2F(this->x * mult, this->y * mult);
+}
+
+float Vec2F::operator*(Vec2F vector)
+{
+	return x * vector.x + y * vector.y;
+}
+
+Vec2F Vec2F::operator/(float div)
+{
+	return Vec2F(this->x / div, this->y / div);
+}
+
+Vec2F Vec2F::operator+=(Vec2F add_vector)
+{
+	return Vec2F(this->x + add_vector.x, this->y + add_vector.y);
+}
+
+Vec2F Vec2F::operator-=(Vec2F add_vector)
+{
+	return Vec2F(this->x - add_vector.x, this->y - add_vector.y);
+}
+
+Vec2F Vec2F::operator*=(float mult)
+{
+	return Vec2F(this->x * mult, this->y * mult);
+}
+
+float Vec2F::operator*=(Vec2F vector)
+{
+	return x * vector.x + y * vector.y;
+}
+
+Vec2F Vec2F::operator/=(float div)
+{
+	return Vec2F(this->x / div, this->y / div);
+}
+
+bool Vec2F::operator==(Vec2F vec)
+{
+	return (this->x == vec.x && this->y == vec.y);
+}
+
+bool Vec2F::operator!=(Vec2F vec)
+{
+	return (this->x != vec.x && this->y != vec.y);
+}
+
+float Vec2F::GetDistance(Vec2F* target_vector)
+{
+	return (*this - *target_vector).GetLength();
+}
+
+float Vec2F::GetLength()
+{
+	return sqrtf(x * x + y * y);
+}
+
+Vec2F Vec2F::Normalize()
+{
+	return *this / GetLength();
+}
+
+void Vec2F::NormalizeThis()
+{
+	*this /= GetLength();
+}
+
+Vec2F Vec2F::Project(Vec2F* projecting_vector)
+{
+	float dot = *this * *projecting_vector;
+	if (dot > 0.0)
+	{
+		return *this * sqrtf(dot / GetLength());
+	}
+	if (dot < 0.0)
+	{
+
+		return *this * -sqrtf(-dot / GetLength());
+	}
+	return Vec2F();
+}
+
+Vec2F Vec2F::Perpendicular()
+{
+	return Vec2F(y, -x);
+}
+
+void Vec2F::PerpendicularThis()
+{
+	float temp = -x;
+	x = y;
+	y = temp;
+}
+
+Vec2F Vec2F::Rotate(float angle)
+{
+	return Vec2F(x * cosf(angle) + y * sinf(angle), y * cosf(angle) - x * sinf(angle));
+}
+
+void Vec2F::RotateThis(float angle)
+{
+	float temp = x * cosf(angle) + y * sinf(angle);
+	y = y * cosf(angle) - x * sinf(angle);
 	x = temp;
 }

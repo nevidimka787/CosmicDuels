@@ -1,4 +1,5 @@
-#pragma once
+#ifndef VEC_H
+#define VEC_H
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -35,3 +36,41 @@ public:
 	Vec2D Rotate(double angle);
 	void RotateThis(double angle);
 };
+
+
+
+class Vec2F
+{
+public:
+	float x;
+	float y;
+	Vec2F();
+	Vec2F(float x, float y);
+
+	Vec2F operator+(Vec2F add_vector);
+	Vec2F operator+=(Vec2F add_vector);
+	Vec2F operator-();
+	Vec2F operator-(Vec2F sub_vector);
+	Vec2F operator-=(Vec2F sub_vector);
+	Vec2F operator*(float mult);
+	float operator*(Vec2F vec);
+	Vec2F operator*=(float mult);
+	float operator*=(Vec2F vec);
+	Vec2F operator/(float div);
+	Vec2F operator/=(float div);
+	bool operator==(Vec2F vec);
+	bool operator!=(Vec2F vec);
+
+	float GetDistance(Vec2F* target);
+	float GetLength();
+	Vec2F Normalize();
+	void NormalizeThis();
+	Vec2F Project(Vec2F* projecting_vector);
+	Vec2F Perpendicular();
+	void PerpendicularThis();
+	Vec2F Rotate(float angle);
+	void RotateThis(float angle);
+};
+
+
+#endif // !VEC_H

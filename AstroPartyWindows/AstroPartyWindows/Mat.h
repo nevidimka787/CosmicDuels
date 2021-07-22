@@ -35,4 +35,38 @@ public:
 	Mat2D InverseNotNormalize();
 	void InverseThisNotNormalize();
 };
+
+
+class Mat2F
+{
+public:
+	float a11, a12;
+	float a21, a22;
+
+	Mat2F();
+	Mat2F(float value);
+	Mat2F(Vec2F* abscissa, Vec2F* ordinate);
+	Mat2F(float a11, float a12, float a21, float a22);
+
+	Mat2F operator+(Mat2F add_mat);
+	Mat2F operator+=(Mat2F add_mat);
+	Mat2F operator-();
+	Mat2F operator-(Mat2F sub_mat);
+	Mat2F operator-=(Mat2F sub_mat);
+	Mat2F operator*(float mult);
+	Vec2F operator*(Vec2F vec);
+	Mat2F operator*(Mat2F mat);
+	Mat2F operator*=(float mult);
+	Vec2F operator*=(Vec2F vec);
+	Mat2F operator*=(Mat2F mat);
+	Mat2F operator/(float div);
+	Mat2F operator/=(float div);
+	bool operator==(Mat2F vec);
+
+	float Determinant();
+	Mat2F Inverse();
+	void InverseThis();
+	Mat2F InverseNotNormalize();
+	void InverseThisNotNormalize();
+};
 #endif

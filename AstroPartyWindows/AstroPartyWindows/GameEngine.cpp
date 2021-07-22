@@ -1,76 +1,76 @@
 #include "GameEngine.h"
 #include <math.h>
 
-Entity::Entity() : position(new Vec2D()), radius(0.0), angle(0.0), direction(new Vec2D(1.0, 0.0))
+Entity::Entity() : position(new Vec2F()), radius(0.0), angle(0.0), direction(new Vec2F(1.0, 0.0))
 {
 }
 
-Entity::Entity(Vec2D* position, double radius, double angle) : position(new Vec2D(*position)), radius(radius), angle(angle), direction(new Vec2D(cos(angle), -sin(angle)))
+Entity::Entity(Vec2F* position, float radius, float angle) : position(new Vec2F(*position)), radius(radius), angle(angle), direction(new Vec2F(cos(angle), -sin(angle)))
 {
 }
 
-double Entity::GetAngle()
+float Entity::GetAngle()
 {
 	return angle;
 }
 
-double Entity::GetDistance(Entity* entity)
+float Entity::GetDistance(Entity* entity)
 {
-	return fmax(entity->position->GetDistance(position) - entity->radius - radius, 0.0);
+	return fmaxf(entity->position->GetDistance(position) - entity->radius - radius, 0.0f);
 }
 
-double Entity::GetDistance(Vec2D* point)
+float Entity::GetDistance(Vec2F* point)
 {
-	return fmax(point->GetDistance(position) - radius, 0.0);
+	return fmaxf(point->GetDistance(position) - radius, 0.0f);
 }
 
-double Entity::GetDistance(Line* line)
+float Entity::GetDistance(Line* line)
 {
-	return fmax(line->GetDistance(position) - radius, 0.0);
+	return fmaxf(line->GetDistance(position) - radius, 0.0f);
 }
 
-double Entity::GetDistance(Beam* beam)
+float Entity::GetDistance(Beam* beam)
 {
-	return fmax(beam->GetDistance(position) - radius, 0.0);
+	return fmaxf(beam->GetDistance(position) - radius, 0.0f);
 }
 
-double Entity::GetDistance(Segment* segment)
+float Entity::GetDistance(Segment* segment)
 {
-	return fmax(segment->GetDistance(position) - radius, 0.0);
+	return fmaxf(segment->GetDistance(position) - radius, 0.0f);
 }
 
-double Entity::GetDistance(DynamicEntity* entity)
+float Entity::GetDistance(DynamicEntity* entity)
 {
-	return fmax(entity->GetDistance(position) - radius, 0.0);
+	return fmaxf(entity->GetDistance(position) - radius, 0.0f);
 }
 
-double Entity::GetDistance(StaticEntity* entity)
+float Entity::GetDistance(StaticEntity* entity)
 {
-	return fmax(entity->GetDistance(position) - radius, 0.0);
+	return fmaxf(entity->GetDistance(position) - radius, 0.0f);
 }
 
-double Entity::GetDistance(Rectangle* rectangle)
+float Entity::GetDistance(Rectangle* rectangle)
 {
 	Segment temp = rectangle->GetUpSide();
-	double dist1 = GetDistance(&temp);
+	float dist1 = GetDistance(&temp);
 	if (dist1 == 0.0)
 	{
 		return 0.0;
 	}
 	temp = rectangle->GetDownSide();
-	double dist2 = GetDistance(&temp);
+	float dist2 = GetDistance(&temp);
 	if (dist2 == 0.0)
 	{
 		return 0.0;
 	}
 	temp = rectangle->GetLeftSide();
-	double dist3 = GetDistance(&temp);
+	float dist3 = GetDistance(&temp);
 	if (dist3 == 0.0)
 	{
 		return 0.0;
 	}
 	temp = rectangle->GetRightSide();
-	double dist4 = GetDistance(&temp);
+	float dist4 = GetDistance(&temp);
 	if (dist4 == 0.0)
 	{
 		return 0.0;
@@ -106,28 +106,28 @@ double Entity::GetDistance(Rectangle* rectangle)
 	return dist4;
 }
 
-double Entity::GetDistance(Cyrcle* cyrcle)
+float Entity::GetDistance(Cyrcle* cyrcle)
 {
-	Vec2D temp = cyrcle->GetPosition();
+	Vec2F temp = cyrcle->GetPosition();
 	return GetDistance(&temp) - cyrcle->GetRadius();
 }
 
-double Entity::GetDistance(Polygon* polygon)
+float Entity::GetDistance(Polygon* polygon)
 {
 	return 0.0;
 }
 
-Vec2D Entity::GetDirection()
+Vec2F Entity::GetDirection()
 {
 	return *direction;
 }
 
-Vec2D Entity::GetPosition()
+Vec2F Entity::GetPosition()
 {
 	return *position;
 }
 
-bool Entity::IsCollision(Vec2D* point)
+bool Entity::IsCollision(Vec2F* point)
 {
 	return GetDistance(point) < 0.0;
 }
@@ -154,7 +154,7 @@ bool Entity::IsCollision(DynamicEntity* entity)
 
 bool Entity::IsCollision(StaticEntity* entity)
 {
-	Vec2D temp = entity->GetPosition();
+	Vec2F temp = entity->GetPosition();
 	return GetDistance(&temp) < 0.0;
 }
 
@@ -198,7 +198,7 @@ bool Entity::IsCollision(Rectangle* rectangle)
 
 bool Entity::IsCollision(Cyrcle* cyrcle)
 {
-	Vec2D temp = cyrcle->GetPosition();
+	Vec2F temp = cyrcle->GetPosition();
 	return GetDistance(&temp) < radius + cyrcle->GetRadius();
 }
 
@@ -207,29 +207,29 @@ bool Entity::IsCollision(Polygon* polygon)
 	return false;
 }
 
-void Entity::Rotate(double angle)
+void Entity::Rotate(float angle)
 {
 	this->angle += angle;
 	this->direction->x = cos(angle);
 	this->direction->y = -sin(angle);
 }
 
-void Entity::SetAngle(double angle)
+void Entity::SetAngle(float angle)
 {
 	this->angle = angle;
 }
 
-void Entity::SetDirection(Vec2D* direction)
+void Entity::SetDirection(Vec2F* direction)
 {
 	*this->direction = direction->Normalize();
 }
 
-void Entity::SetPosition(Vec2D* position)
+void Entity::SetPosition(Vec2F* position)
 {
 	*(this->position) = *position;
 }
 
-void Entity::Move(Vec2D* delta)
+void Entity::Move(Vec2F* delta)
 {
 	*position += *delta;
 }
@@ -241,23 +241,23 @@ Entity::~Entity()
 
 
 
-DynamicEntity::DynamicEntity() : angular_velocity(0.0), velocity(new Vec2D()), force(new Vec2D()), FORCE_COLLISION_COEFFICIENT(DEFAULT_FORCE_COLLISION_COEFFICIENT), FORCE_RESISTANSE_AIR_COEFFICIENT(DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT)
+DynamicEntity::DynamicEntity() : angular_velocity(0.0f), velocity(new Vec2F()), force(new Vec2F()), FORCE_COLLISION_COEFFICIENT(DEFAULT_FORCE_COLLISION_COEFFICIENT), FORCE_RESISTANSE_AIR_COEFFICIENT(DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT)
 {
-	Vec2D temp = Vec2D();
+	Vec2F temp = Vec2F();
 	SetPosition(&temp);
 }
 
-DynamicEntity::DynamicEntity(Vec2D* position, double angle, double radius) : angular_velocity(0.0), velocity(new Vec2D()), force(new Vec2D()), FORCE_COLLISION_COEFFICIENT(DEFAULT_FORCE_COLLISION_COEFFICIENT), FORCE_RESISTANSE_AIR_COEFFICIENT(DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT)
+DynamicEntity::DynamicEntity(Vec2F* position, float angle, float radius) : angular_velocity(0.0f), velocity(new Vec2F()), force(new Vec2F()), FORCE_COLLISION_COEFFICIENT(DEFAULT_FORCE_COLLISION_COEFFICIENT), FORCE_RESISTANSE_AIR_COEFFICIENT(DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT)
 {
 	SetPosition(position);
 }
 
-DynamicEntity::DynamicEntity(Vec2D* position, Vec2D* velosity, double angle, double angular_velosity, double radius, double FORCE_COLLISION_COEFFICIENT, double FORCE_RESISTANSE_AIR_COEFFICIENT) : angular_velocity(angular_velosity), velocity(new Vec2D(*velosity)), force(new Vec2D()), FORCE_COLLISION_COEFFICIENT(FORCE_COLLISION_COEFFICIENT), FORCE_RESISTANSE_AIR_COEFFICIENT(DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT)
+DynamicEntity::DynamicEntity(Vec2F* position, Vec2F* velosity, float angle, float angular_velosity, float radius, float FORCE_COLLISION_COEFFICIENT, float FORCE_RESISTANSE_AIR_COEFFICIENT) : angular_velocity(angular_velosity), velocity(new Vec2F(*velosity)), force(new Vec2F()), FORCE_COLLISION_COEFFICIENT(FORCE_COLLISION_COEFFICIENT), FORCE_RESISTANSE_AIR_COEFFICIENT(DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT)
 {
 	SetPosition(position);
 }
 
-void DynamicEntity::AddForce(Vec2D* force)
+void DynamicEntity::AddForce(Vec2F* force)
 {
 	*this->force += *force;
 }
@@ -268,7 +268,7 @@ bool DynamicEntity::Collision(DynamicEntity* entity)
 	{
 		return false;
 	}
-	Vec2D line = *position - *entity->position;
+	Vec2F line = *position - *entity->position;
 	*velocity -= line.Project(velocity);
 	*entity->velocity -= line.Project(entity->velocity);
 
@@ -287,8 +287,8 @@ bool DynamicEntity::Collision(StaticEntity* entity)
 
 bool DynamicEntity::Collision(Rectangle* rectangle)
 {
-	Vec2D temp1 = rectangle->GetUpRightPoint();
-	Vec2D temp2 = rectangle->GetUpLeftPoint();
+	Vec2F temp1 = rectangle->GetUpRightPoint();
+	Vec2F temp2 = rectangle->GetUpLeftPoint();
 	Segment up_side = Segment(&temp1, &temp1, true);
 	temp1 = rectangle->GetDownRightPoint();
 	temp2 = rectangle->GetDownLeftPoint();
@@ -304,52 +304,52 @@ bool DynamicEntity::Collision(Rectangle* rectangle)
 	{
 		if(right_side.GetDistance(position) < radius)
 		{
-			Vec2D force_vec = *position - rectangle->GetUpRightPoint();
+			Vec2F force_vec = *position - rectangle->GetUpRightPoint();
 			*velocity += rectangle->GetVelocity() - force_vec.Project(velocity);
 			*force += force_vec * FORCE_COLLISION_COEFFICIENT;
 			return true;
 		}
 		if (left_side.GetDistance(position) < radius)
 		{
-			Vec2D force_vec = *position - rectangle->GetUpLeftPoint();
+			Vec2F force_vec = *position - rectangle->GetUpLeftPoint();
 			*velocity += rectangle->GetVelocity() - force_vec.Project(velocity);
 			*force += force_vec * FORCE_COLLISION_COEFFICIENT;
 			return true;
 		}
-		*velocity += rectangle->GetVelocity() - Vec2D(0.0, 1.0).Project(velocity);
-		*force += Vec2D(0.0, (radius - (position->y - up_side.point->y)) * FORCE_COLLISION_COEFFICIENT);
+		*velocity += rectangle->GetVelocity() - Vec2F(0.0, 1.0).Project(velocity);
+		*force += Vec2F(0.0, (radius - (position->y - up_side.point->y)) * FORCE_COLLISION_COEFFICIENT);
 		return true;
 	}
 	if (down_side.GetDistance(position) < radius)
 	{
 		if (right_side.GetDistance(position) < radius)
 		{
-			Vec2D force_vec = *position - rectangle->GetDownRightPoint();
+			Vec2F force_vec = *position - rectangle->GetDownRightPoint();
 			*velocity += rectangle->GetVelocity() - force_vec.Project(velocity);
 			*force += force_vec * FORCE_COLLISION_COEFFICIENT;
 			return true;
 		}
 		if (left_side.GetDistance(position) < radius)
 		{
-			Vec2D force_vec = *position - rectangle->GetDownLeftPoint();
+			Vec2F force_vec = *position - rectangle->GetDownLeftPoint();
 			*velocity += rectangle->GetVelocity() - force_vec.Project(velocity);
 			*force += force_vec * FORCE_COLLISION_COEFFICIENT;
 			return true;
 		}
-		*velocity += rectangle->GetVelocity() - Vec2D(0.0, 1.0).Project(velocity);
-		*force += Vec2D(0.0, (radius - (up_side.point->y - position->y)) * FORCE_COLLISION_COEFFICIENT);
+		*velocity += rectangle->GetVelocity() - Vec2F(0.0, 1.0).Project(velocity);
+		*force += Vec2F(0.0, (radius - (up_side.point->y - position->y)) * FORCE_COLLISION_COEFFICIENT);
 		return true;
 	}
 	if (right_side.GetDistance(position) < radius)
 	{
-		*velocity += rectangle->GetVelocity() - Vec2D(1.0, 0.0).Project(velocity);
-		*force += Vec2D((radius - (position->x - up_side.point->x)) * FORCE_COLLISION_COEFFICIENT, 0.0);
+		*velocity += rectangle->GetVelocity() - Vec2F(1.0, 0.0).Project(velocity);
+		*force += Vec2F((radius - (position->x - up_side.point->x)) * FORCE_COLLISION_COEFFICIENT, 0.0);
 		return true;
 	}
 	if (left_side.GetDistance(position) < radius)
 	{
-		*velocity += rectangle->GetVelocity() - Vec2D(1.0, 0.0).Project(velocity);
-		*force += Vec2D((radius - (up_side.point->x - position->x)) * FORCE_COLLISION_COEFFICIENT, 0.0);
+		*velocity += rectangle->GetVelocity() - Vec2F(1.0, 0.0).Project(velocity);
+		*force += Vec2F((radius - (up_side.point->x - position->x)) * FORCE_COLLISION_COEFFICIENT, 0.0);
 		return true;
 	}
 	return false;
@@ -357,12 +357,12 @@ bool DynamicEntity::Collision(Rectangle* rectangle)
 
 bool DynamicEntity::Collision(Cyrcle* cyrcle)
 {
-	Vec2D vec = cyrcle->GetPosition();
+	Vec2F vec = cyrcle->GetPosition();
 	if (GetDistance(&vec) > radius + cyrcle->GetRadius())
 	{
 		return false;
 	}
-	Vec2D force_vec = *position - cyrcle->GetPosition();
+	Vec2F force_vec = *position - cyrcle->GetPosition();
 	*velocity -= force_vec.Project(velocity);
 	*force += force_vec * FORCE_COLLISION_COEFFICIENT;
 
@@ -395,12 +395,12 @@ bool DynamicEntity::Collision(Map* map)
 	return true;
 }
 
-double DynamicEntity::GetAngularVelocity()
+float DynamicEntity::GetAngularVelocity()
 {
 	return angular_velocity;
 }
 
-Vec2D DynamicEntity::GetVelocity()
+Vec2F DynamicEntity::GetVelocity()
 {
 	return *velocity;
 }
@@ -422,18 +422,18 @@ DynamicEntity::~DynamicEntity()
 
 
 
-StaticEntity::StaticEntity() : last_position(new Vec2D()), position(new Vec2D())
+StaticEntity::StaticEntity() : last_position(new Vec2F()), position(new Vec2F())
 {
 
 }
 
-StaticEntity::StaticEntity(Vec2D* position, double angle) : last_position(new Vec2D(*position)), position(new Vec2D(*position))
+StaticEntity::StaticEntity(Vec2F* position, float angle) : last_position(new Vec2F(*position)), position(new Vec2F(*position))
 {
 	SetPosition(position);
 	SetAngle(angle);
 }
 
-Vec2D StaticEntity::GetVelosity()
+Vec2F StaticEntity::GetVelosity()
 {
 	return *position - *last_position;
 }
@@ -455,7 +455,7 @@ Bonus::Bonus() : bonus_type(0)
 
 }
 
-Bonus::Bonus(uint16_t bonus_type, Vec2D* position, Vec2D* velocity) : bonus_type(bonus_type)
+Bonus::Bonus(uint16_t bonus_type, Vec2F* position, Vec2F* velocity) : bonus_type(bonus_type)
 {
 	*this->position = *position;
 	*this->velocity = *velocity;
@@ -514,7 +514,7 @@ ControledEntity::ControledEntity() : player_number(0), rotate_input_value_pointe
 
 }
 
-ControledEntity::ControledEntity(uint8_t player_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2D* position, Vec2D* velosity, double angle, double angular_velosity) : player_number(player_number), rotate_input_value_pointer(rotate_input_value_pointer), shoot_input_value_pointer(shoot_input_value_pointer)
+ControledEntity::ControledEntity(uint8_t player_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* position, Vec2F* velosity, float angle, float angular_velosity) : player_number(player_number), rotate_input_value_pointer(rotate_input_value_pointer), shoot_input_value_pointer(shoot_input_value_pointer)
 {
 	*this->position = *position;
 	*this->velocity = *velocity;
@@ -544,7 +544,7 @@ ControledEntity::~ControledEntity()
 
 
 
-Sheep::Sheep(uint8_t player_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2D* position, Vec2D* velocity, double angle, double angular_velocity) : baff_bonus(0x00), active_baff_bonus(0x00)
+Sheep::Sheep(uint8_t player_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* position, Vec2F* velocity, float angle, float angular_velocity) : baff_bonus(0x00), active_baff_bonus(0x00)
 {
 	this->player_number = player_number;
 	this->rotate_input_value_pointer = rotate_input_value_pointer;
@@ -555,7 +555,7 @@ Sheep::Sheep(uint8_t player_number, void* rotate_input_value_pointer, void* shoo
 	this->angular_velocity = angular_velocity;
 }
 
-Sheep::Sheep(uint8_t player_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2D* position, Vec2D* velocity, double angle, double angular_velocity, uint16_t baff_bonus) : baff_bonus(baff_bonus), active_baff_bonus(0x00)
+Sheep::Sheep(uint8_t player_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* position, Vec2F* velocity, float angle, float angular_velocity, uint16_t baff_bonus) : baff_bonus(baff_bonus), active_baff_bonus(0x00)
 {
 	this->player_number = player_number;
 	this->rotate_input_value_pointer = rotate_input_value_pointer;
@@ -573,8 +573,8 @@ void Sheep::ActivateBonus()
 
 DynamicEntity* Sheep::CreateBullet()
 {
-	Vec2D temp1 = *direction * radius + *position;
-	Vec2D temp2 = *direction * BULLET_DEFAULT_VELOCITY + *velocity;
+	Vec2F temp1 = *direction * radius + *position;
+	Vec2F temp2 = *direction * BULLET_DEFAULT_VELOCITY + *velocity;
 	return new DynamicEntity(&temp1, &temp2, 0.0, 0.0, BULLET_DEFAULT_RADIUS, 0.0, BULLET_DEFAULT_RESISTANCE_AIR_COEFFICIENT / 2.0);
 }
 
@@ -584,7 +584,7 @@ DynamicEntity* Sheep::CreateTriple(uint8_t bullet_number)
 	{
 		return nullptr;
 	}
-	Vec2D temp1, temp2;
+	Vec2F temp1, temp2;
 	switch (bullet_number)
 	{
 	case 0:
@@ -613,10 +613,10 @@ DynamicEntity* Sheep::CreateLoop(uint8_t bullet_number)
 	{
 		baff_bonus -= BONUS_LOOP;
 	}
-	Vec2D new_dir = direction->Rotate(2 * M_PI / BULLETS_IN_LOOP * bullet_number);
-	Vec2D temp = *position + new_dir * radius;
+	Vec2F new_dir = direction->Rotate(2.0f * (float)M_PI / BULLETS_IN_LOOP * bullet_number);
+	Vec2F temp = *position + new_dir * radius;
 	new_dir = new_dir * BULLET_DEFAULT_VELOCITY + *velocity;
-	return new DynamicEntity(&temp, &new_dir, 0.0, 0.0, BULLET_DEFAULT_RADIUS, 0.0, BULLET_DEFAULT_RESISTANCE_AIR_COEFFICIENT);
+	return new DynamicEntity(&temp, &new_dir, 0.0f, 0.0f, BULLET_DEFAULT_RADIUS, 0.0f, BULLET_DEFAULT_RESISTANCE_AIR_COEFFICIENT);
 }
 
 Mine* Sheep::CreateMine()
@@ -626,8 +626,8 @@ Mine* Sheep::CreateMine()
 		return nullptr;
 	}
 	baff_bonus -= BONUS_LOOP;
-	Vec2D temp = Vec2D();
-	return new Mine(player_number, position, &temp, 0.0, 0.0);
+	Vec2F temp = Vec2F();
+	return new Mine(player_number, position, &temp, 0.0f, 0.0f);
 }
 
 Beam* Sheep::CreateLazer()
@@ -637,13 +637,13 @@ Beam* Sheep::CreateLazer()
 		return nullptr;
 	}
 	baff_bonus -= BONUS_LOOP;
-	Vec2D temp = *position + *direction * radius;
+	Vec2F temp = *position + *direction * radius;
 	return new Beam(&temp, direction, false);
 }
 
 Segment* Sheep::CreateKnife(uint8_t knife_number)
 {
-	Vec2D temp1, temp2;
+	Vec2F temp1, temp2;
 	switch (knife_number)
 	{
 	case 0:
@@ -657,7 +657,7 @@ Segment* Sheep::CreateKnife(uint8_t knife_number)
 		}
 		baff_bonus -= BONUS_LOOP;
 		temp1 = *position - *direction - direction->Perpendicular();
-		temp2 = *direction * 2.0;
+		temp2 = *direction * 2.0f;
 		return new Segment(&temp1, &temp2, false);
 	default:
 		return nullptr;
@@ -690,7 +690,7 @@ Bonus* Sheep::LoseBonus()
 
 Pilot* Sheep::Destroy()
 {
-	Vec2D temp = *velocity * 2.0;
+	Vec2F temp = *velocity * 2.0f;
 	return new Pilot(player_number, rotate_input_value_pointer, shoot_input_value_pointer, position, &temp, angle, angular_velocity);
 }
 
@@ -701,7 +701,7 @@ Sheep::~Sheep()
 
 
 
-Pilot::Pilot(uint8_t player_number, void* rotate_keyboard_key_pointer, void* move_keyboard_key_pointer, Vec2D* position, Vec2D* velosity, double angle, double angular_velosity)
+Pilot::Pilot(uint8_t player_number, void* rotate_keyboard_key_pointer, void* move_keyboard_key_pointer, Vec2F* position, Vec2F* velosity, float angle, float angular_velosity)
 {
 	this->player_number = player_number;
 	rotate_input_value_pointer = rotate_keyboard_key_pointer;
@@ -714,8 +714,8 @@ Pilot::Pilot(uint8_t player_number, void* rotate_keyboard_key_pointer, void* mov
 
 Sheep* Pilot::Respawn()
 {
-	Vec2D temp = Vec2D();
-	return new Sheep(player_number, rotate_input_value_pointer, shoot_input_value_pointer, position, &temp, angle, 0.0);
+	Vec2F temp = Vec2F();
+	return new Sheep(player_number, rotate_input_value_pointer, shoot_input_value_pointer, position, &temp, angle, 0.0f);
 }
 
 Pilot::~Pilot()
@@ -725,7 +725,7 @@ Pilot::~Pilot()
 
 
 
-Turel::Turel(Vec2D* position, double angle)
+Turel::Turel(Vec2F* position, float angle)
 {
 	this->position = position;
 	this->angle = angle;
@@ -733,9 +733,9 @@ Turel::Turel(Vec2D* position, double angle)
 
 DynamicEntity* Turel::Shoot()
 {
-	Vec2D temp1 = *direction * BULLET_DEFAULT_VELOCITY;
-	Vec2D temp2 = *position + *direction * radius;
-	return new DynamicEntity(&temp2, &temp1, 0.0, 0.0, BULLET_DEFAULT_RADIUS, 0.0, BULLET_DEFAULT_RESISTANCE_AIR_COEFFICIENT);
+	Vec2F temp1 = *direction * BULLET_DEFAULT_VELOCITY;
+	Vec2F temp2 = *position + *direction * radius;
+	return new DynamicEntity(&temp2, &temp1, 0.0f, 0.0f, BULLET_DEFAULT_RADIUS, 0.0f, BULLET_DEFAULT_RESISTANCE_AIR_COEFFICIENT);
 }
 
 Turel::~Turel()
@@ -745,7 +745,7 @@ Turel::~Turel()
 
 
 
-MegaLazer::MegaLazer(Segment* lazer_segment, double angle) : active(false)
+MegaLazer::MegaLazer(Segment* lazer_segment, float angle) : active(false)
 {
 	*this->position = *lazer_segment->point;
 	*this->point2 = lazer_segment->GetSecondPoint();
@@ -780,7 +780,7 @@ MegaLazer::~MegaLazer()
 
 
 
-Mine::Mine(uint8_t player_master_number, Vec2D* position, Vec2D* velosity, double angle, double angular_velosity) : animation_tik(MINE_DEFAULT_TIMER), active(false), boom(false)
+Mine::Mine(uint8_t player_master_number, Vec2F* position, Vec2F* velosity, float angle, float angular_velosity) : animation_tik(MINE_DEFAULT_TIMER), active(false), boom(false)
 {
 	this->player_master_number = player_master_number;
 	*this->position = *position;
@@ -821,27 +821,27 @@ Mine::~Mine()
 
 
 
-MapElement::MapElement() : position(new Vec2D()), last_position(new Vec2D())
+MapElement::MapElement() : position(new Vec2F()), last_position(new Vec2F())
 {
 
 }
 
-Vec2D MapElement::GetPosition()
+Vec2F MapElement::GetPosition()
 {
 	return *position;
 }
 
-Vec2D MapElement::GetVelocity()
+Vec2F MapElement::GetVelocity()
 {
 	return *position - *last_position;
 }
 
-void MapElement::Move(Vec2D* move_vector)
+void MapElement::Move(Vec2F* move_vector)
 {
 	*position += *move_vector;
 }
 
-void MapElement::SetPosition(Vec2D* position)
+void MapElement::SetPosition(Vec2F* position)
 {
 	*this->position = *position;
 }
@@ -854,63 +854,63 @@ MapElement::~MapElement()
 
 
 
-Rectangle::Rectangle() : point2(new Vec2D()), show_sides(RECTANGLE_UP_SIDE | RECTANGLE_DOWN_SIDE | RECTANGLE_RIGHT_SIDE | RECTANGLE_LEFT_SIDE), collision_sides(RECTANGLE_UP_SIDE | RECTANGLE_DOWN_SIDE | RECTANGLE_RIGHT_SIDE | RECTANGLE_LEFT_SIDE)
+Rectangle::Rectangle() : point2(new Vec2F()), show_sides(RECTANGLE_UP_SIDE | RECTANGLE_DOWN_SIDE | RECTANGLE_RIGHT_SIDE | RECTANGLE_LEFT_SIDE), collision_sides(RECTANGLE_UP_SIDE | RECTANGLE_DOWN_SIDE | RECTANGLE_RIGHT_SIDE | RECTANGLE_LEFT_SIDE)
 {
 
 }
 
-Rectangle::Rectangle(Vec2D* point1, Vec2D* point2) : point2(new Vec2D(*point2)), show_sides(RECTANGLE_UP_SIDE | RECTANGLE_DOWN_SIDE | RECTANGLE_RIGHT_SIDE | RECTANGLE_LEFT_SIDE), collision_sides(RECTANGLE_UP_SIDE | RECTANGLE_DOWN_SIDE | RECTANGLE_RIGHT_SIDE | RECTANGLE_LEFT_SIDE)
+Rectangle::Rectangle(Vec2F* point1, Vec2F* point2) : point2(new Vec2F(*point2)), show_sides(RECTANGLE_UP_SIDE | RECTANGLE_DOWN_SIDE | RECTANGLE_RIGHT_SIDE | RECTANGLE_LEFT_SIDE), collision_sides(RECTANGLE_UP_SIDE | RECTANGLE_DOWN_SIDE | RECTANGLE_RIGHT_SIDE | RECTANGLE_LEFT_SIDE)
 {
 	*position = *point1;
 }
 
-Vec2D Rectangle::GetUpRightPoint()
+Vec2F Rectangle::GetUpRightPoint()
 {
-	return Vec2D(point2->x, position->y);
+	return Vec2F(point2->x, position->y);
 }
 
-Vec2D Rectangle::GetDownRightPoint()
+Vec2F Rectangle::GetDownRightPoint()
 {
 	return *point2;
 }
 
 
-Vec2D Rectangle::GetDownLeftPoint()
+Vec2F Rectangle::GetDownLeftPoint()
 {
-	return Vec2D(position->x, point2->y);;
+	return Vec2F(position->x, point2->y);;
 }
 
 
-Vec2D Rectangle::GetUpLeftPoint()
+Vec2F Rectangle::GetUpLeftPoint()
 {
 	return *position;
 }
 
 Segment Rectangle::GetUpSide()
 {
-	Vec2D temp = Vec2D(point2->x, position->y);
+	Vec2F temp = Vec2F(point2->x, position->y);
 	return Segment(position, &temp, true);
 }
 
 Segment Rectangle::GetDownSide()
 {
-	Vec2D temp = Vec2D(position->x, point2->y);
+	Vec2F temp = Vec2F(position->x, point2->y);
 	return Segment(&temp, point2, true);
 }
 
 Segment Rectangle::GetRightSide()
 {
-	Vec2D temp = Vec2D(point2->x, position->y);
+	Vec2F temp = Vec2F(point2->x, position->y);
 	return Segment(&temp, point2, true);
 }
 
 Segment Rectangle::GetLeftSide()
 {
-	Vec2D temp = Vec2D(position->x, point2->y);
+	Vec2F temp = Vec2F(position->x, point2->y);
 	return Segment(position, &temp, true);
 }
 
-void Rectangle::Move(Vec2D* move_vector)
+void Rectangle::Move(Vec2F* move_vector)
 {
 	MapElement::Move(move_vector);
 	*point2 += *move_vector;
@@ -933,22 +933,22 @@ Rectangle::~Rectangle()
 
 
 
-Cyrcle::Cyrcle() : radius(0.0)
+Cyrcle::Cyrcle() : radius(0.0f)
 {
 
 }
 
-Cyrcle::Cyrcle(Vec2D* position, double radius) : radius(radius)
+Cyrcle::Cyrcle(Vec2F* position, float radius) : radius(radius)
 {
 	*this->position = *position;
 }
 
-double Cyrcle::GetRadius()
+float Cyrcle::GetRadius()
 {
 	return radius;
 }
 
-void Cyrcle::SetRadius(double radius)
+void Cyrcle::SetRadius(float radius)
 {
 	this->radius = radius;
 }
@@ -972,7 +972,7 @@ Polygon::Polygon() : points_array(nullptr), default_points_array(nullptr), point
 
 }
 
-Polygon::Polygon(Vec2D* position, Vec2D* default_points_array, uint32_t points_array_length) : points_array_length(points_array_length), default_points_array(new Vec2D[points_array_length]), points_array(new Vec2D[points_array_length - 1])
+Polygon::Polygon(Vec2F* position, Vec2F* default_points_array, uint32_t points_array_length) : points_array_length(points_array_length), default_points_array(new Vec2F[points_array_length]), points_array(new Vec2F[points_array_length - 1])
 {
 	*this->position = *position;
 	for (uint32_t i = 0; i < points_array_length; i++)
@@ -982,9 +982,9 @@ Polygon::Polygon(Vec2D* position, Vec2D* default_points_array, uint32_t points_a
 	ToDefault();
 }
 
-void Polygon::Rotate(double angle, Vec2D* rotating_point)
+void Polygon::Rotate(float angle, Vec2F* rotating_point)
 {
-	Vec2D rot_vec;
+	Vec2F rot_vec;
 	for (uint32_t i = 0; i < points_array_length - 1; i++)
 	{
 		rot_vec = points_array[i] - *rotating_point;
@@ -997,7 +997,7 @@ void Polygon::Rotate(double angle, Vec2D* rotating_point)
 	*position = *rotating_point + rot_vec;
 }
 
-void Polygon::Move(Vec2D* move_vector)
+void Polygon::Move(Vec2F* move_vector)
 {
 	for (uint32_t i = 0; i < points_array_length - 1; i++)
 	{
@@ -1020,8 +1020,8 @@ void Polygon::Set(Polygon* parent)
 	delete points_array;
 	delete default_points_array;
 	points_array_length = parent->points_array_length;
-	points_array = new Vec2D[points_array_length - 1];
-	default_points_array = new Vec2D[points_array_length];
+	points_array = new Vec2F[points_array_length - 1];
+	default_points_array = new Vec2F[points_array_length];
 	for (uint32_t i = 1; i < points_array_length; i++)
 	{
 		points_array[i] = parent->points_array[i];
@@ -1035,7 +1035,7 @@ Polygon::~Polygon()
 
 
 
-Map::Map(Rectangle* rectangles_array, uint8_t rectangles_array_length, Cyrcle* cyrcles_array, uint8_t cyrcles_array_length, Polygon* polygons_array, uint8_t polygons_array_length) : rectangles_array_length(rectangles_array_length), cyrcles_array_length(cyrcles_array_length), polygons_array_length(polygons_array_length)
+Map::Map(Rectangle* rectangles_array, uint8_t rectangles_array_length, Cyrcle* cyrcles_array, uint8_t cyrcles_array_length, Polygon* polygons_array, uint8_t polygons_array_length, Vec2F* size) : rectangles_array_length(rectangles_array_length), cyrcles_array_length(cyrcles_array_length), polygons_array_length(polygons_array_length), size(*size)
 {
 	if (rectangles_array_length > 0)
 	{
@@ -1075,6 +1075,11 @@ Map::Map(Rectangle* rectangles_array, uint8_t rectangles_array_length, Cyrcle* c
 	{
 		this->polygons_array = nullptr;
 	}
+}
+
+Vec2F Map::GetSize()
+{
+	return size;
 }
 
 Rectangle Map::GetRectangle(uint8_t number)
