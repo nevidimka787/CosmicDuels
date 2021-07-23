@@ -3,7 +3,10 @@
 
 #include <iostream>
 #include <limits.h>
+#include <random>
 #include "GameEngine.h"
+#include "Menu.h"
+#include "MenuFunctions.h"
 
 namespace Game
 {
@@ -35,6 +38,7 @@ namespace Game
 #define GAME_RULE_BALANCE_ACTIVE					(1 << 14)
 
 #define RANDOM_ITERATIONS_COUNT 8
+#define MAPS_COUNT 1;
 #define BALANCE_ACTIVATE_DIFFERENCE_SCORES 3 
 
 	//game variables
@@ -48,7 +52,6 @@ namespace Game
 	static uint8_t anty_gravs_count;
 	static uint8_t players_count;
 	static uint8_t turels_count;
-	static uint8_t start_bonus;
 	static uint16_t asterooids_count;
 	static uint16_t bonuses_count;
 	static uint16_t bullets_count;
@@ -80,12 +83,29 @@ namespace Game
 
 	//game objects
 
+	//menu objects
+
+	static Menu* current_active_menu;
+
+	static Menu* main_menu;
+	static Menu* option_menu;
+	static Menu* pause_menu;
+
+	static Menu* sheeps_select_menu;
+	static Menu* team_sheeps_select_menu;
+	static Menu* maps_select_menu;
+	static Menu* spawning_objects_select_menu;
+
+	//menu objects
+
 	void GameInit();
 	void MachInit(uint8_t players_count, uint32_t game_rules, uint16_t start_bonus);
 	void LevelInit(uint8_t map_id);
+	void MenusInit();
 	void Recalculate();
 
 	uint8_t GenerateRandomBonus();
+	uint8_t GetRandomMap();
 	uint8_t GetMaxScore();
 };
 

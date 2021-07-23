@@ -11,6 +11,7 @@
 #include "Mat.h"
 #include "GameEngine.h"
 #include "GameRealisation.h"
+#include "Menu.h"
 
 #define SCR_WIDTH 800
 #define SCR_HEIGHT 600
@@ -26,7 +27,7 @@ std::shared_mutex physic_calculation_mtx;
 uint32_t global_timer = 0;
 
 void TikUpdate();
-void PhysicsCalculation();
+void PhysicsCalculation(uint8_t* level_id);
 void Draw(GLFWwindow* window);
 
 int main()
@@ -36,12 +37,17 @@ int main()
     OpenGL::InitGlad();
 
     bool start_game = false;
+    uint8_t level;
+    Game::MenusInit();
+    Game::GameInit();
 
     while (true)
     {
+        OpenGL::DrawObject(Game::current_active_menu, false);
         if (start_game == true)
         {
-            std::thread physic(PhysicsCalculation);
+            Game::MachInit(2, GAME_RULE_PLAYERS_SPAWN_THIS_BONUS | GAME_RULE_START_BONUS_RANDOMIZE | GAME_RULE_NEED_KILL_PILOT | GAME_RULE_ASTEROIDS_IS_SPAWNING | GAME_RULE_BONUSES_IS_SPAWNING, 0);
+            std::thread physic(PhysicsCalculation, &level);
             std::thread draw(Draw, window);
             physic.join();
         }
@@ -93,7 +99,7 @@ void TikUpdate()
     }
 }
 
-void PhysicsCalculation()
+void PhysicsCalculation(uint8_t* level_id)
 {
     std::thread timer(TikUpdate);
 
@@ -106,7 +112,15 @@ void PhysicsCalculation()
     physic_calculation_mtx.lock();
     //start initialisate all entities and variables
 
-    //Game::Init();
+    if (Game::game_rules & GAME_RULE_RANDOMLY_MAP)
+    {
+        Game::LevelInit(Game::GetRandomMap());
+    }
+    else
+    {
+        Game::LevelInit(*level_id);
+    }
+
 
     //start initialisate all entities and variables
     physic_calculation_mtx.unlock();
