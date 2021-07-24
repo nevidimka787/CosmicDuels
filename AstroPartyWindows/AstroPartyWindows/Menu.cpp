@@ -3,12 +3,12 @@
 #pragma warning(disable : 6386)
 #pragma warning(disable : 6385)
 
-Button::Button() : position(new Vec2F()), size(new Vec2F()), ActivateFunction(nullptr), text(nullptr), text_size(0)
+Button::Button() : position(new Vec2F()), size(new Vec2F()), text(nullptr), text_size(0), id(0), status(BUTTOM_STATUS_INACTIVE)
 {
 
 }
 
-Button::Button(Vec2F* position, Vec2F* size, void* ActivateFunction(void*), const char* text, uint8_t text_size) : position(new Vec2F(*position)), size(new Vec2F(*size)), ActivateFunction(ActivateFunction), text_size(text_size)
+Button::Button(uint32_t id, Vec2F* position, Vec2F* size, const char* text, uint8_t text_size) : id(id), position(new Vec2F(*position)), size(new Vec2F(*size)), text_size(text_size), status(BUTTOM_STATUS_INACTIVE)
 {
 	uint32_t length;
 	for (length = 0; text[length] != '\0'; length++);
@@ -18,6 +18,11 @@ Button::Button(Vec2F* position, Vec2F* size, void* ActivateFunction(void*), cons
 	{
 		this->text[i] = text[i];
 	}
+}
+
+uint32_t Button::GetId()
+{
+	return id;
 }
 
 Vec2F Button::GetPosition()
@@ -35,7 +40,7 @@ void Button::Set(Button* button)
 	*position = *button->position;
 	*size = *button->size;
 	text_size = button->text_size;
-	ActivateFunction = button->ActivateFunction;
+	id = button->id;
 	
 	if (text != nullptr)
 	{
@@ -50,11 +55,17 @@ void Button::Set(Button* button)
 	{
 		text[i] = button->text[i];
 	}
+	status = button->status;
 }
 
 void Button::Move(Vec2F* move_vector)
 {
 	*position += *move_vector;
+}
+
+void Button::SetId(uint32_t id)
+{
+	this->id = id;
 }
 
 void Button::SetPosition(Vec2F* position)
@@ -65,6 +76,23 @@ void Button::SetPosition(Vec2F* position)
 void Button::SetSize(Vec2F* size)
 {
 	*this->size = *size;
+}
+
+bool Button::HavePoint(Vec2F* point)
+{
+	if (size->x > 0.0f)
+	{
+		if (size->y > 0.0f)
+		{
+			return point->x >= position->x && point->y >= position->y && point->x <= position->x + size->x && point->y <= position->y + size->y;
+		}
+		return point->x >= position->x && point->y <= position->y && point->x <= position->x + size->x && point->y >= position->y + size->y;
+	}
+	if (size->y > 0.0f)
+	{
+		return point->x <= position->x && point->y >= position->y && point->x >= position->x + size->x && point->y <= position->y + size->y;
+	}
+	return point->x <= position->x && point->y <= position->y && point->x >= position->x + size->x && point->y >= position->y + size->y;
 }
 
 void Button::SetText(const char* text)
@@ -91,15 +119,6 @@ void Button::SetText(const char* text, uint8_t text_size)
 	this->text_size = text_size;
 }
 
-void* Button::ButtonActivate(void* data)
-{
-	if (ActivateFunction != nullptr)
-	{
-		return ActivateFunction(data);
-	}
-	return nullptr;
-}
-
 Button::~Button()
 {
 	delete position;
@@ -114,7 +133,7 @@ Menu::Menu() : default_buttons(nullptr), current_buttons(nullptr), buttons_count
 	
 }
 
-Menu::Menu(Vec2F* position, Button* buttons, uint8_t buttons_count) : position(new Vec2F(*position)), default_buttons(new Button[buttons_count]), current_buttons(new Button[buttons_count]), buttons_count(buttons_count)
+Menu::Menu(Vec2F* position, Button* buttons, uint8_t buttons_count, void ProcessInputFunction(Vec2F*)) : position(new Vec2F(*position)), default_buttons(new Button[buttons_count]), current_buttons(new Button[buttons_count]), buttons_count(buttons_count), ProcessInputFunction(ProcessInputFunction)
 {
 	for (uint8_t i = 0; i < buttons_count; i++)
 	{
@@ -153,6 +172,11 @@ void Menu::SetPosition(Vec2F* position)
 {
 	*this->position = *position;
 	Recalculate();
+}
+
+void Menu::ProcessInput(Vec2F* clk_pos)
+{
+	ProcessInputFunction(clk_pos);
 }
 
 void Menu::Recalculate()

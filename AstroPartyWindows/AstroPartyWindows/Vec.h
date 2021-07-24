@@ -35,6 +35,7 @@ public:
 	void PerpendicularThis();
 	Vec2D Rotate(double angle);
 	void RotateThis(double angle);
+	Vec2D Scale(Vec2D* scale);
 };
 
 
@@ -70,6 +71,7 @@ public:
 	void PerpendicularThis();
 	Vec2F Rotate(float angle);
 	void RotateThis(float angle);
+	Vec2F Scale(Vec2F* scale);
 };
 
 

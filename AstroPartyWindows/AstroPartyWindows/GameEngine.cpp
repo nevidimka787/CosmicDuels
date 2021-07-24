@@ -207,6 +207,32 @@ bool Entity::IsCollision(Polygon* polygon)
 	return false;
 }
 
+bool Entity::IsCollision(Map* map)
+{
+	for (uint8_t i = 0; i < map->rectangles_array_length; i++)
+	{
+		if (IsCollision(map->GetRectanglePointer(i)))
+		{
+			return true;
+		}
+	}
+	for (uint8_t i = 0; i < map->cyrcles_array_length; i++)
+	{
+		if (IsCollision(map->GetCyrclePointer(i)))
+		{
+			return true;
+		}
+	}
+	for (uint8_t i = 0; i < map->polygons_array_length; i++)
+	{
+		if (IsCollision(map->GetPolygonPointer(i)))
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
 void Entity::Rotate(float angle)
 {
 	this->angle += angle;
@@ -464,12 +490,20 @@ Bonus::Bonus(uint16_t bonus_type, Vec2F* position, Vec2F* velocity) : bonus_type
 Bonus* Bonus::Division()
 {
 	uint16_t temp;
+	bool last = false;
 	for (uint8_t i = 0; i < 6; i++)
 	{
 		temp = 0x11 << (i << 1);
 		if (bonus_type & temp)
 		{
-			return new Bonus(bonus_type & temp, position, velocity);
+			if (last)
+			{
+				return new Bonus(bonus_type & temp, position, velocity);
+			}
+			else
+			{
+				last = true;
+			}
 		}
 	}
 	return nullptr;
@@ -509,12 +543,12 @@ Asteroid::~Asteroid()
 
 
 
-ControledEntity::ControledEntity() : player_number(0), rotate_input_value_pointer(nullptr), shoot_input_value_pointer(nullptr)
+ControledEntity::ControledEntity() : player_number(0), rotate_input_value_pointer(nullptr), shoot_input_value_pointer(nullptr), unbrakable(false)
 {
 
 }
 
-ControledEntity::ControledEntity(uint8_t player_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* position, Vec2F* velosity, float angle, float angular_velosity) : player_number(player_number), rotate_input_value_pointer(rotate_input_value_pointer), shoot_input_value_pointer(shoot_input_value_pointer)
+ControledEntity::ControledEntity(uint8_t player_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* position, Vec2F* velosity, float angle, float angular_velosity) : player_number(player_number), rotate_input_value_pointer(rotate_input_value_pointer), shoot_input_value_pointer(shoot_input_value_pointer), unbrakable(false)
 {
 	*this->position = *position;
 	*this->velocity = *velocity;
@@ -535,6 +569,15 @@ bool ControledEntity::GetRotateInputValue()
 bool ControledEntity::GetShootInputValue()
 {
 	return *(bool*)shoot_input_value_pointer;
+}
+
+void ControledEntity::Recalculate()
+{
+	DynamicEntity::Recalculate();
+	if (unbrakable > 0)
+	{
+		unbrakable--;
+	}
 }
 
 ControledEntity::~ControledEntity()
@@ -569,6 +612,12 @@ Sheep::Sheep(uint8_t player_number, void* rotate_input_value_pointer, void* shoo
 void Sheep::ActivateBonus()
 {
 	active_baff_bonus |= baff_bonus;
+}
+
+void Sheep::BreakShield()
+{
+	active_baff_bonus &= (0xFFFFFFFF - BUFF_SHIELD * 3);
+	unbrakable = CONTROLED_ENTITY_UNBRAKABLE_PERIOD;
 }
 
 DynamicEntity* Sheep::CreateBullet()
@@ -664,7 +713,7 @@ Segment* Sheep::CreateKnife(uint8_t knife_number)
 	}
 }
 
-void Sheep::GetBonus(Bonus* bonus)
+void Sheep::TakeBonus(Bonus* bonus)
 {
 	if (baff_bonus & BUFF_TRIPLE)
 	{
@@ -694,6 +743,11 @@ Pilot* Sheep::Destroy()
 	return new Pilot(player_number, rotate_input_value_pointer, shoot_input_value_pointer, position, &temp, angle, angular_velocity);
 }
 
+uint16_t Sheep::GetActiveBaffsAndBonuses()
+{
+	return active_baff_bonus;
+}
+
 Sheep::~Sheep()
 {
 
@@ -710,6 +764,7 @@ Pilot::Pilot(uint8_t player_number, void* rotate_keyboard_key_pointer, void* mov
 	*this->velocity = *velocity;
 	this->angle = angle;
 	this->angular_velocity = angular_velocity;
+	this->unbrakable = CONTROLED_ENTITY_UNBRAKABLE_PERIOD;
 }
 
 Sheep* Pilot::Respawn()
@@ -719,6 +774,42 @@ Sheep* Pilot::Respawn()
 }
 
 Pilot::~Pilot()
+{
+
+}
+
+
+
+AggressiveEntity::AggressiveEntity() : attack_dellay(0), attack_period(AGGRESIVE_ENTITY_DEFAULT_ATTACK_PERIOD), inactive_period(AGGRESIVE_ENTITY_DEFAULT_INACTIVE_PERIOD), shoots_count(AGGRESIVE_ENTITY_DEFAULT_SHOOTS_COUNT)
+{
+
+}
+
+AggressiveEntity::AggressiveEntity(uint32_t current_tic, uint32_t first_activation_dellay, uint32_t attack_period, uint32_t passive_period, uint8_t shoots_count) : attack_dellay(current_tic + first_activation_dellay), attack_period(attack_period), inactive_period(passive_period), shoots_count(shoots_count)
+{
+
+}
+
+bool AggressiveEntity::IsShoot(uint32_t current_tic)
+{
+	uint32_t local_tic = (current_tic - attack_dellay) % (attack_period + inactive_period);
+	if (local_tic < attack_period)
+	{
+		return false;
+	}
+	if (attack_period < shoots_count)
+	{
+		return true;
+	}
+	return (local_tic - attack_period) % (attack_period / shoots_count) == 0;
+}
+
+void AggressiveEntity::PostponeAttack(uint32_t dellay)
+{
+	attack_dellay += dellay;
+}
+
+AggressiveEntity::~AggressiveEntity()
 {
 
 }
@@ -739,6 +830,23 @@ DynamicEntity* Turel::Shoot()
 }
 
 Turel::~Turel()
+{
+
+}
+
+
+
+GravGen::GravGen() : gravity(GRAVITY_GENERATOR_DEFAULT_GRAVITY)
+{
+
+}
+
+GravGen::GravGen(Vec2F* position, float gravity) : gravity(gravity)
+{
+	*this->position = *position;
+}
+
+GravGen::~GravGen()
 {
 
 }
@@ -780,7 +888,7 @@ MegaLazer::~MegaLazer()
 
 
 
-Mine::Mine(uint8_t player_master_number, Vec2F* position, Vec2F* velosity, float angle, float angular_velosity) : animation_tik(MINE_DEFAULT_TIMER), active(false), boom(false)
+Mine::Mine(uint8_t player_master_number, Vec2F* position, Vec2F* velosity, float angle, float angular_velosity) : animation_tic(MINE_DEFAULT_TIMER), active(false), boom(false)
 {
 	this->player_master_number = player_master_number;
 	*this->position = *position;
@@ -796,7 +904,7 @@ void Mine::Activate()
 
 void Mine::Boom()
 {
-	animation_tik = MiNE_BOOM_TIMER;
+	animation_tic = MiNE_BOOM_TIMER;
 	radius = MINE_BOOM_RADIUS;
 	boom = true;
 }
@@ -804,11 +912,11 @@ void Mine::Boom()
 void Mine::Recalculate()
 {
 	DynamicEntity::Recalculate();
-	if (active && animation_tik > 0)
+	if (active && animation_tic > 0)
 	{
-		animation_tik--;
+		animation_tic--;
 	}
-	if (animation_tik == 0 && !boom)
+	if (animation_tic == 0 && !boom)
 	{
 		Boom();
 	}
@@ -1107,6 +1215,33 @@ Polygon Map::GetPolygon(uint8_t number)
 		return polygons_array[number % polygons_array_length];
 	}
 	return polygons_array[number];
+}
+
+Rectangle* Map::GetRectanglePointer(uint8_t number)
+{
+	if (number >= rectangles_array_length)
+	{
+		return &rectangles_array[number % rectangles_array_length];
+	}
+	return &rectangles_array[number];
+}
+
+Cyrcle* Map::GetCyrclePointer(uint8_t number)
+{
+	if (number >= cyrcles_array_length)
+	{
+		return &cyrcles_array[number % cyrcles_array_length];
+	}
+	return &cyrcles_array[number];
+}
+
+Polygon* Map::GetPolygonPointer(uint8_t number)
+{
+	if (number >= polygons_array_length)
+	{
+		return &polygons_array[number % polygons_array_length];
+	}
+	return &polygons_array[number];
 }
 
 Map::~Map()

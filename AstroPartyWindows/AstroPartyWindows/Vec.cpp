@@ -132,6 +132,11 @@ void Vec2D::RotateThis(double angle)
 	x = temp;
 }
 
+Vec2D Vec2D::Scale(Vec2D* scale)
+{
+	return Vec2D(x * scale->x, y * scale->y);
+}
+
 
 
 Vec2F::Vec2F() : x(0.0), y(0.0)
@@ -264,4 +269,9 @@ void Vec2F::RotateThis(float angle)
 	float temp = x * cosf(angle) + y * sinf(angle);
 	y = y * cosf(angle) - x * sinf(angle);
 	x = temp;
+}
+
+Vec2F Vec2F::Scale(Vec2F* scale)
+{
+	return Vec2F(x * scale->x, y * scale->y);
 }

@@ -1,51 +1,46 @@
 #include "MenuFunctions.h"
 
-void* MenuFunctions::StartGame(void* data)
+void MenuFunctions::StartGame()
 {
-	return nullptr;
+
 }
 
-void* MenuFunctions::OpenOptions(void* data)
+void MenuFunctions::OpenOptions()
 {
-	return nullptr;
+
 }
 
-void* MenuFunctions::OpenMainMenu(void* data)
+void MenuFunctions::OpenMainMenu()
 {
-	return nullptr;
+
 }
 
-void* MenuFunctions::Pause(void* data)
+void MenuFunctions::Pause()
 {
-	return nullptr;
+
 }
 
-void* MenuFunctions::ResumeGame(void* data)
+void MenuFunctions::ResumeGame()
 {
-	return nullptr;
+
 }
 
-void* MenuFunctions::SelectSheep(void* sheep)
+void MenuFunctions::SelectSheep(uint8_t sheep_number)
 {
-	return nullptr;
+
 }
 
-void* MenuFunctions::SelectSheepTeam1(void* sheep)
+void MenuFunctions::SelectSheep(uint8_t sheep_number, uint8_t team_number)
 {
-	return nullptr;
+
 }
 
-void* MenuFunctions::SelectSheepTeam2(void* sheep)
+void MenuFunctions::Exit()
 {
-	return nullptr;
+
 }
 
-void* MenuFunctions::Exit(void* data)
+void MenuFunctions::ChangeOption(uint32_t option_number)
 {
-	return nullptr;
-}
 
-void* MenuFunctions::ChangeOption(void* option)
-{
-	return nullptr;
 }

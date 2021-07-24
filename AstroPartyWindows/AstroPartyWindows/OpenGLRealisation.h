@@ -41,8 +41,7 @@ namespace OpenGL
 
 	//hight level functions
 
-	void DrawObject(Button* button, bool update_shader);
-	void DrawObject(Menu* menu, bool update_shader);
+	void DrawMenu(Menu* menu);
 
 	void DrawObject(Line* line, bool update_shader);
 	void DrawObject(Beam* beam, bool update_shader);

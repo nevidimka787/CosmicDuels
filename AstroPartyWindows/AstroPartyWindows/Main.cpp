@@ -43,7 +43,7 @@ int main()
 
     while (true)
     {
-        OpenGL::DrawObject(Game::current_active_menu, false);
+        OpenGL::DrawMenu(Game::current_active_menu);
         if (start_game == true)
         {
             Game::MachInit(2, GAME_RULE_PLAYERS_SPAWN_THIS_BONUS | GAME_RULE_START_BONUS_RANDOMIZE | GAME_RULE_NEED_KILL_PILOT | GAME_RULE_ASTEROIDS_IS_SPAWNING | GAME_RULE_BONUSES_IS_SPAWNING, 0);
@@ -74,6 +74,7 @@ void Draw(GLFWwindow* window)
         physic_calculation_mtx.lock();
         OpenGL::DrawFrame();
         physic_calculation_mtx.unlock();
+        OpenGL::DrawMenu(Game::sheeps_control_menu);
 
         glfwSwapBuffers(window);
         glfwPollEvents();

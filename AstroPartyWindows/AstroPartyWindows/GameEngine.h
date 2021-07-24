@@ -8,6 +8,7 @@ class Entity;
 class StaticEntity;
 class MegaLazer;
 class Turel;
+class GravGen;
 class DynamicEntity;
 class Mine;
 class Bonus;
@@ -60,6 +61,7 @@ public:
 	bool IsCollision(Rectangle* rectangle);
 	bool IsCollision(Cyrcle* cyrcle);
 	bool IsCollision(Polygon* polygon);
+	bool IsCollision(Map* map);
 	void Move(Vec2F* delta);
 
 	~Entity();
@@ -159,10 +161,12 @@ public:
 
 class ControledEntity : public DynamicEntity
 {
+#define CONTROLED_ENTITY_UNBRAKABLE_PERIOD 100
 protected:
 	uint8_t player_number;
 	void* rotate_input_value_pointer;
 	void* shoot_input_value_pointer;
+	uint16_t unbrakable;
 public:
 	ControledEntity();
 	ControledEntity(uint8_t player_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* position, Vec2F* velosity, float angle, float angular_velosity);
@@ -170,6 +174,7 @@ public:
 	uint8_t GetPlauerNumber();
 	bool GetRotateInputValue();
 	bool GetShootInputValue();
+	void Recalculate();
 	
 	~ControledEntity();
 };
@@ -187,6 +192,7 @@ public:
 	Sheep(uint8_t player_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* position, Vec2F* velocity, float angle, float angular_velocity, uint16_t baff_bonus);
 	
 	void ActivateBonus();
+	void BreakShield();
 	DynamicEntity* CreateBullet();
 	DynamicEntity* CreateTriple(uint8_t bullet_number);
 #define BULLETS_IN_LOOP 24
@@ -194,9 +200,10 @@ public:
 	Mine* CreateMine();
 	Beam* CreateLazer();
 	Segment* CreateKnife(uint8_t knife_number);
-	void GetBonus(Bonus* bonus);
-	Bonus* LoseBonus();
 	Pilot* Destroy();
+	uint16_t GetActiveBaffsAndBonuses();
+	Bonus* LoseBonus();
+	void TakeBonus(Bonus* bonus);
 	
 	~Sheep();
 };
@@ -212,15 +219,44 @@ public:
 	~Pilot();
 };
 
+class AggressiveEntity : public StaticEntity
+{
+#define AGGRESIVE_ENTITY_DEFAULT_ATTACK_PERIOD			30
+#define AGGRESIVE_ENTITY_DEFAULT_INACTIVE_PERIOD		970
+#define AGGRESIVE_ENTITY_DEFAULT_SHOOTS_COUNT			3
+protected:
+	uint32_t attack_dellay;
+public:
+	uint32_t attack_period;
+	uint32_t inactive_period;
+	uint8_t shoots_count;
+	AggressiveEntity();
+	AggressiveEntity(uint32_t current_tic, uint32_t first_activation_dellay, uint32_t attack_period, uint32_t passive_period, uint8_t shoots_count);
+	bool IsShoot(uint32_t current_tic);
+	void PostponeAttack(uint32_t dellay);
+	~AggressiveEntity();
+};
+
 class Turel : public StaticEntity
 {
-protected:
+#define ATACK_ENTITY_DEFAULT_ATACK_PERIOD
 public:
 	Turel(Vec2F* position, float angle);
 	
 	DynamicEntity* Shoot();
 
 	~Turel();
+};
+
+class GravGen : public StaticEntity
+{
+#define GRAVITY_GENERATOR_DEFAULT_GRAVITY 0.1f
+public:
+	float gravity;
+
+	GravGen();
+	GravGen(Vec2F* position, float gravity);
+	~GravGen();
 };
 
 class MegaLazer : public StaticEntity
@@ -245,7 +281,7 @@ class Mine : public DynamicEntity
 #define MINE_BOOM_RADIUS 0.1f
 protected:
 	uint8_t player_master_number;
-	uint8_t animation_tik;
+	uint8_t animation_tic;
 	bool active;
 	bool boom;
 public:
@@ -358,6 +394,9 @@ public:
 	Rectangle GetRectangle(uint8_t number);
 	Cyrcle GetCyrcle(uint8_t number);
 	Polygon GetPolygon(uint8_t number);
+	Rectangle* GetRectanglePointer(uint8_t number);
+	Cyrcle* GetCyrclePointer(uint8_t number);
+	Polygon* GetPolygonPointer(uint8_t number);
 
 	~Map();
 };
