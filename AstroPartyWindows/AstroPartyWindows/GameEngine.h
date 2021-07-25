@@ -10,6 +10,10 @@ class MegaLazer;
 class Turel;
 class GravGen;
 class DynamicEntity;
+class KillerEntity;
+class Bullet;
+class Lazer;
+class Knife;
 class Mine;
 class Bonus;
 class ControledEntity;
@@ -62,6 +66,8 @@ public:
 	bool IsCollision(Cyrcle* cyrcle);
 	bool IsCollision(Polygon* polygon);
 	bool IsCollision(Map* map);
+	void UpdateAngle();
+	void UpdateDirection();
 	void Move(Vec2F* delta);
 
 	~Entity();
@@ -69,8 +75,8 @@ public:
 
 class DynamicEntity : public Entity
 {
-#define DEFAULT_FORCE_COLLISION_COEFFICIENT			0.001
-#define DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT	0.001
+#define DEFAULT_FORCE_COLLISION_COEFFICIENT			0.001f
+#define DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT	0.001f
 protected:
 	float angular_velocity;
 	Vec2F* velocity;
@@ -117,16 +123,17 @@ public:
 class Bonus : public DynamicEntity
 {
 #define BONUSES_COUNT	4
-#define BUFS_COUNT		2
+#define BUFFS_COUNT		2
 #define BONUS_DATA_LENGTH (sizeof(uint8_t) * 8 - 2)
 #define BONUS		0x00FF //0000 0000 1111 1111
 #define BUFF		0x3F00 //0011 1111 0000 0000
 #define GAME_RULE	0xC000 //1100 0000 0000 0000
 
+#define BONUS_NO_BONUS	0x0000
 #define BONUS_LOOP		0x0001
 #define BONUS_LASER		0x0004
 #define BONUS_MINE		0x0008
-#define BONUS_SHNECK	0x0010
+#define BONUS_KNIFE	0x0010
 #define BUFF_TRIPLE		0x0100
 #define BUFF_SHIELD		0x0400
 #define GAME_REVERSE	0x8000
@@ -150,13 +157,42 @@ public:
 
 class Asteroid : public DynamicEntity
 {
+#define ASTEROID_RADIUS_SMALL	0.0125f
+#define ASTEROID_RADIUS_MEDIUM	0.025f
+#define ASTEROID_RADIUS_BIG		0.05f
+#define ASTEROID_MAX_RADIUS		ASTEROID_RADIUS_BIG
+#define ASTEROID_DEFAULT_RADIUS	ASTEROID_RADIUS_MEDIUM
+#define ASTEROID_SIZE_SMALL		0
+#define ASTEROID_SIZE_MEDIUM	1
+#define ASTEROID_SIZE_BIG		2
+#define ASTEROID_MAX_SIZE		ASTEROID_SIZE_BIG
+#define ASTEROID_DEFAULT_SIZE	ASTEROID_SIZE_MEDIUM
 protected:
 	uint16_t buff_bonus;
+	uint8_t size;
 public:
 	Asteroid();
-	Asteroid(uint16_t buff_bonus);
+	Asteroid(uint16_t buff_bonus, uint8_t size);
 	Bonus* Destroy();
+	/*
+	*The function creates a new smaller asteroid.
+	*Remember to remove main asteroid.
+	*/
+	Asteroid* Division();
+	uint8_t GetSize();
+	uint16_t GetBuffBonus();
 	~Asteroid();
+};
+
+class KillerEntity : public DynamicEntity
+{
+protected:
+	uint8_t player_master_number;
+public:
+	KillerEntity();
+	KillerEntity(uint8_t player_master_number);
+	uint8_t GetPlayerMasterNumber();
+	~KillerEntity();
 };
 
 class ControledEntity : public DynamicEntity
@@ -185,23 +221,25 @@ class Sheep : public ControledEntity
 #define BULLET_DEFAULT_RADIUS	0.01f
 #define BULLET_DEFAULT_RESISTANCE_AIR_COEFFICIENT 0.001f
 protected:
-	uint16_t baff_bonus;
-	uint16_t active_baff_bonus;
+	uint16_t buffs_bonuses;
+	uint16_t active_baffs;
 public:
+	bool can_shoot;
 	Sheep(uint8_t player_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* position, Vec2F* velocity, float angle, float angular_velocity);
-	Sheep(uint8_t player_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* position, Vec2F* velocity, float angle, float angular_velocity, uint16_t baff_bonus);
+	Sheep(uint8_t player_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* position, Vec2F* velocity, float angle, float angular_velocity, uint16_t buffs_bonuses);
 	
 	void ActivateBonus();
 	void BreakShield();
-	DynamicEntity* CreateBullet();
-	DynamicEntity* CreateTriple(uint8_t bullet_number);
+	Bullet* CreateBullet();
+	Bullet* CreateTriple(uint8_t bullet_number);
 #define BULLETS_IN_LOOP 24
-	DynamicEntity* CreateLoop(uint8_t bullet_number);
+	Bullet* CreateLoop(uint8_t bullet_number);
 	Mine* CreateMine();
-	Beam* CreateLazer();
-	Segment* CreateKnife(uint8_t knife_number);
+	Lazer* CreateLazer();
+	Knife* CreateKnife(uint8_t knife_number);
 	Pilot* Destroy();
-	uint16_t GetActiveBaffsAndBonuses();
+	uint16_t GetActiveBaffs();
+	bool HaveBonus(uint16_t bonus);
 	Bonus* LoseBonus();
 	void TakeBonus(Bonus* bonus);
 	
@@ -274,22 +312,60 @@ public:
 	~MegaLazer();
 };
 
-class Mine : public DynamicEntity
+class Lazer : public StaticEntity
 {
-#define MINE_DEFAULT_TIMER 100
-#define MiNE_BOOM_TIMER 10
-#define MINE_BOOM_RADIUS 0.1f
 protected:
 	uint8_t player_master_number;
+public:
+	Lazer();
+	Lazer(Vec2F* position, Vec2F* direction, uint8_t host_number);
+	Beam GetBeam();
+	void Set(Lazer* lazer);
+	~Lazer();
+};
+
+class Bullet : public KillerEntity
+{
+protected:
+public:
+	Bullet();
+	Bullet(Vec2F* position, Vec2F* velocity, uint8_t host_number);
+	bool IsCollision(Map* map);
+	void Set(Bullet* bullet);
+	~Bullet();
+};
+
+class Knife : public KillerEntity
+{
+protected:
+public:
+	Knife();
+	Knife(Vec2F* point1, Vec2F* point2, uint8_t host_number);
+	Segment GetSegment();
+	void Set(Knife* knife);
+	~Knife();
+};
+
+class Mine : public KillerEntity
+{
+#define MINE_DEFAULT_TIMER 100
+#define MINE_BOOM_TIMER 10
+#define MINE_BOOM_RADIUS 0.1f
+protected:
 	uint8_t animation_tic;
 	bool active;
 	bool boom;
 public:
-	Mine(uint8_t player_master_number, Vec2F* position, Vec2F* velosity, float angle, float angular_velosity);
+	Mine();
+	Mine(Vec2F* position, Vec2F* velosity, float angle, float angular_velosity, uint8_t player_master_number);
 	
 	void Activate();
 	void Boom();
+	bool IsActive();
+	bool IsBoom();
+	bool CanRemove();
 	void Recalculate();
+	void Set(Mine* mine);
 
 	~Mine();
 };
@@ -299,11 +375,14 @@ class MapElement
 protected:
 	Vec2F* position;
 	Vec2F* last_position;
+	bool unbreakable;
 public:
+	bool is_exist;
 	MapElement();
 
 	Vec2F GetPosition();
 	Vec2F GetVelocity();
+	bool IsUnbreacable();
 	void Move(Vec2F* move_vector);
 	void SetPosition(Vec2F* position);
 
@@ -322,7 +401,7 @@ public:
 	uint8_t show_sides;
 	uint8_t collision_sides;
 	Rectangle();
-	Rectangle(Vec2F* point1, Vec2F* point2);
+	Rectangle(Vec2F* point1, Vec2F* point2, bool unbreakable);
 
 	Vec2F GetUpRightPoint();
 	Vec2F GetDownRightPoint();
@@ -344,7 +423,7 @@ protected:
 	float radius;
 public:
 	Cyrcle();
-	Cyrcle(Vec2F* position, float radius);
+	Cyrcle(Vec2F* position, float radius, bool unbreakable);
 
 	float GetRadius();
 	void SetRadius(float radius);
@@ -365,7 +444,7 @@ protected:
 
 public:
 	Polygon();
-	Polygon(Vec2F* position, Vec2F* default_points_array, uint32_t points_array_length);
+	Polygon(Vec2F* position, Vec2F* default_points_array, uint32_t points_array_length, bool unbreakable);
 	
 	void Rotate(float angle, Vec2F* rotating_point);
 	void Move(Vec2F* move_vector);

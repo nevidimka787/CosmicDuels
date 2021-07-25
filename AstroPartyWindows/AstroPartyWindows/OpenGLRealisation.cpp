@@ -1,6 +1,31 @@
 #include "OpenGLRealisation.h"
 #include <iostream>
 
+Shader::Shader(const char* geometric_file_name, const char* fragment_file_name)
+{
+
+}
+
+void Shader::SetFragment(const char* fragment_file_name)
+{
+
+}
+
+void Shader::SetGeometric(const char* geometric_file_name)
+{
+
+}
+
+void Shader::Use()
+{
+
+}
+
+Shader::~Shader()
+{
+
+}
+
 void OpenGL::InitOpneGL()
 {
     glfwInit();
@@ -62,3 +87,65 @@ void OpenGL::FramebufferSizeCallback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
 }
+
+
+
+void OpenGL::DrawMenu(Menu* menu)
+{}
+
+void OpenGL::DrawObject(Line* line, bool update_shader)
+{}
+
+void OpenGL::DrawObject(Beam* beam, bool update_shader)
+{}
+
+void OpenGL::DrawObject(Segment* segment, bool update_shader)
+{}
+
+void OpenGL::DrawObject(Entity* entity, bool update_shader)
+{}
+
+void OpenGL::DrawObject(StaticEntity* static_entity, bool update_shader)
+{}
+
+void OpenGL::DrawObject(DynamicEntity* dynamic_entity, bool update_shader)
+{}
+
+void OpenGL::DrawObject(Bonus* bonus, bool update_shader)
+{}
+
+void OpenGL::DrawObject(Asteroid* asteroid, bool update_shader)
+{}
+
+void OpenGL::DrawObject(ControledEntity controled_entity, bool update_shader)
+{}
+
+void OpenGL::DrawObject(Sheep* sheep, bool update_shader)
+{}
+
+void OpenGL::DrawObject(Pilot* pilot, bool update_shader)
+{}
+
+void OpenGL::DrawObject(Turel* turel, bool update_shader)
+{}
+
+void OpenGL::DrawObject(MegaLazer* mega_lazer, bool update_shader)
+{}
+
+void OpenGL::DrawObject(Mine* mine, bool update_shader)
+{}
+
+void OpenGL::DrawObject(MapElement* map_element, bool update_shader)
+{}
+
+void OpenGL::DrawObject(Rectangle* rectangle, bool update_shader)
+{}
+
+void OpenGL::DrawObject(Cyrcle* cyrcle, bool update_shader)
+{}
+
+void OpenGL::DrawObject(Polygon* polygon, bool update_shader)
+{}
+
+void OpenGL::DrawObject(Map* map, bool update_shader)
+{}

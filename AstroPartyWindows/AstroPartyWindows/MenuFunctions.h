@@ -2,6 +2,7 @@
 #define MENU_FUNCTIONS_H
 
 #include <iostream>
+#include "Vec.h"
 
 namespace MenuFunctions
 {
