@@ -8,6 +8,7 @@
 #include "Menu.h"
 #include "Line.h"
 #include "GameEngine.h"
+#include "MenuFunctions.h"
 
 class Shader
 {

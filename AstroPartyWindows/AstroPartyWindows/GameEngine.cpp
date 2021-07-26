@@ -1,11 +1,11 @@
 #include "GameEngine.h"
 #include <math.h>
 
-Entity::Entity() : position(new Vec2F()), radius(0.0), angle(0.0), direction(new Vec2F(1.0, 0.0))
+Entity::Entity() : position(new Vec2F()), radius(0.0), angle(0.0), direction(new Vec2F(1.0, 0.0)), exist(false)
 {
 }
 
-Entity::Entity(Vec2F* position, float radius, float angle) : position(new Vec2F(*position)), radius(radius), angle(angle), direction(new Vec2F(cos(angle), -sin(angle)))
+Entity::Entity(Vec2F* position, float radius, float angle) : position(new Vec2F(*position)), radius(radius), angle(angle), direction(new Vec2F(cos(angle), -sin(angle))), exist(true)
 {
 }
 
@@ -282,6 +282,15 @@ void Entity::UpdateDirection()
 	*direction = Vec2F(1.0f, 0.0f).Rotate(angle);
 }
 
+void Entity::operator=(Entity entity)
+{
+	angle = entity.angle;
+	*direction = *entity.direction;
+	exist = entity.exist;
+	*position = *entity.position;
+	radius = entity.radius;
+}
+
 Entity::~Entity()
 {
 	delete this->position;
@@ -292,17 +301,18 @@ Entity::~Entity()
 DynamicEntity::DynamicEntity() : angular_velocity(0.0f), velocity(new Vec2F()), force(new Vec2F()), FORCE_COLLISION_COEFFICIENT(DEFAULT_FORCE_COLLISION_COEFFICIENT), FORCE_RESISTANSE_AIR_COEFFICIENT(DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT)
 {
 	Vec2F temp = Vec2F();
-	SetPosition(&temp);
 }
 
 DynamicEntity::DynamicEntity(Vec2F* position, float angle, float radius) : angular_velocity(0.0f), velocity(new Vec2F()), force(new Vec2F()), FORCE_COLLISION_COEFFICIENT(DEFAULT_FORCE_COLLISION_COEFFICIENT), FORCE_RESISTANSE_AIR_COEFFICIENT(DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT)
 {
 	SetPosition(position);
+	exist = true;
 }
 
 DynamicEntity::DynamicEntity(Vec2F* position, Vec2F* velosity, float angle, float angular_velosity, float radius, float FORCE_COLLISION_COEFFICIENT, float FORCE_RESISTANSE_AIR_COEFFICIENT) : angular_velocity(angular_velosity), velocity(new Vec2F(*velosity)), force(new Vec2F()), FORCE_COLLISION_COEFFICIENT(FORCE_COLLISION_COEFFICIENT), FORCE_RESISTANSE_AIR_COEFFICIENT(DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT)
 {
 	SetPosition(position);
+	exist = true;
 }
 
 void DynamicEntity::AddForce(Vec2F* force)
@@ -508,6 +518,19 @@ void DynamicEntity::Recalculate()
 	Move(velocity);
 }
 
+void DynamicEntity::operator=(DynamicEntity entity)
+{
+	angle = entity.angle;
+	*direction = *entity.direction;
+	exist = entity.exist;
+	*position = *entity.position;
+	radius = entity.radius;
+
+	angular_velocity = entity.angular_velocity;
+	*force = *entity.force;
+	*velocity = *entity.velocity;
+}
+
 DynamicEntity::~DynamicEntity()
 {
 	delete velocity;
@@ -525,6 +548,7 @@ StaticEntity::StaticEntity(Vec2F* position, float angle) : last_position(new Vec
 {
 	SetPosition(position);
 	SetAngle(angle);
+	exist = true;
 }
 
 Vec2F StaticEntity::GetVelosity()
@@ -535,6 +559,15 @@ Vec2F StaticEntity::GetVelosity()
 void StaticEntity::Recalculate()
 {
 	*last_position = *position;
+}
+
+void StaticEntity::operator=(StaticEntity entity)
+{
+	angle = entity.angle;
+	*direction = *entity.direction;
+	exist = entity.exist;
+	*position = *entity.position;
+	radius = entity.radius;
 }
 
 StaticEntity::~StaticEntity()
@@ -553,9 +586,10 @@ Bonus::Bonus(uint16_t bonus_type, Vec2F* position, Vec2F* velocity) : bonus_type
 {
 	*this->position = *position;
 	*this->velocity = *velocity;
+	exist = true;
 }
 
-Bonus* Bonus::Division()
+Bonus Bonus::Division()
 {
 	uint16_t temp;
 	bool last = false;
@@ -566,7 +600,7 @@ Bonus* Bonus::Division()
 		{
 			if (last)
 			{
-				return new Bonus(bonus_type & temp, position, velocity);
+				return Bonus(bonus_type & temp, position, velocity);
 			}
 			else
 			{
@@ -574,12 +608,79 @@ Bonus* Bonus::Division()
 			}
 		}
 	}
-	return nullptr;
+	return Bonus();
 }
 
 uint16_t Bonus::GetType()
 {
 	return bonus_type;
+}
+
+uint8_t Bonus::GetBonusesCount()
+{
+	uint8_t count = 0;
+	for (uint8_t i = 0; i < BONUS_BONUSES_COUNT; i++)
+	{
+		if (bonus_type & (0x11 << (i << 1)))
+		{
+			count++;
+		}
+	}
+	return count;
+}
+
+uint8_t Bonus::GetBuffsCount()
+{
+	uint8_t count = 0;
+	for (uint8_t i = BONUS_BONUSES_COUNT; i < BONUS_BONUSES_COUNT + BONUS_BUFFS_COUNT; i++)
+	{
+		if (bonus_type & (0x11 << (i << 1)))
+		{
+			count++;
+		}
+	}
+	return count;
+}
+
+uint8_t Bonus::GetGameRulesCount()
+{
+	uint8_t count = 0;
+	for (uint8_t i = BONUS_BONUSES_COUNT + BONUS_BUFFS_COUNT; i < BONUS_BONUSES_COUNT + BONUS_BUFFS_COUNT + BONUS_GAME_RULES_COUNT; i++)
+	{
+		if (bonus_type & (0x11 << (i << 1)))
+		{
+			count++;
+		}
+	}
+	return count;
+}
+
+uint8_t Bonus::GetTypesCount()
+{
+	uint8_t count = 0;
+	for (uint8_t i = 0; i < BONUS_TYPES_COUNT; i++)
+	{
+		if (bonus_type & (0x11 << (i << 1)))
+		{
+			count++;
+		}
+	}
+	return count;
+}
+
+void Bonus::operator=(Bonus entity)
+{
+	angle = entity.angle;
+	*direction = *entity.direction;
+	exist = entity.exist;
+	*position = *entity.position;
+	radius = entity.radius;
+
+	angular_velocity = entity.angular_velocity;
+	*force = *entity.force;
+	*velocity = *entity.velocity;
+
+	bonus_type = entity.bonus_type;
 }
 
 Bonus::~Bonus()
@@ -589,12 +690,12 @@ Bonus::~Bonus()
 
 
 
-Asteroid::Asteroid() : buff_bonus(0), size(ASTEROID_DEFAULT_SIZE)
+Asteroid::Asteroid() : size(ASTEROID_DEFAULT_SIZE)
 {
 
 }
 
-Asteroid::Asteroid(uint16_t buff_bonus, uint8_t size) : buff_bonus(buff_bonus), size(size)
+Asteroid::Asteroid(uint16_t bonus_type, uint8_t size) : size(size)
 {
 	switch (this->size)
 	{
@@ -612,11 +713,13 @@ Asteroid::Asteroid(uint16_t buff_bonus, uint8_t size) : buff_bonus(buff_bonus), 
 		radius = ASTEROID_DEFAULT_RADIUS;
 		break;
 	}
+	this->bonus_type = bonus_type;
+	exist = true;
 }
 
 Bonus* Asteroid::Destroy()
 {
-	return new Bonus(buff_bonus, position, velocity);
+	return new Bonus(bonus_type, position, velocity);
 }
 
 Asteroid* Asteroid::Division()
@@ -625,20 +728,20 @@ Asteroid* Asteroid::Division()
 	{
 		return nullptr;
 	}
-	Asteroid* temp_asteroid = new Asteroid(buff_bonus, size - 1);
+	Asteroid* temp_asteroid = new Asteroid(bonus_type, size - 1);
 	*temp_asteroid->position = *position + Vec2F(((float)rand() - (float)RAND_MAX / 2.0f) / ((float)RAND_MAX * 10.0f), ((float)rand() - (float)RAND_MAX / 2.0f) / ((float)RAND_MAX * 10.0f));
 	*temp_asteroid->velocity = *velocity;
 
 	uint16_t temp;
-	for (uint8_t i = 0; i < BUFFS_COUNT + BONUSES_COUNT; i++)
+	for (uint8_t i = 0; i < BONUS_BUFFS_COUNT + BONUS_BONUSES_COUNT; i++)
 	{
 		temp = 0x11 << (i << 1);
-		if (buff_bonus & temp)
+		if (bonus_type & temp)
 		{
 			break;
 		}
 	}
-	temp_asteroid->buff_bonus = temp;
+	temp_asteroid->bonus_type = temp;
 	return temp_asteroid;
 }
 
@@ -649,7 +752,22 @@ uint8_t Asteroid::GetSize()
 
 uint16_t Asteroid::GetBuffBonus()
 {
-	return buff_bonus;
+	return bonus_type;
+}
+
+void Asteroid::operator=(Asteroid entity)
+{
+	angle = entity.angle;
+	*direction = *entity.direction;
+	exist = entity.exist;
+	*position = *entity.position;
+	radius = entity.radius;
+
+	angular_velocity = entity.angular_velocity;
+	*force = *entity.force;
+	*velocity = *entity.velocity;
+
+	bonus_type = entity.bonus_type;
 }
 
 Asteroid::~Asteroid()
@@ -666,12 +784,27 @@ KillerEntity::KillerEntity() : player_master_number(0)
 
 KillerEntity::KillerEntity(uint8_t player_master_number) : player_master_number(player_master_number)
 {
-
+	exist = true;
 }
 
 uint8_t KillerEntity::GetPlayerMasterNumber()
 {
 	return player_master_number;
+}
+
+void KillerEntity::operator=(KillerEntity entity)
+{
+	angle = entity.angle;
+	*direction = *entity.direction;
+	exist = entity.exist;
+	*position = *entity.position;
+	radius = entity.radius;
+
+	angular_velocity = entity.angular_velocity;
+	*force = *entity.force;
+	*velocity = *entity.velocity;
+
+	player_master_number = entity.player_master_number;
 }
 
 KillerEntity::~KillerEntity()
@@ -692,6 +825,7 @@ ControledEntity::ControledEntity(uint8_t player_number, void* rotate_input_value
 	*this->velocity = *velocity;
 	this->angle = angle;
 	this->angular_velocity = angular_velocity;
+	exist = true;
 }
 
 uint8_t ControledEntity::GetPlauerNumber()
@@ -718,12 +852,34 @@ void ControledEntity::Recalculate()
 	}
 }
 
+void ControledEntity::operator=(ControledEntity entity)
+{
+	angle = entity.angle;
+	*direction = *entity.direction;
+	exist = entity.exist;
+	*position = *entity.position;
+	radius = entity.radius;
+
+	angular_velocity = entity.angular_velocity;
+	*force = *entity.force;
+	*velocity = *entity.velocity;
+
+	player_number = entity.player_number;
+	rotate_input_value_pointer = entity.rotate_input_value_pointer;
+	shoot_input_value_pointer = entity.shoot_input_value_pointer;
+}
+
 ControledEntity::~ControledEntity()
 {
 
 }
 
 
+
+Sheep::Sheep() : buffs_bonuses(0), active_baffs(0), can_shoot(true)
+{
+
+}
 
 Sheep::Sheep(uint8_t player_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* position, Vec2F* velocity, float angle, float angular_velocity) : buffs_bonuses(0x00), active_baffs(0x00), can_shoot(true)
 {
@@ -734,6 +890,7 @@ Sheep::Sheep(uint8_t player_number, void* rotate_input_value_pointer, void* shoo
 	*this->velocity = *velocity;
 	this->angle = angle;
 	this->angular_velocity = angular_velocity;
+	exist = true;
 }
 
 Sheep::Sheep(uint8_t player_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* position, Vec2F* velocity, float angle, float angular_velocity, uint16_t buffs_bonuses) : buffs_bonuses(buffs_bonuses), active_baffs(0x00), can_shoot(true)
@@ -745,11 +902,12 @@ Sheep::Sheep(uint8_t player_number, void* rotate_input_value_pointer, void* shoo
 	*this->velocity = *velocity;
 	this->angle = angle;
 	this->angular_velocity = angular_velocity;
+	exist = true;
 }
 
 void Sheep::ActivateBonus()
 {
-	active_baffs |= buffs_bonuses & BUFF;
+	active_baffs |= buffs_bonuses & BONUS_BUFF;
 }
 
 void Sheep::BreakShield()
@@ -758,43 +916,43 @@ void Sheep::BreakShield()
 	unbrakable = CONTROLED_ENTITY_UNBRAKABLE_PERIOD;
 }
 
-Bullet* Sheep::CreateBullet()
+Bullet Sheep::CreateBullet()
 {
 	Vec2F temp_position = *direction * radius + *position;
 	Vec2F temp_velocity = *direction * BULLET_DEFAULT_VELOCITY + *velocity;
-	return new Bullet(&temp_position, &temp_velocity, player_number);
+	return Bullet(&temp_position, &temp_velocity, player_number);
 }
 
-Bullet* Sheep::CreateTriple(uint8_t bullet_number)
+Bullet Sheep::CreateTriple(uint8_t bullet_number)
 {
 	if (!(buffs_bonuses & BUFF_TRIPLE))
 	{
-		return nullptr;
+		return Bullet();
 	}
 	Vec2F temp1, temp2;
 	switch (bullet_number)
 	{
 	case 0:
 		temp1 = *direction * BULLET_DEFAULT_VELOCITY + *velocity;
-		return new Bullet(position, &temp1, player_number);
+		return Bullet(position, &temp1, player_number);
 	case 1:
 		temp1 = *position + direction->Rotate(0.5) * radius;
 		temp2 = *direction * BULLET_DEFAULT_VELOCITY + *velocity;
-		return new Bullet(&temp1, &temp2, player_number);
+		return Bullet(&temp1, &temp2, player_number);
 	case 2:
 		temp1 = *position + direction->Rotate(-0.5) * radius;
 		temp2 = *direction * BULLET_DEFAULT_VELOCITY + *velocity;
-		return new Bullet(&temp1, &temp2, player_number);
+		return Bullet(&temp1, &temp2, player_number);
 	default:
-		return nullptr;
+		return Bullet();
 	}
 }
 
-Bullet* Sheep::CreateLoop(uint8_t bullet_number)
+Bullet Sheep::CreateLoop(uint8_t bullet_number)
 {
 	if (!(buffs_bonuses & BONUS_LOOP))
 	{
-		return nullptr;
+		return Bullet();
 	}
 	if (bullet_number == BULLETS_IN_LOOP - 1)
 	{
@@ -803,32 +961,32 @@ Bullet* Sheep::CreateLoop(uint8_t bullet_number)
 	Vec2F new_dir = direction->Rotate(2.0f * (float)M_PI / BULLETS_IN_LOOP * bullet_number);
 	Vec2F temp = *position + new_dir * radius;
 	new_dir = new_dir * BULLET_DEFAULT_VELOCITY + *velocity;
-	return new Bullet(&temp, &new_dir, player_number);
+	return Bullet(&temp, &new_dir, player_number);
 }
 
-Mine* Sheep::CreateMine()
+Mine Sheep::CreateMine()
 {
 	if (!(buffs_bonuses & BONUS_LOOP))
 	{
-		return nullptr;
+		return Mine();
 	}
 	buffs_bonuses -= BONUS_LOOP;
 	Vec2F temp = Vec2F();
-	return new Mine(position, &temp, 0.0f, 0.0f, player_number);
+	return Mine(position, &temp, 0.0f, 0.0f, player_number);
 }
 
-Lazer* Sheep::CreateLazer()
+Lazer Sheep::CreateLazer()
 {
 	if (!(buffs_bonuses & BONUS_LOOP))
 	{
-		return nullptr;
+		return Lazer();
 	}
 	buffs_bonuses -= BONUS_LOOP;
 	Vec2F temp = *position + *direction * radius;
-	return new Lazer(&temp, direction, player_number);
+	return Lazer(&temp, direction, player_number);
 }
 
-Knife* Sheep::CreateKnife(uint8_t knife_number)
+Knife Sheep::CreateKnife(uint8_t knife_number)
 {
 	Vec2F temp1, temp2;
 	switch (knife_number)
@@ -836,25 +994,25 @@ Knife* Sheep::CreateKnife(uint8_t knife_number)
 	case 0:
 		temp1 = *position - *direction + direction->Perpendicular();
 		temp2 = *direction * 2.0 + temp1;
-		return new Knife(&temp1, &temp2, player_number);
+		return Knife(&temp1, &temp2, player_number);
 	case 1:
 		if (!(buffs_bonuses & BONUS_LOOP))
 		{
-			return nullptr;
+			return Knife();
 		}
 		buffs_bonuses -= BONUS_LOOP;
 		temp1 = *position - *direction - direction->Perpendicular();
 		temp2 = *direction * 2.0f;
-		return new Knife(&temp1, &temp2, player_number);
+		return Knife(&temp1, &temp2, player_number);
 	default:
-		return nullptr;
+		return Knife();
 	}
 }
 
 bool Sheep::HaveBonus(uint16_t bonus)
 {
 	uint16_t temp;
-	for (uint16_t i = 0; i < BONUSES_COUNT; i++)
+	for (uint16_t i = 0; i < BONUS_BONUSES_COUNT; i++)
 	{
 		temp = 0x11 * (i << 1);
 		if ((bonus & temp) && !(buffs_bonuses & temp))
@@ -870,7 +1028,7 @@ void Sheep::TakeBonus(Bonus* bonus)
 	if (buffs_bonuses & BUFF_TRIPLE)
 	{
 		uint16_t temp;
-		for (uint8_t i = 0; i < BONUS_DATA_LENGTH; i++)
+		for (uint8_t i = 0; i < BONUS_BONUS_DATA_LENGTH; i++)
 		{
 			temp = 0x11 << (i << 1);
 			if (bonus->bonus_type & temp)
@@ -883,21 +1041,41 @@ void Sheep::TakeBonus(Bonus* bonus)
 	buffs_bonuses |= bonus->bonus_type;
 }
 
-Bonus* Sheep::LoseBonus()
+Bonus Sheep::LoseBonus()
 {
-	return new Bonus(buffs_bonuses, position, velocity);
+	return Bonus(buffs_bonuses, position, velocity);
 }
 
 
-Pilot* Sheep::Destroy()
+Pilot Sheep::Destroy()
 {
 	Vec2F temp = *velocity * 2.0f;
-	return new Pilot(player_number, rotate_input_value_pointer, shoot_input_value_pointer, position, &temp, angle, angular_velocity);
+	return Pilot(player_number, rotate_input_value_pointer, shoot_input_value_pointer, position, &temp, angle, angular_velocity);
 }
 
 uint16_t Sheep::GetActiveBaffs()
 {
 	return active_baffs;
+}
+
+void Sheep::operator=(Sheep entity)
+{
+	angle = entity.angle;
+	*direction = *entity.direction;
+	exist = entity.exist;
+	*position = *entity.position;
+	radius = entity.radius;
+
+	angular_velocity = entity.angular_velocity;
+	*force = *entity.force;
+	*velocity = *entity.velocity;
+
+	player_number = entity.player_number;
+	rotate_input_value_pointer = entity.rotate_input_value_pointer;
+	shoot_input_value_pointer = entity.shoot_input_value_pointer;
+
+	buffs_bonuses = entity.buffs_bonuses;
+	active_baffs = entity.active_baffs;
 }
 
 Sheep::~Sheep()
@@ -906,6 +1084,11 @@ Sheep::~Sheep()
 }
 
 
+
+Pilot::Pilot()
+{
+
+}
 
 Pilot::Pilot(uint8_t player_number, void* rotate_keyboard_key_pointer, void* move_keyboard_key_pointer, Vec2F* position, Vec2F* velosity, float angle, float angular_velosity)
 {
@@ -917,12 +1100,30 @@ Pilot::Pilot(uint8_t player_number, void* rotate_keyboard_key_pointer, void* mov
 	this->angle = angle;
 	this->angular_velocity = angular_velocity;
 	this->unbrakable = CONTROLED_ENTITY_UNBRAKABLE_PERIOD;
+	exist = true;
 }
 
 Sheep* Pilot::Respawn()
 {
 	Vec2F temp = Vec2F();
 	return new Sheep(player_number, rotate_input_value_pointer, shoot_input_value_pointer, position, &temp, angle, 0.0f);
+}
+
+void Pilot::operator=(Pilot entity)
+{
+	angle = entity.angle;
+	*direction = *entity.direction;
+	exist = entity.exist;
+	*position = *entity.position;
+	radius = entity.radius;
+
+	angular_velocity = entity.angular_velocity;
+	*force = *entity.force;
+	*velocity = *entity.velocity;
+
+	player_number = entity.player_number;
+	rotate_input_value_pointer = entity.rotate_input_value_pointer;
+	shoot_input_value_pointer = entity.shoot_input_value_pointer;
 }
 
 Pilot::~Pilot()
@@ -939,7 +1140,7 @@ AggressiveEntity::AggressiveEntity() : attack_dellay(0), attack_period(AGGRESIVE
 
 AggressiveEntity::AggressiveEntity(uint32_t current_tic, uint32_t first_activation_dellay, uint32_t attack_period, uint32_t passive_period, uint8_t shoots_count) : attack_dellay(current_tic + first_activation_dellay), attack_period(attack_period), inactive_period(passive_period), shoots_count(shoots_count)
 {
-
+	exist = true;
 }
 
 bool AggressiveEntity::IsShoot(uint32_t current_tic)
@@ -959,6 +1160,20 @@ bool AggressiveEntity::IsShoot(uint32_t current_tic)
 void AggressiveEntity::PostponeAttack(uint32_t dellay)
 {
 	attack_dellay += dellay;
+}
+
+void AggressiveEntity::operator=(AggressiveEntity entity)
+{
+	angle = entity.angle;
+	*direction = *entity.direction;
+	exist = entity.exist;
+	*position = *entity.position;
+	radius = entity.radius;
+
+	attack_dellay = entity.attack_dellay;
+	attack_period = entity.attack_period;
+	inactive_period = entity.inactive_period;
+	shoots_count = entity.shoots_count;
 }
 
 AggressiveEntity::~AggressiveEntity()
@@ -981,6 +1196,20 @@ DynamicEntity* Turel::Shoot()
 	return new DynamicEntity(&temp2, &temp1, 0.0f, 0.0f, BULLET_DEFAULT_RADIUS, 0.0f, BULLET_DEFAULT_RESISTANCE_AIR_COEFFICIENT);
 }
 
+void Turel::operator=(Turel entity)
+{
+	angle = entity.angle;
+	*direction = *entity.direction;
+	exist = entity.exist;
+	*position = *entity.position;
+	radius = entity.radius;
+
+	attack_dellay = entity.attack_dellay;
+	attack_period = entity.attack_period;
+	inactive_period = entity.inactive_period;
+	shoots_count = entity.shoots_count;
+}
+
 Turel::~Turel()
 {
 
@@ -998,6 +1227,17 @@ GravGen::GravGen(Vec2F* position, float gravity) : gravity(gravity)
 	*this->position = *position;
 }
 
+void GravGen::operator=(GravGen entity)
+{
+	angle = entity.angle;
+	*direction = *entity.direction;
+	exist = entity.exist;
+	*position = *entity.position;
+	radius = entity.radius;
+
+	gravity = entity.gravity;
+}
+
 GravGen::~GravGen()
 {
 
@@ -1010,6 +1250,7 @@ MegaLazer::MegaLazer(Segment* lazer_segment, float angle) : active(false)
 	*this->position = *lazer_segment->point;
 	*this->point2 = lazer_segment->GetSecondPoint();
 	this->angle = angle;
+	exist = true;
 }
 
 void MegaLazer::StartShoot()
@@ -1033,6 +1274,23 @@ bool MegaLazer::IsShooting()
 	return active;
 }
 
+void MegaLazer::operator=(MegaLazer entity)
+{
+	angle = entity.angle;
+	*direction = *entity.direction;
+	exist = entity.exist;
+	*position = *entity.position;
+	radius = entity.radius;
+
+	attack_dellay = entity.attack_dellay;
+	attack_period = entity.attack_period;
+	inactive_period = entity.inactive_period;
+	shoots_count = entity.shoots_count;
+
+	active = entity.active;
+	*point2 = *entity.point2;
+}
+
 MegaLazer::~MegaLazer()
 {
 
@@ -1050,6 +1308,7 @@ Lazer::Lazer(Vec2F* position, Vec2F* velocity, uint8_t host_number)
 	*this->position = *position;
 	*this->direction = *direction;
 	player_master_number = host_number;
+	exist = true;
 }
 
 Beam Lazer::GetBeam()
@@ -1062,6 +1321,17 @@ void Lazer::Set(Lazer* lazer)
 	*position = *lazer->position;
 	*direction = *lazer->direction;
 	player_master_number = lazer->player_master_number;
+}
+
+void Lazer::operator=(Lazer entity)
+{
+	angle = entity.angle;
+	*direction = *entity.direction;
+	exist = entity.exist;
+	*position = *entity.position;
+	radius = entity.radius;
+
+	player_master_number = entity.player_master_number;
 }
 
 Lazer::~Lazer()
@@ -1081,6 +1351,7 @@ Bullet::Bullet(Vec2F* position, Vec2F* velocity, uint8_t host_number)
 	*this->position = *position;
 	*this->velocity = *velocity;
 	player_master_number = host_number;
+	exist = true;
 }
 
 bool Bullet::IsCollision(Map* map)
@@ -1121,6 +1392,22 @@ void Bullet::Set(Bullet* bullet)
 	*position = *bullet->position;
 	*velocity = *bullet->velocity;
 	player_master_number = bullet->player_master_number;
+	exist = bullet->exist;
+}
+
+void Bullet::operator=(Bullet entity)
+{
+	angle = entity.angle;
+	*direction = *entity.direction;
+	exist = entity.exist;
+	*position = *entity.position;
+	radius = entity.radius;
+
+	angular_velocity = entity.angular_velocity;
+	*force = *entity.force;
+	*velocity = *entity.velocity;
+
+	player_master_number = entity.player_master_number;
 }
 
 Bullet::~Bullet()
@@ -1141,6 +1428,7 @@ Knife::Knife(Vec2F* point1, Vec2F* point2, uint8_t host_number)
 	radius = point1->GetDistance(point2);
 	*direction = *point2 - *point1;
 	direction->NormalizeThis();
+	exist = true;
 }
 
 Segment Knife::GetSegment()
@@ -1154,6 +1442,21 @@ void Knife::Set(Knife* knife)
 	*position = *knife->position;
 	*direction = *knife->direction;
 	radius = knife->radius;
+}
+
+void Knife::operator=(Knife entity)
+{
+	angle = entity.angle;
+	*direction = *entity.direction;
+	exist = entity.exist;
+	*position = *entity.position;
+	radius = entity.radius;
+
+	angular_velocity = entity.angular_velocity;
+	*force = *entity.force;
+	*velocity = *entity.velocity;
+
+	player_master_number = entity.player_master_number;
 }
 
 Knife::~Knife()
@@ -1175,6 +1478,7 @@ Mine::Mine(Vec2F* position, Vec2F* velosity, float angle, float angular_velosity
 	*this->velocity = *velocity;
 	this->angle = angle;
 	this->angular_velocity = angular_velocity;
+	exist = true;
 }
 
 void Mine::Activate()
@@ -1226,6 +1530,26 @@ void Mine::Set(Mine* mine)
 	angle = mine->angle;
 	angular_velocity = mine->angular_velocity;
 	player_master_number = mine->player_master_number;
+	exist = mine->exist;
+}
+
+void Mine::operator=(Mine entity)
+{
+	angle = entity.angle;
+	*direction = *entity.direction;
+	exist = entity.exist;
+	*position = *entity.position;
+	radius = entity.radius;
+
+	angular_velocity = entity.angular_velocity;
+	*force = *entity.force;
+	*velocity = *entity.velocity;
+
+	player_master_number = entity.player_master_number;
+
+	animation_tic = entity.animation_tic;
+	active = entity.active;
+	boom = entity.boom;
 }
 
 Mine::~Mine()

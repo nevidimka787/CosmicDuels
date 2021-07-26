@@ -51,6 +51,8 @@ namespace Game
 #define GAME_RULE_BONUSES_IS_SPAWNING				(1 << 13)
 #define GAME_RULE_BALANCE_ACTIVE					(1 << 14)
 
+#define GAME_RULE_DEFAULT_GAME_RULES (GAME_RULE_PLAYERS_SPAWN_THIS_BONUS | GAME_RULE_START_BONUS_RANDOMIZE | GAME_RULE_NEED_KILL_PILOT | GAME_RULE_ASTEROIDS_IS_SPAWNING | GAME_RULE_BONUSES_IS_SPAWNING)
+
 	//game rules
 
 	//match rules
@@ -106,23 +108,6 @@ namespace Game
 
 	//select sheeps menu
 
-	//select sheeps in teams menu
-
-#define BUTTON_ID_SELECT_SHEEP_1_TO_NO_TEAM	70
-#define BUTTON_ID_SELECT_SHEEP_1_TO_TEAM_1	71
-#define BUTTON_ID_SELECT_SHEEP_1_TO_TEAM_2	72
-#define BUTTON_ID_SELECT_SHEEP_2_TO_NO_TEAM	73
-#define BUTTON_ID_SELECT_SHEEP_2_TO_TEAM_1	74
-#define BUTTON_ID_SELECT_SHEEP_2_TO_TEAM_2	75
-#define BUTTON_ID_SELECT_SHEEP_3_TO_NO_TEAM	76
-#define BUTTON_ID_SELECT_SHEEP_3_TO_TEAM_1	77
-#define BUTTON_ID_SELECT_SHEEP_3_TO_TEAM_2	78
-#define BUTTON_ID_SELECT_SHEEP_4_TO_NO_TEAM	79
-#define BUTTON_ID_SELECT_SHEEP_4_TO_TEAM_1	80
-#define BUTTON_ID_SELECT_SHEEP_4_TO_TEAM_2	81
-
-	//select sheeps in teams menu
-
 	//select objects menu
 
 #define BUTTON_ID_SELECT_OBJECT_ASTEROID	100
@@ -140,6 +125,9 @@ namespace Game
 
 
 	//game variables
+
+	static bool start_game;
+	static bool pause_game;
 
 	static bool* shoot_keys;
 	static bool* rotate_keys;
@@ -178,22 +166,22 @@ namespace Game
 
 	//game objects
 
-	static Sheep** sheeps;
-	static Pilot** pilots;
+	static Sheep* sheeps;
+	static Pilot* pilots;
 
-	static Bullet** bullets;
-	static Knife** knifes;
-	static Lazer** lazers;
-	static Mine** mines;
-	static DynamicEntity** particles;
-	static Asteroid** asteroids;
-	static Bonus** bonuses;
+	static Bullet* bullets;
+	static Knife* knifes;
+	static Lazer* lazers;
+	static Mine* mines;
+	static DynamicEntity* particles;
+	static Asteroid* asteroids;
+	static Bonus* bonuses;
 
 	static Map* map;
 	static Rectangle* rectangles;
-	static GravGen** grav_gens;
-	static Turel** turels;
-	static MegaLazer** mega_lazers;
+	static GravGen* grav_gens;
+	static Turel* turels;
+	static MegaLazer* mega_lazers;
 
 	//game objects
 
@@ -215,17 +203,17 @@ namespace Game
 	//menu objects
 
 	void GameInit();
-	void MachInit(uint8_t players_count, uint32_t game_rules, uint16_t start_bonus);
+	void MachInit();
 	void LevelInit(uint8_t map_id);
 	void MenusInit();
 
-	void DynamicEntitiesCollisions(DynamicEntity** entities, uint16_t entities_count);
-	void DynamicEntitiesCollisions(DynamicEntity** entities1, uint16_t entities1_count, DynamicEntity** entities2, uint16_t entities2_count);
-	void DynamicEntitiesCollisions(DynamicEntity** entities, uint16_t entities_count, Map* map);
+	void DynamicEntitiesCollisions(DynamicEntity* entities, uint16_t entities_count);
+	void DynamicEntitiesCollisions(DynamicEntity* entities1, uint16_t entities1_count, DynamicEntity* entities2, uint16_t entities2_count);
+	void DynamicEntitiesCollisions(DynamicEntity* entities, uint16_t entities_count, Map* map);
 	void MinesCollisions();
-	void DynamicEntitiesAddForce(DynamicEntity** entities, uint16_t entities_count, Vec2F* force);
-	void DynamicEntitiesAddForce(DynamicEntity** entities, uint16_t entities_count, GravGen* grav_gen);
-	void DynamicEntitiesAddForce(DynamicEntity** entities, uint16_t entities_count, GravGen** grav_gens, uint8_t grav_gens_count);
+	void DynamicEntitiesAddForce(DynamicEntity* entities, uint16_t entities_count, Vec2F* force);
+	void DynamicEntitiesAddForce(DynamicEntity* entities, uint16_t entities_count, GravGen* grav_gen);
+	void DynamicEntitiesAddForce(DynamicEntity* entities, uint16_t entities_count, GravGen* grav_gens, uint8_t grav_gens_count);
 
 	void UpdateBullets();
 	void UpdateMines();
@@ -265,8 +253,6 @@ namespace Game
 	uint8_t GenerateRandomBonus();
 	uint8_t GetRandomMap();
 	uint8_t GetMaxScore();
-
-	void DefragmentationArray(void** array, uint16_t array_length, uint16_t elements_count);
 };
 
 #endif //GAME_REALISATION_H

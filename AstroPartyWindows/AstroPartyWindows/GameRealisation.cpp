@@ -8,53 +8,59 @@
 
 void Game::GameInit()
 {
-	sheeps = (Sheep**)malloc(sizeof(Sheep*) * GAME_PLAYERS_MAX_COUNT);
-	pilots = (Pilot**)malloc(sizeof(Pilot*) * GAME_PLAYERS_MAX_COUNT);
+	game_rules = GAME_RULE_DEFAULT_GAME_RULES;
 
-	knifes = (Knife**)malloc(sizeof(Knife*) * GAME_KNIFES_MAX_COUNT);
-	knifes_count = 0;
-	lazers = (Lazer**)malloc(sizeof(Lazer*) * GAME_LAZERS_MAX_COUNT);
-	lazers_count = 0;
-	mines = (Mine**)malloc(sizeof(Mine*) * GAME_MINES_MAX_COUNT);
-	mines_count = 0;
-
-	bullets = (Bullet**)malloc(sizeof(Bullet*) * GAME_BULLETS_MAX_COUNT);
-	bullets_count = 0;
-	particles = (DynamicEntity**)malloc(sizeof(DynamicEntity*) * GAME_PARTICLES_MAX_COUNT);
-	particles_count = 0;
-	asteroids = (Asteroid**)malloc(sizeof(Asteroid*) * GAME_ASTEROIDS_MAX_COUNT);
-	asterooids_count = 0;
-	bonuses = (Bonus**)malloc(sizeof(Bonus*) * GAME_BONUSES_MAX_COUNT);
-	bonuses_count = 0;
+	MenuFunctions::sheeps_select_buttons = new uint8_t[GAME_PLAYERS_MAX_COUNT];
+	for (uint8_t i = 0; i < GAME_PLAYERS_MAX_COUNT; i++)
+	{
+		MenuFunctions::sheeps_select_buttons[i] = SHEEPS_SELECT_BUTTONS_NO_TEAM;
+	}
 
 	srand((unsigned int)sheeps * (unsigned int)pilots);
 }
 
-void Game::MachInit(uint8_t players_count, uint32_t game_rules, uint16_t start_bonus)
+void Game::MachInit()
 {
-	if (players_count > GAME_PLAYERS_MAX_COUNT)
+	players_count = 0;
+	for (uint8_t i = 0; i < GAME_PLAYERS_MAX_COUNT; i++)
 	{
-		Game::players_count = GAME_PLAYERS_MAX_COUNT;
+		if (MenuFunctions::sheeps_select_buttons[i] != SHEEPS_SELECT_BUTTONS_NO_TEAM)
+		{
+			players_count++;
+		}
 	}
-	else if (players_count < 2)
-	{
-		Game::players_count = 2;
-	}
-	else
-	{
-		Game::players_count = players_count;
-	}
-	shoot_keys = new bool[Game::players_count];
-	rotate_keys = new bool[Game::players_count];
-	scores = new uint8_t[Game::players_count];
-	for (uint8_t i = 0; i < Game::players_count; i++)
+	sheeps_count = players_count;
+
+	sheeps = new Sheep[sheeps_count];
+	pilots = new Pilot[sheeps_count];
+
+	knifes = new Knife[sheeps_count << 1];
+	knifes_count = 0;
+	lazers = new Lazer[sheeps_count];
+	lazers_count = 0;
+	mines = new Mine[GAME_MINES_MAX_COUNT];
+	mines_count = 0;
+
+	bullets = new Bullet[GAME_BULLETS_MAX_COUNT];
+	bullets_count = 0;
+	particles = new DynamicEntity[GAME_PARTICLES_MAX_COUNT];
+	particles_count = 0;
+	asteroids = new Asteroid[GAME_ASTEROIDS_MAX_COUNT];
+	asterooids_count = 0;
+	bonuses = new Bonus[GAME_BONUSES_MAX_COUNT];
+	bonuses_count = 0;
+
+	shoot_keys = new bool[players_count];
+	rotate_keys = new bool[players_count];
+	scores = new uint8_t[players_count];
+	for (uint8_t i = 0; i < GAME_PLAYERS_MAX_COUNT; i++)
 	{
 		scores[i] = 0;
 	}
 
 
-	Game::start_bonus = game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_SHIELD ? BUFF_SHIELD : 0x0000;
-	Game::start_bonus |= game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_TRIPLE_BONUS ? BUFF_TRIPLE : 0x0000;
+	start_bonus = game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_SHIELD ? BUFF_SHIELD : 0x0000;
+	start_bonus |= game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_TRIPLE_BONUS ? BUFF_TRIPLE : 0x0000;
 	if (game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_BONUS)
 	{
 		if (game_rules & GAME_RULE_START_BONUS_RANDOMIZE)
@@ -63,7 +69,7 @@ void Game::MachInit(uint8_t players_count, uint32_t game_rules, uint16_t start_b
 		}
 		else
 		{
-			Game::start_bonus |= start_bonus;
+			Game::start_bonus |= MenuFunctions::start_bonus;
 		}
 	}
 
@@ -150,11 +156,11 @@ void Game::LevelInit(uint8_t map_id)
 			Vec2F temp_vel = Vec2F();
 			if (game_rules & GAME_RULE_BALANCE_ACTIVE && scores[i] <= max_score - BALANCE_ACTIVATE_DIFFERENCE_SCORES)
 			{
-				sheeps[i] = new Sheep(i, (void*)&rotate_keys[i], (void*)&shoot_keys[i], &temp_points[i], &temp_vel, temp_angles[i], 0.0f, start_bonus | BUFF_SHIELD);
+				sheeps[i] = Sheep(i, (void*)&rotate_keys[i], (void*)&shoot_keys[i], &temp_points[i], &temp_vel, temp_angles[i], 0.0f, start_bonus | BUFF_SHIELD);
 			}
 			else
 			{
-				sheeps[i] = new Sheep(i, (void*)&rotate_keys[i], (void*)&shoot_keys[i], &temp_points[i], &temp_vel, temp_angles[i], 0.0f, start_bonus);
+				sheeps[i] = Sheep(i, (void*)&rotate_keys[i], (void*)&shoot_keys[i], &temp_points[i], &temp_vel, temp_angles[i], 0.0f, start_bonus);
 			}
 		}
 	}
@@ -225,49 +231,18 @@ void Game::MenusInit()
 
 	//sheeps select menu
 	buttons = new Button[4];
-	size = Vec2F(0.25f, -0.3f);
-	position = Vec2F(-0.5f, 0.5f - 1.0f / 3.0f);
-	buttons[0] = Button(BUTTON_ID_SELECT_SHEEP_1, &position, &size, "Red sheep", 6);
-	position = Vec2F(-0.25f, 0.5f - 1.0f / 3.0f);
-	buttons[1] = Button(BUTTON_ID_SELECT_SHEEP_2, &position, &size, "Green sheep", 6);
-	position = Vec2F(0.0f, 0.5f - 1.0f / 3.0f);
-	buttons[2] = Button(BUTTON_ID_SELECT_SHEEP_3, &position, &size, "Blue sheep", 6);
-	position = Vec2F(0.25f, 0.5f - 1.0f / 3.0f);
-	buttons[3] = Button(BUTTON_ID_SELECT_SHEEP_4, &position, &size, "Purpure sheep", 6);
+	size = Vec2F(0.25f, -0.25f);
+	position = Vec2F(-0.5f, 0.5f);
+	buttons[0] = Button(BUTTON_ID_SELECT_SHEEP_1, &position, &size, "Player 1", 6);
+	position = Vec2F(0.0f, 0.5f);
+	buttons[1] = Button(BUTTON_ID_SELECT_SHEEP_2, &position, &size, "Player 2", 6);
+	position = Vec2F(0.0f, 0.0f);
+	buttons[2] = Button(BUTTON_ID_SELECT_SHEEP_3, &position, &size, "Player 3", 6);
+	position = Vec2F(-0.5f, 0.0f);
+	buttons[3] = Button(BUTTON_ID_SELECT_SHEEP_4, &position, &size, "Player 4", 6);
 	position = Vec2F();
 	sheeps_select_menu = new Menu(&position, buttons, 4, MenuFunctions::SheepsSelectMenuFunction);
 	delete[] buttons;
-
-	//team sheeps select menu
-	buttons = new Button[12];
-size = Vec2F(0.25f, -0.3f);
-position = Vec2F(-0.5f / 4.0f, 0.5f);
-buttons[0] = Button(BUTTON_ID_SELECT_SHEEP_1_TO_TEAM_1, &position, &size, "Team 1", 6);
-position = Vec2F(-0.5f / 4.0f, 0.5f - 1.0f / 3.0f);
-buttons[1] = Button(BUTTON_ID_SELECT_SHEEP_1_TO_NO_TEAM, &position, &size, "Red sheep", 6);
-position = Vec2F(-0.5f / 4.0f, 0.5f - 2.0f / 3.0f);
-buttons[2] = Button(BUTTON_ID_SELECT_SHEEP_1_TO_TEAM_2, &position, &size, "Team 2", 6);
-position = Vec2F(-0.5f / 4.0f, 0.5f);
-buttons[3] = Button(BUTTON_ID_SELECT_SHEEP_2_TO_TEAM_1, &position, &size, "Team 1", 6);
-position = Vec2F(-0.5f / 4.0f, 0.5f - 1.0f / 3.0f);
-buttons[4] = Button(BUTTON_ID_SELECT_SHEEP_2_TO_NO_TEAM, &position, &size, "Green sheep", 6);
-position = Vec2F(-0.5f / 4.0f, 0.5f - 2.0f / 3.0f);
-buttons[5] = Button(BUTTON_ID_SELECT_SHEEP_2_TO_TEAM_2, &position, &size, "Team 2", 6);
-position = Vec2F(-0.5f / 4.0f, 0.5f);
-buttons[6] = Button(BUTTON_ID_SELECT_SHEEP_3_TO_TEAM_1, &position, &size, "Team 1", 6);
-position = Vec2F(-0.5f / 4.0f, 0.5f - 1.0f / 3.0f);
-buttons[7] = Button(BUTTON_ID_SELECT_SHEEP_3_TO_NO_TEAM, &position, &size, "Blue sheep", 6);
-position = Vec2F(-0.5f / 4.0f, 0.5f - 2.0f / 3.0f);
-buttons[8] = Button(BUTTON_ID_SELECT_SHEEP_3_TO_TEAM_2, &position, &size, "Team 2", 6);
-position = Vec2F(-0.5f / 4.0f, 0.5f);
-buttons[9] = Button(BUTTON_ID_SELECT_SHEEP_4_TO_TEAM_1, &position, &size, "Team 1", 6);
-position = Vec2F(-0.5f / 4.0f, 0.5f - 1.0f / 3.0f);
-buttons[10] = Button(BUTTON_ID_SELECT_SHEEP_4_TO_NO_TEAM, &position, &size, "Purpure sheep", 6);
-position = Vec2F(-0.5f / 4.0f, 0.5f - 2.0f / 3.0f);
-buttons[11] = Button(BUTTON_ID_SELECT_SHEEP_4_TO_TEAM_2, &position, &size, "Team 2", 6);
-position = Vec2F();
-team_sheeps_select_menu = new Menu(&position, buttons, 12, MenuFunctions::TeamsSelectMenuFunction);
-delete[] buttons;
 
 //maps select menu
 buttons = new Button[MAPS_COUNT];
@@ -300,22 +275,22 @@ void Game::Recalculate()
 	
 	//collisions
 
-	DynamicEntitiesCollisions((DynamicEntity**)sheeps, players_count);
-	DynamicEntitiesCollisions((DynamicEntity**)pilots, players_count);
-	DynamicEntitiesCollisions((DynamicEntity**)asteroids, asterooids_count);
+	DynamicEntitiesCollisions((DynamicEntity*)sheeps, players_count);
+	DynamicEntitiesCollisions((DynamicEntity*)pilots, players_count);
+	DynamicEntitiesCollisions((DynamicEntity*)asteroids, asterooids_count);
 
-	DynamicEntitiesCollisions((DynamicEntity**)sheeps, players_count, (DynamicEntity**)pilots, players_count);
-	DynamicEntitiesCollisions((DynamicEntity**)sheeps, players_count, (DynamicEntity**)asteroids, asterooids_count);
-	DynamicEntitiesCollisions((DynamicEntity**)asteroids, asterooids_count, (DynamicEntity**)pilots, players_count);
+	DynamicEntitiesCollisions((DynamicEntity*)sheeps, players_count, (DynamicEntity*)pilots, players_count);
+	DynamicEntitiesCollisions((DynamicEntity*)sheeps, players_count, (DynamicEntity*)asteroids, asterooids_count);
+	DynamicEntitiesCollisions((DynamicEntity*)asteroids, asterooids_count, (DynamicEntity*)pilots, players_count);
 
-	DynamicEntitiesCollisions((DynamicEntity**)sheeps, players_count, map);
-	DynamicEntitiesCollisions((DynamicEntity**)pilots, players_count, map);
-	DynamicEntitiesCollisions((DynamicEntity**)asteroids, asterooids_count, map);
+	DynamicEntitiesCollisions((DynamicEntity*)sheeps, players_count, map);
+	DynamicEntitiesCollisions((DynamicEntity*)pilots, players_count, map);
+	DynamicEntitiesCollisions((DynamicEntity*)asteroids, asterooids_count, map);
 
-	DynamicEntitiesAddForce((DynamicEntity**)sheeps, players_count, grav_gens, grav_gens_count);
-	DynamicEntitiesAddForce((DynamicEntity**)pilots, players_count, grav_gens, grav_gens_count);
-	DynamicEntitiesAddForce((DynamicEntity**)asteroids, asterooids_count, grav_gens, grav_gens_count);
-	DynamicEntitiesAddForce((DynamicEntity**)bullets, asterooids_count, grav_gens, grav_gens_count);
+	DynamicEntitiesAddForce((DynamicEntity*)sheeps, players_count, grav_gens, grav_gens_count);
+	DynamicEntitiesAddForce((DynamicEntity*)pilots, players_count, grav_gens, grav_gens_count);
+	DynamicEntitiesAddForce((DynamicEntity*)asteroids, asterooids_count, grav_gens, grav_gens_count);
+	DynamicEntitiesAddForce((DynamicEntity*)bullets, asterooids_count, grav_gens, grav_gens_count);
 
 	//collisions
 
@@ -326,17 +301,17 @@ void Game::Recalculate()
 	//recalculation
 }
 
-void Game::DynamicEntitiesCollisions(DynamicEntity** entities, uint16_t entities_count)
+void Game::DynamicEntitiesCollisions(DynamicEntity* entities, uint16_t entities_count)
 {
 	for (uint16_t first = 0, found_entites_count1 = 0; found_entites_count1 < entities_count; first++)
 	{
-		if (entities[first] != nullptr)
+		if (entities[first].exist)
 		{
 			for (uint16_t second = first + 1, found_entites_count2 = found_entites_count1; found_entites_count2 < entities_count; second++)
 			{
-				if (entities[second] != nullptr)
+				if (entities[second].exist)
 				{
-					entities[first]->Collision(entities[second]);
+					entities[first].Collision(&entities[second]);
 					found_entites_count2++;
 				}
 			}
@@ -345,17 +320,17 @@ void Game::DynamicEntitiesCollisions(DynamicEntity** entities, uint16_t entities
 	}
 }
 
-void Game::DynamicEntitiesCollisions(DynamicEntity** entities1, uint16_t entities1_count, DynamicEntity** entities2, uint16_t entities2_count)
+void Game::DynamicEntitiesCollisions(DynamicEntity* entities1, uint16_t entities1_count, DynamicEntity* entities2, uint16_t entities2_count)
 {
 	for (uint16_t first = 0, found_entites_count1 = 0; found_entites_count1 < entities1_count; first++)
 	{
-		if (entities1[first] != nullptr)
+		if (entities1[first].exist)
 		{
 			for (uint16_t second = 0, found_entites_count2 = 0; found_entites_count2 < entities2_count; second++)
 			{
-				if (entities2[second] != nullptr)
+				if (entities2[second].exist)
 				{
-					entities1[first]->Collision(entities2[second]);
+					entities1[first].Collision(&entities2[second]);
 					found_entites_count2++;
 				}
 			}
@@ -364,13 +339,13 @@ void Game::DynamicEntitiesCollisions(DynamicEntity** entities1, uint16_t entitie
 	}
 }
 
-void Game::DynamicEntitiesCollisions(DynamicEntity** entities, uint16_t entities_count, Map* map)
+void Game::DynamicEntitiesCollisions(DynamicEntity* entities, uint16_t entities_count, Map* map)
 {
 	for (uint16_t first = 0, found_entites_count = 0; found_entites_count < entities_count; first++)
 	{
-		if (entities[first] != nullptr)
+		if (entities[first].exist)
 		{
-			entities[first]->Collision(map);
+			entities[first].Collision(map);
 			found_entites_count++;
 		}
 	}
@@ -382,13 +357,13 @@ void Game::MinesCollisions()
 	Mine* temp2;
 	for (uint16_t mine1 = 0, found_mines1 = 0; found_mines1 < mines_count; mine1++)
 	{
-		temp1 = mines[mine1];
-		if (temp1 != nullptr)
+		temp1 = &mines[mine1];
+		if (temp1->exist)
 		{
 			for (uint16_t mine2 = mine1 + 1, found_mines2 = found_mines1; found_mines2 < mines_count; mine2++)
 			{
-				temp2 = mines[mine2];
-				if (temp2 != nullptr)
+				temp2 = &mines[mine2];
+				if (temp2->exist)
 				{
 					if (temp1->GetDistance(temp2) == 0.0f)
 					{
@@ -410,52 +385,52 @@ void Game::MinesCollisions()
 	}
 }
 
-void Game::DynamicEntitiesAddForce(DynamicEntity** entities, uint16_t entities_count, Vec2F* force)
+void Game::DynamicEntitiesAddForce(DynamicEntity* entities, uint16_t entities_count, Vec2F* force)
 {
 	for (uint16_t i = 0, found = 0; found < entities_count; i++)
 	{
-		if (entities[i] != nullptr)
+		if (entities[i].exist)
 		{
-			entities[i]->AddForce(force);
+			entities[i].AddForce(force);
 			found++;
 		}
 	}
 }
 
-void Game::DynamicEntitiesAddForce(DynamicEntity** entities, uint16_t entities_count, GravGen* grav_gen)
+void Game::DynamicEntitiesAddForce(DynamicEntity* entities, uint16_t entities_count, GravGen* grav_gen)
 {
 	Vec2F force;
 	float len2;
 	for (uint16_t i = 0, found = 0; found < entities_count; i++)
 	{
-		if (entities[i] != nullptr)
+		if (entities[i].exist)
 		{
-			force = entities[i]->GetPosition() - grav_gen->GetPosition();
+			force = entities[i].GetPosition() - grav_gen->GetPosition();
 			len2 = force.x * force.x + force.y * force.y;
 			force /= len2 * sqrt(len2) / grav_gen->gravity;
-			entities[i]->AddForce(&force);
+			entities[i].AddForce(&force);
 
 			found++;
 		}
 	}
 }
 
-void Game::DynamicEntitiesAddForce(DynamicEntity** entities, uint16_t entities_count, GravGen** grav_gens, uint8_t grav_gens_count)
+void Game::DynamicEntitiesAddForce(DynamicEntity* entities, uint16_t entities_count, GravGen* grav_gens, uint8_t grav_gens_count)
 {
 	Vec2F force;
 	float len2;
 	for (uint8_t grav_gen = 0; grav_gen < grav_gens_count; grav_gen++)
 	{
-		if (grav_gens[grav_gen] != nullptr)
+		if (grav_gens[grav_gen].exist)
 		{
 			for (uint16_t i = 0, found = 0; found < entities_count; i++)
 			{
-				if (entities[i] != nullptr)
+				if (entities[i].exist)
 				{
-					force = entities[i]->GetPosition() - grav_gens[grav_gen]->GetPosition();
+					force = entities[i].GetPosition() - grav_gens[grav_gen].GetPosition();
 					len2 = force.x * force.x + force.y * force.y;
-					force /= len2 * sqrt(len2) / grav_gens[grav_gen]->gravity;
-					entities[i]->AddForce(&force);
+					force /= len2 * sqrt(len2) / grav_gens[grav_gen].gravity;
+					entities[i].AddForce(&force);
 
 					found++;
 				}
@@ -470,9 +445,9 @@ void Game::UpdateBullets()
 
 	for (uint16_t i = 0, found_bullets = 0; found_bullets < bullets_count && i < GAME_BULLETS_MAX_COUNT; i++)
 	{
-		if (bullets[i] != nullptr)
+		if (bullets[i].exist)
 		{
-			Bullet* temp_bullet = bullets[i];
+			Bullet* temp_bullet = &bullets[i];
 			if (temp_bullet->IsCollision(map))
 			{
 				DeleteEntity(temp_bullet);
@@ -480,31 +455,30 @@ void Game::UpdateBullets()
 			}
 			for (uint8_t sheep = 0; sheep < players_count; sheep++)
 			{
-				if (sheeps[sheep] != nullptr && temp_bullet->Entity::IsCollision(sheeps[sheep]))
+				if (sheeps[sheep].exist && temp_bullet->Entity::IsCollision(&sheeps[sheep]))
 				{
-					if (sheeps[sheep]->GetActiveBaffs() & BUFF_SHIELD)
+					if (sheeps[sheep].GetActiveBaffs() & BUFF_SHIELD)
 					{
-						sheeps[sheep]->BreakShield();
+						sheeps[sheep].BreakShield();
 					}
 					else
 					{
-						Bonus* new_bonus = sheeps[sheep]->LoseBonus();
-						Bonus* temp_bonus;
-						while ((temp_bonus = new_bonus->Division()) != nullptr)
+						Bonus new_bonus = sheeps[sheep].LoseBonus();
+						for (uint8_t b = 0, count = new_bonus.GetTypesCount() - 1; b < count; b++)
 						{
-							AddEntity(temp_bonus);
+							AddEntity(&new_bonus.Division());
 						}
-						AddEntity(new_bonus);
+						AddEntity(&new_bonus);
 
-						pilots[sheep] = sheeps[sheep]->Destroy();
+						pilots[sheep] = sheeps[sheep].Destroy();
 						pilots_count++;
-						delete sheeps[sheep];
+						sheeps[sheep].exist = false;
 						sheeps_count--;
 						if (!(game_rules & GAME_RULE_NEED_KILL_PILOT))
 						{
 							if (temp_bullet->GetPlayerMasterNumber() == sheep)
 							{
-								scores[sheep]--;
+								scores[temp_bullet->GetPlayerMasterNumber()]--;
 							}
 							else
 							{
@@ -519,63 +493,67 @@ void Game::UpdateBullets()
 			}
 			for (uint8_t pilot = 0; pilot < players_count; pilot++)
 			{
-				if (pilots[pilot] != nullptr && temp_bullet->Entity::IsCollision(pilots[pilot]))
+				if (pilots[pilot].exist && temp_bullet->Entity::IsCollision(&pilots[pilot]))
 				{
 					if (game_rules & BUTTON_ID_SET_NEED_KILL_PILOT)
 					{
 						if (temp_bullet->GetPlayerMasterNumber() == pilot)
 						{
-							scores[pilot]--;
+							scores[temp_bullet->GetPlayerMasterNumber()]--;
 						}
 						else
 						{
 							scores[temp_bullet->GetPlayerMasterNumber()]++;
 						}
-						delete pilots[pilot];
+						pilots[pilot].exist = false;
 						pilots_count--;
 						DeleteEntity(temp_bullet);
 						goto end_cycle;
 					}
 					else
 					{
-						delete pilots[pilot];
+						pilots[pilot].exist = false;
 						pilots_count--;
 					}
 				}
 			}
-			for (uint16_t asteroid = 0; asteroid < asterooids_count; asteroid++)
+			for (uint16_t asteroid = 0, found_asteroids = 0; found_asteroids < asterooids_count; asteroid++)
 			{
-				if (asteroids[asteroid] != nullptr && temp_bullet->Entity::IsCollision(asteroids[asteroid]))
+				if (asteroids[asteroid].exist)
 				{
-					if (asteroids[asteroid]->GetBuffBonus())
+					if (temp_bullet->Entity::IsCollision(&asteroids[asteroid]))
 					{
-						if (asteroids[asteroid]->GetSize() > ASTEROID_SIZE_SMALL)
+						if (asteroids[asteroid].GetBuffBonus())
 						{
-							for (uint8_t div = 0; div < 2; div++)
+							if (asteroids[asteroid].GetSize() > ASTEROID_SIZE_SMALL)
 							{
-								AddEntity(asteroids[asteroid]->Division());
+								for (uint8_t div = 0; div < 2; div++)
+								{
+									AddEntity(asteroids[asteroid].Division());
+								}
+							}
+							else
+							{
+								Bonus* new_bonus = asteroids[asteroid].Destroy();
+								if (new_bonus->bonus_type)
+								{
+									AddEntity(new_bonus);
+								}
 							}
 						}
-						else
+						else if (asteroids[asteroid].GetSize() > ASTEROID_SIZE_SMALL)
 						{
-							Bonus* new_bonus = asteroids[asteroid]->Destroy();
-							if (new_bonus->bonus_type)
+							for (uint8_t div = 0; div < 4; div++)
 							{
-								AddEntity(new_bonus);
+								AddEntity(asteroids[asteroid].Division());
 							}
 						}
-					}
-					else if (asteroids[asteroid]->GetSize() > ASTEROID_SIZE_SMALL)
-					{
-						for (uint8_t div = 0; div < 4; div++)
-						{
-							AddEntity(asteroids[asteroid]->Division());
-						}
-					}
-					DeleteEntity(asteroids[asteroid]);
+						DeleteEntity(&asteroids[asteroid]);
 
-					DeleteEntity(temp_bullet);
-					goto end_cycle;
+						DeleteEntity(temp_bullet);
+						goto end_cycle;
+					}
+					found_asteroids++;
 				}
 			}
 			found_bullets++;
@@ -592,8 +570,8 @@ void Game::UpdateMines()
 	Mine* mine;
 	for (uint16_t i = 0, found_mines = 0; found_mines < mines_count && i < GAME_MINES_MAX_COUNT; i++)
 	{
-		mine = mines[i];
-		if (mine != nullptr)
+		mine = &mines[i];
+		if (mine->exist == true)
 		{
 			if (mine->IsActive())
 			{
@@ -603,13 +581,13 @@ void Game::UpdateMines()
 			{
 				for (uint8_t sheep = 0; sheep < players_count; sheep++)
 				{
-					if (sheeps[sheep]->GetDistance(mine) == 0.0f)
+					if (sheeps[sheep].GetDistance(mine) == 0.0f)
 					{
 						if (mine->IsBoom())
 						{
-							pilots[sheep] = sheeps[sheep]->Destroy();
+							pilots[sheep] = sheeps[sheep].Destroy();
 							pilots_count++;
-							delete sheeps[sheep];
+							sheeps[sheep].exist = false;
 							sheeps_count--;
 						}
 						else
@@ -628,8 +606,8 @@ void Game::SheepsShoot()
 {
 	for (uint8_t sheep = 0; sheep < players_count; sheep++)
 	{
-		Sheep* temp_sheep = sheeps[sheep];
-		if (temp_sheep != nullptr)
+		Sheep* temp_sheep = &sheeps[sheep];
+		if (temp_sheep->exist == true)
 		{
 			if (temp_sheep->GetShootInputValue() && temp_sheep->can_shoot)
 			{
@@ -681,28 +659,28 @@ void Game::SheepsShoot()
 				}
 				else if (temp_sheep->HaveBonus(BONUS_LASER))
 				{
-					AddEntity(temp_sheep->CreateLazer());
+					AddEntity(&temp_sheep->CreateLazer());
 				}
 				else if (temp_sheep->HaveBonus(BONUS_LOOP))
 				{
 					bonus_activate = true;
 					for (uint8_t bullet = 0; bullet < BULLETS_IN_LOOP; bullet++)
 					{
-						AddEntity(temp_sheep->CreateLoop(bullet));
+						AddEntity(&temp_sheep->CreateLoop(bullet));
 					}
 				}
 				else if (temp_sheep->HaveBonus(BONUS_MINE))
 				{
-					AddEntity(temp_sheep->CreateMine());
+					AddEntity(&temp_sheep->CreateMine());
 				}
 				else if (temp_sheep->HaveBonus(BONUS_KNIFE))
 				{
-					AddEntity(temp_sheep->CreateKnife(0));
-					AddEntity(temp_sheep->CreateKnife(1));
+					AddEntity(&temp_sheep->CreateKnife(0));
+					AddEntity(&temp_sheep->CreateKnife(1));
 				}
 				else
 				{
-					AddEntity(temp_sheep->CreateBullet());
+					AddEntity(&temp_sheep->CreateBullet());
 				}
 			}
 		}
@@ -715,9 +693,9 @@ void Game::AddEntity(Asteroid* new_asteroid)
 	{
 		for (uint16_t asteroid = 0; asteroid < GAME_ASTEROIDS_MAX_COUNT; asteroid++)
 		{
-			if (asteroids[asteroid] == nullptr)
+			if (asteroids[asteroid].exist == false)
 			{
-				asteroids[asteroid] = new_asteroid;
+				asteroids[asteroid].Set(new_asteroid);
 				asterooids_count++;
 				return;
 			}
@@ -731,9 +709,9 @@ void Game::AddEntity(Bonus* new_bonus)
 	{
 		for (uint16_t bonus = 0; bonus < GAME_BONUSES_MAX_COUNT; bonus++)
 		{
-			if (bonuses[bonus] == nullptr)
+			if (bonuses[bonus].exist == false)
 			{
-				bonuses[bonus] = new_bonus;
+				bonuses[bonus].Set(new_bonus);
 				bonuses_count++;
 				return;
 			}
@@ -747,9 +725,9 @@ void Game::AddEntity(Bullet* new_bullet)
 	{
 		for (uint16_t bullet = 0; bullet < GAME_BULLETS_MAX_COUNT; bullet++)
 		{
-			if (bullets[bullet] == nullptr)
+			if (bullets[bullet].exist == false)
 			{
-				bullets[bullet] = new_bullet;
+				bullets[bullet].Set(new_bullet);
 				bullets_count++;
 				return;
 			}
@@ -763,9 +741,9 @@ void Game::AddEntity(Knife* new_knife)
 	{
 		for (uint16_t particle = 0; particle < GAME_KNIFES_MAX_COUNT; particle++)
 		{
-			if (knifes[particle] == nullptr)
+			if (knifes[particle].exist == false)
 			{
-				knifes[particle] = new_knife;
+				knifes[particle].Set(new_knife);
 				knifes_count++;
 				return;
 			}
@@ -779,9 +757,9 @@ void Game::AddEntity(Mine* new_mine)
 	{
 		for (uint16_t particle = 0; particle < GAME_MINES_MAX_COUNT; particle++)
 		{
-			if (mines[particle] == nullptr)
+			if (mines[particle].exist == false)
 			{
-				mines[particle] = new_mine;
+				mines[particle].Set(new_mine);
 				mines_count++;
 				return;
 			}
@@ -795,9 +773,9 @@ void Game::AddEntity(Lazer* new_lazer)
 	{
 		for (uint16_t particle = 0; particle < GAME_LAZERS_MAX_COUNT; particle++)
 		{
-			if (lazers[particle] == nullptr)
+			if (lazers[particle].exist == false)
 			{
-				lazers[particle] = new_lazer;
+				lazers[particle].Set(new_lazer);
 				lazers_count++;
 				return;
 			}
@@ -811,9 +789,9 @@ void Game::AddEntity(DynamicEntity* new_particle)
 	{
 		for (uint16_t particle = 0; particle < GAME_PARTICLES_MAX_COUNT; particle++)
 		{
-			if (particles[particle] == nullptr)
+			if (particles[particle].exist == false)
 			{
-				particles[particle] = new_particle;
+				particles[particle].Set(new_particle);
 				bullets_count++;
 				return;
 			}
@@ -823,49 +801,49 @@ void Game::AddEntity(DynamicEntity* new_particle)
 
 void Game::DeleteEntity(Asteroid* deleting_asteroid)
 {
-	delete deleting_asteroid;
+	deleting_asteroid->exist = false;
 	asterooids_count--;
 }
 
 void Game::DeleteEntity(Bonus* deleting_bonus)
 {
-	delete deleting_bonus;
+	deleting_bonus->exist = false;
 	bonuses_count--;
 }
 
 void Game::DeleteEntity(Bullet* deleting_bullet)
 {
-	delete deleting_bullet;
+	deleting_bullet->exist = false;
 	bullets_count--;
 }
 
 void Game::DeleteEntity(Knife* deleting_knife)
 {
-	delete deleting_knife;
+	deleting_knife->exist = false;
 	knifes_count--;
 }
 
 void Game::DeleteEntity(Mine* deleting_mine)
 {
-	delete deleting_mine;
+	deleting_mine->exist = false;
 	mines_count--;
 }
 
 void Game::DeleteEntity(Lazer* deleting_lazer)
 {
-	delete deleting_lazer;
+	deleting_lazer->exist = false;
 	lazers_count--;
 }
 
 void Game::DeleteParticle(DynamicEntity* deleting_particle)
 {
-	delete deleting_particle;
+	deleting_particle->exist = false;
 	particles_count--;
 }
 
 uint8_t Game::GenerateRandomBonus()
 {
-	return 1 << (((rand() % BONUSES_COUNT)) * 2);
+	return 1 << (((rand() % BONUS_BONUSES_COUNT)) * 2);
 }
 
 uint8_t Game::GetRandomMap()
@@ -884,33 +862,4 @@ uint8_t Game::GetMaxScore()
 		}
 	}
 	return max_score;
-}
-
-void Game::DefragmentationArray(void** arr, uint16_t arr_len, uint16_t elements_count)
-{
-	uint16_t found_elements_count = 0;
-	uint16_t to_cell = 0;
-	bool optimal = true;
-	for (uint16_t from_cell = 0; from_cell < arr_len && found_elements_count < elements_count; from_cell++)
-	{
-		if (arr[from_cell] == nullptr)
-		{
-			if (optimal == true)
-			{
-				optimal = false;
-				to_cell = from_cell;
-			}
-		}
-		else if (optimal == false)
-		{
-			arr[to_cell] = arr[from_cell];
-			to_cell++;
-
-			found_elements_count++;
-		}
-		else
-		{
-			found_elements_count++;
-		}
-	}
 }

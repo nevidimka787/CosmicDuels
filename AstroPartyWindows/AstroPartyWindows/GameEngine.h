@@ -32,6 +32,7 @@ protected:
 	Vec2F* position;
 	Vec2F* direction;
 public:
+	bool exist;
 	float radius;
 	Entity();
 	Entity(Vec2F* position, float radius, float angle);
@@ -53,6 +54,7 @@ public:
 	Vec2F GetPosition();
 	Vec2F GetDirection();
 	void Rotate(float angle);
+	void Set(Entity* entity);
 	void SetAngle(float angle);
 	void SetDirection(Vec2F* direction);
 	void SetPosition(Vec2F* position);
@@ -69,6 +71,8 @@ public:
 	void UpdateAngle();
 	void UpdateDirection();
 	void Move(Vec2F* delta);
+
+	void operator=(Entity entity);
 
 	~Entity();
 };
@@ -92,6 +96,7 @@ public:
 	/*
 	If objects collide, function will be changing the physical parameters of those objects.
 	*/
+	void Set(DynamicEntity* entity);
 	bool Collision(DynamicEntity* entity);
 	bool Collision(StaticEntity* entity);
 	bool Collision(Rectangle* rectangle);
@@ -101,6 +106,8 @@ public:
 	float GetAngularVelocity();
 	Vec2F GetVelocity();
 	void Recalculate();
+
+	void operator=(DynamicEntity entity);
 
 	~DynamicEntity();
 };
@@ -116,18 +123,23 @@ public:
 	
 	Vec2F GetVelosity();
 	void Recalculate();
+	void Set(StaticEntity* entity);
+
+	void operator=(StaticEntity entity);
 	
 	~StaticEntity();
 };
 
 class Bonus : public DynamicEntity
 {
-#define BONUSES_COUNT	4
-#define BUFFS_COUNT		2
-#define BONUS_DATA_LENGTH (sizeof(uint8_t) * 8 - 2)
-#define BONUS		0x00FF //0000 0000 1111 1111
-#define BUFF		0x3F00 //0011 1111 0000 0000
-#define GAME_RULE	0xC000 //1100 0000 0000 0000
+#define BONUS_BONUSES_COUNT		4
+#define BONUS_BUFFS_COUNT		2
+#define BONUS_GAME_RULES_COUNT	1
+#define BONUS_TYPES_COUNT		(BONUS_BONUSES_COUNT + BONUS_BUFFS_COUNT + BONUS_GAME_RULES_COUNT)
+#define BONUS_BONUS_DATA_LENGTH (sizeof(uint8_t) * 8 - 2)
+#define BONUS_BONUS		0x00FF //0000 0000 1111 1111
+#define BONUS_BUFF		0x3F00 //0011 1111 0000 0000
+#define BONUS_GAME_RULE	0xC000 //1100 0000 0000 0000
 
 #define BONUS_NO_BONUS	0x0000
 #define BONUS_LOOP		0x0001
@@ -148,14 +160,20 @@ public:
 		bonus type will be passed as a new object,
 		otherwise the function will return 'nullptr'.
 	*/
-	Bonus* Division();
+	Bonus Division();
 	uint16_t GetType();
+	uint8_t GetBonusesCount();
+	uint8_t	GetBuffsCount();
+	uint8_t GetGameRulesCount();
+	uint8_t GetTypesCount();
+	void Set(Bonus* entity);
 
+	void operator=(Bonus entity);
 
 	~Bonus();
 };
 
-class Asteroid : public DynamicEntity
+class Asteroid : public Bonus
 {
 #define ASTEROID_RADIUS_SMALL	0.0125f
 #define ASTEROID_RADIUS_MEDIUM	0.025f
@@ -168,7 +186,6 @@ class Asteroid : public DynamicEntity
 #define ASTEROID_MAX_SIZE		ASTEROID_SIZE_BIG
 #define ASTEROID_DEFAULT_SIZE	ASTEROID_SIZE_MEDIUM
 protected:
-	uint16_t buff_bonus;
 	uint8_t size;
 public:
 	Asteroid();
@@ -181,6 +198,10 @@ public:
 	Asteroid* Division();
 	uint8_t GetSize();
 	uint16_t GetBuffBonus();
+	void Set(Asteroid* entity);
+
+	void operator=(Asteroid entity);
+
 	~Asteroid();
 };
 
@@ -192,6 +213,10 @@ public:
 	KillerEntity();
 	KillerEntity(uint8_t player_master_number);
 	uint8_t GetPlayerMasterNumber();
+	void Set(Bonus* entity);
+
+	void operator=(KillerEntity entity);
+
 	~KillerEntity();
 };
 
@@ -211,6 +236,9 @@ public:
 	bool GetRotateInputValue();
 	bool GetShootInputValue();
 	void Recalculate();
+	void Set(ControledEntity* entity);
+
+	void operator=(ControledEntity entity);
 	
 	~ControledEntity();
 };
@@ -225,23 +253,27 @@ protected:
 	uint16_t active_baffs;
 public:
 	bool can_shoot;
+	Sheep();
 	Sheep(uint8_t player_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* position, Vec2F* velocity, float angle, float angular_velocity);
 	Sheep(uint8_t player_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* position, Vec2F* velocity, float angle, float angular_velocity, uint16_t buffs_bonuses);
 	
 	void ActivateBonus();
 	void BreakShield();
-	Bullet* CreateBullet();
-	Bullet* CreateTriple(uint8_t bullet_number);
+	Bullet CreateBullet();
+	Bullet CreateTriple(uint8_t bullet_number);
 #define BULLETS_IN_LOOP 24
-	Bullet* CreateLoop(uint8_t bullet_number);
-	Mine* CreateMine();
-	Lazer* CreateLazer();
-	Knife* CreateKnife(uint8_t knife_number);
-	Pilot* Destroy();
+	Bullet CreateLoop(uint8_t bullet_number);
+	Mine CreateMine();
+	Lazer CreateLazer();
+	Knife CreateKnife(uint8_t knife_number);
+	Pilot Destroy();
 	uint16_t GetActiveBaffs();
 	bool HaveBonus(uint16_t bonus);
-	Bonus* LoseBonus();
+	Bonus LoseBonus();
+	void Set(Sheep* entity);
 	void TakeBonus(Bonus* bonus);
+
+	void operator=(Sheep entity);
 	
 	~Sheep();
 };
@@ -250,9 +282,13 @@ class Pilot : public ControledEntity
 {
 protected:
 public:
+	Pilot();
 	Pilot(uint8_t player_number, void* rotate_keyboard_key_pointer, void* move_keyboard_key_pointer, Vec2F* position, Vec2F* velosity, float angle, float angular_velosity);
 
 	Sheep* Respawn();
+	void Set(Bonus* entity);
+
+	void operator=(Pilot entity);
 
 	~Pilot();
 };
@@ -272,16 +308,23 @@ public:
 	AggressiveEntity(uint32_t current_tic, uint32_t first_activation_dellay, uint32_t attack_period, uint32_t passive_period, uint8_t shoots_count);
 	bool IsShoot(uint32_t current_tic);
 	void PostponeAttack(uint32_t dellay);
+	void Set(Bonus* entity);
+
+	void operator=(AggressiveEntity entity);
+
 	~AggressiveEntity();
 };
 
-class Turel : public StaticEntity
+class Turel : public AggressiveEntity
 {
 #define ATACK_ENTITY_DEFAULT_ATACK_PERIOD
 public:
 	Turel(Vec2F* position, float angle);
 	
 	DynamicEntity* Shoot();
+	void Set(Turel* entity);
+
+	void operator=(Turel entity);
 
 	~Turel();
 };
@@ -294,20 +337,27 @@ public:
 
 	GravGen();
 	GravGen(Vec2F* position, float gravity);
+	void Set(GravGen* entity);
+
+	void operator=(GravGen entity);
+
 	~GravGen();
 };
 
-class MegaLazer : public StaticEntity
+class MegaLazer : public AggressiveEntity
 {
 protected:
 	bool active;
 	Vec2F* point2;
 public:
 	MegaLazer(Segment* lazer_segment, float angle);
-	
+
+	void Set(MegaLazer* entity);
 	void StartShoot();
 	void StopShoot();
 	bool IsShooting();
+
+	void operator=(MegaLazer entity);
 
 	~MegaLazer();
 };
@@ -321,6 +371,9 @@ public:
 	Lazer(Vec2F* position, Vec2F* direction, uint8_t host_number);
 	Beam GetBeam();
 	void Set(Lazer* lazer);
+
+	void operator=(Lazer entity);
+
 	~Lazer();
 };
 
@@ -332,6 +385,9 @@ public:
 	Bullet(Vec2F* position, Vec2F* velocity, uint8_t host_number);
 	bool IsCollision(Map* map);
 	void Set(Bullet* bullet);
+
+	void operator=(Bullet entity);
+
 	~Bullet();
 };
 
@@ -343,6 +399,9 @@ public:
 	Knife(Vec2F* point1, Vec2F* point2, uint8_t host_number);
 	Segment GetSegment();
 	void Set(Knife* knife);
+
+	void operator=(Knife entity);
+
 	~Knife();
 };
 
@@ -367,6 +426,8 @@ public:
 	void Recalculate();
 	void Set(Mine* mine);
 
+	void operator=(Mine entity);
+
 	~Mine();
 };
 
@@ -385,6 +446,7 @@ public:
 	bool IsUnbreacable();
 	void Move(Vec2F* move_vector);
 	void SetPosition(Vec2F* position);
+	void Set(MapElement* element);
 
 	~MapElement();
 };
@@ -476,6 +538,7 @@ public:
 	Rectangle* GetRectanglePointer(uint8_t number);
 	Cyrcle* GetCyrclePointer(uint8_t number);
 	Polygon* GetPolygonPointer(uint8_t number);
+	void Set(Map* entity);
 
 	~Map();
 };

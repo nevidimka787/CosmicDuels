@@ -10,8 +10,8 @@ class Menu;
 
 class Button
 {
-#define BUTTOM_STATUS_ACTIVE	0x00
-#define BUTTOM_STATUS_INACTIVE	0x01
+#define BUTTOM_STATUS_INACTIVE	0x00
+#define BUTTOM_STATUS_ACTIVE	0x01
 
 #define BUTTON_STATUS_CUSTOM_0	0x02
 #define BUTTON_STATUS_CUSTOM_1	0x04
@@ -27,8 +27,9 @@ protected:
 	char* text;
 	uint8_t text_size;
 	uint32_t id;
-	uint8_t status;
 public:
+	uint8_t status;
+
 	Button();
 	Button(uint32_t id, Vec2F* position, Vec2F* size, const char* text, uint8_t text_size);
 
@@ -52,13 +53,14 @@ class Menu
 protected:
 	Vec2F* position;
 	Button* default_buttons;
-	Button* current_buttons;
 	uint8_t buttons_count;
 	void (*ProcessInputFunction)(Vec2F*);
 public:
+	Button* current_buttons;
 	Menu();
 	Menu(Vec2F* position, Button* buttons, uint8_t buttons_count, void ProcessInputFunction(Vec2F*));
 
+	uint8_t GetButtonsCount();
 	void Move(Vec2F* move_vector);
 	void Set(Menu* menu);
 	void SetPosition(Vec2F* position);

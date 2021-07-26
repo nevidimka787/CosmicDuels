@@ -36,7 +36,6 @@ int main()
     GLFWwindow* window = OpenGL::CreateWindows(SCR_WIDTH, SCR_HEIGHT, "AstroParty", nullptr, nullptr);
     OpenGL::InitGlad();
 
-    bool start_game = false;
     uint8_t level;
     Game::MenusInit();
     Game::GameInit();
@@ -44,9 +43,9 @@ int main()
     while (true)
     {
         OpenGL::DrawMenu(Game::current_active_menu);
-        if (start_game == true)
+        if (Game::start_game == true)
         {
-            Game::MachInit(2, GAME_RULE_PLAYERS_SPAWN_THIS_BONUS | GAME_RULE_START_BONUS_RANDOMIZE | GAME_RULE_NEED_KILL_PILOT | GAME_RULE_ASTEROIDS_IS_SPAWNING | GAME_RULE_BONUSES_IS_SPAWNING, 0);
+            Game::MachInit();
             std::thread physic(PhysicsCalculation, &level);
             std::thread draw(Draw, window);
             physic.join();
@@ -74,7 +73,7 @@ void Draw(GLFWwindow* window)
         physic_calculation_mtx.lock();
         OpenGL::DrawFrame();
         physic_calculation_mtx.unlock();
-        OpenGL::DrawMenu(Game::sheeps_control_menu);
+        OpenGL::DrawMenu(Game::current_active_menu);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -92,9 +91,10 @@ void TikUpdate()
     while (true)
     {
         timer_mtx.lock();
-
-        global_timer++;
-
+        if (Game::pause_game == false)
+        {
+            global_timer++;
+        }
         timer_mtx.unlock();
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
