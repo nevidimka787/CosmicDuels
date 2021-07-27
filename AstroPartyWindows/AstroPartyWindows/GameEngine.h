@@ -149,11 +149,13 @@ class Bonus : public DynamicEntity
 #define BUFF_TRIPLE		0x0100
 #define BUFF_SHIELD		0x0400
 #define GAME_REVERSE	0x8000
+
 protected:
 public:
-	uint16_t bonus_type;
+	typedef typename uint16_t bonus_t;
+	bonus_t bonus_type;
 	Bonus();
-	Bonus(uint16_t BONUS_TYPE, Vec2F* position, Vec2F* velocity);
+	Bonus(bonus_t bonus_type, Vec2F* position, Vec2F* velocity);
 	
 	/*
 		If an object has more than one bonus type,
@@ -161,7 +163,7 @@ public:
 		otherwise the function will return 'nullptr'.
 	*/
 	Bonus Division();
-	uint16_t GetType();
+	bonus_t GetType();
 	uint8_t GetBonusesCount();
 	uint8_t	GetBuffsCount();
 	uint8_t GetGameRulesCount();
@@ -189,13 +191,13 @@ protected:
 	uint8_t size;
 public:
 	Asteroid();
-	Asteroid(uint16_t buff_bonus, uint8_t size);
-	Bonus* Destroy();
+	Asteroid(bonus_t buff_bonus, uint8_t size);
+	Bonus Destroy();
 	/*
 	*The function creates a new smaller asteroid.
 	*Remember to remove main asteroid.
 	*/
-	Asteroid* Division();
+	Asteroid Division();
 	uint8_t GetSize();
 	uint16_t GetBuffBonus();
 	void Set(Asteroid* entity);
@@ -249,13 +251,13 @@ class Sheep : public ControledEntity
 #define BULLET_DEFAULT_RADIUS	0.01f
 #define BULLET_DEFAULT_RESISTANCE_AIR_COEFFICIENT 0.001f
 protected:
-	uint16_t buffs_bonuses;
-	uint16_t active_baffs;
+	Bonus::bonus_t buffs_bonuses;
+	Bonus::bonus_t active_baffs;
 public:
 	bool can_shoot;
 	Sheep();
 	Sheep(uint8_t player_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* position, Vec2F* velocity, float angle, float angular_velocity);
-	Sheep(uint8_t player_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* position, Vec2F* velocity, float angle, float angular_velocity, uint16_t buffs_bonuses);
+	Sheep(uint8_t player_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* position, Vec2F* velocity, float angle, float angular_velocity, Bonus::bonus_t buffs_bonuses);
 	
 	void ActivateBonus();
 	void BreakShield();
@@ -267,8 +269,8 @@ public:
 	Lazer CreateLazer();
 	Knife CreateKnife(uint8_t knife_number);
 	Pilot Destroy();
-	uint16_t GetActiveBaffs();
-	bool HaveBonus(uint16_t bonus);
+	Bonus::bonus_t GetActiveBaffs();
+	bool HaveBonus(Bonus::bonus_t bonus);
 	Bonus LoseBonus();
 	void Set(Sheep* entity);
 	void TakeBonus(Bonus* bonus);
@@ -286,7 +288,7 @@ public:
 	Pilot(uint8_t player_number, void* rotate_keyboard_key_pointer, void* move_keyboard_key_pointer, Vec2F* position, Vec2F* velosity, float angle, float angular_velosity);
 
 	Sheep* Respawn();
-	void Set(Bonus* entity);
+	void Set(Pilot* entity);
 
 	void operator=(Pilot entity);
 

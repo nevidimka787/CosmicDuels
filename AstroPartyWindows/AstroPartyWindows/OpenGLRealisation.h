@@ -43,6 +43,7 @@ namespace OpenGL
 	//hight level functions
 
 	void DrawMenu(Menu* menu);
+	void DrawCurrentMenu();
 
 	void DrawObject(Line* line, bool update_shader);
 	void DrawObject(Beam* beam, bool update_shader);

@@ -27,7 +27,7 @@ std::shared_mutex physic_calculation_mtx;
 uint32_t global_timer = 0;
 
 void TikUpdate();
-void PhysicsCalculation(uint8_t* level_id);
+void PhysicsCalculation();
 void Draw(GLFWwindow* window);
 
 int main()
@@ -36,19 +36,23 @@ int main()
     GLFWwindow* window = OpenGL::CreateWindows(SCR_WIDTH, SCR_HEIGHT, "AstroParty", nullptr, nullptr);
     OpenGL::InitGlad();
 
-    uint8_t level;
-    Game::MenusInit();
-    Game::GameInit();
+    Game::Init::Menus();
+    Game::Init::Game();
 
+    //game cycle
     while (true)
     {
-        OpenGL::DrawMenu(Game::current_active_menu);
+        OpenGL::DrawCurrentMenu();
         if (Game::start_game == true)
         {
-            Game::MachInit();
-            std::thread physic(PhysicsCalculation, &level);
-            std::thread draw(Draw, window);
-            physic.join();
+            Game::Init::Mach();
+            while (Game::start_game == true)
+            {
+                std::thread physic(PhysicsCalculation);
+                std::thread draw(Draw, window);
+                physic.join();
+                draw.join();
+            }
         }
     }
 
@@ -72,8 +76,8 @@ void Draw(GLFWwindow* window)
 
         physic_calculation_mtx.lock();
         OpenGL::DrawFrame();
+        OpenGL::DrawCurrentMenu();
         physic_calculation_mtx.unlock();
-        OpenGL::DrawMenu(Game::current_active_menu);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -100,7 +104,7 @@ void TikUpdate()
     }
 }
 
-void PhysicsCalculation(uint8_t* level_id)
+void PhysicsCalculation()
 {
     std::thread timer(TikUpdate);
 
@@ -113,15 +117,7 @@ void PhysicsCalculation(uint8_t* level_id)
     physic_calculation_mtx.lock();
     //start initialisate all entities and variables
 
-    if (Game::game_rules & GAME_RULE_RANDOMLY_MAP)
-    {
-        Game::LevelInit(Game::GetRandomMap());
-    }
-    else
-    {
-        Game::LevelInit(*level_id);
-    }
-
+        Game::Init::Level();
 
     //start initialisate all entities and variables
     physic_calculation_mtx.unlock();

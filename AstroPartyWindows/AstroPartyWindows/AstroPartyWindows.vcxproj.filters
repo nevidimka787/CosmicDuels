@@ -45,6 +45,12 @@
     <ClCompile Include="MenuFunctions.cpp">
       <Filter>Файлы ресурсов</Filter>
     </ClCompile>
+    <ClCompile Include="GameRealisationUpdate.cpp">
+      <Filter>Файлы ресурсов</Filter>
+    </ClCompile>
+    <ClCompile Include="GameRealisationInit.cpp">
+      <Filter>Файлы ресурсов</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine.h">

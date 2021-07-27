@@ -582,7 +582,7 @@ Bonus::Bonus() : bonus_type(0)
 
 }
 
-Bonus::Bonus(uint16_t bonus_type, Vec2F* position, Vec2F* velocity) : bonus_type(bonus_type)
+Bonus::Bonus(bonus_t bonus_type, Vec2F* position, Vec2F* velocity) : bonus_type(bonus_type)
 {
 	*this->position = *position;
 	*this->velocity = *velocity;
@@ -591,7 +591,7 @@ Bonus::Bonus(uint16_t bonus_type, Vec2F* position, Vec2F* velocity) : bonus_type
 
 Bonus Bonus::Division()
 {
-	uint16_t temp;
+	bonus_t temp;
 	bool last = false;
 	for (uint8_t i = 0; i < 6; i++)
 	{
@@ -695,7 +695,7 @@ Asteroid::Asteroid() : size(ASTEROID_DEFAULT_SIZE)
 
 }
 
-Asteroid::Asteroid(uint16_t bonus_type, uint8_t size) : size(size)
+Asteroid::Asteroid(bonus_t bonus_type, uint8_t size) : size(size)
 {
 	switch (this->size)
 	{
@@ -717,22 +717,22 @@ Asteroid::Asteroid(uint16_t bonus_type, uint8_t size) : size(size)
 	exist = true;
 }
 
-Bonus* Asteroid::Destroy()
+Bonus Asteroid::Destroy()
 {
-	return new Bonus(bonus_type, position, velocity);
+	return Bonus(bonus_type, position, velocity);
 }
 
-Asteroid* Asteroid::Division()
+Asteroid Asteroid::Division()
 {
 	if (size > ASTEROID_SIZE_SMALL)
 	{
-		return nullptr;
+		return Asteroid();
 	}
-	Asteroid* temp_asteroid = new Asteroid(bonus_type, size - 1);
-	*temp_asteroid->position = *position + Vec2F(((float)rand() - (float)RAND_MAX / 2.0f) / ((float)RAND_MAX * 10.0f), ((float)rand() - (float)RAND_MAX / 2.0f) / ((float)RAND_MAX * 10.0f));
-	*temp_asteroid->velocity = *velocity;
+	Asteroid temp_asteroid = Asteroid(bonus_type, size - 1);
+	*temp_asteroid.position = *position + Vec2F(((float)rand() - (float)RAND_MAX / 2.0f) / ((float)RAND_MAX * 10.0f), ((float)rand() - (float)RAND_MAX / 2.0f) / ((float)RAND_MAX * 10.0f));
+	*temp_asteroid.velocity = *velocity;
 
-	uint16_t temp;
+	bonus_t temp;
 	for (uint8_t i = 0; i < BONUS_BUFFS_COUNT + BONUS_BONUSES_COUNT; i++)
 	{
 		temp = 0x11 << (i << 1);
@@ -741,7 +741,7 @@ Asteroid* Asteroid::Division()
 			break;
 		}
 	}
-	temp_asteroid->bonus_type = temp;
+	temp_asteroid.bonus_type = temp;
 	return temp_asteroid;
 }
 
@@ -893,7 +893,7 @@ Sheep::Sheep(uint8_t player_number, void* rotate_input_value_pointer, void* shoo
 	exist = true;
 }
 
-Sheep::Sheep(uint8_t player_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* position, Vec2F* velocity, float angle, float angular_velocity, uint16_t buffs_bonuses) : buffs_bonuses(buffs_bonuses), active_baffs(0x00), can_shoot(true)
+Sheep::Sheep(uint8_t player_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* position, Vec2F* velocity, float angle, float angular_velocity, Bonus::bonus_t buffs_bonuses) : buffs_bonuses(buffs_bonuses), active_baffs(0x00), can_shoot(true)
 {
 	this->player_number = player_number;
 	this->rotate_input_value_pointer = rotate_input_value_pointer;
@@ -1009,7 +1009,7 @@ Knife Sheep::CreateKnife(uint8_t knife_number)
 	}
 }
 
-bool Sheep::HaveBonus(uint16_t bonus)
+bool Sheep::HaveBonus(Bonus::bonus_t bonus)
 {
 	uint16_t temp;
 	for (uint16_t i = 0; i < BONUS_BONUSES_COUNT; i++)

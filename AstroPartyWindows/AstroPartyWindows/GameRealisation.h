@@ -6,7 +6,6 @@
 #include <random>
 #include "GameEngine.h"
 #include "Menu.h"
-#include "MenuFunctions.h"
 
 namespace Game
 {
@@ -57,9 +56,10 @@ namespace Game
 
 	//match rules
 
-#define RANDOM_ITERATIONS_COUNT 8
-#define MAPS_COUNT 1
-#define BALANCE_ACTIVATE_DIFFERENCE_SCORES 3
+#define RANDOM_ITERATIONS_COUNT				8
+#define MAPS_COUNT							1
+#define OBJECTS_COUNT						1
+#define BALANCE_ACTIVATE_DIFFERENCE_SCORES	3
 
 	//matc rules
 
@@ -81,14 +81,14 @@ namespace Game
 #define BUTTON_ID_SET_SPAWN_THIS_RANDOM_BONUS	13
 #define BUTTON_ID_SET_SPAWN_WHIS_TRIPLE_BUFF	14
 #define BUTTON_ID_SET_SPAWN_WHIT_SHIELD_BAFF	15
-#define BUTTON_ID_GO_TO_SELECT_MACH_TYPE_MENU	16
+#define BUTTON_ID_SET_ACTIVE_BALANCE			16
 #define BUTTON_ID_SET_FRIEDLY_SHEEP_CAN_RESTORE	17
 #define BUTTON_ID_SET_ACTIVE_FRIENDLY_FIRE		18
 #define BUTTON_ID_SET_PILOT_CAN_RESPAWN			19
 #define BUTTON_ID_SET_NEED_KILL_PILOT			20
-#define BUTTON_ID_GO_TO_SELECT_MAP_MENU			21
-#define BUTTON_ID_GO_TO_SELECT_OBJECTS_MENU		22
-#define BUTTON_ID_SET_ACTIVE_BALANCE			23
+
+#define BUTTON_ID_GO_TO_SELECT_MAP_MENU			30
+#define BUTTON_ID_GO_TO_SELECT_OBJECTS_MENU		32
 
 	//options menu
 
@@ -99,30 +99,64 @@ namespace Game
 
 	//pause menu
 
+#define BUTTON_ID_SHEEP1_SHOOT		60
+#define BUTTON_ID_SHEEP1_ROTATE		61
+#define BUTTON_ID_SHEEP2_SHOOT		62
+#define BUTTON_ID_SHEEP2_ROTATE		63
+#define BUTTON_ID_SHEEP3_SHOOT		64
+#define BUTTON_ID_SHEEP3_ROTATE		65
+#define BUTTON_ID_SHEEP4_SHOOT		66
+#define BUTTON_ID_SHEEP4_ROTATE		67
+
 	//select sheeps menu
 
-#define BUTTON_ID_SELECT_SHEEP_1	60
-#define BUTTON_ID_SELECT_SHEEP_2	61
-#define BUTTON_ID_SELECT_SHEEP_3	62
-#define BUTTON_ID_SELECT_SHEEP_4	63
+#define BUTTON_ID_SELECT_SHEEP_1	80
+#define BUTTON_ID_SELECT_SHEEP_2	81
+#define BUTTON_ID_SELECT_SHEEP_3	82
+#define BUTTON_ID_SELECT_SHEEP_4	83
 
 	//select sheeps menu
 
 	//select objects menu
 
-#define BUTTON_ID_SELECT_OBJECT_ASTEROID	100
+#define BUTTON_ID_SELECT_OBJECT				100
+#define BUTTON_ID_SELECT_OBJECT_ASTEROID	(BUTTON_ID_SELECT_OBJECT + 0)
 
 	//select objects menu
 
 	//select map pull menu
 
 #define BUTTON_ID_SELECT_MAP	200
-#define BUTTON_ID_SELECT_MAP_0 (BUTTON_ID_SELECT_MAP + MAP_TEST_MAP)
+#define BUTTON_ID_SELECT_MAP_0	(BUTTON_ID_SELECT_MAP + MAP_TEST_MAP)
 
 	//select map pull menu
 
 	//buttons
 
+	//typedefs
+	
+	typedef typename uint8_t players_count_t;
+	typedef typename uint16_t entities_count_t;
+	typedef typename uint8_t map_elements_count_t;
+	typedef typename uint16_t maps_count_t;
+	typedef typename uint32_t game_rules_t;
+	typedef typename uint8_t score_t;
+
+#define PLAYERS_COUNT_T_MAX			UINT8_MAX
+#define ENTITIES_COUNT_T_MAX		UINT16_MAX
+#define MAP_ELEMENTS_COUNT_T_MAX	UINT8_MAX
+#define MAPS_COUNT_T_MAX			UINT16_MAX
+#define GAME_RULES_T_MAX			UINT32_MAX
+#define SCORE_T_MAX					UINT8_MAX
+
+#define PLAYERS_COUNT_T_MIN			UINT8_MIN
+#define ENTITIES_COUNT_T_MIN		UINT16_MIN
+#define MAP_ELEMENTS_COUNT_T_MIN	UINT8_MIN
+#define MAPS_COUNT_T_MIN			UINT16_MIN
+#define GAME_RULES_T_MIN			UINT32_MIN
+#define SCORE_T_MIN					UINT8_MIN
+
+	//typedefs
 
 	//game variables
 
@@ -133,34 +167,38 @@ namespace Game
 	static bool* rotate_keys;
 	static bool* sheeps_can_shoot;
 
-	static uint8_t* scores;
-	static uint8_t* last_match_scores;
-	static uint8_t current_map_id;
+	static maps_count_t selected_maps_id_array_length;
 
-	static uint8_t grav_gens_count;
-	static uint8_t players_count;
-	static uint8_t sheeps_count;
-	static uint8_t pilots_count;
-	static uint8_t knifes_count;
-	static uint8_t lazers_count;
-	static uint8_t mines_count;
-	static uint8_t turels_count;
-	static uint8_t mega_lazers_count;
-	static uint16_t asterooids_count;
-	static uint16_t bonuses_count;
-	static uint16_t bullets_count;
-	static uint16_t particles_count;
-	static uint16_t rectangles_count;
+	static score_t* scores;
+	static score_t* last_match_scores;
+	static maps_count_t current_map_id;
 
-	static uint16_t start_bonus;
+	static map_elements_count_t grav_gens_count;
+	static players_count_t players_count;
+	static players_count_t sheeps_count;
+	static players_count_t pilots_count;
+	static entities_count_t knifes_count;
+	static entities_count_t lazers_count;
+	static entities_count_t mines_count;
+	static entities_count_t turels_count;
+	static entities_count_t mega_lazers_count;
+	static entities_count_t asterooids_count;
+	static entities_count_t bonuses_count;
+	static entities_count_t bullets_count;
+	static entities_count_t particles_count;
+	static map_elements_count_t rectangles_count;
 
-	static uint32_t game_rules;
+	static Bonus::bonus_t start_bonus;
+
+	static game_rules_t game_rules;
 
 	//game variables
 
 	//game lists
 
-	static uint32_t* map_pull_array;
+	static bool* map_pull_array;
+	static maps_count_t* selected_maps_id_array;
+	static bool* object_pull_array;
 
 	//game lists
 
@@ -202,21 +240,58 @@ namespace Game
 
 	//menu objects
 
-	void GameInit();
-	void MachInit();
-	void LevelInit(uint8_t map_id);
-	void MenusInit();
+	//temp containers
+	namespace Temp
+	{
+		static Sheep sheep;
+		static Pilot pilot;
+		static Bullet bullet;
+		static Knife knife;
+		static Lazer lazer;
+		static Mine mine;
+		static DynamicEntity particle;
+		static Asteroid asteroid;
+		static Bonus bonus;
 
-	void DynamicEntitiesCollisions(DynamicEntity* entities, uint16_t entities_count);
-	void DynamicEntitiesCollisions(DynamicEntity* entities1, uint16_t entities1_count, DynamicEntity* entities2, uint16_t entities2_count);
-	void DynamicEntitiesCollisions(DynamicEntity* entities, uint16_t entities_count, Map* map);
+		static Sheep* sheep_p;
+		static Pilot* pilot_p;
+		static Bullet* bullet_p;
+		static Knife* knife_p;
+		static Lazer* lazer_p;
+		static Mine* mine_p;
+		static DynamicEntity* particle_p;
+		static Asteroid* asteroid_p;
+		static Bonus* bonus_p;
+	}
+
+
+	namespace Init
+	{
+		void Game();
+		void Mach();
+		void Level();
+		void Menus();
+	}
+
+	void DynamicEntitiesCollisions(DynamicEntity* entities, entities_count_t entities_count);
+	void DynamicEntitiesCollisions(DynamicEntity* entities1, entities_count_t entities1_count, DynamicEntity* entities2, entities_count_t entities2_count);
+	void DynamicEntitiesCollisions(DynamicEntity* entities, entities_count_t entities_count, Map* map);
 	void MinesCollisions();
-	void DynamicEntitiesAddForce(DynamicEntity* entities, uint16_t entities_count, Vec2F* force);
-	void DynamicEntitiesAddForce(DynamicEntity* entities, uint16_t entities_count, GravGen* grav_gen);
-	void DynamicEntitiesAddForce(DynamicEntity* entities, uint16_t entities_count, GravGen* grav_gens, uint8_t grav_gens_count);
+	void DynamicEntitiesAddForce(DynamicEntity* entities, entities_count_t entities_count, Vec2F* force);
+	void DynamicEntitiesAddForce(DynamicEntity* entities, entities_count_t entities_count, GravGen* grav_gen);
+	void DynamicEntitiesAddForce(DynamicEntity* entities, entities_count_t entities_count, GravGen* grav_gens, map_elements_count_t grav_gens_count);
 
-	void UpdateBullets();
-	void UpdateMines();
+	namespace Update
+	{
+		void Bullets();
+		void Mines();
+		void Sheeps();
+		void Pilots();
+		void Knifes();
+		void Lazers();
+		void Asteroids();
+		void Bonuses();
+	}
 	void Recalculate();
 	void SheepsShoot();
 
@@ -250,9 +325,9 @@ namespace Game
 	//Not checking nullprt!
 	void DeleteParticle(DynamicEntity* deleting_particle);
 
-	uint8_t GenerateRandomBonus();
-	uint8_t GetRandomMap();
-	uint8_t GetMaxScore();
+	Bonus::bonus_t GenerateRandomBonus();
+	maps_count_t GenerateRandomMapId();
+	score_t GetMaxScore();
 };
 
 #endif //GAME_REALISATION_H

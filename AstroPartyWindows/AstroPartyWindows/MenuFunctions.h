@@ -14,7 +14,7 @@ namespace MenuFunctions
 #define SHEEPS_SELECT_BUTTONS_TEAM_PURPURE	4
 	static uint8_t* sheeps_select_buttons;
 
-	static uint16_t start_bonus;
+	static Bonus::bonus_t start_bonus;
 
 
 	void Back();
@@ -31,10 +31,9 @@ namespace MenuFunctions
 	void StartGame();
 	void PauseGame();
 	void ResumeGame();
-	void SelectSheep(uint8_t sheep_number);
-	void SelectSheep(uint8_t sheep_number, uint8_t team_number);
+	void SelectSheep(Game::players_count_t sheep_number, uint8_t team_number);
 	void Exit();
-	void ChangeOption(uint32_t option_number);
+	void ChangeOption(Game::game_rules_t option_number);
 
 	void MainMenuFunction(Vec2F* clk_pos);
 	void OptionMenuFunction(Vec2F* clk_pos);

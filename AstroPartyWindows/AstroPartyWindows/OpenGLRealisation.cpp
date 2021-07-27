@@ -91,6 +91,14 @@ void OpenGL::FramebufferSizeCallback(GLFWwindow* window, int width, int height)
 
 
 void OpenGL::DrawMenu(Menu* menu)
+{
+    Menu* last_menu = Game::current_active_menu;
+    Game::current_active_menu = menu;
+    DrawCurrentMenu();
+    Game::current_active_menu = last_menu;
+}
+
+void OpenGL::DrawCurrentMenu()
 {}
 
 void OpenGL::DrawObject(Line* line, bool update_shader)
