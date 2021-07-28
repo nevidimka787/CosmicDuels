@@ -1,7 +1,79 @@
 #include "GameRealisation.h"
 
+inline void Game::Update::All()
+{
+	Bullets();
+	Bombs();
+	Ships();
+	Pilots();
+	Knifes();
+	Lazers();
+	Asteroids();
+	Bonuses();
+}
 
-void Game::Update::Bullets()
+inline void Game::Update::TransportAll()
+{
+	TransportBullets();
+	TransportBombs();
+	TransportSheeps();
+	TransportPilots();
+	TransportKnifes();
+	TransportLazers();
+	TransportAsteroids();
+	TransportBonuses();
+}
+
+void Game::Update::Bombs()
+{
+	BombsChainReaction();
+	
+	for (entities_count_t i = 0, found_mines = 0; found_mines < bombs_count && i < GAME_BOMBS_MAX_COUNT; i++)
+	{
+		Temp::bomb_p = &bombs[i];
+		if (Temp::bomb_p->exist == true)
+		{
+			if (Temp::bomb_p->IsBoom())
+			{
+				
+				for (players_count_t pilot = 0; pilot < players_count; pilot++)
+				{
+					Temp::pilot_p = &pilots[pilot];
+					if (Temp::pilot_p->exist == true && Temp::pilot_p->GetDistance(Temp::bomb_p) == 0.0f)
+					{
+						if (game_rules & GAME_RULE_NEED_KILL_PILOT)
+						{
+							if (Temp::bomb_p->GetPlayerMasterNumber() == Temp::pilot_p->GetPlayerNumber())
+							{
+								scores[Temp::pilot_p->GetPlayerNumber()]--;
+							}
+							else
+							{
+								scores[Temp::bomb_p->GetPlayerMasterNumber()]++;
+							}
+						}
+						Temp::ship_p->exist = false;
+						ships_count--;
+					}
+				}
+			}
+			else if (Temp::bomb_p->IsActive() == false)
+			{
+				for (players_count_t sheep = 0; sheep < players_count; sheep++)
+				{
+					Temp::ship_p = &ships[sheep];
+					if (Temp::ship_p->exist == true && Temp::ship_p->GetDistance(Temp::bomb_p) == 0.0f)
+					{
+						Temp::bomb_p->Activate();
+					}
+				}
+			}
+		}
+		found_mines++;
+	}
+}
+
+void Game::Update::BulletsDestroy()
 {
 	//deleting bullets
 
@@ -17,40 +89,15 @@ void Game::Update::Bullets()
 			}
 			for (players_count_t sheep = 0; sheep < players_count; sheep++)
 			{
-				if (sheeps[sheep].exist && Temp::bullet_p->Entity::IsCollision(&sheeps[sheep]))
+				if (ships[sheep].exist && Temp::bullet_p->Entity::IsCollision(&ships[sheep]))
 				{
-					if (sheeps[sheep].GetActiveBaffs() & BUFF_SHIELD)
+					if (ships[sheep].GetActiveBaffs() & BUFF_SHIELD)
 					{
-						sheeps[sheep].BreakShield();
+						ships[sheep].BreakShield();
 					}
 					else
 					{
-						if (!(game_rules & GAME_RULE_NEED_KILL_PILOT))
-						{
-							if (Temp::bullet_p->GetPlayerMasterNumber() == sheep && !(game_rules & GAME_RULE_FRENDLY_FIRE))
-							{
-								scores[Temp::bullet_p->GetPlayerMasterNumber()]--;
-							}
-							else
-							{
-								scores[Temp::bullet_p->GetPlayerMasterNumber()]++;
-							}
-						}
-
-						Bonus new_bonus = sheeps[sheep].LoseBonus();
-						for (uint8_t b = 0, count = new_bonus.GetTypesCount() - 1; b < count; b++)
-						{
-							Temp::bonus = new_bonus.Division();
-							AddEntity(&Temp::bonus);
-						}
-						AddEntity(&new_bonus);
-						if (!(game_rules & GAME_RULE_FRENDLY_FIRE))
-						{
-							pilots[sheep] = sheeps[sheep].Destroy();
-							pilots_count++;
-							sheeps[sheep].exist = false;
-							sheeps_count--;
-						}
+						Destroy::Entity(Temp::bullet_p, &ships[sheep]);
 					}
 
 					DeleteEntity(Temp::bullet_p);
@@ -63,20 +110,7 @@ void Game::Update::Bullets()
 				{
 					if (game_rules & BUTTON_ID_SET_NEED_KILL_PILOT)
 					{
-						if (Temp::bullet_p->GetPlayerMasterNumber() == pilot && !(game_rules & GAME_RULE_FRENDLY_FIRE))
-						{
-							scores[Temp::bullet_p->GetPlayerMasterNumber()]--;
-						}
-						else
-						{
-							scores[Temp::bullet_p->GetPlayerMasterNumber()]++;
-						}
-
-						if (!(game_rules & GAME_RULE_FRENDLY_FIRE))
-						{
-							pilots[pilot].exist = false;
-							pilots_count--;
-						}
+						Destroy::Entity(Temp::bullet_p, &pilots[pilot]);
 						DeleteEntity(Temp::bullet_p);
 						goto end_cycle;
 					}
@@ -87,7 +121,7 @@ void Game::Update::Bullets()
 					}
 				}
 			}
-			for (entities_count_t asteroid = 0, found_asteroids = 0; found_asteroids < asterooids_count; asteroid++)
+			for (entities_count_t asteroid = 0, found_asteroids = 0; found_asteroids < asteroids_count; asteroid++)
 			{
 				if (asteroids[asteroid].exist)
 				{
@@ -99,8 +133,7 @@ void Game::Update::Bullets()
 							{
 								for (uint8_t div = 0; div < 2; div++)
 								{
-									Temp::asteroid = asteroids[asteroid].Division();
-									AddEntity(&Temp::asteroid);
+									AddEntity(asteroids[asteroid].Division());
 								}
 							}
 							else
@@ -108,7 +141,7 @@ void Game::Update::Bullets()
 								Temp::bonus = asteroids[asteroid].Destroy();
 								if (Temp::bonus.bonus_type)
 								{
-									AddEntity(&Temp::bonus);
+									AddEntity(Temp::bonus);
 								}
 							}
 						}
@@ -116,8 +149,7 @@ void Game::Update::Bullets()
 						{
 							for (uint8_t div = 0; div < 4; div++)
 							{
-								Temp::asteroid = asteroids[asteroid].Division();
-								AddEntity(&Temp::asteroid);
+								AddEntity(asteroids[asteroid].Division());
 							}
 						}
 						DeleteEntity(&asteroids[asteroid]);
@@ -136,41 +168,36 @@ void Game::Update::Bullets()
 	//deleting bullets
 }
 
-void Game::Update::Mines()
+void Game::Update::BombsChainReaction()
 {
-	MinesCollisions();
-	Mine* mine;
-	for (entities_count_t i = 0, found_mines = 0; found_mines < mines_count && i < GAME_MINES_MAX_COUNT; i++)
+	bool recursion = true;
+	while (recursion == true)
 	{
-		mine = &mines[i];
-		if (mine->exist == true)
+		recursion = false;
+		for (entities_count_t bomb = 0, found_bomb = 0; found_bomb < bombs_count && bomb < GAME_BOMBS_MAX_COUNT; bomb++)
 		{
-			if (mine->IsActive())
+			Temp::bomb_p = &bombs[bomb];
+			if (Temp::bomb_p->exist == true)
 			{
-				mine->Recalculate();
-			}
-			else
-			{
-				for (players_count_t sheep = 0; sheep < players_count; sheep++)
+				if (Temp::bomb_p->IsBoom() == true)
 				{
-					if (sheeps[sheep].GetDistance(mine) == 0.0f)
+					Bomb* temp_bomb;
+					for (entities_count_t new_bomb = 0, found_new_bomb = 0; found_new_bomb < bombs_count && new_bomb < GAME_BOMBS_MAX_COUNT; new_bomb++)
 					{
-						if (mine->IsBoom())
+						temp_bomb = &bombs[new_bomb];
+						if (temp_bomb->exist == true)
 						{
-							pilots[sheep] = sheeps[sheep].Destroy();
-							pilots_count++;
-							sheeps[sheep].exist = false;
-							sheeps_count--;
-						}
-						else
-						{
-							mine->Activate();
+							if (new_bomb != bomb && temp_bomb->IsBoom() == false && Temp::bomb_p->GetDistance(temp_bomb) == 0.0f)
+							{
+								recursion = true;
+								temp_bomb->Boom();
+							}
+							found_new_bomb++;
 						}
 					}
 				}
+				found_bomb++;
 			}
 		}
-		found_mines++;
 	}
 }
-

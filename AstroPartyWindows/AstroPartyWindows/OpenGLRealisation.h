@@ -55,11 +55,11 @@ namespace OpenGL
 	void DrawObject(Bonus* bonus, bool update_shader);
 	void DrawObject(Asteroid* asteroid, bool update_shader);
 	void DrawObject(ControledEntity controled_entity, bool update_shader);
-	void DrawObject(Sheep* sheep, bool update_shader);
+	void DrawObject(Ship* ship, bool update_shader);
 	void DrawObject(Pilot* pilot, bool update_shader);
 	void DrawObject(Turel* turel, bool update_shader);
-	void DrawObject(MegaLazer* mega_lazer, bool update_shader);
-	void DrawObject(Mine* mine, bool update_shader);
+	void DrawObject(MegaLaser* mega_laser, bool update_shader);
+	void DrawObject(Bomb* mine, bool update_shader);
 	void DrawObject(MapElement* map_element, bool update_shader);
 	void DrawObject(Rectangle* rectangle, bool update_shader);
 	void DrawObject(Cyrcle* cyrcle, bool update_shader);

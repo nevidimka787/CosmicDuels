@@ -149,6 +149,7 @@
     <ClCompile Include="gald.c" />
     <ClCompile Include="GameEngine.cpp" />
     <ClCompile Include="GameRealisation.cpp" />
+    <ClCompile Include="GameRealisationDestroy.cpp" />
     <ClCompile Include="GameRealisationInit.cpp" />
     <ClCompile Include="GameRealisationUpdate.cpp" />
     <ClCompile Include="Line.cpp" />

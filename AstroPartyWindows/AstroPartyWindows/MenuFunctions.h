@@ -7,12 +7,12 @@
 
 namespace MenuFunctions
 {
-#define SHEEPS_SELECT_BUTTONS_NO_TEAM		0
-#define SHEEPS_SELECT_BUTTONS_TEAM_RED		1
-#define SHEEPS_SELECT_BUTTONS_TEAM_BLUE		2
-#define SHEEPS_SELECT_BUTTONS_TEAM_GREEN	3
-#define SHEEPS_SELECT_BUTTONS_TEAM_PURPURE	4
-	static uint8_t* sheeps_select_buttons;
+#define SHIPS_SELECT_BUTTONS_NO_TEAM		0
+#define SHIPS_SELECT_BUTTONS_TEAM_RED		1
+#define SHIPS_SELECT_BUTTONS_TEAM_BLUE		2
+#define SHIPS_SELECT_BUTTONS_TEAM_GREEN	3
+#define SHIPS_SELECT_BUTTONS_TEAM_PURPURE	4
+	static uint8_t* ships_select_buttons;
 
 	static Bonus::bonus_t start_bonus;
 
@@ -38,10 +38,10 @@ namespace MenuFunctions
 	void MainMenuFunction(Vec2F* clk_pos);
 	void OptionMenuFunction(Vec2F* clk_pos);
 	void PauseMenuFunction(Vec2F* clk_pos);
-	void SheepsSelectMenuFunction(Vec2F* clk_pos);
+	void ShipsSelectMenuFunction(Vec2F* clk_pos);
 	void MapPullSelectMenuFunction(Vec2F* clk_pos);
 	void SpawnObjectsSelectMenuFunction(Vec2F* clk_pos);
-	void SheepsControlMenuFunction(Vec2F* clk_pos);
+	void ShipsControlMenuFunction(Vec2F* clk_pos);
 };
 
 #endif //MENU_FUNCTIONS_H

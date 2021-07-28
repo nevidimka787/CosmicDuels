@@ -1,6 +1,9 @@
-﻿  GameRealisationInit.cpp
-GameRealisation.obj : error LNK2019: ссылка на неразрешенный внешний символ "public: void __cdecl DynamicEntity::Set(class DynamicEntity *)" (?Set@DynamicEntity@@QEAAXPEAV1@@Z) в функции "void __cdecl Game::AddEntity(class DynamicEntity *)" (?AddEntity@Game@@YAXPEAVDynamicEntity@@@Z).
-GameRealisation.obj : error LNK2019: ссылка на неразрешенный внешний символ "public: void __cdecl Bonus::Set(class Bonus *)" (?Set@Bonus@@QEAAXPEAV1@@Z) в функции "void __cdecl Game::AddEntity(class Bonus *)" (?AddEntity@Game@@YAXPEAVBonus@@@Z).
-GameRealisation.obj : error LNK2019: ссылка на неразрешенный внешний символ "public: void __cdecl Asteroid::Set(class Asteroid *)" (?Set@Asteroid@@QEAAXPEAV1@@Z) в функции "void __cdecl Game::AddEntity(class Asteroid *)" (?AddEntity@Game@@YAXPEAVAsteroid@@@Z).
-MenuFunctions.obj : error LNK2019: ссылка на неразрешенный внешний символ "public: unsigned char __cdecl Menu::GetButtonsCount(void)" (?GetButtonsCount@Menu@@QEAAEXZ) в функции "void __cdecl MenuFunctions::MainMenuFunction(class Vec2F *)" (?MainMenuFunction@MenuFunctions@@YAXPEAVVec2F@@@Z).
-D:\Documents\GItHub\AstroParty\AstroPartyWindows\x64\Debug\AstroPartyRemakeWindows.exe : fatal error LNK1120: неразрешенных внешних элементов: 4
+﻿  GameEngine.cpp
+  GameRealisation.cpp
+  GameRealisationInit.cpp
+  GameRealisationUpdate.cpp
+D:\Documents\GItHub\AstroParty\AstroPartyWindows\AstroPartyWindows\GameRealisationUpdate.cpp(114,67): error C2059: синтаксическая ошибка: )
+  Main.cpp
+  MenuFunctions.cpp
+  OpenGLRealisation.cpp
+  Создание кода...

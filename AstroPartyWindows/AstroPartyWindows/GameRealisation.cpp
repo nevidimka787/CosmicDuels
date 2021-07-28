@@ -12,37 +12,38 @@ using namespace Game;
 void Game::Recalculate()
 {
 	//shoots
-	
-	Update::Bullets();
+
+	Update::All();
+
+	Update::BulletsDestroy();
 	SheepsShoot();
 
 	//shoots
 	
 	//collisions
 
-	DynamicEntitiesCollisions((DynamicEntity*)sheeps, players_count);
+	DynamicEntitiesCollisions((DynamicEntity*)ships, players_count);
 	DynamicEntitiesCollisions((DynamicEntity*)pilots, players_count);
-	DynamicEntitiesCollisions((DynamicEntity*)asteroids, asterooids_count);
+	DynamicEntitiesCollisions((DynamicEntity*)asteroids, asteroids_count);
 
-	DynamicEntitiesCollisions((DynamicEntity*)sheeps, players_count, (DynamicEntity*)pilots, players_count);
-	DynamicEntitiesCollisions((DynamicEntity*)sheeps, players_count, (DynamicEntity*)asteroids, asterooids_count);
-	DynamicEntitiesCollisions((DynamicEntity*)asteroids, asterooids_count, (DynamicEntity*)pilots, players_count);
+	DynamicEntitiesCollisions((DynamicEntity*)ships, players_count, (DynamicEntity*)pilots, players_count);
+	DynamicEntitiesCollisions((DynamicEntity*)ships, players_count, (DynamicEntity*)asteroids, asteroids_count);
+	DynamicEntitiesCollisions((DynamicEntity*)asteroids, asteroids_count, (DynamicEntity*)pilots, players_count);
 
-	DynamicEntitiesCollisions((DynamicEntity*)sheeps, players_count, map);
+	DynamicEntitiesCollisions((DynamicEntity*)ships, players_count, map);
 	DynamicEntitiesCollisions((DynamicEntity*)pilots, players_count, map);
-	DynamicEntitiesCollisions((DynamicEntity*)asteroids, asterooids_count, map);
+	DynamicEntitiesCollisions((DynamicEntity*)asteroids, asteroids_count, map);
 
-	DynamicEntitiesAddForce((DynamicEntity*)sheeps, players_count, grav_gens, grav_gens_count);
+	DynamicEntitiesAddForce((DynamicEntity*)ships, players_count, grav_gens, grav_gens_count);
 	DynamicEntitiesAddForce((DynamicEntity*)pilots, players_count, grav_gens, grav_gens_count);
-	DynamicEntitiesAddForce((DynamicEntity*)asteroids, asterooids_count, grav_gens, grav_gens_count);
-	DynamicEntitiesAddForce((DynamicEntity*)bullets, asterooids_count, grav_gens, grav_gens_count);
+	DynamicEntitiesAddForce((DynamicEntity*)asteroids, asteroids_count, grav_gens, grav_gens_count);
+	DynamicEntitiesAddForce((DynamicEntity*)bullets, asteroids_count, grav_gens, grav_gens_count);
 
 	//collisions
 
 	//recalculation
 
-
-	Update::Mines();
+	Update::TransportAll();
 
 	//recalculation
 }
@@ -93,40 +94,6 @@ void Game::DynamicEntitiesCollisions(DynamicEntity* entities, entities_count_t e
 		{
 			entities[first].Collision(map);
 			found_entites_count++;
-		}
-	}
-}
-
-void Game::MinesCollisions()
-{
-	Mine* temp1;
-	Mine* temp2;
-	for (entities_count_t mine1 = 0, found_mines1 = 0; found_mines1 < mines_count; mine1++)
-	{
-		temp1 = &mines[mine1];
-		if (temp1->exist)
-		{
-			for (entities_count_t mine2 = mine1 + 1, found_mines2 = found_mines1; found_mines2 < mines_count; mine2++)
-			{
-				temp2 = &mines[mine2];
-				if (temp2->exist)
-				{
-					if (temp1->GetDistance(temp2) == 0.0f)
-					{
-						if (temp1->IsBoom() == true && temp2->IsBoom() == false)
-						{
-							temp2->Boom();
-						}
-						else if (temp1->IsBoom() == false && temp2->IsBoom() == true)
-						{
-							temp1->Boom();
-						}
-					}
-					found_mines2++;
-				}
-			}
-
-			found_mines1++;
 		}
 	}
 }
@@ -189,110 +156,104 @@ void Game::SheepsShoot()
 {
 	for (players_count_t sheep = 0; sheep < players_count; sheep++)
 	{
-		Temp::sheep_p = &sheeps[sheep];
-		if (Temp::sheep_p->exist == true)
+		Temp::ship_p = &ships[sheep];
+		if (Temp::ship_p->exist == true)
 		{
-			if (Temp::sheep_p->GetShootInputValue() && Temp::sheep_p->can_shoot)
+			if (Temp::ship_p->GetShootInputValue() && Temp::ship_p->can_shoot)
 			{
 				bool bonus_activate = false;
 				//Magicka and Magicka 2 are the best games I've seen.
-				if (Temp::sheep_p->HaveBonus(BONUS_LASER | BONUS_LOOP | BONUS_MINE | BONUS_KNIFE))
+				if (Temp::ship_p->HaveBonus(BONUS_LASER | BONUS_LOOP | BONUS_MINE | BONUS_KNIFE))
 				{
 
 				}
-				else if (Temp::sheep_p->HaveBonus(BONUS_LASER | BONUS_LOOP | BONUS_MINE))
+				else if (Temp::ship_p->HaveBonus(BONUS_LASER | BONUS_LOOP | BONUS_MINE))
 				{
 
 				}
-				else if (Temp::sheep_p->HaveBonus(BONUS_LASER | BONUS_LOOP | BONUS_KNIFE))
+				else if (Temp::ship_p->HaveBonus(BONUS_LASER | BONUS_LOOP | BONUS_KNIFE))
 				{
 
 				}
-				else if (Temp::sheep_p->HaveBonus(BONUS_LASER | BONUS_MINE | BONUS_KNIFE))
+				else if (Temp::ship_p->HaveBonus(BONUS_LASER | BONUS_MINE | BONUS_KNIFE))
 				{
 
 				}
-				else if (Temp::sheep_p->HaveBonus(BONUS_LOOP | BONUS_MINE | BONUS_KNIFE))
+				else if (Temp::ship_p->HaveBonus(BONUS_LOOP | BONUS_MINE | BONUS_KNIFE))
 				{
 
 				}
-				else if (Temp::sheep_p->HaveBonus(BONUS_LASER | BONUS_LOOP))
+				else if (Temp::ship_p->HaveBonus(BONUS_LASER | BONUS_LOOP))
 				{
 
 				}
-				else if (Temp::sheep_p->HaveBonus(BONUS_LASER | BONUS_MINE))
+				else if (Temp::ship_p->HaveBonus(BONUS_LASER | BONUS_MINE))
 				{
 
 				}
-				else if (Temp::sheep_p->HaveBonus(BONUS_LASER | BONUS_KNIFE))
+				else if (Temp::ship_p->HaveBonus(BONUS_LASER | BONUS_KNIFE))
 				{
 
 				}
-				else if (Temp::sheep_p->HaveBonus(BONUS_LOOP | BONUS_MINE))
+				else if (Temp::ship_p->HaveBonus(BONUS_LOOP | BONUS_MINE))
 				{
 
 				}
-				else if (Temp::sheep_p->HaveBonus(BONUS_LOOP | BONUS_KNIFE))
+				else if (Temp::ship_p->HaveBonus(BONUS_LOOP | BONUS_KNIFE))
 				{
 
 				}
-				else if (Temp::sheep_p->HaveBonus(BONUS_MINE | BONUS_KNIFE))
+				else if (Temp::ship_p->HaveBonus(BONUS_MINE | BONUS_KNIFE))
 				{
 
 				}
-				else if (Temp::sheep_p->HaveBonus(BONUS_LASER))
+				else if (Temp::ship_p->HaveBonus(BONUS_LASER))
 				{
-					Temp::lazer = Temp::sheep_p->CreateLazer();
-					AddEntity(&Temp::lazer);
+					AddEntity(Temp::ship_p->CreateLazer());
 				}
-				else if (Temp::sheep_p->HaveBonus(BONUS_LOOP))
+				else if (Temp::ship_p->HaveBonus(BONUS_LOOP))
 				{
 					bonus_activate = true;
 					for (entities_count_t bullet = 0; bullet < BULLETS_IN_LOOP; bullet++)
 					{
-						Temp::bullet = Temp::sheep_p->CreateLoop(bullet);
-						AddEntity(&Temp::bullet);
+						AddEntity(Temp::ship_p->CreateLoop(bullet));
 					}
 				}
-				else if (Temp::sheep_p->HaveBonus(BONUS_MINE))
+				else if (Temp::ship_p->HaveBonus(BONUS_MINE))
 				{
-					Temp::mine = Temp::sheep_p->CreateMine();
-					AddEntity(&Temp::mine);
+					AddEntity(Temp::ship_p->CreateBomb());
 				}
-				else if (Temp::sheep_p->HaveBonus(BONUS_KNIFE))
+				else if (Temp::ship_p->HaveBonus(BONUS_KNIFE))
 				{
-					Temp::knife = Temp::sheep_p->CreateKnife(0);
-					AddEntity(&Temp::knife);
-					Temp::knife = Temp::sheep_p->CreateKnife(1);
-					AddEntity(&Temp::knife);
+					AddEntity(Temp::ship_p->CreateKnife(0));
+					AddEntity(Temp::ship_p->CreateKnife(1));
 				}
 				else
 				{
-					Temp::bullet = Temp::sheep_p->CreateBullet();
-					AddEntity(&Temp::bullet);
+					AddEntity(Temp::ship_p->CreateBullet());
 				}
 			}
 		}
 	}
 }
 
-void Game::AddEntity(Asteroid* new_asteroid)
+inline void Game::AddEntity(Asteroid new_asteroid)
 {
-	if (asterooids_count < GAME_ASTEROIDS_MAX_COUNT)
+	if (asteroids_count < GAME_ASTEROIDS_MAX_COUNT)
 	{
 		for (entities_count_t asteroid = 0; asteroid < GAME_ASTEROIDS_MAX_COUNT; asteroid++)
 		{
 			if (asteroids[asteroid].exist == false)
 			{
-				asteroids[asteroid].Set(new_asteroid);
-				asterooids_count++;
+				asteroids[asteroid] = new_asteroid;
+				asteroids_count++;
 				return;
 			}
 		}
 	}
 }
 
-void Game::AddEntity(Bonus* new_bonus)
+inline void Game::AddEntity(Bonus new_bonus)
 {
 	if (bonuses_count < GAME_BONUSES_MAX_COUNT)
 	{
@@ -300,7 +261,7 @@ void Game::AddEntity(Bonus* new_bonus)
 		{
 			if (bonuses[bonus].exist == false)
 			{
-				bonuses[bonus].Set(new_bonus);
+				bonuses[bonus] = new_bonus;
 				bonuses_count++;
 				return;
 			}
@@ -308,7 +269,7 @@ void Game::AddEntity(Bonus* new_bonus)
 	}
 }
 
-void Game::AddEntity(Bullet* new_bullet)
+inline void Game::AddEntity(Bullet new_bullet)
 {
 	if (bullets_count < GAME_BULLETS_MAX_COUNT)
 	{
@@ -316,7 +277,7 @@ void Game::AddEntity(Bullet* new_bullet)
 		{
 			if (bullets[bullet].exist == false)
 			{
-				bullets[bullet].Set(new_bullet);
+				bullets[bullet] = new_bullet;
 				bullets_count++;
 				return;
 			}
@@ -324,7 +285,7 @@ void Game::AddEntity(Bullet* new_bullet)
 	}
 }
 
-void Game::AddEntity(Knife* new_knife)
+void Game::AddEntity(Knife new_knife)
 {
 	if (bullets_count < GAME_PARTICLES_MAX_COUNT)
 	{
@@ -332,7 +293,7 @@ void Game::AddEntity(Knife* new_knife)
 		{
 			if (knifes[particle].exist == false)
 			{
-				knifes[particle].Set(new_knife);
+				knifes[particle] = new_knife;
 				knifes_count++;
 				return;
 			}
@@ -340,39 +301,39 @@ void Game::AddEntity(Knife* new_knife)
 	}
 }
 
-void Game::AddEntity(Mine* new_mine)
+inline void Game::AddEntity(Bomb new_mine)
 {
 	if (bullets_count < GAME_PARTICLES_MAX_COUNT)
 	{
-		for (entities_count_t particle = 0; particle < GAME_MINES_MAX_COUNT; particle++)
+		for (entities_count_t particle = 0; particle < GAME_BOMBS_MAX_COUNT; particle++)
 		{
-			if (mines[particle].exist == false)
+			if (bombs[particle].exist == false)
 			{
-				mines[particle].Set(new_mine);
-				mines_count++;
+				bombs[particle] = new_mine;
+				bombs_count++;
 				return;
 			}
 		}
 	}
 }
 
-void Game::AddEntity(Lazer* new_lazer)
+inline void Game::AddEntity(Laser new_lazer)
 {
 	if (bullets_count < GAME_PARTICLES_MAX_COUNT)
 	{
 		for (entities_count_t particle = 0; particle < GAME_LAZERS_MAX_COUNT; particle++)
 		{
-			if (lazers[particle].exist == false)
+			if (lasers[particle].exist == false)
 			{
-				lazers[particle].Set(new_lazer);
-				lazers_count++;
+				lasers[particle] = new_lazer;
+				lasers_count++;
 				return;
 			}
 		}
 	}
 }
 
-void Game::AddEntity(DynamicEntity* new_particle)
+inline void Game::AddEntity(DynamicEntity new_particle)
 {
 	if (bullets_count < GAME_PARTICLES_MAX_COUNT)
 	{
@@ -380,7 +341,7 @@ void Game::AddEntity(DynamicEntity* new_particle)
 		{
 			if (particles[particle].exist == false)
 			{
-				particles[particle].Set(new_particle);
+				particles[particle] = new_particle;
 				bullets_count++;
 				return;
 			}
@@ -388,43 +349,43 @@ void Game::AddEntity(DynamicEntity* new_particle)
 	}
 }
 
-void Game::DeleteEntity(Asteroid* deleting_asteroid)
+inline void Game::DeleteEntity(Asteroid* deleting_asteroid)
 {
 	deleting_asteroid->exist = false;
-	asterooids_count--;
+	asteroids_count--;
 }
 
-void Game::DeleteEntity(Bonus* deleting_bonus)
+inline void Game::DeleteEntity(Bonus* deleting_bonus)
 {
 	deleting_bonus->exist = false;
 	bonuses_count--;
 }
 
-void Game::DeleteEntity(Bullet* deleting_bullet)
+inline void Game::DeleteEntity(Bullet* deleting_bullet)
 {
 	deleting_bullet->exist = false;
 	bullets_count--;
 }
 
-void Game::DeleteEntity(Knife* deleting_knife)
+inline void Game::DeleteEntity(Knife* deleting_knife)
 {
 	deleting_knife->exist = false;
 	knifes_count--;
 }
 
-void Game::DeleteEntity(Mine* deleting_mine)
+inline void Game::DeleteEntity(Bomb* deleting_mine)
 {
 	deleting_mine->exist = false;
-	mines_count--;
+	bombs_count--;
 }
 
-void Game::DeleteEntity(Lazer* deleting_lazer)
+inline void Game::DeleteEntity(Laser* deleting_lazer)
 {
 	deleting_lazer->exist = false;
-	lazers_count--;
+	lasers_count--;
 }
 
-void Game::DeleteParticle(DynamicEntity* deleting_particle)
+inline void Game::DeleteParticle(DynamicEntity* deleting_particle)
 {
 	deleting_particle->exist = false;
 	particles_count--;

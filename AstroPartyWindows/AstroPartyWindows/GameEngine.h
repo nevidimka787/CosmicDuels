@@ -6,18 +6,18 @@
 
 class Entity;
 class StaticEntity;
-class MegaLazer;
+class MegaLaser;
 class Turel;
 class GravGen;
 class DynamicEntity;
 class KillerEntity;
 class Bullet;
-class Lazer;
+class Laser;
 class Knife;
-class Mine;
+class Bomb;
 class Bonus;
 class ControledEntity;
-class Sheep;
+class Ship;
 class Pilot;
 class MapElement;
 class Rectangle;
@@ -234,7 +234,7 @@ public:
 	ControledEntity();
 	ControledEntity(uint8_t player_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* position, Vec2F* velosity, float angle, float angular_velosity);
 	
-	uint8_t GetPlauerNumber();
+	uint8_t GetPlayerNumber();
 	bool GetRotateInputValue();
 	bool GetShootInputValue();
 	void Recalculate();
@@ -245,7 +245,7 @@ public:
 	~ControledEntity();
 };
 
-class Sheep : public ControledEntity
+class Ship : public ControledEntity
 {
 #define BULLET_DEFAULT_VELOCITY 0.1f
 #define BULLET_DEFAULT_RADIUS	0.01f
@@ -255,9 +255,9 @@ protected:
 	Bonus::bonus_t active_baffs;
 public:
 	bool can_shoot;
-	Sheep();
-	Sheep(uint8_t player_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* position, Vec2F* velocity, float angle, float angular_velocity);
-	Sheep(uint8_t player_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* position, Vec2F* velocity, float angle, float angular_velocity, Bonus::bonus_t buffs_bonuses);
+	Ship();
+	Ship(uint8_t player_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* position, Vec2F* velocity, float angle, float angular_velocity);
+	Ship(uint8_t player_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* position, Vec2F* velocity, float angle, float angular_velocity, Bonus::bonus_t buffs_bonuses);
 	
 	void ActivateBonus();
 	void BreakShield();
@@ -265,19 +265,19 @@ public:
 	Bullet CreateTriple(uint8_t bullet_number);
 #define BULLETS_IN_LOOP 24
 	Bullet CreateLoop(uint8_t bullet_number);
-	Mine CreateMine();
-	Lazer CreateLazer();
+	Bomb CreateBomb();
+	Laser CreateLazer();
 	Knife CreateKnife(uint8_t knife_number);
 	Pilot Destroy();
 	Bonus::bonus_t GetActiveBaffs();
 	bool HaveBonus(Bonus::bonus_t bonus);
 	Bonus LoseBonus();
-	void Set(Sheep* entity);
+	void Set(Ship* entity);
 	void TakeBonus(Bonus* bonus);
 
-	void operator=(Sheep entity);
+	void operator=(Ship entity);
 	
-	~Sheep();
+	~Ship();
 };
 
 class Pilot : public ControledEntity
@@ -287,7 +287,7 @@ public:
 	Pilot();
 	Pilot(uint8_t player_number, void* rotate_keyboard_key_pointer, void* move_keyboard_key_pointer, Vec2F* position, Vec2F* velosity, float angle, float angular_velosity);
 
-	Sheep* Respawn();
+	Ship* Respawn();
 	void Set(Pilot* entity);
 
 	void operator=(Pilot entity);
@@ -346,37 +346,37 @@ public:
 	~GravGen();
 };
 
-class MegaLazer : public AggressiveEntity
+class MegaLaser : public AggressiveEntity
 {
 protected:
 	bool active;
 	Vec2F* point2;
 public:
-	MegaLazer(Segment* lazer_segment, float angle);
+	MegaLaser(Segment* lazer_segment, float angle);
 
-	void Set(MegaLazer* entity);
+	void Set(MegaLaser* entity);
 	void StartShoot();
 	void StopShoot();
 	bool IsShooting();
 
-	void operator=(MegaLazer entity);
+	void operator=(MegaLaser entity);
 
-	~MegaLazer();
+	~MegaLaser();
 };
 
-class Lazer : public StaticEntity
+class Laser : public StaticEntity
 {
 protected:
 	uint8_t player_master_number;
 public:
-	Lazer();
-	Lazer(Vec2F* position, Vec2F* direction, uint8_t host_number);
+	Laser();
+	Laser(Vec2F* position, Vec2F* direction, uint8_t host_number);
 	Beam GetBeam();
-	void Set(Lazer* lazer);
+	void Set(Laser* lazer);
 
-	void operator=(Lazer entity);
+	void operator=(Laser entity);
 
-	~Lazer();
+	~Laser();
 };
 
 class Bullet : public KillerEntity
@@ -407,7 +407,7 @@ public:
 	~Knife();
 };
 
-class Mine : public KillerEntity
+class Bomb : public KillerEntity
 {
 #define MINE_DEFAULT_TIMER 100
 #define MINE_BOOM_TIMER 10
@@ -417,8 +417,8 @@ protected:
 	bool active;
 	bool boom;
 public:
-	Mine();
-	Mine(Vec2F* position, Vec2F* velosity, float angle, float angular_velosity, uint8_t player_master_number);
+	Bomb();
+	Bomb(Vec2F* position, Vec2F* velosity, float angle, float angular_velosity, uint8_t player_master_number);
 	
 	void Activate();
 	void Boom();
@@ -426,11 +426,11 @@ public:
 	bool IsBoom();
 	bool CanRemove();
 	void Recalculate();
-	void Set(Mine* mine);
+	void Set(Bomb* mine);
 
-	void operator=(Mine entity);
+	void operator=(Bomb entity);
 
-	~Mine();
+	~Bomb();
 };
 
 class MapElement

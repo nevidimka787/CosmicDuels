@@ -9,47 +9,47 @@
 #pragma warning (disable : 6386)
 #pragma warning (disable : 26451)
 
-void Game::Init::Game()
+inline void Game::Init::Game()
 {
 	game_rules = GAME_RULE_DEFAULT_GAME_RULES;
 
-	MenuFunctions::sheeps_select_buttons = new players_count_t[GAME_PLAYERS_MAX_COUNT];
+	MenuFunctions::ships_select_buttons = new players_count_t[GAME_PLAYERS_MAX_COUNT];
 	for (players_count_t i = 0; i < GAME_PLAYERS_MAX_COUNT; i++)
 	{
-		MenuFunctions::sheeps_select_buttons[i] = SHEEPS_SELECT_BUTTONS_NO_TEAM;
+		MenuFunctions::ships_select_buttons[i] = SHIPS_SELECT_BUTTONS_NO_TEAM;
 	}
 
-	srand((unsigned int)sheeps * (unsigned int)pilots);
+	srand((unsigned int)ships * (unsigned int)pilots);
 }
 
-void Game::Init::Mach()
+inline void Game::Init::Mach()
 {
 	players_count = 0;
 	for (uint8_t i = 0; i < GAME_PLAYERS_MAX_COUNT; i++)
 	{
-		if (MenuFunctions::sheeps_select_buttons[i] != SHEEPS_SELECT_BUTTONS_NO_TEAM)
+		if (MenuFunctions::ships_select_buttons[i] != SHIPS_SELECT_BUTTONS_NO_TEAM)
 		{
 			players_count++;
 		}
 	}
-	sheeps_count = players_count;
+	ships_count = players_count;
 
-	sheeps = new Sheep[players_count];
+	ships = new Ship[players_count];
 	pilots = new Pilot[players_count];
 
 	knifes = new Knife[players_count << 1];
 	knifes_count = 0;
-	lazers = new Lazer[players_count];
-	lazers_count = 0;
-	mines = new Mine[GAME_MINES_MAX_COUNT];
-	mines_count = 0;
+	lasers = new Laser[players_count];
+	lasers_count = 0;
+	bombs = new Bomb[GAME_BOMBS_MAX_COUNT];
+	bombs_count = 0;
 
 	bullets = new Bullet[GAME_BULLETS_MAX_COUNT];
 	bullets_count = 0;
 	particles = new DynamicEntity[GAME_PARTICLES_MAX_COUNT];
 	particles_count = 0;
 	asteroids = new Asteroid[GAME_ASTEROIDS_MAX_COUNT];
-	asterooids_count = 0;
+	asteroids_count = 0;
 	bonuses = new Bonus[GAME_BONUSES_MAX_COUNT];
 	bonuses_count = 0;
 
@@ -105,7 +105,7 @@ void Game::Init::Mach()
 	//create map pull array
 }
 
-void Game::Init::Level()
+inline void Game::Init::Level()
 {
 
 	current_map_id = selected_maps_id_array[rand() % selected_maps_id_array_length];
@@ -188,17 +188,17 @@ void Game::Init::Level()
 			Vec2F temp_vel = Vec2F();
 			if (game_rules & GAME_RULE_BALANCE_ACTIVE && scores[i] <= max_score - BALANCE_ACTIVATE_DIFFERENCE_SCORES)
 			{
-				sheeps[i] = Sheep(i, (void*)&rotate_keys[i], (void*)&shoot_keys[i], &temp_points[i], &temp_vel, temp_angles[i], 0.0f, start_bonus | BUFF_SHIELD);
+				ships[i] = Ship(i, (void*)&rotate_keys[i], (void*)&shoot_keys[i], &temp_points[i], &temp_vel, temp_angles[i], 0.0f, start_bonus | BUFF_SHIELD);
 			}
 			else
 			{
-				sheeps[i] = Sheep(i, (void*)&rotate_keys[i], (void*)&shoot_keys[i], &temp_points[i], &temp_vel, temp_angles[i], 0.0f, start_bonus);
+				ships[i] = Ship(i, (void*)&rotate_keys[i], (void*)&shoot_keys[i], &temp_points[i], &temp_vel, temp_angles[i], 0.0f, start_bonus);
 			}
 		}
 	}
 }
 
-void Game::Init::Menus()
+inline void Game::Init::Menus()
 {
 	//main menu
 	Button* buttons = new Button[3];
@@ -261,15 +261,15 @@ void Game::Init::Menus()
 	buttons = new Button[4];
 	size = Vec2F(0.25f, -0.25f);
 	position = Vec2F(-0.5f, 0.5f);
-	buttons[0] = Button(BUTTON_ID_SELECT_SHEEP_1, &position, &size, "Player 1", 6);
+	buttons[0] = Button(BUTTON_ID_SELECT_SHIP_1, &position, &size, "Player 1", 6);
 	position = Vec2F(0.0f, 0.5f);
-	buttons[1] = Button(BUTTON_ID_SELECT_SHEEP_2, &position, &size, "Player 2", 6);
+	buttons[1] = Button(BUTTON_ID_SELECT_SHIP_2, &position, &size, "Player 2", 6);
 	position = Vec2F(0.0f, 0.0f);
-	buttons[2] = Button(BUTTON_ID_SELECT_SHEEP_3, &position, &size, "Player 3", 6);
+	buttons[2] = Button(BUTTON_ID_SELECT_SHIP_3, &position, &size, "Player 3", 6);
 	position = Vec2F(-0.5f, 0.0f);
-	buttons[3] = Button(BUTTON_ID_SELECT_SHEEP_4, &position, &size, "Player 4", 6);
+	buttons[3] = Button(BUTTON_ID_SELECT_SHIP_4, &position, &size, "Player 4", 6);
 	position = Vec2F();
-	sheeps_select_menu = new Menu(&position, buttons, 4, MenuFunctions::SheepsSelectMenuFunction);
+	ships_select_menu = new Menu(&position, buttons, 4, MenuFunctions::ShipsSelectMenuFunction);
 	delete[] buttons;
 
 	//maps select menu
@@ -280,7 +280,7 @@ void Game::Init::Menus()
 		buttons[i] = Button(BUTTON_ID_SELECT_MAP + i - 1, &position, &size, "", 6);
 	}
 	position = Vec2F();
-	maps_select_menu = new Menu(&position, buttons, MAPS_COUNT, MenuFunctions::MapPullSelectMenuFunction);
+	map_pull_select_menu = new Menu(&position, buttons, MAPS_COUNT, MenuFunctions::MapPullSelectMenuFunction);
 	delete[] buttons;
 
 	//spawning objects select menu

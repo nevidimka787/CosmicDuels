@@ -128,7 +128,7 @@ void OpenGL::DrawObject(Asteroid* asteroid, bool update_shader)
 void OpenGL::DrawObject(ControledEntity controled_entity, bool update_shader)
 {}
 
-void OpenGL::DrawObject(Sheep* sheep, bool update_shader)
+void OpenGL::DrawObject(Ship* sheep, bool update_shader)
 {}
 
 void OpenGL::DrawObject(Pilot* pilot, bool update_shader)
@@ -137,10 +137,10 @@ void OpenGL::DrawObject(Pilot* pilot, bool update_shader)
 void OpenGL::DrawObject(Turel* turel, bool update_shader)
 {}
 
-void OpenGL::DrawObject(MegaLazer* mega_lazer, bool update_shader)
+void OpenGL::DrawObject(MegaLaser* mega_lazer, bool update_shader)
 {}
 
-void OpenGL::DrawObject(Mine* mine, bool update_shader)
+void OpenGL::DrawObject(Bomb* mine, bool update_shader)
 {}
 
 void OpenGL::DrawObject(MapElement* map_element, bool update_shader)

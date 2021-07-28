@@ -1,0 +1,9 @@
+*.idb
+*.pdb
+*.obj
+*.opendb
+*.db-shm
+*.db-wal
+*.log
+*.tlog
+*.suo
