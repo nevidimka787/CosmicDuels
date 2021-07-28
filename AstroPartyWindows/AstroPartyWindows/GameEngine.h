@@ -3,6 +3,7 @@
 #include <iostream>
 #include "Vec.h"
 #include "Line.h"
+#include "GameRealisationTypes.h"
 
 class Entity;
 class StaticEntity;
@@ -93,10 +94,13 @@ public:
 	DynamicEntity(Vec2F* position, Vec2F* velosity, float angle, float angular_velosity, float radius, float FORCE_COLLISION_COEFFICIENT, float FORCE_RESISTANSE_AIR_COEFFICIENT);
 	
 	void AddForce(Vec2F* force);
+	void AddForceAlongDirection(float force);
+	void AddAngularVelocity(float angulat_velocity);
+	void AddGravityForce(float gravity_coeffisient, Entity* forced_entity);
+	void AddGravityForce(float gravity_coeffisient, Vec2F* forced_point);
 	/*
 	If objects collide, function will be changing the physical parameters of those objects.
 	*/
-	void Set(DynamicEntity* entity);
 	bool Collision(DynamicEntity* entity);
 	bool Collision(StaticEntity* entity);
 	bool Collision(Rectangle* rectangle);
@@ -106,6 +110,8 @@ public:
 	float GetAngularVelocity();
 	Vec2F GetVelocity();
 	void Recalculate();
+	void Set(DynamicEntity* entity);
+	void SetAngularVelocity(float angulat_velocity);
 
 	void operator=(DynamicEntity entity);
 
@@ -144,15 +150,15 @@ class Bonus : public DynamicEntity
 #define BONUS_NO_BONUS	0x0000
 #define BONUS_LOOP		0x0001
 #define BONUS_LASER		0x0004
-#define BONUS_MINE		0x0008
-#define BONUS_KNIFE	0x0010
+#define BONUS_BOMB		0x0008
+#define BONUS_KNIFE		0x0010
 #define BUFF_TRIPLE		0x0100
 #define BUFF_SHIELD		0x0400
 #define GAME_REVERSE	0x8000
 
 protected:
 public:
-	typedef typename uint16_t bonus_t;
+	typedef uint16_t bonus_t;
 	bonus_t bonus_type;
 	Bonus();
 	Bonus(bonus_t bonus_type, Vec2F* position, Vec2F* velocity);
@@ -210,11 +216,12 @@ public:
 class KillerEntity : public DynamicEntity
 {
 protected:
-	uint8_t player_master_number;
+	Game::players_count_t player_master_number;
+	Game::players_count_t player_master_team_number;
 public:
 	KillerEntity();
-	KillerEntity(uint8_t player_master_number);
-	uint8_t GetPlayerMasterNumber();
+	KillerEntity(Game::players_count_t player_master_number, Game::players_count_t player_master_team_number);
+	Game::players_count_t GetPlayerMasterNumber();
 	void Set(Bonus* entity);
 
 	void operator=(KillerEntity entity);
@@ -226,15 +233,16 @@ class ControledEntity : public DynamicEntity
 {
 #define CONTROLED_ENTITY_UNBRAKABLE_PERIOD 100
 protected:
-	uint8_t player_number;
+	Game::players_count_t player_number;
+	Game::players_count_t player_team_number;
 	void* rotate_input_value_pointer;
 	void* shoot_input_value_pointer;
 	uint16_t unbrakable;
 public:
 	ControledEntity();
-	ControledEntity(uint8_t player_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* position, Vec2F* velosity, float angle, float angular_velosity);
+	ControledEntity(Game::players_count_t player_number, Game::players_count_t player_team_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* position, Vec2F* velosity, float angle, float angular_velosity);
 	
-	uint8_t GetPlayerNumber();
+	Game::players_count_t GetPlayerNumber();
 	bool GetRotateInputValue();
 	bool GetShootInputValue();
 	void Recalculate();
@@ -300,15 +308,17 @@ class AggressiveEntity : public StaticEntity
 #define AGGRESIVE_ENTITY_DEFAULT_ATTACK_PERIOD			30
 #define AGGRESIVE_ENTITY_DEFAULT_INACTIVE_PERIOD		970
 #define AGGRESIVE_ENTITY_DEFAULT_SHOOTS_COUNT			3
+
+#define AGGRESIVE_ENTITY_HOST_ID	PLAYERS_COUNT_T_MAX
 protected:
-	uint32_t attack_dellay;
+	Game::tic_t attack_dellay;
 public:
-	uint32_t attack_period;
-	uint32_t inactive_period;
+	Game::tic_t attack_period;
+	Game::tic_t inactive_period;
 	uint8_t shoots_count;
 	AggressiveEntity();
-	AggressiveEntity(uint32_t current_tic, uint32_t first_activation_dellay, uint32_t attack_period, uint32_t passive_period, uint8_t shoots_count);
-	bool IsShoot(uint32_t current_tic);
+	AggressiveEntity(Game::tic_t current_tic, Game::tic_t first_activation_dellay, Game::tic_t attack_period, Game::tic_t passive_period, uint8_t shoots_count);
+	bool CanShoot(uint32_t current_tic);
 	void PostponeAttack(uint32_t dellay);
 	void Set(Bonus* entity);
 
@@ -321,9 +331,10 @@ class Turel : public AggressiveEntity
 {
 #define ATACK_ENTITY_DEFAULT_ATACK_PERIOD
 public:
+	Turel();
 	Turel(Vec2F* position, float angle);
 	
-	DynamicEntity* Shoot();
+	Bullet Shoot();
 	void Set(Turel* entity);
 
 	void operator=(Turel entity);
@@ -352,8 +363,10 @@ protected:
 	bool active;
 	Vec2F* point2;
 public:
+	MegaLaser();
 	MegaLaser(Segment* lazer_segment, float angle);
 
+	Segment GetSegment();
 	void Set(MegaLaser* entity);
 	void StartShoot();
 	void StopShoot();
@@ -395,12 +408,16 @@ public:
 
 class Knife : public KillerEntity
 {
+	typedef uint8_t knife_health_h;
 protected:
+	knife_health_h health;
 public:
 	Knife();
 	Knife(Vec2F* point1, Vec2F* point2, uint8_t host_number);
 	Segment GetSegment();
 	void Set(Knife* knife);
+	//The function will return false when health is zero.
+	bool LoseHealth();
 
 	void operator=(Knife entity);
 

@@ -261,13 +261,18 @@ void Vec2F::PerpendicularThis()
 
 Vec2F Vec2F::Rotate(float angle)
 {
-	return Vec2F(x * cosf(angle) + y * sinf(angle), y * cosf(angle) - x * sinf(angle));
+	float temp_cos = cosf(angle);
+	float temp_sin = sinf(angle);
+	return Vec2F(x * temp_cos + y * temp_sin, y * temp_cos - x * temp_sin);
 }
 
 void Vec2F::RotateThis(float angle)
 {
-	float temp = x * cosf(angle) + y * sinf(angle);
-	y = y * cosf(angle) - x * sinf(angle);
+	float temp_cos = cosf(angle);
+	float temp_sin = sinf(angle);
+
+	float temp = x * temp_cos + y * temp_sin;
+	y = y * temp_cos - x * temp_sin;
 	x = temp;
 }
 

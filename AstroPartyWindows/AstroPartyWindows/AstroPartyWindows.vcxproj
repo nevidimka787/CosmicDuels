@@ -149,6 +149,7 @@
     <ClCompile Include="gald.c" />
     <ClCompile Include="GameEngine.cpp" />
     <ClCompile Include="GameRealisation.cpp" />
+    <ClCompile Include="GameRealisationAddDelete.cpp" />
     <ClCompile Include="GameRealisationDestroy.cpp" />
     <ClCompile Include="GameRealisationInit.cpp" />
     <ClCompile Include="GameRealisationUpdate.cpp" />
@@ -163,6 +164,7 @@
   <ItemGroup>
     <ClInclude Include="GameEngine.h" />
     <ClInclude Include="GameRealisation.h" />
+    <ClInclude Include="GameRealisationTypes.h" />
     <ClInclude Include="Line.h" />
     <ClInclude Include="Mat.h" />
     <ClInclude Include="Menu.h" />

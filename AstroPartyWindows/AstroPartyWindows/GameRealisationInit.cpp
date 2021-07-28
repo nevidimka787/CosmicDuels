@@ -12,6 +12,7 @@
 inline void Game::Init::Game()
 {
 	game_rules = GAME_RULE_DEFAULT_GAME_RULES;
+	global_timer = 0;
 
 	MenuFunctions::ships_select_buttons = new players_count_t[GAME_PLAYERS_MAX_COUNT];
 	for (players_count_t i = 0; i < GAME_PLAYERS_MAX_COUNT; i++)
@@ -53,8 +54,8 @@ inline void Game::Init::Mach()
 	bonuses = new Bonus[GAME_BONUSES_MAX_COUNT];
 	bonuses_count = 0;
 
-	shoot_keys = new bool[players_count];
-	rotate_keys = new bool[players_count];
+	shoot_flags = new bool[players_count];
+	rotate_flags = new bool[players_count];
 	scores = new players_count_t[players_count];
 	for (players_count_t i = 0; i < GAME_PLAYERS_MAX_COUNT; i++)
 	{
@@ -188,11 +189,11 @@ inline void Game::Init::Level()
 			Vec2F temp_vel = Vec2F();
 			if (game_rules & GAME_RULE_BALANCE_ACTIVE && scores[i] <= max_score - BALANCE_ACTIVATE_DIFFERENCE_SCORES)
 			{
-				ships[i] = Ship(i, (void*)&rotate_keys[i], (void*)&shoot_keys[i], &temp_points[i], &temp_vel, temp_angles[i], 0.0f, start_bonus | BUFF_SHIELD);
+				Add::Entity(Ship(i, (void*)&rotate_flags[i], (void*)&shoot_flags[i], &temp_points[i], &temp_vel, temp_angles[i], 0.0f, start_bonus | BUFF_SHIELD));
 			}
 			else
 			{
-				ships[i] = Ship(i, (void*)&rotate_keys[i], (void*)&shoot_keys[i], &temp_points[i], &temp_vel, temp_angles[i], 0.0f, start_bonus);
+				Add::Entity(Ship(i, (void*)&rotate_flags[i], (void*)&shoot_flags[i], &temp_points[i], &temp_vel, temp_angles[i], 0.0f, start_bonus));
 			}
 		}
 	}

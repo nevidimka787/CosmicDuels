@@ -24,7 +24,6 @@ uint8_t init = 0x00;
 
 std::shared_mutex timer_mtx;
 std::shared_mutex physic_calculation_mtx;
-uint32_t global_timer = 0;
 
 void TikUpdate();
 void PhysicsCalculation();
@@ -87,9 +86,6 @@ void Draw(GLFWwindow* window)
 void TikUpdate()
 {
     init_mtx.lock();
-    timer_mtx.lock();
-    global_timer = 0;
-    timer_mtx.unlock();
     init |= TIK_UPDATE_INIT;
     init_mtx.unlock();
     while (true)
@@ -97,7 +93,7 @@ void TikUpdate()
         timer_mtx.lock();
         if (Game::pause_game == false)
         {
-            global_timer++;
+            Game::global_timer++;
         }
         timer_mtx.unlock();
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
@@ -126,7 +122,7 @@ void PhysicsCalculation()
 
 
     timer_mtx.lock();
-    uint64_t current_tik = global_timer;
+    Game::current_tic = Game::global_timer;
     timer_mtx.unlock();
 
     while (true)
@@ -140,12 +136,12 @@ void PhysicsCalculation()
         physic_calculation_mtx.unlock();
 
         timer_mtx.lock();
-        while (current_tik >= global_timer)
+        while (Game::current_tic >= Game::global_timer)
         {
             timer_mtx.unlock();
             timer_mtx.lock();
         }
-        current_tik = global_timer;
+        Game::current_tic = Game::global_timer;
         timer_mtx.unlock();
 
     }

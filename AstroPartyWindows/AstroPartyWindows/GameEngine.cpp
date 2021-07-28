@@ -1,4 +1,5 @@
 #include "GameEngine.h"
+#include "GameRealisation.h"
 #include <math.h>
 
 Entity::Entity() : position(new Vec2F()), radius(0.0), angle(0.0), direction(new Vec2F(1.0, 0.0)), exist(false)
@@ -777,12 +778,12 @@ Asteroid::~Asteroid()
 
 
 
-KillerEntity::KillerEntity() : player_master_number(0)
+KillerEntity::KillerEntity() : player_master_number(0), player_master_team_number(0)
 {
 
 }
 
-KillerEntity::KillerEntity(uint8_t player_master_number) : player_master_number(player_master_number)
+KillerEntity::KillerEntity(Game::players_count_t player_master_number, Game::players_count_t player_master_team_number) : player_master_number(player_master_number), player_master_team_number(player_master_team_number)
 {
 	exist = true;
 }
@@ -814,12 +815,12 @@ KillerEntity::~KillerEntity()
 
 
 
-ControledEntity::ControledEntity() : player_number(0), rotate_input_value_pointer(nullptr), shoot_input_value_pointer(nullptr), unbrakable(false)
+ControledEntity::ControledEntity() : player_number(0), rotate_input_value_pointer(nullptr), shoot_input_value_pointer(nullptr), unbrakable(false), player_team_number(0)
 {
 
 }
 
-ControledEntity::ControledEntity(uint8_t player_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* position, Vec2F* velosity, float angle, float angular_velosity) : player_number(player_number), rotate_input_value_pointer(rotate_input_value_pointer), shoot_input_value_pointer(shoot_input_value_pointer), unbrakable(false)
+ControledEntity::ControledEntity(Game::players_count_t player_number, Game::players_count_t player_team_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* position, Vec2F* velosity, float angle, float angular_velosity) : player_number(player_number), rotate_input_value_pointer(rotate_input_value_pointer), shoot_input_value_pointer(shoot_input_value_pointer), unbrakable(false), player_team_number(player_team_number)
 {
 	*this->position = *position;
 	*this->velocity = *velocity;
@@ -966,22 +967,22 @@ Bullet Ship::CreateLoop(uint8_t bullet_number)
 
 Bomb Ship::CreateBomb()
 {
-	if (!(buffs_bonuses & BONUS_LOOP))
+	if (!(buffs_bonuses & BONUS_BOMB))
 	{
 		return Bomb();
 	}
-	buffs_bonuses -= BONUS_LOOP;
+	buffs_bonuses -= BONUS_BOMB;
 	Vec2F temp = Vec2F();
 	return Bomb(position, &temp, 0.0f, 0.0f, player_number);
 }
 
 Laser Ship::CreateLazer()
 {
-	if (!(buffs_bonuses & BONUS_LOOP))
+	if (!(buffs_bonuses & BONUS_LASER))
 	{
 		return Laser();
 	}
-	buffs_bonuses -= BONUS_LOOP;
+	buffs_bonuses -= BONUS_LASER;
 	Vec2F temp = *position + *direction * radius;
 	return Laser(&temp, direction, player_number);
 }
@@ -1138,12 +1139,12 @@ AggressiveEntity::AggressiveEntity() : attack_dellay(0), attack_period(AGGRESIVE
 
 }
 
-AggressiveEntity::AggressiveEntity(uint32_t current_tic, uint32_t first_activation_dellay, uint32_t attack_period, uint32_t passive_period, uint8_t shoots_count) : attack_dellay(current_tic + first_activation_dellay), attack_period(attack_period), inactive_period(passive_period), shoots_count(shoots_count)
+AggressiveEntity::AggressiveEntity(Game::tic_t current_tic, Game::tic_t first_activation_dellay, Game::tic_t attack_period, Game::tic_t passive_period, uint8_t shoots_count) : attack_dellay(current_tic + first_activation_dellay), attack_period(attack_period), inactive_period(passive_period), shoots_count(shoots_count)
 {
 	exist = true;
 }
 
-bool AggressiveEntity::IsShoot(uint32_t current_tic)
+bool AggressiveEntity::CanShoot(Game::tic_t current_tic)
 {
 	uint32_t local_tic = (current_tic - attack_dellay) % (attack_period + inactive_period);
 	if (local_tic < attack_period)
@@ -1189,11 +1190,11 @@ Turel::Turel(Vec2F* position, float angle)
 	this->angle = angle;
 }
 
-DynamicEntity* Turel::Shoot()
+Bullet Turel::Shoot()
 {
 	Vec2F temp1 = *direction * BULLET_DEFAULT_VELOCITY;
 	Vec2F temp2 = *position + *direction * radius;
-	return new DynamicEntity(&temp2, &temp1, 0.0f, 0.0f, BULLET_DEFAULT_RADIUS, 0.0f, BULLET_DEFAULT_RESISTANCE_AIR_COEFFICIENT);
+	return Bullet(&temp2, &temp1, AGGRESIVE_ENTITY_HOST_ID);
 }
 
 void Turel::operator=(Turel entity)
@@ -1417,12 +1418,12 @@ Bullet::~Bullet()
 
 
 
-Knife::Knife()
+Knife::Knife() : health(3)
 {
 
 }
 
-Knife::Knife(Vec2F* point1, Vec2F* point2, uint8_t host_number)
+Knife::Knife(Vec2F* point1, Vec2F* point2, uint8_t host_number) : health(3)
 {
 	*position = *point1;
 	radius = point1->GetDistance(point2);

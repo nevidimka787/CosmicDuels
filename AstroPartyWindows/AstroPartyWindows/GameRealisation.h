@@ -5,35 +5,61 @@
 #include <limits.h>
 #include <random>
 #include "GameEngine.h"
+#include "GameRealisationTypes.h"
 #include "Menu.h"
 
 namespace Game
 {
 	//game engine rules
 
+	//The maximum possible count of gravity generators on the map.
 #define GAME_ANTY_GRAVS_MAX_COUNT	2
+	//The maximum possible count of players on the map.
 #define GAME_PLAYERS_MAX_COUNT		4
+	//The maximum possible count of knifes on the map.
 #define GAME_KNIFES_MAX_COUNT		(GAME_PLAYERS_MAX_COUNT * 2)
-#define GAME_LAZERS_MAX_COUNT		(GAME_PLAYERS_MAX_COUNT * 2)
+	//The maximum possible count of lasers on the map.
+#define GAME_LASERS_MAX_COUNT		(GAME_PLAYERS_MAX_COUNT * 2)
+	//The maximum possible count of bombs on the map.
 #define GAME_BOMBS_MAX_COUNT		(UINT8_MAX - 1)
+	//The maximum possible count of turels on the map.
 #define GAME_TURELS_MAX_COUNT		1
-#define GAME_MEGA_LAZERS_MAX_COUNT	2
+	//The maximum possible count of lasers on the map.
+#define GAME_MEGA_LASERS_MAX_COUNT	2
+	//The maximum possible count of asteroids on the map.
 #define GAME_ASTEROIDS_MAX_COUNT	16
+	//The maximum possible count of bonuses on the map.
 #define GAME_BONUSES_MAX_COUNT		16
+	//The maximum possible count of bullets on the map.
 #define GAME_BULLETS_MAX_COUNT		(UINT16_MAX - 1)
+	//The maximum possible count of particles on the map.
 #define GAME_PARTICLES_MAX_COUNT	(UINT16_MAX - 1)
+	//The maximum possible count of map's rectangles on the map.
 #define GAME_RECTANGLES_MAX_COUNT	128
+	//KnockBack force of the pilot.
+#define GAME_KNOCKBACK_FORCE_OF_THE_PILOT	0.01f
+	//KnockBack force of the ship.
+#define GAME_KNOCKBACK_FORCE_OF_THE_SHIP	0.02f
+	//Ship's gravitation force.
+#define GAME_SHIP_GRAVITATION_FORCE			0.01f
+	//Sheep's radius of influence.
+#define GAME_SHIP_INFLUENCE_RADIUS			0.01f
+#define GAME_SHIP_ANGULAR_VELOCITY			0.1f
+#define GAME_PILOT_ANGULAR_VELOCITY			0.1f
 
 	//game engine rules
 
 	//map pull
 
+	//This map is first map on every match.
 #define MAP_TEST_MAP 0x00
 
 	//map pull
 
 	//game rules
 
+	//If rule applys, players will spawn in random spawns.
+	//If the rule does not apply, players will appear in places corresponding to the positions of the buttons on the screen.
 #define GAME_RULE_PLAYERS_SPAWN_POSITION_RANDOMIZE	(1 << 0)
 #define GAME_RULE_PLAYERS_SPAWN_DIRECTION_RANDOMIZE	(1 << 1)
 #define GAME_RULE_PLAYERS_SPAWN_THIS_BONUS			(1 << 2)
@@ -49,6 +75,7 @@ namespace Game
 #define GAME_RULE_ASTEROIDS_IS_SPAWNING				(1 << 12)
 #define GAME_RULE_BONUSES_IS_SPAWNING				(1 << 13)
 #define GAME_RULE_BALANCE_ACTIVE					(1 << 14)
+#define GAME_RULE_KNIFES_CAN_BREAKE_BULLETS			(1 << 15)
 
 #define GAME_RULE_DEFAULT_GAME_RULES (GAME_RULE_PLAYERS_SPAWN_THIS_BONUS | GAME_RULE_START_BONUS_RANDOMIZE | GAME_RULE_NEED_KILL_PILOT | GAME_RULE_ASTEROIDS_IS_SPAWNING | GAME_RULE_BONUSES_IS_SPAWNING)
 
@@ -75,20 +102,21 @@ namespace Game
 
 	//options menu
 
-#define BUTTON_ID_SET_RANDOM_SPAWN				10
-#define BUTTON_ID_SET_RANDOM_SPAWN_DIRECTION	11
-#define BUTTON_ID_SET_SPAWN_THIS_BONUS			12
-#define BUTTON_ID_SET_SPAWN_THIS_RANDOM_BONUS	13
-#define BUTTON_ID_SET_SPAWN_WHIS_TRIPLE_BUFF	14
-#define BUTTON_ID_SET_SPAWN_WHIT_SHIELD_BAFF	15
-#define BUTTON_ID_SET_ACTIVE_BALANCE			16
-#define BUTTON_ID_SET_FRIEDLY_SHEEP_CAN_RESTORE	17
-#define BUTTON_ID_SET_ACTIVE_FRIENDLY_FIRE		18
-#define BUTTON_ID_SET_PILOT_CAN_RESPAWN			19
-#define BUTTON_ID_SET_NEED_KILL_PILOT			20
+#define BUTTON_ID_SET_RANDOM_SPAWN					10
+#define BUTTON_ID_SET_RANDOM_SPAWN_DIRECTION		11
+#define BUTTON_ID_SET_SPAWN_THIS_BONUS				12
+#define BUTTON_ID_SET_SPAWN_THIS_RANDOM_BONUS		13
+#define BUTTON_ID_SET_SPAWN_WHIS_TRIPLE_BUFF		14
+#define BUTTON_ID_SET_SPAWN_WHIT_SHIELD_BAFF		15
+#define BUTTON_ID_SET_ACTIVE_BALANCE				16
+#define BUTTON_ID_SET_FRIEDLY_SHEEP_CAN_RESTORE		17
+#define BUTTON_ID_SET_ACTIVE_FRIENDLY_FIRE			18
+#define BUTTON_ID_SET_PILOT_CAN_RESPAWN				19
+#define BUTTON_ID_SET_NEED_KILL_PILOT				20
+#define BUTTON_ID_SET_KNIFES_CAN_DESTROY_BULLETS	21
 
-#define BUTTON_ID_GO_TO_SELECT_MAP_MENU			30
-#define BUTTON_ID_GO_TO_SELECT_OBJECTS_MENU		32
+#define BUTTON_ID_GO_TO_SELECT_MAP_MENU				30
+#define BUTTON_ID_GO_TO_SELECT_OBJECTS_MENU			32
 
 	//options menu
 
@@ -133,32 +161,12 @@ namespace Game
 
 	//buttons
 
-	//typedefs
-	
-	typedef typename uint8_t players_count_t;
-	typedef typename uint16_t entities_count_t;
-	typedef typename uint8_t map_elements_count_t;
-	typedef typename uint16_t maps_count_t;
-	typedef typename uint32_t game_rules_t;
-	typedef typename uint8_t score_t;
-
-#define PLAYERS_COUNT_T_MAX			UINT8_MAX
-#define ENTITIES_COUNT_T_MAX		UINT16_MAX
-#define MAP_ELEMENTS_COUNT_T_MAX	UINT8_MAX
-#define MAPS_COUNT_T_MAX			UINT16_MAX
-#define GAME_RULES_T_MAX			UINT32_MAX
-#define SCORE_T_MAX					UINT8_MAX
-
-#define PLAYERS_COUNT_T_MIN			UINT8_MIN
-#define ENTITIES_COUNT_T_MIN		UINT16_MIN
-#define MAP_ELEMENTS_COUNT_T_MIN	UINT8_MIN
-#define MAPS_COUNT_T_MIN			UINT16_MIN
-#define GAME_RULES_T_MIN			UINT32_MIN
-#define SCORE_T_MIN					UINT8_MIN
-
-	//typedefs
-
 	//game variables
+
+	//Global tic value. Not use by functions.
+	static tic_t global_timer;
+	//Global tic value for use in functions.
+	static tic_t current_tic;
 
 	//Game status true = The game is on. false = The game stops.
 	static bool start_game;
@@ -166,13 +174,20 @@ namespace Game
 	static bool pause_game;
 
 	//Controled entities refer to this array.
-	static bool* shoot_keys;
+	static bool* shoot_flags;
 	//Controled entities refer to this array.
-	static bool* rotate_keys;
+	static bool* rotate_flags;
+	//Controled entities refer to this array.
+	static bool* burnout_flags;
 	//true = The sheep can shoot one time. false = The sheep can't shoot.
-	static bool* sheeps_can_shoot;
+	static bool* sheeps_can_shoot_flags;
 
 	static maps_count_t selected_maps_id_array_length;
+
+	//Controle is inversing
+	static bool rotation_inverse;
+	//Buttons positions in inveres.
+	static bool buttons_inverse;
 
 	//Current scores of players.
 	static score_t* scores;
@@ -287,9 +302,13 @@ namespace Game
 	namespace Temp
 	{
 		//Memory space for temporary values.
-		static Ship ship;
+		static Asteroid asteroid;
 		//Memory space for temporary values.
-		static Pilot pilot;
+		static Beam beam;
+		//Memory space for temporary values.
+		static Bomb bomb;
+		//Memory space for temporary values.
+		static Bonus bonus;
 		//Memory space for temporary values.
 		static Bullet bullet;
 		//Memory space for temporary values.
@@ -297,18 +316,28 @@ namespace Game
 		//Memory space for temporary values.
 		static Laser lazer;
 		//Memory space for temporary values.
-		static Bomb bomb;
+		static MegaLaser mega_lazer;
 		//Memory space for temporary values.
 		static DynamicEntity particle;
 		//Memory space for temporary values.
-		static Asteroid asteroid;
+		static Pilot pilot;
 		//Memory space for temporary values.
-		static Bonus bonus;
+		static Segment segment;
+		//Memory space for temporary values.
+		static Ship ship;
+		//Memory space for temporary values.
+		static Turel turel;
+		//Memory space for temporary values.
+		static Vec2F vector;
 
 		//Memory space for temporary pointers.
-		static Ship* ship_p;
+		static Asteroid* asteroid_p;
 		//Memory space for temporary pointers.
-		static Pilot* pilot_p;
+		static Beam* beam_p;
+		//Memory space for temporary pointers.
+		static Bomb* bomb_p;
+		//Memory space for temporary pointers.
+		static Bonus* bonus_p;
 		//Memory space for temporary pointers.
 		static Bullet* bullet_p;
 		//Memory space for temporary pointers.
@@ -316,13 +345,19 @@ namespace Game
 		//Memory space for temporary pointers.
 		static Laser* lazer_p;
 		//Memory space for temporary pointers.
-		static Bomb* bomb_p;
+		static MegaLaser* mega_lazer_p;
 		//Memory space for temporary pointers.
 		static DynamicEntity* particle_p;
 		//Memory space for temporary pointers.
-		static Asteroid* asteroid_p;
+		static Pilot* pilot_p;
 		//Memory space for temporary pointers.
-		static Bonus* bonus_p;
+		static Segment* segment_p;
+		//Memory space for temporary pointers.
+		static Ship* ship_p;
+		//Memory space for temporary pointers.
+		static Turel* turel_p;
+		//Memory space for temporary pointers.
+		static Vec2F* vector_p;
 	}
 
 
@@ -372,9 +407,13 @@ namespace Game
 		//The function calculates the influence of entities on other entities. Any entity can be destroyed. New entities can be created.
 		void Lazers();
 		//The function calculates the influence of entities on other entities. Any entity can be destroyed. New entities can be created.
+		void MegaLazers();
+		//The function calculates the influence of entities on other entities. Any entity can be destroyed. New entities can be created.
 		void Pilots();
 		//The function calculates the influence of entities on other entities. Any entity can be destroyed. New entities can be created.
 		void Ships();
+		//The function calculates the influence of entities on other entities. Any entity can be destroyed. New entities can be created.
+		void Turels();
 
 		//Recalculate the positions of all entities.
 		inline void TransportAll();
@@ -403,6 +442,18 @@ namespace Game
 
 		namespace Destroy
 		{
+			//The function destroys the entity with the aggressive entity.
+			inline void Entity(AggressiveEntity* destried_entity, Asteroid* asteroid);
+			//The function destroys the entity with the aggressive entity.
+			inline void Entity(AggressiveEntity* destried_entity, Bonus* bonus);
+			//The function destroys the entity with the aggressive entity.
+			inline void Entity(AggressiveEntity* destried_entity, Bullet* bulet);
+			//The function destroys the entity with the aggressive entity.
+			inline void Entity(AggressiveEntity* destried_entity, Knife* fnife);
+			//The function destroys the entity with the aggressive entity.
+			inline void Entity(AggressiveEntity* destried_entity, Pilot* pilot);
+			//The function destroys the entity with the aggressive entity.
+			inline void Entity(AggressiveEntity* destried_entity, Ship* sheep);
 			//The function destroys the entity with the killer entity.
 			inline void Entity(KillerEntity* destried_entity, Asteroid* asteroid);
 			//The function destroys the entity with the killer entity.
@@ -415,59 +466,88 @@ namespace Game
 			inline void Entity(KillerEntity* destried_entity, Pilot* pilot);
 			//The function destroys the entity with the killer entity.
 			inline void Entity(KillerEntity* destried_entity, Ship* sheep);
+			//The function destroys the entity with the killer entity.
+			inline void Entity(KillerEntity* destried_entity, Turel* turel);
+			//The function destroys the entity with the laser.
+			inline void Entity(Laser* destried_entity, Asteroid* asteroid);
+			//The function destroys the entity with the laser.
+			inline void Entity(Laser* destried_entity, Bonus* bonus);
+			//The function destroys the entity with the laser.
+			inline void Entity(Laser* destried_entity, Bullet* bulet);
+			//The function destroys the entity with the laser.
+			inline void Entity(Laser* destried_entity, Knife* fnife);
+			//The function destroys the entity with the laser.
+			inline void Entity(Laser* destried_entity, Pilot* pilot);
+			//The function destroys the entity with the laser.
+			inline void Entity(Laser* destried_entity, Ship* sheep);
+			//The function destroys the entity with the laser.
+			inline void Entity(Laser* destried_entity, Turel* turel);
+			//The function destroys the pilot with the ship.
+			inline void Entity(Ship* destried_entity, Pilot* pilot);
+		}
+
+		namespace Spawn
+		{
+			//The function spawn the shep from the pilot.
+			inline void Entity(Ship* spawner, Pilot* pilot);
 		}
 	}
 
-	
+	//Not checking nullprt!
+	void ShipShoot(Ship* ship);
 
 	//Function call every game tic.
 	void Recalculate();
-	//Sheeps create bullets. (Not use. Realisation transmit to Update::Shiips())
-	void SheepsShoot();
 
-	//Function adds entity to array that store entities of the same type.
-	//Not checking nullprt!
-	inline void AddEntity(Bonus new_bonus);
-	//Function adds entity to array that store entities of the same type.
-	//Not checking nullprt!
-	inline void AddEntity(Asteroid new_asteroid);
-	//Function adds entity to array that store entities of the same type.
-	//Not checking nullprt!
-	inline void AddEntity(Bullet new_bullet);
-	//Function adds entity to array that store entities of the same type.
-	//Not checking nullprt!
-	inline void AddEntity(Knife new_knife);
-	//Function adds entity to array that store entities of the same type.
-	//Not checking nullprt!
-	inline void AddEntity(Bomb new_mine);
-	//Function adds entity to array that store entities of the same type.
-	//Not checking nullprt!
-	inline void AddEntity(Laser new_lazer);
-	//Function adds entity to array that store entities of the same type.
-	//Not checking nullprt!
-	inline void AddEntity(DynamicEntity new_particle);
+	namespace Add
+	{
+		//Function adds entity to array that store entities of the same type.
+		//Not checking nullprt!
+		inline void Entity(Bonus new_bonus);
+		//Function adds entity to array that store entities of the same type.
+		//Not checking nullprt!
+		inline void Entity(Asteroid new_asteroid);
+		//Function adds entity to array that store entities of the same type.
+		//Not checking nullprt!
+		inline void Entity(Bullet new_bullet);
+		//Function adds entity to array that store entities of the same type.
+		//Not checking nullprt!
+		inline void Entity(Knife new_knife);
+		//Function adds entity to array that store entities of the same type.
+		//Not checking nullprt!
+		inline void Entity(Bomb new_mine);
+		//Function adds entity to array that store entities of the same type.
+		//Not checking nullprt!
+		inline void Entity(Laser new_lazer);
+		//Function adds entity to array that store entities of the same type.
+		//Not checking nullprt!
+		inline void Entity(DynamicEntity new_particle);
+	}
 
-	//Function removes the specified entity from the array.
-	//Not checking nullprt!
-	inline void DeleteEntity(Bonus* deleting_bonus);
-	//Function removes the specified entity from the array.
-	//Not checking nullprt!
-	inline void DeleteEntity(Asteroid* deleting_asteroid);
-	//Function removes the specified entity from the array.
-	//Not checking nullprt!
-	inline void DeleteEntity(Bullet* deleting_bullet);
-	//Function removes the specified entity from the array.
-	//Not checking nullprt!
-	inline void DeleteEntity(Knife* deleting_knife);
-	//Function removes the specified entity from the array.
-	//Not checking nullprt!
-	inline void DeleteEntity(Bomb* deleting_mine);
-	//Function removes the specified entity from the array.
-	//Not checking nullprt!
-	inline void DeleteEntity(Laser* deleting_lazer);
-	//Function removes the specified entity from the array.
-	//Not checking nullprt!
-	inline void DeleteParticle(DynamicEntity* deleting_particle);
+	namespace Delete
+	{
+		//Function removes the specified entity from the array.
+		//Not checking nullprt!
+		inline void Entity(Bonus* deleting_bonus);
+		//Function removes the specified entity from the array.
+		//Not checking nullprt!
+		inline void Entity(Asteroid* deleting_asteroid);
+		//Function removes the specified entity from the array.
+		//Not checking nullprt!
+		inline void Entity(Bullet* deleting_bullet);
+		//Function removes the specified entity from the array.
+		//Not checking nullprt!
+		inline void Entity(Knife* deleting_knife);
+		//Function removes the specified entity from the array.
+		//Not checking nullprt!
+		inline void Entity(Bomb* deleting_mine);
+		//Function removes the specified entity from the array.
+		//Not checking nullprt!
+		inline void Entity(Laser* deleting_lazer);
+		//Function removes the specified entity from the array.
+		//Not checking nullprt!
+		inline void Particle(DynamicEntity* deleting_particle);
+	}
 
 	//The function returns a random bonus type.
 	Bonus::bonus_t GenerateRandomBonus();

@@ -158,6 +158,9 @@ void MenuFunctions::OptionMenuFunction(Vec2F* clk_pos)
 			case BUTTON_ID_SET_NEED_KILL_PILOT:
 				ChangeOption(GAME_RULE_NEED_KILL_PILOT);
 				return;
+			case BUTTON_ID_SET_KNIFES_CAN_DESTROY_BULLETS:
+				ChangeOption(GAME_RULE_KNIFES_CAN_BREAKE_BULLETS);
+				return;
 			case BUTTON_ID_GO_TO_SELECT_MAP_MENU:
 				OpenMapPullSelectMenu();
 				return;

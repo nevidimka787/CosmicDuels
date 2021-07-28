@@ -20,7 +20,7 @@ inline void Game::Update::Destroy::Entity(KillerEntity* destried_entity, Ship* s
 		{
 			if (Temp::knife_p->GetPlayerMasterNumber() == sheep->GetPlayerNumber())
 			{
-				DeleteEntity(Temp::knife_p);
+				Delete::Entity(Temp::knife_p);
 			}
 			found_knifes++;
 		}
@@ -29,10 +29,10 @@ inline void Game::Update::Destroy::Entity(KillerEntity* destried_entity, Ship* s
 	Bonus new_bonus = Temp::bonus.Division();
 	while (new_bonus.exist == true)
 	{
-		AddEntity(new_bonus);
+		Add::Entity(new_bonus);
 		new_bonus = Temp::bonus.Division();
 	}
-	AddEntity(Temp::bonus);
+	Add::Entity(Temp::bonus);
 	pilots[sheep->GetPlayerNumber()] = sheep->Destroy();
 	pilots_count++;
 	sheep->exist = false;
