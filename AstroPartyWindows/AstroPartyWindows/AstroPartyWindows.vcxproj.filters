@@ -51,10 +51,13 @@
     <ClCompile Include="GameRealisationInit.cpp">
       <Filter>Файлы ресурсов</Filter>
     </ClCompile>
-    <ClCompile Include="GameRealisationDestroy.cpp">
+    <ClCompile Include="GameRealisationDestroySpawn.cpp">
       <Filter>Файлы ресурсов</Filter>
     </ClCompile>
     <ClCompile Include="GameRealisationAddDelete.cpp">
+      <Filter>Файлы ресурсов</Filter>
+    </ClCompile>
+    <ClCompile Include="GameRealisationShipShoot.cpp">
       <Filter>Файлы ресурсов</Filter>
     </ClCompile>
   </ItemGroup>

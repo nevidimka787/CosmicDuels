@@ -1,39 +1,44 @@
 ﻿  GameEngine.cpp
   GameRealisation.cpp
   GameRealisationAddDelete.cpp
-  GameRealisationDestroy.cpp
+  GameRealisationDestroySpawn.cpp
   GameRealisationInit.cpp
+  GameRealisationShipShoot.cpp
   GameRealisationUpdate.cpp
   Main.cpp
+  Menu.cpp
   MenuFunctions.cpp
   OpenGLRealisation.cpp
+  Vec.cpp
   Создание кода...
+MenuFunctions.obj : error LNK2001: неразрешенный внешний символ "public: __cdecl Turel::Turel(void)" (??0Turel@@QEAA@XZ).
 OpenGLRealisation.obj : error LNK2001: неразрешенный внешний символ "public: __cdecl Turel::Turel(void)" (??0Turel@@QEAA@XZ).
 GameRealisationInit.obj : error LNK2001: неразрешенный внешний символ "public: __cdecl Turel::Turel(void)" (??0Turel@@QEAA@XZ).
+GameRealisationShipShoot.obj : error LNK2001: неразрешенный внешний символ "public: __cdecl Turel::Turel(void)" (??0Turel@@QEAA@XZ).
 GameRealisationUpdate.obj : error LNK2001: неразрешенный внешний символ "public: __cdecl Turel::Turel(void)" (??0Turel@@QEAA@XZ).
 Main.obj : error LNK2001: неразрешенный внешний символ "public: __cdecl Turel::Turel(void)" (??0Turel@@QEAA@XZ).
-MenuFunctions.obj : error LNK2001: неразрешенный внешний символ "public: __cdecl Turel::Turel(void)" (??0Turel@@QEAA@XZ).
 GameEngine.obj : error LNK2001: неразрешенный внешний символ "public: __cdecl Turel::Turel(void)" (??0Turel@@QEAA@XZ).
 GameRealisation.obj : error LNK2001: неразрешенный внешний символ "public: __cdecl Turel::Turel(void)" (??0Turel@@QEAA@XZ).
 GameRealisationAddDelete.obj : error LNK2001: неразрешенный внешний символ "public: __cdecl Turel::Turel(void)" (??0Turel@@QEAA@XZ).
-GameRealisationDestroy.obj : error LNK2001: неразрешенный внешний символ "public: __cdecl Turel::Turel(void)" (??0Turel@@QEAA@XZ).
+GameRealisationDestroySpawn.obj : error LNK2001: неразрешенный внешний символ "public: __cdecl Turel::Turel(void)" (??0Turel@@QEAA@XZ).
+MenuFunctions.obj : error LNK2001: неразрешенный внешний символ "public: __cdecl MegaLaser::MegaLaser(void)" (??0MegaLaser@@QEAA@XZ).
 OpenGLRealisation.obj : error LNK2001: неразрешенный внешний символ "public: __cdecl MegaLaser::MegaLaser(void)" (??0MegaLaser@@QEAA@XZ).
 GameRealisationInit.obj : error LNK2001: неразрешенный внешний символ "public: __cdecl MegaLaser::MegaLaser(void)" (??0MegaLaser@@QEAA@XZ).
+GameRealisationShipShoot.obj : error LNK2001: неразрешенный внешний символ "public: __cdecl MegaLaser::MegaLaser(void)" (??0MegaLaser@@QEAA@XZ).
 GameRealisationUpdate.obj : error LNK2001: неразрешенный внешний символ "public: __cdecl MegaLaser::MegaLaser(void)" (??0MegaLaser@@QEAA@XZ).
 Main.obj : error LNK2001: неразрешенный внешний символ "public: __cdecl MegaLaser::MegaLaser(void)" (??0MegaLaser@@QEAA@XZ).
-MenuFunctions.obj : error LNK2001: неразрешенный внешний символ "public: __cdecl MegaLaser::MegaLaser(void)" (??0MegaLaser@@QEAA@XZ).
 GameEngine.obj : error LNK2001: неразрешенный внешний символ "public: __cdecl MegaLaser::MegaLaser(void)" (??0MegaLaser@@QEAA@XZ).
 GameRealisation.obj : error LNK2001: неразрешенный внешний символ "public: __cdecl MegaLaser::MegaLaser(void)" (??0MegaLaser@@QEAA@XZ).
 GameRealisationAddDelete.obj : error LNK2001: неразрешенный внешний символ "public: __cdecl MegaLaser::MegaLaser(void)" (??0MegaLaser@@QEAA@XZ).
-GameRealisationDestroy.obj : error LNK2001: неразрешенный внешний символ "public: __cdecl MegaLaser::MegaLaser(void)" (??0MegaLaser@@QEAA@XZ).
+GameRealisationDestroySpawn.obj : error LNK2001: неразрешенный внешний символ "public: __cdecl MegaLaser::MegaLaser(void)" (??0MegaLaser@@QEAA@XZ).
 GameRealisation.obj : error LNK2019: ссылка на неразрешенный внешний символ "void __cdecl Game::Update::All(void)" (?All@Update@Game@@YAXXZ) в функции "void __cdecl Game::Recalculate(void)" (?Recalculate@Game@@YAXXZ).
 GameRealisation.obj : error LNK2019: ссылка на неразрешенный внешний символ "void __cdecl Game::Update::TransportAll(void)" (?TransportAll@Update@Game@@YAXXZ) в функции "void __cdecl Game::Recalculate(void)" (?Recalculate@Game@@YAXXZ).
 GameRealisation.obj : error LNK2019: ссылка на неразрешенный внешний символ "void __cdecl Game::Update::BulletsDestroy(void)" (?BulletsDestroy@Update@Game@@YAXXZ) в функции "void __cdecl Game::Recalculate(void)" (?Recalculate@Game@@YAXXZ).
-GameRealisation.obj : error LNK2019: ссылка на неразрешенный внешний символ "void __cdecl Game::Add::Entity(class Bullet)" (?Entity@Add@Game@@YAXVBullet@@@Z) в функции "void __cdecl Game::ShipShoot(class Ship *)" (?ShipShoot@Game@@YAXPEAVShip@@@Z).
+GameRealisationShipShoot.obj : error LNK2019: ссылка на неразрешенный внешний символ "void __cdecl Game::Add::Entity(class Bullet)" (?Entity@Add@Game@@YAXVBullet@@@Z) в функции "void __cdecl Game::ShipShoot::Loop(class Ship *)" (?Loop@ShipShoot@Game@@YAXPEAVShip@@@Z).
 GameRealisationUpdate.obj : error LNK2001: неразрешенный внешний символ "void __cdecl Game::Add::Entity(class Bullet)" (?Entity@Add@Game@@YAXVBullet@@@Z).
-GameRealisation.obj : error LNK2019: ссылка на неразрешенный внешний символ "void __cdecl Game::Add::Entity(class Knife)" (?Entity@Add@Game@@YAXVKnife@@@Z) в функции "void __cdecl Game::ShipShoot(class Ship *)" (?ShipShoot@Game@@YAXPEAVShip@@@Z).
-GameRealisation.obj : error LNK2019: ссылка на неразрешенный внешний символ "void __cdecl Game::Add::Entity(class Bomb)" (?Entity@Add@Game@@YAXVBomb@@@Z) в функции "void __cdecl Game::ShipShoot(class Ship *)" (?ShipShoot@Game@@YAXPEAVShip@@@Z).
-GameRealisation.obj : error LNK2019: ссылка на неразрешенный внешний символ "void __cdecl Game::Add::Entity(class Laser)" (?Entity@Add@Game@@YAXVLaser@@@Z) в функции "void __cdecl Game::ShipShoot(class Ship *)" (?ShipShoot@Game@@YAXPEAVShip@@@Z).
+GameRealisationShipShoot.obj : error LNK2019: ссылка на неразрешенный внешний символ "void __cdecl Game::Add::Entity(class Knife)" (?Entity@Add@Game@@YAXVKnife@@@Z) в функции "void __cdecl Game::ShipShoot::Knife(class Ship *)" (?Knife@ShipShoot@Game@@YAXPEAVShip@@@Z).
+GameRealisationShipShoot.obj : error LNK2019: ссылка на неразрешенный внешний символ "void __cdecl Game::Add::Entity(class Bomb)" (?Entity@Add@Game@@YAXVBomb@@@Z) в функции "void __cdecl Game::ShipShoot::Bomb(class Ship *)" (?Bomb@ShipShoot@Game@@YAXPEAVShip@@@Z).
+GameRealisationShipShoot.obj : error LNK2019: ссылка на неразрешенный внешний символ "void __cdecl Game::Add::Entity(class Laser)" (?Entity@Add@Game@@YAXVLaser@@@Z) в функции "void __cdecl Game::ShipShoot::Laser(class Ship *)" (?Laser@ShipShoot@Game@@YAXPEAVShip@@@Z).
 GameRealisationUpdate.obj : error LNK2019: ссылка на неразрешенный внешний символ "public: void __cdecl DynamicEntity::AddForceAlongDirection(float)" (?AddForceAlongDirection@DynamicEntity@@QEAAXM@Z) в функции "void __cdecl Game::Update::Pilots(void)" (?Pilots@Update@Game@@YAXXZ).
 GameRealisationUpdate.obj : error LNK2019: ссылка на неразрешенный внешний символ "public: void __cdecl DynamicEntity::AddGravityForce(float,class Entity *)" (?AddGravityForce@DynamicEntity@@QEAAXMPEAVEntity@@@Z) в функции "void __cdecl Game::Update::Ships(void)" (?Ships@Update@Game@@YAXXZ).
 GameRealisationUpdate.obj : error LNK2019: ссылка на неразрешенный внешний символ "public: void __cdecl DynamicEntity::SetAngularVelocity(float)" (?SetAngularVelocity@DynamicEntity@@QEAAXM@Z) в функции "void __cdecl Game::Update::Pilots(void)" (?Pilots@Update@Game@@YAXXZ).

@@ -150,8 +150,9 @@
     <ClCompile Include="GameEngine.cpp" />
     <ClCompile Include="GameRealisation.cpp" />
     <ClCompile Include="GameRealisationAddDelete.cpp" />
-    <ClCompile Include="GameRealisationDestroy.cpp" />
+    <ClCompile Include="GameRealisationDestroySpawn.cpp" />
     <ClCompile Include="GameRealisationInit.cpp" />
+    <ClCompile Include="GameRealisationShipShoot.cpp" />
     <ClCompile Include="GameRealisationUpdate.cpp" />
     <ClCompile Include="Line.cpp" />
     <ClCompile Include="Main.cpp" />

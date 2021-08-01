@@ -181,6 +181,9 @@ namespace Game
 	static bool* burnout_flags;
 	//true = The sheep can shoot one time. false = The sheep can't shoot.
 	static bool* sheeps_can_shoot_flags;
+	//Index of array is ship's player number. Values of array are numbers of teams by every ship.
+	//Array changed in Game::Init::Menus.
+	static entities_count_t* teams;
 
 	static maps_count_t selected_maps_id_array_length;
 
@@ -418,21 +421,21 @@ namespace Game
 		//Recalculate the positions of all entities.
 		inline void TransportAll();
 
-		//Recalculate the position of entity.
-		void TransportBullets();
-		//Recalculate the position of entity.
-		void TransportBombs();
-		//Recalculate the position of entity.
-		void TransportSheeps();
-		//Recalculate the position of entity.
-		void TransportPilots();
-		//Recalculate the position of entity.
-		void TransportKnifes();
-		//Recalculate the position of entity.
-		void TransportLazers();
-		//Recalculate the position of entity.
+		//Recalculate the position ans velocity of entity.
 		void TransportAsteroids();
-		//Recalculate the position of entity.
+		//Recalculate the position ans velocity of entity.
+		void TransportBullets();
+		//Recalculate the position ans velocity of entity.
+		void TransportBombs();
+		//Recalculate the position ans velocity of entity.
+		void TransportSheeps();
+		//Recalculate the position ans velocity of entity.
+		void TransportPilots();
+		//Recalculate the position ans velocity of entity.
+		void TransportKnifes();
+		//Recalculate the position ans velocity of entity.
+		void TransportLazers();
+		//Recalculate the position ans velocity of entity.
 		void TransportBonuses();
 
 		void BulletsDestroy();
@@ -449,11 +452,11 @@ namespace Game
 			//The function destroys the entity with the aggressive entity.
 			inline void Entity(AggressiveEntity* destried_entity, Bullet* bulet);
 			//The function destroys the entity with the aggressive entity.
-			inline void Entity(AggressiveEntity* destried_entity, Knife* fnife);
+			inline void Entity(AggressiveEntity* destried_entity, Knife* knife);
 			//The function destroys the entity with the aggressive entity.
 			inline void Entity(AggressiveEntity* destried_entity, Pilot* pilot);
 			//The function destroys the entity with the aggressive entity.
-			inline void Entity(AggressiveEntity* destried_entity, Ship* sheep);
+			inline void Entity(AggressiveEntity* destried_entity, Ship* ship);
 			//The function destroys the entity with the killer entity.
 			inline void Entity(KillerEntity* destried_entity, Asteroid* asteroid);
 			//The function destroys the entity with the killer entity.
@@ -473,9 +476,9 @@ namespace Game
 			//The function destroys the entity with the laser.
 			inline void Entity(Laser* destried_entity, Bonus* bonus);
 			//The function destroys the entity with the laser.
-			inline void Entity(Laser* destried_entity, Bullet* bulet);
+			inline void Entity(Laser* destried_entity, Bullet* bullet);
 			//The function destroys the entity with the laser.
-			inline void Entity(Laser* destried_entity, Knife* fnife);
+			inline void Entity(Laser* destried_entity, Knife* knife);
 			//The function destroys the entity with the laser.
 			inline void Entity(Laser* destried_entity, Pilot* pilot);
 			//The function destroys the entity with the laser.
@@ -493,8 +496,6 @@ namespace Game
 		}
 	}
 
-	//Not checking nullprt!
-	void ShipShoot(Ship* ship);
 
 	//Function call every game tic.
 	void Recalculate();
@@ -546,7 +547,33 @@ namespace Game
 		inline void Entity(Laser* deleting_lazer);
 		//Function removes the specified entity from the array.
 		//Not checking nullprt!
+		inline void Entity(Turel* deleting_turel);
+		//Function removes the specified entity from the array.
+		//Not checking nullprt!
 		inline void Particle(DynamicEntity* deleting_particle);
+	}
+
+	namespace ShipShoot
+	{
+		//Not checking nullprt!
+		void Shoot(Ship* ship);
+
+		inline void LaserLoopBombKnife(Ship* ship);
+		inline void LaserLoopBomb(Ship* ship);
+		inline void LaserLoopKnife(Ship* ship);
+		inline void LaserBombKnife(Ship* ship);
+		inline void LoopBombKnife(Ship* ship);
+		inline void LaserLoop(Ship* ship);
+		inline void LaserBomb(Ship* ship);
+		inline void LoopBomb(Ship* ship);
+		inline void LaserKnife(Ship* ship);
+		inline void LoopKnife(Ship* ship);
+		inline void BombKnife(Ship* ship);
+		inline void Knife(Ship* ship);
+		inline void Bomb(Ship* ship);
+		inline void Loop(Ship* ship);
+		inline void Laser(Ship* ship);
+		inline void NoBonus(Ship* ship);
 	}
 
 	//The function returns a random bonus type.

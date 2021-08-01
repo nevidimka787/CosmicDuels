@@ -23,6 +23,45 @@ inline void Game::Update::TransportAll()
 	TransportBonuses();
 }
 
+void Game::Update::TransportAsteroids()
+{
+	for (entities_count_t asteroid = 0, found_asteroids = 0; found_asteroids < asteroids_count; asteroid++)
+	{
+		Temp::asteroid_p = &asteroids[asteroid];
+		if (Temp::asteroid_p->exist == true)
+		{
+			Temp::asteroid_p->Recalculate();
+			found_asteroids++;
+		}
+	}
+}
+
+void Game::Update::TransportBullets()
+{
+	for (entities_count_t bullet = 0, found_bullets = 0; found_bullets < asteroids_count; bullet++)
+	{
+		Temp::bullet_p = &bullets[bullet];
+		if (Temp::bullet_p->exist == true)
+		{
+			Temp::bullet_p->Recalculate();
+			found_bullets++;
+		}
+	}
+}
+
+void Game::Update::TransportBombs()
+{
+	for (entities_count_t bomb = 0, found_bombs = 0; found_bombs < asteroids_count; bomb++)
+	{
+		Temp::bomb_p = &bombs[bomb];
+		if (Temp::bomb_p->exist == true)
+		{
+			Temp::bomb_p->Recalculate();
+			found_bombs++;
+		}
+	}
+}
+
 void Game::Update::Asteroids()
 {}
 
@@ -517,7 +556,7 @@ void Game::Update::Ships()
 			}
 			if (shoot_flags[ship] == true && sheeps_can_shoot_flags[ship] == true)
 			{
-				ShipShoot(Temp::ship_p);
+				ShipShoot::Shoot(Temp::ship_p);
 			}
 			if (rotate_flags[ship] == true)
 			{

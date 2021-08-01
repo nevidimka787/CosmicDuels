@@ -148,6 +148,12 @@ inline void Game::Delete::Entity(Laser* deleting_lazer)
 	lasers_count--;
 }
 
+inline void Game::Delete::Entity(Turel* deleting_turel)
+{
+	deleting_turel->exist = false;
+	turels_count--;
+}
+
 inline void Game::Delete::Particle(DynamicEntity* deleting_particle)
 {
 	deleting_particle->exist = false;

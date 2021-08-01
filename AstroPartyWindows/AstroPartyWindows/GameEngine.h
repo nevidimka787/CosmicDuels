@@ -8,6 +8,7 @@
 class Entity;
 class StaticEntity;
 class MegaLaser;
+class AggressiveEntity;
 class Turel;
 class GravGen;
 class DynamicEntity;
@@ -121,7 +122,6 @@ public:
 class StaticEntity : public Entity
 {
 protected:
-	Vec2F* position;
 	Vec2F* last_position;
 public:
 	StaticEntity();
@@ -155,6 +155,8 @@ class Bonus : public DynamicEntity
 #define BUFF_TRIPLE		0x0100
 #define BUFF_SHIELD		0x0400
 #define GAME_REVERSE	0x8000
+
+#define BONUS_DEFAULT_RADIUS 0.005f
 
 protected:
 public:
@@ -222,7 +224,8 @@ public:
 	KillerEntity();
 	KillerEntity(Game::players_count_t player_master_number, Game::players_count_t player_master_team_number);
 	Game::players_count_t GetPlayerMasterNumber();
-	void Set(Bonus* entity);
+	Game::players_count_t GetPlayerMasterTeamNumber();
+	void Set(KillerEntity* entity);
 
 	void operator=(KillerEntity entity);
 
@@ -231,21 +234,19 @@ public:
 
 class ControledEntity : public DynamicEntity
 {
-#define CONTROLED_ENTITY_UNBRAKABLE_PERIOD 100
 protected:
 	Game::players_count_t player_number;
 	Game::players_count_t player_team_number;
 	void* rotate_input_value_pointer;
 	void* shoot_input_value_pointer;
-	uint16_t unbrakable;
 public:
 	ControledEntity();
 	ControledEntity(Game::players_count_t player_number, Game::players_count_t player_team_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* position, Vec2F* velosity, float angle, float angular_velosity);
 	
 	Game::players_count_t GetPlayerNumber();
+	Game::players_count_t GetTeamNumber();
 	bool GetRotateInputValue();
 	bool GetShootInputValue();
-	void Recalculate();
 	void Set(ControledEntity* entity);
 
 	void operator=(ControledEntity entity);
@@ -255,31 +256,43 @@ public:
 
 class Ship : public ControledEntity
 {
+#define SHIP_UNBRAKABLE_PERIOD 100
+
 #define BULLET_DEFAULT_VELOCITY 0.1f
 #define BULLET_DEFAULT_RADIUS	0.01f
 #define BULLET_DEFAULT_RESISTANCE_AIR_COEFFICIENT 0.001f
 protected:
 	Bonus::bonus_t buffs_bonuses;
 	Bonus::bonus_t active_baffs;
+	uint16_t unbrakable;
 public:
-	bool can_shoot;
 	Ship();
-	Ship(uint8_t player_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* position, Vec2F* velocity, float angle, float angular_velocity);
-	Ship(uint8_t player_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* position, Vec2F* velocity, float angle, float angular_velocity, Bonus::bonus_t buffs_bonuses);
+	Ship(Game::players_count_t player_number, Game::players_count_t player_team_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* position, Vec2F* velocity, float angle, float angular_velocity);
+	Ship(Game::players_count_t player_number, Game::players_count_t player_team_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* position, Vec2F* velocity, float angle, float angular_velocity, Bonus::bonus_t buffs_bonuses);
 	
-	void ActivateBonus();
+	void ActivateBuffs();
 	void BreakShield();
 	Bullet CreateBullet();
+	//The function does not check for the presence of a bonus.
 	Bullet CreateTriple(uint8_t bullet_number);
 #define BULLETS_IN_LOOP 24
-	Bullet CreateLoop(uint8_t bullet_number);
+	//The function does not check for the presence of a bonus.
+	Bullet CreateLoop(Game::entities_count_t bullet_number);
+	//The function does not check for the presence of a bonus.
 	Bomb CreateBomb();
+	//The function does not check for the presence of a bonus.
 	Laser CreateLazer();
+	//The function does not check for the presence of a bonus.
 	Knife CreateKnife(uint8_t knife_number);
 	Pilot Destroy();
 	Bonus::bonus_t GetActiveBaffs();
 	bool HaveBonus(Bonus::bonus_t bonus);
 	Bonus LoseBonus();
+	void Recalculate();
+	//If ship have bonus, the function reduces the amount of this bonus and return true.
+	bool SpendBonus(Bonus::bonus_t bonus);
+	//The function reduces the amount of this bonus.
+	void SpendBonusNoCheck(Bonus::bonus_t bonus);
 	void Set(Ship* entity);
 	void TakeBonus(Bonus* bonus);
 
@@ -293,9 +306,9 @@ class Pilot : public ControledEntity
 protected:
 public:
 	Pilot();
-	Pilot(uint8_t player_number, void* rotate_keyboard_key_pointer, void* move_keyboard_key_pointer, Vec2F* position, Vec2F* velosity, float angle, float angular_velosity);
+	Pilot(Game::players_count_t player_number, Game::players_count_t player_team_number, void* rotate_keyboard_key_pointer, void* move_keyboard_key_pointer, Vec2F* position, Vec2F* velosity, float angle, float angular_velosity);
 
-	Ship* Respawn();
+	Ship Respawn();
 	void Set(Pilot* entity);
 
 	void operator=(Pilot entity);
@@ -303,6 +316,7 @@ public:
 	~Pilot();
 };
 
+//Killer entity with out host.
 class AggressiveEntity : public StaticEntity
 {
 #define AGGRESIVE_ENTITY_DEFAULT_ATTACK_PERIOD			30
@@ -311,16 +325,20 @@ class AggressiveEntity : public StaticEntity
 
 #define AGGRESIVE_ENTITY_HOST_ID	PLAYERS_COUNT_T_MAX
 protected:
+	//Dellay to first attack after spawn.
 	Game::tic_t attack_dellay;
 public:
+	//Period of all attack cycle.
 	Game::tic_t attack_period;
+	//Period between shoots.
 	Game::tic_t inactive_period;
+	//Shoots count in one attack period.
 	uint8_t shoots_count;
 	AggressiveEntity();
 	AggressiveEntity(Game::tic_t current_tic, Game::tic_t first_activation_dellay, Game::tic_t attack_period, Game::tic_t passive_period, uint8_t shoots_count);
-	bool CanShoot(uint32_t current_tic);
-	void PostponeAttack(uint32_t dellay);
-	void Set(Bonus* entity);
+	bool CanShoot(Game::tic_t current_tic);
+	void PostponeAttack(Game::tic_t dellay);
+	void Set(AggressiveEntity* entity);
 
 	void operator=(AggressiveEntity entity);
 
@@ -368,8 +386,6 @@ public:
 
 	Segment GetSegment();
 	void Set(MegaLaser* entity);
-	void StartShoot();
-	void StopShoot();
 	bool IsShooting();
 
 	void operator=(MegaLaser entity);
@@ -380,11 +396,15 @@ public:
 class Laser : public StaticEntity
 {
 protected:
-	uint8_t player_master_number;
+	Game::players_count_t player_master_number;
+	Game::players_count_t player_master_team_number;
 public:
 	Laser();
-	Laser(Vec2F* position, Vec2F* direction, uint8_t host_number);
+	Laser(Vec2F* position, Vec2F* direction, Game::players_count_t player_master_number, Game::players_count_t player_master_team_number);
+	bool CanShoot(Game::tic_t current_tic);
 	Beam GetBeam();
+	Game::players_count_t GetPlayerMasterNumber();
+	Game::players_count_t GetPlayerMasterTeamNumber();
 	void Set(Laser* lazer);
 
 	void operator=(Laser entity);
@@ -472,6 +492,7 @@ public:
 
 class Rectangle : public MapElement
 {
+	typedef uint8_t sides_t;
 #define RECTANGLE_UP_SIDE		0x01
 #define RECTANGLE_DOWN_SIDE		0x02
 #define RECTANGLE_RIGHT_SIDE	0x04
@@ -479,8 +500,8 @@ class Rectangle : public MapElement
 protected:
 	Vec2F* point2;//down right point
 public:
-	uint8_t show_sides;
-	uint8_t collision_sides;
+	sides_t show_sides;
+	sides_t collision_sides;
 	Rectangle();
 	Rectangle(Vec2F* point1, Vec2F* point2, bool unbreakable);
 

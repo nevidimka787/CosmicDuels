@@ -189,11 +189,13 @@ inline void Game::Init::Level()
 			Vec2F temp_vel = Vec2F();
 			if (game_rules & GAME_RULE_BALANCE_ACTIVE && scores[i] <= max_score - BALANCE_ACTIVATE_DIFFERENCE_SCORES)
 			{
-				Add::Entity(Ship(i, (void*)&rotate_flags[i], (void*)&shoot_flags[i], &temp_points[i], &temp_vel, temp_angles[i], 0.0f, start_bonus | BUFF_SHIELD));
+				Temp::ship = Ship(i, teams[i], (void*)&rotate_flags[i], (void*)&shoot_flags[i], &temp_points[i], &temp_vel, temp_angles[i], 0.0f, start_bonus | BUFF_SHIELD);
+				Add::Entity(Temp::ship);
 			}
 			else
 			{
-				Add::Entity(Ship(i, (void*)&rotate_flags[i], (void*)&shoot_flags[i], &temp_points[i], &temp_vel, temp_angles[i], 0.0f, start_bonus));
+				Temp::ship = Ship(i, teams[i], (void*)&rotate_flags[i], (void*)&shoot_flags[i], &temp_points[i], &temp_vel, temp_angles[i], 0.0f, start_bonus);
+				Add::Entity(Temp::ship);
 			}
 		}
 	}
@@ -201,6 +203,9 @@ inline void Game::Init::Level()
 
 inline void Game::Init::Menus()
 {
+	//arrays
+	teams = new entities_count_t[GAME_PLAYERS_MAX_COUNT];
+
 	//main menu
 	Button* buttons = new Button[3];
 	Vec2F position = Vec2F(-0.5f, 0.5f);

@@ -128,7 +128,7 @@ Button::~Button()
 
 
 
-Menu::Menu() : default_buttons(nullptr), current_buttons(nullptr), buttons_count(0), position(new Vec2F())
+Menu::Menu() : default_buttons(nullptr), current_buttons(nullptr), buttons_count(0), position(new Vec2F()), ProcessInputFunction(nullptr)
 {
 	
 }
