@@ -73,6 +73,11 @@ bool Vec2D::operator!=(Vec2D vec)
 	return (this->x != vec.x && this->y != vec.y);
 }
 
+double Vec2D::GetAbsoluteAngle()
+{
+	return (atan2(-y, x));
+}
+
 double Vec2D::GetDistance(Vec2D* target_vector)
 {
 	return (*this - *target_vector).GetLength();
@@ -210,6 +215,11 @@ bool Vec2F::operator==(Vec2F vec)
 bool Vec2F::operator!=(Vec2F vec)
 {
 	return (this->x != vec.x && this->y != vec.y);
+}
+
+float Vec2F::GetAbsoluteAngle()
+{
+	return (atan2f(-y, x));
 }
 
 float Vec2F::GetDistance(Vec2F* target_vector)

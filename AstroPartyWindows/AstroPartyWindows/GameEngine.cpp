@@ -330,6 +330,34 @@ void DynamicEntity::AddForce(Vec2F* force)
 	*this->force += *force;
 }
 
+void DynamicEntity::AddForceAlongDirection(float force)
+{
+	*this->force += *direction * force;
+}
+
+void DynamicEntity::AddAngularVelocity(float angular_velocity)
+{
+	this->angular_velocity += angular_velocity;
+}
+
+void DynamicEntity::AddGravityForce(float gravity_coeffisient, Entity* forced_entity)
+{
+	Vec2F grav_vec = (forced_entity->GetPosition() - *position).Normalize();
+	float* x_temp_coeff = &grav_vec.x;
+	float* y = &grav_vec.y;
+	*x_temp_coeff = gravity_coeffisient / (*x_temp_coeff * *x_temp_coeff + *y * *y);
+	*force += grav_vec * *x_temp_coeff;
+}
+
+void DynamicEntity::AddGravityForce(float gravity_coeffisient, Vec2F* forced_point)
+{
+	Vec2F grav_vec = (*forced_point - *position).Normalize();
+	float* x_temp_coeff = &grav_vec.x;
+	float* y = &grav_vec.y;
+	*x_temp_coeff = gravity_coeffisient / (*x_temp_coeff * *x_temp_coeff + *y * *y);
+	*force += grav_vec * *x_temp_coeff;
+}
+
 bool DynamicEntity::Collision(DynamicEntity* entity)
 {
 	if (GetDistance(entity) > radius + entity->radius)
@@ -517,7 +545,7 @@ Vec2F DynamicEntity::GetVelocity()
 {
 	return *velocity;
 }
-
+//The function updates position and velocity of entity and clears forces' data.
 void DynamicEntity::Recalculate()
 {
 	angle += angular_velocity;
@@ -539,6 +567,11 @@ void DynamicEntity::Set(DynamicEntity* entity)
 	angular_velocity = entity->angular_velocity;
 	*velocity = *entity->velocity;
 	*force = *entity->force;
+}
+
+void DynamicEntity::SetAngularVelocity(float angulat_velocity)
+{
+	this->angular_velocity = angular_velocity;
 }
 
 void DynamicEntity::operator=(DynamicEntity entity)
@@ -842,9 +875,14 @@ KillerEntity::KillerEntity(Game::players_count_t player_master_number, Game::pla
 	exist = true;
 }
 
-uint8_t KillerEntity::GetPlayerMasterNumber()
+Game::players_count_t KillerEntity::GetPlayerMasterNumber()
 {
 	return player_master_number;
+}
+
+Game::players_count_t KillerEntity::GetPlayerMasterTeamNumber()
+{
+	return player_master_team_number;
 }
 
 void KillerEntity::Set(KillerEntity* entity)
@@ -894,9 +932,14 @@ ControledEntity::ControledEntity(Game::players_count_t player_number, Game::play
 	exist = true;
 }
 
-uint8_t ControledEntity::GetPlayerNumber()
+Game::players_count_t ControledEntity::GetPlayerNumber()
 {
 	return player_number;
+}
+
+Game::players_count_t ControledEntity::GetTeamNumber()
+{
+	return player_team_number;
 }
 
 bool ControledEntity::GetRotateInputValue()
@@ -1036,7 +1079,7 @@ Bomb Ship::CreateBomb()
 Laser Ship::CreateLazer()
 {
 	Vec2F temp = *position + *direction * radius;
-	return Laser(&temp, direction, player_number, player_team_number);
+	return Laser(&temp, direction, player_number, player_team_number, LASER_DEFAULT_SHOOT_PERIOD);
 }
 
 Knife Ship::CreateKnife(uint8_t knife_number)
@@ -1250,7 +1293,7 @@ AggressiveEntity::AggressiveEntity(Game::tic_t current_tic, Game::tic_t first_ac
 
 bool AggressiveEntity::CanShoot(Game::tic_t current_tic)
 {
-	uint32_t local_tic = (current_tic - attack_dellay) % (attack_period + inactive_period);
+	Game::tic_t local_tic = (current_tic - attack_dellay) % (attack_period + inactive_period);
 	if (local_tic < attack_period)
 	{
 		return false;
@@ -1262,7 +1305,7 @@ bool AggressiveEntity::CanShoot(Game::tic_t current_tic)
 	return (local_tic - attack_period) % (attack_period / shoots_count) == 0;
 }
 
-void AggressiveEntity::PostponeAttack(uint32_t dellay)
+void AggressiveEntity::PostponeAttack(Game::tic_t dellay)
 {
 	attack_dellay += dellay;
 }
@@ -1301,10 +1344,16 @@ AggressiveEntity::~AggressiveEntity()
 
 
 
+Turel::Turel()
+{
+
+}
+
 Turel::Turel(Vec2F* position, float angle)
 {
 	this->position = position;
 	this->angle = angle;
+	exist = true;
 }
 
 Bullet Turel::Shoot()
@@ -1356,6 +1405,7 @@ GravGen::GravGen() : gravity(GRAVITY_GENERATOR_DEFAULT_GRAVITY)
 GravGen::GravGen(Vec2F* position, float gravity) : gravity(gravity)
 {
 	*this->position = *position;
+	exist = true;
 }
 
 void GravGen::Set(GravGen* entity)
@@ -1387,15 +1437,48 @@ GravGen::~GravGen()
 
 
 
-MegaLaser::MegaLaser(Segment* lazer_segment, float angle) : active(false)
+MegaLaser::MegaLaser() : active(false)
+{
+}
+
+MegaLaser::MegaLaser(Segment* lazer_segment) : active(false)
 {
 	*this->position = *lazer_segment->point;
-	*this->point2 = lazer_segment->GetSecondPoint();
-	this->angle = angle;
+	*direction = *lazer_segment->vector;
+	angle = direction->GetAbsoluteAngle();
 	exist = true;
 }
 
+Segment MegaLaser::GetSegment()
+{
+	return Segment(position, direction, false);
+}
 
+void MegaLaser::Rotate(float angle)
+{
+	direction->RotateThis(angle);
+	this->angle += angle;
+}
+
+void MegaLaser::Set(MegaLaser* mega_laser)
+{
+	angle = mega_laser->angle;
+	*direction = *mega_laser->direction;
+	exist = mega_laser->exist;
+	*position = *mega_laser->position;
+
+	attack_dellay = mega_laser->attack_dellay;
+	attack_period = mega_laser->attack_period;
+	inactive_period = mega_laser->inactive_period;
+	shoots_count = mega_laser->shoots_count;
+
+	active = mega_laser->active;
+}
+
+bool MegaLaser::IsShooting()
+{
+	return active;
+}
 
 void MegaLaser::operator=(MegaLaser entity)
 {
@@ -1411,7 +1494,6 @@ void MegaLaser::operator=(MegaLaser entity)
 	shoots_count = entity.shoots_count;
 
 	active = entity.active;
-	*point2 = *entity.point2;
 }
 
 MegaLaser::~MegaLaser()
@@ -1421,21 +1503,45 @@ MegaLaser::~MegaLaser()
 
 
 
-Laser::Laser() : player_master_number(0), player_master_team_number(0)
+Laser::Laser() : player_master_number(0), player_master_team_number(0), shoot_period(0)
 {
 
 }
 
-Laser::Laser(Vec2F* position, Vec2F* velocity, Game::players_count_t player_master_number, Game::players_count_t player_master_team_number) : player_master_number(player_master_number), player_master_team_number(player_master_team_number)
+Laser::Laser(Vec2F* position, Vec2F* velocity, Game::players_count_t player_master_number, Game::players_count_t player_master_team_number, Game::tic_t shoot_period) : player_master_number(player_master_number), player_master_team_number(player_master_team_number), shoot_period(shoot_period)
 {
 	*this->position = *position;
 	*this->direction = *direction;
 	exist = true;
 }
 
+bool Laser::CanShoot(Game::tic_t current_tic)
+{
+	return shoot_period > 0;
+}
+
 Beam Laser::GetBeam()
 {
 	return Beam(position, direction, false);
+}
+
+Game::players_count_t Laser::GetPlayerMasterNumber()
+{
+	return player_master_number;
+}
+
+Game::players_count_t Laser::GetPlayerMasterTeamNumber()
+{
+	return player_master_team_number;
+}
+
+void Laser::Recalculate()
+{
+	StaticEntity::Recalculate();
+	if (shoot_period > 0)
+	{
+		shoot_period--;
+	}
 }
 
 void Laser::Set(Laser* laser)
@@ -1570,6 +1676,21 @@ void Knife::Set(Knife* knife)
 	exist = knife->exist;
 	player_master_number = knife->player_master_number;
 	player_master_team_number = knife->player_master_team_number;
+}
+
+bool Knife::LoseHealth()
+{
+	if (health > 1)
+	{
+		health--;
+		return true;
+	}
+	if (health == 1)
+	{
+		health--;
+		return false;
+	}
+	return false;
 }
 
 void Knife::operator=(Knife entity)

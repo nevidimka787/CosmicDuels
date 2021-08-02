@@ -13,14 +13,15 @@ inline void Game::Update::All()
 
 inline void Game::Update::TransportAll()
 {
-	TransportBullets();
-	TransportBombs();
-	TransportSheeps();
-	TransportPilots();
-	TransportKnifes();
-	TransportLazers();
 	TransportAsteroids();
+	TransportBombs();
 	TransportBonuses();
+	TransportBullets();
+	TransportKnifes();
+	TransportLasers();
+	TransportMegaLasers();
+	TransportPilots();
+	TransportShips();
 }
 
 void Game::Update::TransportAsteroids()
@@ -32,6 +33,32 @@ void Game::Update::TransportAsteroids()
 		{
 			Temp::asteroid_p->Recalculate();
 			found_asteroids++;
+		}
+	}
+}
+
+void Game::Update::TransportBombs()
+{
+	for (entities_count_t bomb = 0, found_bombs = 0; found_bombs < asteroids_count; bomb++)
+	{
+		Temp::bomb_p = &bombs[bomb];
+		if (Temp::bomb_p->exist == true)
+		{
+			Temp::bomb_p->Recalculate();
+			found_bombs++;
+		}
+	}
+}
+
+void Game::Update::TransportBonuses()
+{
+	for (entities_count_t mega_laser = 0, found_mega_lasers = 0; found_mega_lasers < asteroids_count; mega_laser++)
+	{
+		Temp::mega_lazer_p = &mega_lasers[mega_laser];
+		if (Temp::mega_lazer_p->exist == true)
+		{
+			Temp::mega_lazer_p->Recalculate();
+			found_mega_lasers++;
 		}
 	}
 }
@@ -49,15 +76,67 @@ void Game::Update::TransportBullets()
 	}
 }
 
-void Game::Update::TransportBombs()
+void Game::Update::TransportKnifes()
 {
-	for (entities_count_t bomb = 0, found_bombs = 0; found_bombs < asteroids_count; bomb++)
+	for (entities_count_t knife = 0, found_knifes = 0; found_knifes < asteroids_count; knife++)
 	{
-		Temp::bomb_p = &bombs[bomb];
-		if (Temp::bomb_p->exist == true)
+		Temp::knife_p = &knifes[knife];
+		if (Temp::knife_p->exist == true)
 		{
-			Temp::bomb_p->Recalculate();
-			found_bombs++;
+			Temp::knife_p->Recalculate();
+			found_knifes++;
+		}
+	}
+}
+
+void Game::Update::TransportLasers()
+{
+	for (entities_count_t laser = 0, found_lasers = 0; found_lasers < asteroids_count; laser++)
+	{
+		Temp::lazer_p = &lasers[laser];
+		if (Temp::lazer_p->exist == true)
+		{
+			Temp::lazer_p->Recalculate();
+			found_lasers++;
+		}
+	}
+}
+
+void Game::Update::TransportMegaLasers()
+{
+	for (entities_count_t mega_laser = 0, found_mega_lasers = 0; found_mega_lasers < asteroids_count; mega_laser++)
+	{
+		Temp::mega_lazer_p = &mega_lasers[mega_laser];
+		if (Temp::mega_lazer_p->exist == true)
+		{
+			Temp::mega_lazer_p->Recalculate();
+			found_mega_lasers++;
+		}
+	}
+}
+
+void Game::Update::TransportPilots()
+{
+	for (entities_count_t pilot = 0, found_pilots = 0; found_pilots < asteroids_count; pilot++)
+	{
+		Temp::pilot_p = &pilots[pilot];
+		if (Temp::pilot_p->exist == true)
+		{
+			Temp::pilot_p->Recalculate();
+			found_pilots++;
+		}
+	}
+}
+
+void Game::Update::TransportShips()
+{
+	for (entities_count_t ship = 0, found_ships = 0; found_ships < asteroids_count; ship++)
+	{
+		Temp::ship_p = &ships[ship];
+		if (Temp::ship_p->exist == true)
+		{
+			Temp::ship_p->Recalculate();
+			found_ships++;
 		}
 	}
 }

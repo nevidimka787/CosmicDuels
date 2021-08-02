@@ -79,6 +79,7 @@ void MenuFunctions::ResumeGame()
 void MenuFunctions::SelectSheep(Game::players_count_t sheep_number, uint8_t team_number)
 {
 	ships_select_buttons[sheep_number] = team_number;
+	Game::teams[sheep_number] = team_number;
 }
 
 void MenuFunctions::Exit()

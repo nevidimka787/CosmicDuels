@@ -11,13 +11,11 @@ using namespace Game;
 
 void Game::Recalculate()
 {
-	//shoots
+	//update
 
 	Update::All();
 
-	Update::BulletsDestroy();
-
-	//shoots
+	//update
 	
 	//collisions
 

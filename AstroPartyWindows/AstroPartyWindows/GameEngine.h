@@ -379,12 +379,12 @@ class MegaLaser : public AggressiveEntity
 {
 protected:
 	bool active;
-	Vec2F* point2;
 public:
 	MegaLaser();
-	MegaLaser(Segment* lazer_segment, float angle);
+	MegaLaser(Segment* lazer_segment);
 
 	Segment GetSegment();
+	void Rotate(float angle);
 	void Set(MegaLaser* entity);
 	bool IsShooting();
 
@@ -395,16 +395,19 @@ public:
 
 class Laser : public StaticEntity
 {
+#define LASER_DEFAULT_SHOOT_PERIOD 100
 protected:
 	Game::players_count_t player_master_number;
 	Game::players_count_t player_master_team_number;
+	Game::tic_t shoot_period;
 public:
 	Laser();
-	Laser(Vec2F* position, Vec2F* direction, Game::players_count_t player_master_number, Game::players_count_t player_master_team_number);
+	Laser(Vec2F* position, Vec2F* direction, Game::players_count_t player_master_number, Game::players_count_t player_master_team_number, Game::tic_t shoot_period);
 	bool CanShoot(Game::tic_t current_tic);
 	Beam GetBeam();
 	Game::players_count_t GetPlayerMasterNumber();
 	Game::players_count_t GetPlayerMasterTeamNumber();
+	void Recalculate();
 	void Set(Laser* lazer);
 
 	void operator=(Laser entity);

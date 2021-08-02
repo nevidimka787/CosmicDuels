@@ -31,9 +31,9 @@ void Draw(GLFWwindow* window);
 
 int main()
 {
-    OpenGL::InitOpneGL();
+    OpenGL::Init::OpneGL();
     GLFWwindow* window = OpenGL::CreateWindows(SCR_WIDTH, SCR_HEIGHT, "AstroParty", nullptr, nullptr);
-    OpenGL::InitGlad();
+    OpenGL::Init::Glad();
 
     Game::Init::Menus();
     Game::Init::Game();
@@ -41,7 +41,7 @@ int main()
     //game cycle
     while (true)
     {
-        OpenGL::DrawCurrentMenu();
+        OpenGL::DrawObject::CurrentMenu();
         if (Game::start_game == true)
         {
             Game::Init::Mach();
@@ -75,7 +75,7 @@ void Draw(GLFWwindow* window)
 
         physic_calculation_mtx.lock();
         OpenGL::DrawFrame();
-        OpenGL::DrawCurrentMenu();
+        OpenGL::DrawObject::CurrentMenu();
         physic_calculation_mtx.unlock();
 
         glfwSwapBuffers(window);

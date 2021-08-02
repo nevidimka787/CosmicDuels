@@ -159,7 +159,9 @@
     <ClCompile Include="Mat.cpp" />
     <ClCompile Include="Menu.cpp" />
     <ClCompile Include="MenuFunctions.cpp" />
+    <ClCompile Include="OpenGLRealisationDraw.cpp" />
     <ClCompile Include="OpenGLRealisation.cpp" />
+    <ClCompile Include="OpenGLRealisationShader.cpp" />
     <ClCompile Include="Vec.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -172,6 +174,9 @@
     <ClInclude Include="MenuFunctions.h" />
     <ClInclude Include="OpenGLRealisation.h" />
     <ClInclude Include="Vec.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\Bullet.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

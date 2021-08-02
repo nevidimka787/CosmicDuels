@@ -29,13 +29,14 @@ namespace Game
 	//The maximum possible count of asteroids on the map.
 #define GAME_ASTEROIDS_MAX_COUNT	16
 	//The maximum possible count of bonuses on the map.
-#define GAME_BONUSES_MAX_COUNT		16
+#define GAME_BONUSES_MAX_COUNT		32
 	//The maximum possible count of bullets on the map.
 #define GAME_BULLETS_MAX_COUNT		(UINT16_MAX - 1)
 	//The maximum possible count of particles on the map.
 #define GAME_PARTICLES_MAX_COUNT	(UINT16_MAX - 1)
 	//The maximum possible count of map's rectangles on the map.
 #define GAME_RECTANGLES_MAX_COUNT	128
+
 	//KnockBack force of the pilot.
 #define GAME_KNOCKBACK_FORCE_OF_THE_PILOT	0.01f
 	//KnockBack force of the ship.
@@ -424,21 +425,21 @@ namespace Game
 		//Recalculate the position ans velocity of entity.
 		void TransportAsteroids();
 		//Recalculate the position ans velocity of entity.
-		void TransportBullets();
-		//Recalculate the position ans velocity of entity.
 		void TransportBombs();
 		//Recalculate the position ans velocity of entity.
-		void TransportSheeps();
+		void TransportBonuses();
 		//Recalculate the position ans velocity of entity.
-		void TransportPilots();
+		void TransportBullets();
 		//Recalculate the position ans velocity of entity.
 		void TransportKnifes();
 		//Recalculate the position ans velocity of entity.
-		void TransportLazers();
+		void TransportLasers();
 		//Recalculate the position ans velocity of entity.
-		void TransportBonuses();
-
-		void BulletsDestroy();
+		void TransportMegaLasers();
+		//Recalculate the position ans velocity of entity.
+		void TransportPilots();
+		//Recalculate the position ans velocity of entity.
+		void TransportShips();
 
 		//All bombs that can be detonated will detonate.
 		void BombsChainReaction();

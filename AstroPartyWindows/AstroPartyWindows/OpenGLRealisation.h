@@ -13,59 +13,106 @@
 class Shader
 {
 private:
+	uint32_t id;
 public:
-	Shader(const char* geometric_file_name, const char* fragment_file_name);
+	Shader(const char* vertex_file_name, const char* fragment_file_name);
+
+	void SetValue(char* name, float value);
+	void SetValue(char* name, int value);
+	void SetValue(char* name, unsigned value);
+	void SetValue(char* name, Vec2F* vector);
 
 	void Use();
-	void SetGeometric(const char* geometric_file_name);
-	void SetFragment(const char* fragment_file_name);
+
 	~Shader();
 
 };
 
 namespace OpenGL
 {
-	//low level functions
-
-	void InitOpneGL();
-	void InitGlad();
+	//start functions
+	
 	GLFWwindow* CreateWindows(int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share);
 	bool CanDrawFrame(GLFWwindow* window);
-	void DrawFrame();
+	namespace Init
+	{
+		void Glad();
+		void OpneGL();
+		void Buffers();
+		void Shaders();
+	}
+	//start functions
 
-	void BindShader();
+	//callback functions
 
 	void ProcessInput(GLFWwindow* window);
 	void FramebufferSizeCallback(GLFWwindow* window, int width, int height);
+	
+	//callback functions
 
-	//low level functions
+	//shaders
 
-	//hight level functions
+	Shader* asteroid_shader;
+	Shader* bomb_shader;
+	Shader* bonus_shader;
+	Shader* bullet_shader;
+	Shader* knife_shader;
+	Shader* mega_laser_sahder;
+	Shader* pilot_shader;
+	Shader* ship_shader;
+	Shader* turel_shader;
+	
+	Shader* rectangle_shader;
+	Shader* cyrcle_shader;
+	Shader* polygon_shader;
 
-	void DrawMenu(Menu* menu);
-	void DrawCurrentMenu();
+	//shaders
 
-	void DrawObject(Line* line, bool update_shader);
-	void DrawObject(Beam* beam, bool update_shader);
-	void DrawObject(Segment* segment, bool update_shader);
+	//hight level funct
 
-	void DrawObject(Entity* entity, bool update_shader);
-	void DrawObject(StaticEntity* static_entity, bool update_shader);
-	void DrawObject(DynamicEntity* dynamic_entity, bool update_shader);
-	void DrawObject(Bonus* bonus, bool update_shader);
-	void DrawObject(Asteroid* asteroid, bool update_shader);
-	void DrawObject(ControledEntity controled_entity, bool update_shader);
-	void DrawObject(Ship* ship, bool update_shader);
-	void DrawObject(Pilot* pilot, bool update_shader);
-	void DrawObject(Turel* turel, bool update_shader);
-	void DrawObject(MegaLaser* mega_laser, bool update_shader);
-	void DrawObject(Bomb* mine, bool update_shader);
-	void DrawObject(MapElement* map_element, bool update_shader);
-	void DrawObject(Rectangle* rectangle, bool update_shader);
-	void DrawObject(Cyrcle* cyrcle, bool update_shader);
-	void DrawObject(Polygon* polygon, bool update_shader);
-	void DrawObject(Map* map, bool update_shader);
+	void DrawFrame();
+	void DrawAll();
 
+	namespace DrawObject
+	{
+
+		void IndicatedMenu(Menu* menu);
+		void CurrentMenu();
+
+		void Object(Line* line, bool update_shader);
+		void Object(Beam* beam, bool update_shader);
+		void Object(Segment* segment, bool update_shader);
+
+		void Object(Entity* entity, bool update_shader);
+		void Object(StaticEntity* static_entity, bool update_shader);
+		void Object(DynamicEntity* dynamic_entity, bool update_shader);
+
+		void Object(Asteroid* asteroid, bool update_shader);
+		void Object(Bomb* mine, bool update_shader);
+		void Object(Bonus* bonus, bool update_shader);
+		void Object(Bullet* bullet, bool update_shader);
+		void Object(Knife* knife, bool update_shader);
+		void Object(MegaLaser* mega_laser, bool update_shader);
+		void Object(Pilot* pilot, bool update_shader);
+		void Object(Ship* ship, bool update_shader);
+		void Object(Turel* turel, bool update_shader);
+
+		void Object(MapElement* map_element, bool update_shader);
+		void Object(Rectangle* rectangle, bool update_shader);
+		void Object(Cyrcle* cyrcle, bool update_shader);
+		void Object(Polygon* polygon, bool update_shader);
+		void Object(Map* map, bool update_shader);
+
+		void Asteroids();
+		void Bombs();
+		void Bonuses();
+		void Bullets();
+		void Knifes();
+		void MegaLasers();
+		void Pilots();
+		void Ships();
+		void Turels();
+	}
 	//hight level functions
 };
 

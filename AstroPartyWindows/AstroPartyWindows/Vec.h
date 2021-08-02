@@ -26,6 +26,7 @@ public:
 	bool operator==(Vec2D vec);
 	bool operator!=(Vec2D vec);
 
+	double GetAbsoluteAngle();
 	double GetDistance(Vec2D* target);
 	double GetLength();
 	Vec2D Normalize();
@@ -62,6 +63,7 @@ public:
 	bool operator==(Vec2F vec);
 	bool operator!=(Vec2F vec);
 
+	float GetAbsoluteAngle();
 	float GetDistance(Vec2F* target);
 	float GetLength();
 	Vec2F Normalize();
