@@ -70,6 +70,9 @@
     <ClCompile Include="OpenGLRealisation.cpp">
       <Filter>OpenGLRealisation</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Game.cpp">
+      <Filter>Classes\Файлы ресурсов</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Objects\Fragment\Asteroid.glsl">
@@ -190,6 +193,9 @@
     </ClInclude>
     <ClInclude Include="OpenGLRealisation.h">
       <Filter>OpenGLRealisation</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Game.h">
+      <Filter>Classes\Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
