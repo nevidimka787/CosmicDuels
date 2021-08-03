@@ -1,12 +1,14 @@
-#ifndef GAME_REALISATION_H
-#define GAME_REALISATION_H
+#pragma once
+
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 
 #include <iostream>
 #include <limits.h>
 #include <random>
-#include "GameEngine.h"
-#include "GameRealisationTypes.h"
-#include "Menu.h"
+#include "Classes/GameEngine.h"
+#include "Classes/Menu.h"
+#include "Classes/Shader.h"
 
 namespace Game
 {
@@ -165,9 +167,9 @@ namespace Game
 	//game variables
 
 	//Global tic value. Not use by functions.
-	static tic_t global_timer;
+	static GameTypes::tic_t global_timer;
 	//Global tic value for use in functions.
-	static tic_t current_tic;
+	static GameTypes::tic_t current_tic;
 
 	//Game status true = The game is on. false = The game stops.
 	static bool start_game;
@@ -184,9 +186,9 @@ namespace Game
 	static bool* sheeps_can_shoot_flags;
 	//Index of array is ship's player number. Values of array are numbers of teams by every ship.
 	//Array changed in Game::Init::Menus.
-	static entities_count_t* teams;
+	static GameTypes::entities_count_t* teams;
 
-	static maps_count_t selected_maps_id_array_length;
+	static GameTypes::maps_count_t selected_maps_id_array_length;
 
 	//Controle is inversing
 	static bool rotation_inverse;
@@ -194,46 +196,46 @@ namespace Game
 	static bool buttons_inverse;
 
 	//Current scores of players.
-	static score_t* scores;
+	static GameTypes::score_t* scores;
 	//Last scores of plauers. 
-	static score_t* last_match_scores;
+	static GameTypes::score_t* last_match_scores;
 	//Id of the current map of the level.
-	static maps_count_t current_map_id;
+	static GameTypes::maps_count_t current_map_id;
 
 	//Count of gravity generators on the map.
-	static map_elements_count_t grav_gens_count;
+	static GameTypes::map_elements_count_t grav_gens_count;
 	//Count of players on the map.
-	static players_count_t players_count;
+	static GameTypes::players_count_t players_count;
 	//Count of ships on the map.
-	static players_count_t ships_count;
+	static GameTypes::players_count_t ships_count;
 	//Count of pilots on the map.
-	static players_count_t pilots_count;
+	static GameTypes::players_count_t pilots_count;
 	//Count of knifes on the map.
-	static entities_count_t knifes_count;
+	static GameTypes::entities_count_t knifes_count;
 	//Count of lazers on the map.
-	static entities_count_t lasers_count;
+	static GameTypes::entities_count_t lasers_count;
 	//Count of bombs on the map.
-	static entities_count_t bombs_count;
+	static GameTypes::entities_count_t bombs_count;
 	//Count of turels on the map.
-	static entities_count_t turels_count;
+	static GameTypes::entities_count_t turels_count;
 	//Count of map's lazers on the map.
-	static entities_count_t mega_lazers_count;
+	static GameTypes::entities_count_t mega_lazers_count;
 	//Count of asteroids on the map.
-	static entities_count_t asteroids_count;
+	static GameTypes::entities_count_t asteroids_count;
 	//Count of bonuses on the map.
-	static entities_count_t bonuses_count;
+	static GameTypes::entities_count_t bonuses_count;
 	//Count of bullets on the map.
-	static entities_count_t bullets_count;
+	static GameTypes::entities_count_t bullets_count;
 	//Count of particles on the map.
-	static entities_count_t particles_count;
+	static GameTypes::entities_count_t particles_count;
 	//Count of map's rectangles on the map.
-	static map_elements_count_t rectangles_count;
+	static GameTypes::map_elements_count_t rectangles_count;
 
 	//Bonus in all ships at the start of the game.
-	static Bonus::bonus_t start_bonus;
+	static ClassTypes::Bonus::bonus_t start_bonus;
 
 	//This variable stores all the values of rules of ghe game. To change the values of rules of ghe game use |= and &=. To get the values of rules of the game use &.
-	static game_rules_t game_rules;
+	static GameTypes::game_rules_t game_rules;
 
 	//game variables
 
@@ -242,7 +244,7 @@ namespace Game
 	//This array contains flags for maps that will be used in the current match.
 	static bool* map_pull_array;
 	//This array contains maps' ids that will be used in the current match.
-	static maps_count_t* selected_maps_id_array;
+	static GameTypes::maps_count_t* selected_maps_id_array;
 	//This array contains objects that will be spawned in the current match.
 	static bool* object_pull_array;
 
@@ -301,6 +303,59 @@ namespace Game
 	static Menu* spawning_objects_select_menu;
 
 	//menu objects
+
+	namespace Add
+	{
+		//Function adds entity to array that store entities of the same type.
+		//Not checking nullprt!
+		inline void Entity(Bonus new_bonus);
+		//Function adds entity to array that store entities of the same type.
+		//Not checking nullprt!
+		inline void Entity(Asteroid new_asteroid);
+		//Function adds entity to array that store entities of the same type.
+		//Not checking nullprt!
+		inline void Entity(Bullet new_bullet);
+		//Function adds entity to array that store entities of the same type.
+		//Not checking nullprt!
+		inline void Entity(Knife new_knife);
+		//Function adds entity to array that store entities of the same type.
+		//Not checking nullprt!
+		inline void Entity(Bomb new_mine);
+		//Function adds entity to array that store entities of the same type.
+		//Not checking nullprt!
+		inline void Entity(Laser new_lazer);
+		//Function adds entity to array that store entities of the same type.
+		//Not checking nullprt!
+		inline void Entity(DynamicEntity new_particle);
+	}
+
+	namespace Delete
+	{
+		//Function removes the specified entity from the array.
+		//Not checking nullprt!
+		inline void Entity(Bonus* deleting_bonus);
+		//Function removes the specified entity from the array.
+		//Not checking nullprt!
+		inline void Entity(Asteroid* deleting_asteroid);
+		//Function removes the specified entity from the array.
+		//Not checking nullprt!
+		inline void Entity(Bullet* deleting_bullet);
+		//Function removes the specified entity from the array.
+		//Not checking nullprt!
+		inline void Entity(Knife* deleting_knife);
+		//Function removes the specified entity from the array.
+		//Not checking nullprt!
+		inline void Entity(Bomb* deleting_mine);
+		//Function removes the specified entity from the array.
+		//Not checking nullprt!
+		inline void Entity(Laser* deleting_lazer);
+		//Function removes the specified entity from the array.
+		//Not checking nullprt!
+		inline void Entity(Turel* deleting_turel);
+		//Function removes the specified entity from the array.
+		//Not checking nullprt!
+		inline void Particle(DynamicEntity* deleting_particle);
+	}
 
 	//temp containers
 	namespace Temp
@@ -369,30 +424,30 @@ namespace Game
 	{
 		//The function runs when the program starts.
 		//The functions nitialisates all arrays this entities.
-		inline void Game();
+		void Game();
 		//The function runs when the mach starts.
 		//The functions nitialisates all arrays this maps.
-		inline void Mach();
+		void Mach();
 		//The function runs when the level initialisates.
 		//The function generates the map and spawning players.
-		inline void Level();
+		void Level();
 		//The function runs when the program starts.
 		//The function creates all nemus objects.
-		inline void Menus();
+		void Menus();
 	}
 
 	//The function calculates forces of collisions between entities in the array.
-	void DynamicEntitiesCollisions(DynamicEntity* entities, entities_count_t entities_count);
+	void DynamicEntitiesCollisions(DynamicEntity* entities, GameTypes::entities_count_t entities_count);
 	//The function calculates forces of collisions between entities from two arrays.
-	void DynamicEntitiesCollisions(DynamicEntity* entities1, entities_count_t entities1_count, DynamicEntity* entities2, entities_count_t entities2_count);
+	void DynamicEntitiesCollisions(DynamicEntity* entities1, GameTypes::entities_count_t entities1_count, DynamicEntity* entities2, GameTypes::entities_count_t entities2_count);
 	//The function calculates forces of collisions between entities in the array and elements of the map.
-	void DynamicEntitiesCollisions(DynamicEntity* entities, entities_count_t entities_count, Map* map);
+	void DynamicEntitiesCollisions(DynamicEntity* entities, GameTypes::entities_count_t entities_count, Map* map);
 	//The function adds the specified force to all entities in the array.
-	void DynamicEntitiesAddForce(DynamicEntity* entities, entities_count_t entities_count, Vec2F* force);
+	void DynamicEntitiesAddForce(DynamicEntity* entities, GameTypes::entities_count_t entities_count, Vec2F* force);
 	//The function adds the force of the gravity generator to all entities in the array.
-	void DynamicEntitiesAddForce(DynamicEntity* entities, entities_count_t entities_count, GravGen* grav_gen);
+	void DynamicEntitiesAddForce(DynamicEntity* entities, GameTypes::entities_count_t entities_count, GravGen* grav_gen);
 	//The function adds forces of the all gravity generators to all entities in the array.
-	void DynamicEntitiesAddForce(DynamicEntity* entities, entities_count_t entities_count, GravGen* grav_gens, map_elements_count_t grav_gens_count);
+	void DynamicEntitiesAddForce(DynamicEntity* entities, GameTypes::entities_count_t entities_count, GravGen* grav_gens, GameTypes::map_elements_count_t grav_gens_count);
 
 	namespace Update
 	{
@@ -497,63 +552,6 @@ namespace Game
 		}
 	}
 
-
-	//Function call every game tic.
-	void Recalculate();
-
-	namespace Add
-	{
-		//Function adds entity to array that store entities of the same type.
-		//Not checking nullprt!
-		inline void Entity(Bonus new_bonus);
-		//Function adds entity to array that store entities of the same type.
-		//Not checking nullprt!
-		inline void Entity(Asteroid new_asteroid);
-		//Function adds entity to array that store entities of the same type.
-		//Not checking nullprt!
-		inline void Entity(Bullet new_bullet);
-		//Function adds entity to array that store entities of the same type.
-		//Not checking nullprt!
-		inline void Entity(Knife new_knife);
-		//Function adds entity to array that store entities of the same type.
-		//Not checking nullprt!
-		inline void Entity(Bomb new_mine);
-		//Function adds entity to array that store entities of the same type.
-		//Not checking nullprt!
-		inline void Entity(Laser new_lazer);
-		//Function adds entity to array that store entities of the same type.
-		//Not checking nullprt!
-		inline void Entity(DynamicEntity new_particle);
-	}
-
-	namespace Delete
-	{
-		//Function removes the specified entity from the array.
-		//Not checking nullprt!
-		inline void Entity(Bonus* deleting_bonus);
-		//Function removes the specified entity from the array.
-		//Not checking nullprt!
-		inline void Entity(Asteroid* deleting_asteroid);
-		//Function removes the specified entity from the array.
-		//Not checking nullprt!
-		inline void Entity(Bullet* deleting_bullet);
-		//Function removes the specified entity from the array.
-		//Not checking nullprt!
-		inline void Entity(Knife* deleting_knife);
-		//Function removes the specified entity from the array.
-		//Not checking nullprt!
-		inline void Entity(Bomb* deleting_mine);
-		//Function removes the specified entity from the array.
-		//Not checking nullprt!
-		inline void Entity(Laser* deleting_lazer);
-		//Function removes the specified entity from the array.
-		//Not checking nullprt!
-		inline void Entity(Turel* deleting_turel);
-		//Function removes the specified entity from the array.
-		//Not checking nullprt!
-		inline void Particle(DynamicEntity* deleting_particle);
-	}
-
 	namespace ShipShoot
 	{
 		//Not checking nullprt!
@@ -577,13 +575,14 @@ namespace Game
 		inline void NoBonus(Ship* ship);
 	}
 
-	//The function returns a random bonus type.
-	Bonus::bonus_t GenerateRandomBonus();
-	//The function returns a random id of map that is in the selected_maps_id_array.
-	maps_count_t GenerateRandomMapId();
-	//The function return the maximum score of all players.
-	score_t GetMaxScore();
-};
+	//Function call every game tic.
+	void Recalculate();
 
-#endif //GAME_REALISATION_H
+	//The function returns a random bonus type.
+	ClassTypes::Bonus::bonus_t GenerateRandomBonus();
+	//The function returns a random id of map that is in the selected_maps_id_array.
+	GameTypes::maps_count_t GenerateRandomMapId();
+	//The function return the maximum score of all players.
+	GameTypes::score_t GetMaxScore();
+}
 

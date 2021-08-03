@@ -1,35 +1,28 @@
-#ifndef OPENGL_REALISASTION_H
-#define OPENGL_REALISASTION_H
+#pragma once
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include "GameRealisation.h"
-#include "Menu.h"
-#include "Line.h"
-#include "GameEngine.h"
-#include "MenuFunctions.h"
-
-class Shader
-{
-private:
-	uint32_t id;
-public:
-	Shader(const char* vertex_file_name, const char* fragment_file_name);
-
-	void SetValue(char* name, float value);
-	void SetValue(char* name, int value);
-	void SetValue(char* name, unsigned value);
-	void SetValue(char* name, Vec2F* vector);
-
-	void Use();
-
-	~Shader();
-
-};
+#include "Classes/Menu.h"
+#include "Classes/Line.h"
+#include "Classes/GameEngine.h"
+#include "Classes/Shader.h"
 
 namespace OpenGL
 {
+	typedef unsigned int buffer_t;
+	//buffers
+
+	static buffer_t basic_triangle;
+	static buffer_t basic_triangle_vertex;
+	static buffer_t basic_square;
+	static buffer_t basic_square_vertex;
+	static buffer_t long_triangle;
+	static buffer_t long_triangle_vertex;
+
+	//buffers
+
 	//start functions
 	
 	GLFWwindow* CreateWindows(int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share);
@@ -52,19 +45,21 @@ namespace OpenGL
 
 	//shaders
 
-	Shader* asteroid_shader;
-	Shader* bomb_shader;
-	Shader* bonus_shader;
-	Shader* bullet_shader;
-	Shader* knife_shader;
-	Shader* mega_laser_sahder;
-	Shader* pilot_shader;
-	Shader* ship_shader;
-	Shader* turel_shader;
+	static Shader* asteroid_shader;
+	static Shader* bomb_shader;
+	static Shader* bonus_shader;
+	static Shader* bullet_shader;
+	static Shader* knife_shader;
+	static Shader* mega_laser_sahder;
+	static Shader* pilot_shader;
+	static Shader* ship_shader;
+	static Shader* turel_shader;
 	
-	Shader* rectangle_shader;
-	Shader* cyrcle_shader;
-	Shader* polygon_shader;
+	static Shader* rectangle_shader;
+	static Shader* cyrcle_shader;
+	static Shader* polygon_shader;
+
+	static Shader* button_shader;
 
 	//shaders
 
@@ -75,9 +70,9 @@ namespace OpenGL
 
 	namespace DrawObject
 	{
-
-		void IndicatedMenu(Menu* menu);
 		void CurrentMenu();
+		void CurrentMap();
+		void IndicatedMenu(Menu* menu);
 
 		void Object(Line* line, bool update_shader);
 		void Object(Beam* beam, bool update_shader);
@@ -101,7 +96,8 @@ namespace OpenGL
 		void Object(Rectangle* rectangle, bool update_shader);
 		void Object(Cyrcle* cyrcle, bool update_shader);
 		void Object(Polygon* polygon, bool update_shader);
-		void Object(Map* map, bool update_shader);
+
+		void Object(Button* button, bool update_shader);
 
 		void Asteroids();
 		void Bombs();
@@ -115,5 +111,3 @@ namespace OpenGL
 	}
 	//hight level functions
 };
-
-#endif //OPENGL_REALISASTION_H

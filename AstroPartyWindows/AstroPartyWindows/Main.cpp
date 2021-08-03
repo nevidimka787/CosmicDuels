@@ -5,13 +5,9 @@
 #include <thread>
 #include <shared_mutex>
 
-#include "OpenGLRealisation.h"
-#include "Vec.h"
-#include "Line.h"
-#include "Mat.h"
-#include "GameEngine.h"
 #include "GameRealisation.h"
-#include "Menu.h"
+#include "MenuRealisation.h"
+#include "OpenGLRealisation.h"
 
 #define SCR_WIDTH 800
 #define SCR_HEIGHT 600
@@ -34,6 +30,8 @@ int main()
     OpenGL::Init::OpneGL();
     GLFWwindow* window = OpenGL::CreateWindows(SCR_WIDTH, SCR_HEIGHT, "AstroParty", nullptr, nullptr);
     OpenGL::Init::Glad();
+    OpenGL::Init::Buffers();
+    OpenGL::Init::Shaders();
 
     Game::Init::Menus();
     Game::Init::Game();
@@ -41,7 +39,8 @@ int main()
     //game cycle
     while (true)
     {
-        OpenGL::DrawObject::CurrentMenu();
+        OpenGL::ProcessInput(window);
+        OpenGL::DrawFrame();
         if (Game::start_game == true)
         {
             Game::Init::Mach();
@@ -53,6 +52,8 @@ int main()
                 draw.join();
             }
         }
+        glfwSwapBuffers(window);
+        glfwPollEvents();
     }
 
     glfwTerminate();
@@ -75,7 +76,6 @@ void Draw(GLFWwindow* window)
 
         physic_calculation_mtx.lock();
         OpenGL::DrawFrame();
-        OpenGL::DrawObject::CurrentMenu();
         physic_calculation_mtx.unlock();
 
         glfwSwapBuffers(window);

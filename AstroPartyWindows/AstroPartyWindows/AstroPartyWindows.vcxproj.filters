@@ -5,16 +5,35 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Файлы заголовков">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="Файлы ресурсов">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="Shaders">
       <UniqueIdentifier>{e2ddbbe4-1a91-4657-b7d5-63fa64ac13eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Vertex">
+      <UniqueIdentifier>{401cd0a4-3c41-4f57-ba9c-d13153ea6492}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Fragment">
+      <UniqueIdentifier>{a0c744d5-2239-4197-afe5-be428ace1103}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Classes">
+      <UniqueIdentifier>{ee798bcc-1e1c-40d0-9478-1634aba4f5a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Classes\Файлы ресурсов">
+      <UniqueIdentifier>{e23ccbf8-10cc-4058-9a9c-be40ed92fb33}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Classes\Файлы заголовков">
+      <UniqueIdentifier>{9b1afe95-fa2e-4fbb-8d78-cef55d1873be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameRealisation">
+      <UniqueIdentifier>{51be4966-05e4-41fd-ba98-0d98d9f2ae6c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Types">
+      <UniqueIdentifier>{584b0972-fe1d-45b2-bee4-256df8bc132f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MenuRealisation">
+      <UniqueIdentifier>{768e48dc-4278-46f2-9366-7c583c5dc041}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OpenGLRealisation">
+      <UniqueIdentifier>{7fbd2602-dd7e-4797-ae6f-a72c289e72fc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -24,84 +43,153 @@
     <ClCompile Include="gald.c">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="GameEngine.cpp">
-      <Filter>Файлы ресурсов</Filter>
+    <ClCompile Include="Classes\GameEngine.cpp">
+      <Filter>Classes\Файлы ресурсов</Filter>
     </ClCompile>
-    <ClCompile Include="Vec.cpp">
-      <Filter>Файлы ресурсов</Filter>
+    <ClCompile Include="Classes\Line.cpp">
+      <Filter>Classes\Файлы ресурсов</Filter>
     </ClCompile>
-    <ClCompile Include="Line.cpp">
-      <Filter>Файлы ресурсов</Filter>
+    <ClCompile Include="Classes\Mat.cpp">
+      <Filter>Classes\Файлы ресурсов</Filter>
     </ClCompile>
-    <ClCompile Include="Mat.cpp">
-      <Filter>Файлы ресурсов</Filter>
+    <ClCompile Include="Classes\Menu.cpp">
+      <Filter>Classes\Файлы ресурсов</Filter>
     </ClCompile>
-    <ClCompile Include="OpenGLRealisation.cpp">
-      <Filter>Файлы ресурсов</Filter>
+    <ClCompile Include="Classes\Vec.cpp">
+      <Filter>Classes\Файлы ресурсов</Filter>
     </ClCompile>
     <ClCompile Include="GameRealisation.cpp">
-      <Filter>Файлы ресурсов</Filter>
+      <Filter>GameRealisation</Filter>
     </ClCompile>
-    <ClCompile Include="Menu.cpp">
-      <Filter>Файлы ресурсов</Filter>
+    <ClCompile Include="Classes\Shader.cpp">
+      <Filter>Classes\Файлы ресурсов</Filter>
     </ClCompile>
-    <ClCompile Include="MenuFunctions.cpp">
-      <Filter>Файлы ресурсов</Filter>
+    <ClCompile Include="MenuRealisation.cpp">
+      <Filter>MenuRealisation</Filter>
     </ClCompile>
-    <ClCompile Include="GameRealisationUpdate.cpp">
-      <Filter>Файлы ресурсов</Filter>
-    </ClCompile>
-    <ClCompile Include="GameRealisationInit.cpp">
-      <Filter>Файлы ресурсов</Filter>
-    </ClCompile>
-    <ClCompile Include="GameRealisationDestroySpawn.cpp">
-      <Filter>Файлы ресурсов</Filter>
-    </ClCompile>
-    <ClCompile Include="GameRealisationAddDelete.cpp">
-      <Filter>Файлы ресурсов</Filter>
-    </ClCompile>
-    <ClCompile Include="GameRealisationShipShoot.cpp">
-      <Filter>Файлы ресурсов</Filter>
-    </ClCompile>
-    <ClCompile Include="OpenGLRealisationDraw.cpp">
-      <Filter>Файлы ресурсов</Filter>
-    </ClCompile>
-    <ClCompile Include="OpenGLRealisationShader.cpp">
-      <Filter>Файлы ресурсов</Filter>
+    <ClCompile Include="OpenGLRealisation.cpp">
+      <Filter>OpenGLRealisation</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GameEngine.h">
-      <Filter>Файлы заголовков</Filter>
+    <None Include="Shaders\Objects\Fragment\Asteroid.glsl">
+      <Filter>Shaders\Fragment</Filter>
+    </None>
+    <None Include="Shaders\Objects\Fragment\Bomb.glsl">
+      <Filter>Shaders\Fragment</Filter>
+    </None>
+    <None Include="Shaders\Objects\Fragment\Bonus.glsl">
+      <Filter>Shaders\Fragment</Filter>
+    </None>
+    <None Include="Shaders\Objects\Fragment\Bullet.glsl">
+      <Filter>Shaders\Fragment</Filter>
+    </None>
+    <None Include="Shaders\Objects\Fragment\Knife.glsl">
+      <Filter>Shaders\Fragment</Filter>
+    </None>
+    <None Include="Shaders\Objects\Fragment\Laser.glsl">
+      <Filter>Shaders\Fragment</Filter>
+    </None>
+    <None Include="Shaders\Objects\Fragment\MegaLaser.glsl">
+      <Filter>Shaders\Fragment</Filter>
+    </None>
+    <None Include="Shaders\Objects\Fragment\Pilot.glsl">
+      <Filter>Shaders\Fragment</Filter>
+    </None>
+    <None Include="Shaders\Objects\Fragment\Ship.glsl">
+      <Filter>Shaders\Fragment</Filter>
+    </None>
+    <None Include="Shaders\Objects\Fragment\Turel.glsl">
+      <Filter>Shaders\Fragment</Filter>
+    </None>
+    <None Include="Shaders\Map\Fragment\Cyrcle.glsl">
+      <Filter>Shaders\Fragment</Filter>
+    </None>
+    <None Include="Shaders\Map\Fragment\Polygon.glsl">
+      <Filter>Shaders\Fragment</Filter>
+    </None>
+    <None Include="Shaders\Map\Fragment\Rectangle.glsl">
+      <Filter>Shaders\Fragment</Filter>
+    </None>
+    <None Include="Shaders\Map\Vertex\Cyrcle.glsl">
+      <Filter>Shaders\Vertex</Filter>
+    </None>
+    <None Include="Shaders\Map\Vertex\Polygon.glsl">
+      <Filter>Shaders\Vertex</Filter>
+    </None>
+    <None Include="Shaders\Map\Vertex\Rectangle.glsl">
+      <Filter>Shaders\Vertex</Filter>
+    </None>
+    <None Include="Shaders\Objects\Vertex\Asteroid.glsl">
+      <Filter>Shaders\Vertex</Filter>
+    </None>
+    <None Include="Shaders\Objects\Vertex\Bomb.glsl">
+      <Filter>Shaders\Vertex</Filter>
+    </None>
+    <None Include="Shaders\Objects\Vertex\Bonus.glsl">
+      <Filter>Shaders\Vertex</Filter>
+    </None>
+    <None Include="Shaders\Objects\Vertex\Bullet.glsl">
+      <Filter>Shaders\Vertex</Filter>
+    </None>
+    <None Include="Shaders\Objects\Vertex\Knife.glsl">
+      <Filter>Shaders\Vertex</Filter>
+    </None>
+    <None Include="Shaders\Objects\Vertex\Laser.glsl">
+      <Filter>Shaders\Vertex</Filter>
+    </None>
+    <None Include="Shaders\Objects\Vertex\MegaLaser.glsl">
+      <Filter>Shaders\Vertex</Filter>
+    </None>
+    <None Include="Shaders\Objects\Vertex\Pilot.glsl">
+      <Filter>Shaders\Vertex</Filter>
+    </None>
+    <None Include="Shaders\Objects\Vertex\Ship.glsl">
+      <Filter>Shaders\Vertex</Filter>
+    </None>
+    <None Include="Shaders\Objects\Vertex\Turel.glsl">
+      <Filter>Shaders\Vertex</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Classes\GameEngine.h">
+      <Filter>Classes\Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="Vec.h">
-      <Filter>Файлы заголовков</Filter>
+    <ClInclude Include="Classes\Line.h">
+      <Filter>Classes\Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="Line.h">
-      <Filter>Файлы заголовков</Filter>
+    <ClInclude Include="Classes\Mat.h">
+      <Filter>Classes\Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="Mat.h">
-      <Filter>Файлы заголовков</Filter>
+    <ClInclude Include="Classes\Menu.h">
+      <Filter>Classes\Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="OpenGLRealisation.h">
-      <Filter>Файлы заголовков</Filter>
+    <ClInclude Include="Classes\Vec.h">
+      <Filter>Classes\Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="GameRealisation.h">
-      <Filter>Файлы заголовков</Filter>
+      <Filter>GameRealisation</Filter>
     </ClInclude>
-    <ClInclude Include="Menu.h">
-      <Filter>Файлы заголовков</Filter>
+    <ClInclude Include="Classes\Shader.h">
+      <Filter>Classes\Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="MenuFunctions.h">
-      <Filter>Файлы заголовков</Filter>
+    <ClInclude Include="Types\GameRealisationTypes.h">
+      <Filter>Types</Filter>
     </ClInclude>
-    <ClInclude Include="GameRealisationTypes.h">
-      <Filter>Файлы заголовков</Filter>
+    <ClInclude Include="Types\MenuRealisationTypes.h">
+      <Filter>Types</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Shaders\Bullet.glsl">
-      <Filter>Shaders</Filter>
-    </None>
+    <ClInclude Include="Types\OpenGLRealisationTypes.h">
+      <Filter>Types</Filter>
+    </ClInclude>
+    <ClInclude Include="Types\ClassesTypes.h">
+      <Filter>Types</Filter>
+    </ClInclude>
+    <ClInclude Include="MenuRealisation.h">
+      <Filter>MenuRealisation</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenGLRealisation.h">
+      <Filter>OpenGLRealisation</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

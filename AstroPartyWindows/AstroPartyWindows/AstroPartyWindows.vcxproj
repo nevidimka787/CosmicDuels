@@ -146,37 +146,60 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Classes\GameEngine.cpp" />
+    <ClCompile Include="Classes\Line.cpp" />
+    <ClCompile Include="Classes\Mat.cpp" />
+    <ClCompile Include="Classes\Menu.cpp" />
+    <ClCompile Include="Classes\Shader.cpp" />
+    <ClCompile Include="Classes\Vec.cpp" />
     <ClCompile Include="gald.c" />
-    <ClCompile Include="GameEngine.cpp" />
     <ClCompile Include="GameRealisation.cpp" />
-    <ClCompile Include="GameRealisationAddDelete.cpp" />
-    <ClCompile Include="GameRealisationDestroySpawn.cpp" />
-    <ClCompile Include="GameRealisationInit.cpp" />
-    <ClCompile Include="GameRealisationShipShoot.cpp" />
-    <ClCompile Include="GameRealisationUpdate.cpp" />
-    <ClCompile Include="Line.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Mat.cpp" />
-    <ClCompile Include="Menu.cpp" />
-    <ClCompile Include="MenuFunctions.cpp" />
-    <ClCompile Include="OpenGLRealisationDraw.cpp" />
+    <ClCompile Include="MenuRealisation.cpp" />
     <ClCompile Include="OpenGLRealisation.cpp" />
-    <ClCompile Include="OpenGLRealisationShader.cpp" />
-    <ClCompile Include="Vec.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GameEngine.h" />
+    <None Include="Shaders\Map\Fragment\Cyrcle.glsl" />
+    <None Include="Shaders\Map\Fragment\Polygon.glsl" />
+    <None Include="Shaders\Map\Fragment\Rectangle.glsl" />
+    <None Include="Shaders\Map\Vertex\Cyrcle.glsl" />
+    <None Include="Shaders\Map\Vertex\Polygon.glsl" />
+    <None Include="Shaders\Map\Vertex\Rectangle.glsl" />
+    <None Include="Shaders\Objects\Fragment\Asteroid.glsl" />
+    <None Include="Shaders\Objects\Fragment\Bomb.glsl" />
+    <None Include="Shaders\Objects\Fragment\Bonus.glsl" />
+    <None Include="Shaders\Objects\Fragment\Bullet.glsl" />
+    <None Include="Shaders\Objects\Fragment\Knife.glsl" />
+    <None Include="Shaders\Objects\Fragment\Laser.glsl" />
+    <None Include="Shaders\Objects\Fragment\MegaLaser.glsl" />
+    <None Include="Shaders\Objects\Fragment\Pilot.glsl" />
+    <None Include="Shaders\Objects\Fragment\Ship.glsl" />
+    <None Include="Shaders\Objects\Fragment\Turel.glsl" />
+    <None Include="Shaders\Objects\Vertex\Asteroid.glsl" />
+    <None Include="Shaders\Objects\Vertex\Bomb.glsl" />
+    <None Include="Shaders\Objects\Vertex\Bonus.glsl" />
+    <None Include="Shaders\Objects\Vertex\Bullet.glsl" />
+    <None Include="Shaders\Objects\Vertex\Knife.glsl" />
+    <None Include="Shaders\Objects\Vertex\Laser.glsl" />
+    <None Include="Shaders\Objects\Vertex\MegaLaser.glsl" />
+    <None Include="Shaders\Objects\Vertex\Pilot.glsl" />
+    <None Include="Shaders\Objects\Vertex\Ship.glsl" />
+    <None Include="Shaders\Objects\Vertex\Turel.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Classes\GameEngine.h" />
+    <ClInclude Include="Classes\Line.h" />
+    <ClInclude Include="Classes\Mat.h" />
+    <ClInclude Include="Classes\Menu.h" />
+    <ClInclude Include="Classes\Shader.h" />
+    <ClInclude Include="Classes\Vec.h" />
     <ClInclude Include="GameRealisation.h" />
-    <ClInclude Include="GameRealisationTypes.h" />
-    <ClInclude Include="Line.h" />
-    <ClInclude Include="Mat.h" />
-    <ClInclude Include="Menu.h" />
-    <ClInclude Include="MenuFunctions.h" />
+    <ClInclude Include="MenuRealisation.h" />
     <ClInclude Include="OpenGLRealisation.h" />
-    <ClInclude Include="Vec.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Shaders\Bullet.glsl" />
+    <ClInclude Include="Types\ClassesTypes.h" />
+    <ClInclude Include="Types\GameRealisationTypes.h" />
+    <ClInclude Include="Types\MenuRealisationTypes.h" />
+    <ClInclude Include="Types\OpenGLRealisationTypes.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
