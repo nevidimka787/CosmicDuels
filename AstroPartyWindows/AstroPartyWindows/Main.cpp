@@ -11,7 +11,7 @@
 #include "SubClasses/Linker.h"
 
 #define SCR_WIDTH 800
-#define SCR_HEIGHT 600
+#define SCR_HEIGHT 800
 
 #define TIK_UPDATE_INIT 0x01
 #define PHYSICS_CALCULATION_INIT 0x02
