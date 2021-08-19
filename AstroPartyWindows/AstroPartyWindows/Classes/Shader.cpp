@@ -19,7 +19,7 @@ Shader::Shader(const char* vertex_file_name, const char* fragment_file_name)
 	FILE* vertex_file = nullptr;
 	FILE* fragment_file = nullptr;
 
-	if (fopen_s(&vertex_file, fragment_file_name, "r") != 0)
+	if (fopen_s(&vertex_file, vertex_file_name, "r") != 0)
 	{
 		std::cout << "ERROR::SHADER_CONSTRUCTOR::VERTEX::File not found." << std::endl
 			<< "File: " << vertex_file_name << std::endl << std::endl;

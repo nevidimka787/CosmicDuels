@@ -5,9 +5,10 @@
 #include <thread>
 #include <shared_mutex>
 
-#include "GameRealisation.h"
-#include "MenuRealisation.h"
-#include "OpenGLRealisation.h"
+#include "SubClasses/Game.h"
+#include "SubClasses/MenuFunctions.h"
+#include "SubClasses/OpenGLRealisation.h"
+#include "SubClasses/Linker.h"
 
 #define SCR_WIDTH 800
 #define SCR_HEIGHT 600
@@ -25,26 +26,37 @@ void TikUpdate();
 void PhysicsCalculation();
 void Draw(GLFWwindow* window);
 
+void LocalFramebufferSizeCallback(GLFWwindow* window, int width, int height);
+
+Game* main_game = nullptr;
+MenuFunctions* main_menu_functions = nullptr;
+OpenGL* main_draw_functions = nullptr;
+
+Linker* main_linker;
+
 int main()
 {
-    OpenGL::Init::OpneGL();
-    GLFWwindow* window = OpenGL::CreateWindows(SCR_WIDTH, SCR_HEIGHT, "AstroParty", nullptr, nullptr);
-    OpenGL::Init::Glad();
-    OpenGL::Init::Buffers();
-    OpenGL::Init::Shaders();
+    GLFWwindow* window = nullptr;
+    main_game = new Game();
+    main_menu_functions = new MenuFunctions();
+    main_draw_functions = new OpenGL(SCR_WIDTH, SCR_HEIGHT, "AstroParty", nullptr, nullptr, LocalFramebufferSizeCallback, &window);
 
-    Game::Init::Menus();
-    Game::Init::Game();
+    main_linker = new Linker(main_game, main_menu_functions, main_draw_functions);
+
+    //Init();
 
     //game cycle
     while (true)
     {
-        OpenGL::ProcessInput(window);
-        OpenGL::DrawFrame();
-        if (Game::start_game == true)
+        main_draw_functions->ProcessInput(window);
+        main_draw_functions->DrawFrame();
+        
+        //Frame();
+        
+        if (main_game->start_game == true)
         {
-            Game::Init::Mach();
-            while (Game::start_game == true)
+            main_game->InitMach();
+            while (main_game->start_game == true)
             {
                 std::thread physic(PhysicsCalculation);
                 std::thread draw(Draw, window);
@@ -72,10 +84,10 @@ void Draw(GLFWwindow* window)
 
     while (!glfwWindowShouldClose(window))
     {
-        OpenGL::ProcessInput(window);
+        main_draw_functions->ProcessInput(window);
 
         physic_calculation_mtx.lock();
-        OpenGL::DrawFrame();
+        main_draw_functions->DrawFrame();
         physic_calculation_mtx.unlock();
 
         glfwSwapBuffers(window);
@@ -91,9 +103,9 @@ void TikUpdate()
     while (true)
     {
         timer_mtx.lock();
-        if (Game::pause_game == false)
+        if (main_game->pause_game == false)
         {
-            Game::global_timer++;
+            main_game->global_timer++;
         }
         timer_mtx.unlock();
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
@@ -113,7 +125,7 @@ void PhysicsCalculation()
     physic_calculation_mtx.lock();
     //start initialisate all entities and variables
 
-        Game::Init::Level();
+        main_game->InitLevel();
 
     //start initialisate all entities and variables
     physic_calculation_mtx.unlock();
@@ -122,7 +134,7 @@ void PhysicsCalculation()
 
 
     timer_mtx.lock();
-    Game::current_tic = Game::global_timer;
+    main_game->current_tic = main_game->global_timer;
     timer_mtx.unlock();
 
     while (true)
@@ -130,19 +142,25 @@ void PhysicsCalculation()
         physic_calculation_mtx.lock();
         //start physics calculation
 
-        Game::Recalculate();
+        main_game->Update();
 
         //end physics calculation
         physic_calculation_mtx.unlock();
 
         timer_mtx.lock();
-        while (Game::current_tic >= Game::global_timer)
+        while (main_game->current_tic >= main_game->global_timer)
         {
             timer_mtx.unlock();
             timer_mtx.lock();
         }
-        Game::current_tic = Game::global_timer;
+        main_game->current_tic = main_game->global_timer;
         timer_mtx.unlock();
 
     }
+}
+
+
+void LocalFramebufferSizeCallback(GLFWwindow* window, int width, int height)
+{
+    main_draw_functions->FramebufferSizeCallback(window, width, height);
 }

@@ -23,17 +23,11 @@
     <Filter Include="Classes\Файлы заголовков">
       <UniqueIdentifier>{9b1afe95-fa2e-4fbb-8d78-cef55d1873be}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GameRealisation">
-      <UniqueIdentifier>{51be4966-05e4-41fd-ba98-0d98d9f2ae6c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Types">
       <UniqueIdentifier>{584b0972-fe1d-45b2-bee4-256df8bc132f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="MenuRealisation">
-      <UniqueIdentifier>{768e48dc-4278-46f2-9366-7c583c5dc041}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="OpenGLRealisation">
-      <UniqueIdentifier>{7fbd2602-dd7e-4797-ae6f-a72c289e72fc}</UniqueIdentifier>
+    <Filter Include="Constants">
+      <UniqueIdentifier>{23c9089e-a8df-48a1-8873-2fc4722235aa}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -58,19 +52,19 @@
     <ClCompile Include="Classes\Vec.cpp">
       <Filter>Classes\Файлы ресурсов</Filter>
     </ClCompile>
-    <ClCompile Include="GameRealisation.cpp">
-      <Filter>GameRealisation</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Shader.cpp">
       <Filter>Classes\Файлы ресурсов</Filter>
     </ClCompile>
-    <ClCompile Include="MenuRealisation.cpp">
-      <Filter>MenuRealisation</Filter>
+    <ClCompile Include="SubClasses\MenuFunctions.cpp">
+      <Filter>Classes\Файлы ресурсов</Filter>
     </ClCompile>
-    <ClCompile Include="OpenGLRealisation.cpp">
-      <Filter>OpenGLRealisation</Filter>
+    <ClCompile Include="SubClasses\OpenGLRealisation.cpp">
+      <Filter>Classes\Файлы ресурсов</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Game.cpp">
+    <ClCompile Include="SubClasses\Linker.cpp">
+      <Filter>Classes\Файлы ресурсов</Filter>
+    </ClCompile>
+    <ClCompile Include="SubClasses\Game.cpp">
       <Filter>Classes\Файлы ресурсов</Filter>
     </ClCompile>
   </ItemGroup>
@@ -170,9 +164,6 @@
     <ClInclude Include="Classes\Vec.h">
       <Filter>Classes\Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="GameRealisation.h">
-      <Filter>GameRealisation</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Shader.h">
       <Filter>Classes\Файлы заголовков</Filter>
     </ClInclude>
@@ -188,14 +179,32 @@
     <ClInclude Include="Types\ClassesTypes.h">
       <Filter>Types</Filter>
     </ClInclude>
-    <ClInclude Include="MenuRealisation.h">
-      <Filter>MenuRealisation</Filter>
-    </ClInclude>
-    <ClInclude Include="OpenGLRealisation.h">
-      <Filter>OpenGLRealisation</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Game.h">
+    <ClInclude Include="SubClasses\MenuFunctions.h">
       <Filter>Classes\Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="SubClasses\OpenGLRealisation.h">
+      <Filter>Classes\Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="SubClasses\Linker.h">
+      <Filter>Classes\Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="SubClasses\Game.h">
+      <Filter>Classes\Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Constants\ClassesConstants.h">
+      <Filter>Constants</Filter>
+    </ClInclude>
+    <ClInclude Include="Constants\GameRealisationConstants.h">
+      <Filter>Constants</Filter>
+    </ClInclude>
+    <ClInclude Include="Constants\MenuRealisationConstants.h">
+      <Filter>Constants</Filter>
+    </ClInclude>
+    <ClInclude Include="Constants\OpenGLRealisationConstants.h">
+      <Filter>Constants</Filter>
+    </ClInclude>
+    <ClInclude Include="Constants\AllConstants.h">
+      <Filter>Constants</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

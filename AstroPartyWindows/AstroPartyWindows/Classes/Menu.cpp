@@ -128,12 +128,12 @@ Button::~Button()
 
 
 
-Menu::Menu() : default_buttons(nullptr), current_buttons(nullptr), buttons_count(0), position(new Vec2F()), ProcessInputFunction(nullptr)
+Menu::Menu() : default_buttons(nullptr), current_buttons(nullptr), buttons_count(0), position(new Vec2F())
 {
 	
 }
 
-Menu::Menu(Vec2F* position, Button* buttons, ClassTypes::Menu::buttons_count_t buttons_count, void ProcessInputFunction(Vec2F*)) : position(new Vec2F(*position)), default_buttons(new Button[buttons_count]), current_buttons(new Button[buttons_count]), buttons_count(buttons_count), ProcessInputFunction(ProcessInputFunction)
+Menu::Menu(Vec2F* position, Button* buttons, ClassTypes::Menu::buttons_count_t buttons_count) : position(new Vec2F(*position)), default_buttons(new Button[buttons_count]), current_buttons(new Button[buttons_count]), buttons_count(buttons_count)
 {
 	for (ClassTypes::Menu::buttons_count_t i = 0; i < buttons_count; i++)
 	{
@@ -177,11 +177,6 @@ void Menu::SetPosition(Vec2F* position)
 {
 	*this->position = *position;
 	Recalculate();
-}
-
-void Menu::ProcessInput(Vec2F* clk_pos)
-{
-	ProcessInputFunction(clk_pos);
 }
 
 void Menu::Recalculate()
