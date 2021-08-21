@@ -147,6 +147,12 @@
     <None Include="Shaders\Objects\Vertex\Turel.glsl">
       <Filter>Shaders\Vertex</Filter>
     </None>
+    <None Include="Shaders\Menu\Vertex\Button.glsl">
+      <Filter>Shaders\Vertex</Filter>
+    </None>
+    <None Include="Shaders\Menu\Fragment\Button.glsl">
+      <Filter>Shaders\Fragment</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\GameEngine.h">

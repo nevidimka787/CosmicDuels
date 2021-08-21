@@ -4,6 +4,7 @@
 #include <GLFW/glfw3.h>
 
 #include "../Types/OpenGLRealisationTypes.h"
+#include "../Constants/OpenGLRealisationConstants.h"
 #include "Game.h"
 #include "../Classes/Menu.h"
 #include "../Classes/Line.h"
@@ -12,16 +13,24 @@
 
 class OpenGL
 {
+protected:
+	uint8_t mouse_buttons = 0x00;
+	GLint window_height;
+	GLint window_width;
 public:
 	void (*FramebufferSizeCallbackPointer)(GLFWwindow* window, int width, int height);
 
 	OpenGL(int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share, GLFWframebuffersizefun Function, GLFWwindow** window);
+	
 	//buffers
 
+	//3 vertexes
 	OpenGLTypes::buffer_t basic_triangle;
 	OpenGLTypes::buffer_t basic_triangle_buffer;
+	//6 vertexes
 	OpenGLTypes::buffer_t basic_square;
 	OpenGLTypes::buffer_t basic_square_buffer;
+	//3 vertexes
 	OpenGLTypes::buffer_t long_triangle;
 	OpenGLTypes::buffer_t long_triangle_buffer;
 
@@ -69,7 +78,6 @@ public:
 	//hight level funct
 
 	void DrawFrame();
-	void DrawAll();
 
 	void DrawObjectCurrentMenu();
 	void DrawObjectCurrentMap();
@@ -114,5 +122,18 @@ public:
 	//game pointers
 
 	Menu** game_p__current_active_menu;
+	Menu* game_p__option_menu;
+	Menu* game_p__main_menu;
+	Menu* game_p__pause_menu;
+	Menu* game_p__ships_select_menu;
+	Menu* game_p__team_sheeps_select_menu;
+	Menu* game_p__map_pull_select_menu;
+	Menu* game_p__spawning_objects_select_menu;
+	Menu* game_p__ships_control_menu;
+
+
+	//menu functions pointers
+
+	MenuFunctions* object_p__menu_functions;
 
 };

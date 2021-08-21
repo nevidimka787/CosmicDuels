@@ -29,11 +29,14 @@ public:
 	bool HavePoint(Vec2F* point);
 	void Move(Vec2F* move_vector);
 	void Set(Button* button);
+	void Set(uint32_t id, Vec2F* position, Vec2F* size, const char* text, uint8_t text_size);
 	void SetId(uint32_t id);
 	void SetPosition(Vec2F* position);
 	void SetSize(Vec2F* size);
 	void SetText(const char* text);
 	void SetText(const char* text, uint8_t text_size);
+
+	void operator=(Button button);
 
 	~Button();
 };

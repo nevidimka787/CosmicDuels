@@ -58,6 +58,29 @@ void Button::Set(Button* button)
 	status = button->status;
 }
 
+void Button::Set(uint32_t id, Vec2F* position, Vec2F* size, const char* text, uint8_t text_size)
+{
+	this->id = id;
+	*this->position = *position;
+	*this->size = *size;
+
+	if (this->text != nullptr)
+	{
+		delete[] this->text;
+	}
+
+	uint32_t length;
+	for (length = 0; text[length] != '\0'; length++);
+
+	this->text = new char[length + 1];
+	for (uint32_t i = 0; i <= length; i++)
+	{
+		this->text[i] = text[i];
+	}
+
+	this->text_size = text_size;
+}
+
 void Button::Move(Vec2F* move_vector)
 {
 	*position += *move_vector;
@@ -119,6 +142,37 @@ void Button::SetText(const char* text, uint8_t text_size)
 	this->text_size = text_size;
 }
 
+void Button::operator=(Button button)
+{
+	if (position == nullptr)
+	{
+		position = new Vec2F();
+	}
+	if (size == nullptr)
+	{
+		size = new Vec2F();
+	}
+	*position = *button.position;
+	*size = *button.size;
+	text_size = button.text_size;
+	id = button.id;
+
+	if (text != nullptr)
+	{
+		delete[] text;
+	}
+
+	uint32_t length;
+	for (length = 0; button.text[length] != '\0'; length++);
+
+	text = new char[length + 1];
+	for (uint32_t i = 0; i <= length; i++)
+	{
+		text[i] = button.text[i];
+	}
+	status = button.status;
+}
+
 Button::~Button()
 {
 	delete position;
@@ -137,8 +191,8 @@ Menu::Menu(Vec2F* position, Button* buttons, ClassTypes::Menu::buttons_count_t b
 {
 	for (ClassTypes::Menu::buttons_count_t i = 0; i < buttons_count; i++)
 	{
-		default_buttons[i] = buttons[i];
-		current_buttons[i] = default_buttons[i];
+		default_buttons[i].Set(&buttons[i]);
+		current_buttons[i].Set(&default_buttons[i]);
 	}
 }
 

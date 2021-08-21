@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+#include <string>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -13,6 +14,26 @@
 
 Shader::Shader(const char* vertex_file_name, const char* fragment_file_name)
 {
+	const char* vertexShaderSource = "#version 330 core\n"
+		"layout (location = 0) in vec2 aPos;\n"
+		"out vec4 vertexColor;\n"
+		"void main()\n"
+		"{\n"
+		"   gl_Position = vec4(aPos.x, aPos.y, 0.0f, 1.0);\n"
+		"   vertexColor = vec4(0.5, 0.0, 0.0, 1.0);\n"
+		"}";
+
+	const char* fragmentShaderSource = "#version 330 core\n"
+		"out vec4 FragColor;\n"
+		"in vec4 vertexColor;\n"
+		"uniform float test;\n"
+		"void main()\n"
+		"{\n"
+		"   FragColor = vertexColor * test;\n"
+		"}";
+	
+	char* test = (char*)fragmentShaderSource;
+
 	char* vertex_code = nullptr;
 	char* fragment_code = nullptr;
 
@@ -81,7 +102,7 @@ Shader::Shader(const char* vertex_file_name, const char* fragment_file_name)
 			<< "Logs:\n" << info_log << std::endl
 			<< "-----------------------------------------------------------------------" << std::endl << std::endl;
 	}
-
+	
 	fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragment_shader, 1, &fragment_code, NULL);
 	glCompileShader(fragment_shader);
@@ -125,24 +146,29 @@ Shader::Shader(const char* vertex_file_name, const char* fragment_file_name)
 	}
 }
 
-void Shader::SetValue(char* name, float value)
+void Shader::SetUniform(GLint uniform_id, float value)
 {
-	glUniform1f(glGetUniformLocation(id, name), value);
+	glUniform1f(uniform_id, value);
 }
 
-void Shader::SetValue(char* name, int value)
+void Shader::SetUniform(GLint uniform_id, int value)
 {
-	glUniform1i(glGetUniformLocation(id, name), value);
+	glUniform1i(uniform_id, value);
 }
 
-void Shader::SetValue(char* name, unsigned value)
+void Shader::SetUniform(GLint uniform_id, unsigned value)
 {
-	glUniform1ui(glGetUniformLocation(id, name), value);
+	glUniform1ui(uniform_id, value);
 }
 
-void Shader::SetValue(char* name, Vec2F* vector)
+void Shader::SetUniform(GLint uniform_id, Vec2F vector)
 {
-	glUniform2f(glGetUniformLocation(id, name), vector->x, vector->y);
+	glUniform2f(uniform_id, vector.x, vector.y);
+}
+
+void Shader::SetUniform(GLint uniform_id, Vec2F* vector)
+{
+	glUniform2f(uniform_id, vector->x, vector->y);
 }
 
 void Shader::Use()

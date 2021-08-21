@@ -40,7 +40,17 @@ Linker::Linker(Game* game_object, MenuFunctions* menu_functions_object, OpenGL* 
 
 	//open gl object
 
+	open_gl_object->object_p__menu_functions = menu_functions_object;
+
 	open_gl_object->game_p__current_active_menu = &game_object->current_active_menu;
+	open_gl_object->game_p__option_menu = game_object->option_menu;
+	open_gl_object->game_p__main_menu = game_object->main_menu;
+	open_gl_object->game_p__pause_menu = game_object->pause_menu;
+	open_gl_object->game_p__ships_select_menu = game_object->ships_select_menu;
+	open_gl_object->game_p__team_sheeps_select_menu = game_object->team_sheeps_select_menu;
+	open_gl_object->game_p__map_pull_select_menu = game_object->map_pull_select_menu;
+	open_gl_object->game_p__spawning_objects_select_menu = game_object->spawning_objects_select_menu;
+	open_gl_object->game_p__ships_control_menu = game_object->ships_control_menu;
 
 	//open gl object
 }

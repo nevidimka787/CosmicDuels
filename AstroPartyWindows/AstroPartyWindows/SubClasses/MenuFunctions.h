@@ -35,13 +35,13 @@ public:
 	void Exit();
 	void ChangeOption(GameTypes::game_rules_t option_number);
 
-	void MainMenuFunction(Vec2F* clk_pos, Menu* menu);
-	void OptionMenuFunction(Vec2F* clk_pos, Menu* menu);
-	void PauseMenuFunction(Vec2F* clk_pos, Menu* menu);
-	void ShipsSelectMenuFunction(Vec2F* clk_pos, Menu* menu);
-	void MapPullSelectMenuFunction(Vec2F* clk_pos, Menu* menu);
-	void SpawnObjectsSelectMenuFunction(Vec2F* clk_pos, Menu* menu);
-	void ShipsControlMenuFunction(Vec2F* clk_pos, Menu* menu);
+	void MainMenuFunction(Vec2F* clk_pos);
+	void OptionMenuFunction(Vec2F* clk_pos);
+	void PauseMenuFunction(Vec2F* clk_pos);
+	void ShipsSelectMenuFunction(Vec2F* clk_pos);
+	void MapPullSelectMenuFunction(Vec2F* clk_pos);
+	void SpawnObjectsSelectMenuFunction(Vec2F* clk_pos);
+	void ShipsControlMenuFunction(Vec2F* clk_pos);
 
 	~MenuFunctions();
 

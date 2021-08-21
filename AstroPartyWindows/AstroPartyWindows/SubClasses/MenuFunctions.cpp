@@ -102,8 +102,9 @@ void MenuFunctions::ChangeOption(GameTypes::game_rules_t option_id)
 	*game_p__game_rules |= option_id;
 }
 
-void MenuFunctions::MainMenuFunction(Vec2F* clk_pos, Menu* menu)
+void MenuFunctions::MainMenuFunction(Vec2F* clk_pos)
 {
+	std::cout << clk_pos->x << ' ' << clk_pos->y << std::endl;
 	for (uint8_t i = 0; i < game_p__main_menu->GetButtonsCount(); i++)
 	{
 		if (game_p__main_menu->current_buttons[i].HavePoint(clk_pos))
@@ -116,6 +117,8 @@ void MenuFunctions::MainMenuFunction(Vec2F* clk_pos, Menu* menu)
 			case BUTTON_ID_GO_TO_OPTINS_MENU:
 				OpenOptionsMenu();
 				return;
+			case BUTTON_ID_EXIT:
+				Exit();
 			default:
 				return;
 			}
@@ -123,7 +126,7 @@ void MenuFunctions::MainMenuFunction(Vec2F* clk_pos, Menu* menu)
 	}
 }
 
-void MenuFunctions::OptionMenuFunction(Vec2F* clk_pos, Menu* menu)
+void MenuFunctions::OptionMenuFunction(Vec2F* clk_pos)
 {
 	for (uint8_t i = 0; i < game_p__option_menu->GetButtonsCount(); i++)
 	{
@@ -143,10 +146,10 @@ void MenuFunctions::OptionMenuFunction(Vec2F* clk_pos, Menu* menu)
 			case BUTTON_ID_SET_SPAWN_THIS_RANDOM_BONUS:
 				ChangeOption(GAME_RULE_START_BONUS_RANDOMIZE);
 				return;
-			case BUTTON_ID_SET_SPAWN_WHIS_TRIPLE_BUFF:
+			case BUTTON_ID_SET_SPAWN_THIS_TRIPLE_BUFF:
 				ChangeOption(GAME_RULE_PLAYERS_SPAWN_THIS_TRIPLE_BONUS);
 				return;
-			case BUTTON_ID_SET_SPAWN_WHIT_SHIELD_BAFF:
+			case BUTTON_ID_SET_SPAWN_THIS_SHIELD_BAFF:
 				ChangeOption(GAME_RULE_PLAYERS_SPAWN_THIS_SHIELD);
 				return;
 			case BUTTON_ID_SET_ACTIVE_BALANCE:
@@ -180,7 +183,7 @@ void MenuFunctions::OptionMenuFunction(Vec2F* clk_pos, Menu* menu)
 	}
 }
 
-void MenuFunctions::PauseMenuFunction(Vec2F* clk_pos, Menu* menu)
+void MenuFunctions::PauseMenuFunction(Vec2F* clk_pos)
 {
 	for (uint8_t i = 0; i < game_p__pause_menu->GetButtonsCount(); i++)
 	{
@@ -200,7 +203,7 @@ void MenuFunctions::PauseMenuFunction(Vec2F* clk_pos, Menu* menu)
 	}
 }
 
-void MenuFunctions::ShipsSelectMenuFunction(Vec2F* clk_pos, Menu* menu)
+void MenuFunctions::ShipsSelectMenuFunction(Vec2F* clk_pos)
 {
 	for (uint8_t i = 0; i < game_p__team_sheeps_select_menu->GetButtonsCount(); i++)
 	{
@@ -315,7 +318,7 @@ void MenuFunctions::ShipsSelectMenuFunction(Vec2F* clk_pos, Menu* menu)
 	}
 }
 
-void MenuFunctions::MapPullSelectMenuFunction(Vec2F* clk_pos, Menu* menu)
+void MenuFunctions::MapPullSelectMenuFunction(Vec2F* clk_pos)
 {
 	for (uint8_t i = 0; i < game_p__map_pull_select_menu->GetButtonsCount(); i++)
 	{
@@ -331,7 +334,7 @@ void MenuFunctions::MapPullSelectMenuFunction(Vec2F* clk_pos, Menu* menu)
 	}
 }
 
-void MenuFunctions::SpawnObjectsSelectMenuFunction(Vec2F* clk_pos, Menu* menu)
+void MenuFunctions::SpawnObjectsSelectMenuFunction(Vec2F* clk_pos)
 {
 	for (uint8_t i = 0; i < game_p__spawning_objects_select_menu->GetButtonsCount(); i++)
 	{
@@ -348,7 +351,7 @@ void MenuFunctions::SpawnObjectsSelectMenuFunction(Vec2F* clk_pos, Menu* menu)
 }
 
 
-void MenuFunctions::ShipsControlMenuFunction(Vec2F* clk_pos, Menu* menu)
+void MenuFunctions::ShipsControlMenuFunction(Vec2F* clk_pos)
 {
 
 }

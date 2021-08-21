@@ -872,95 +872,99 @@ void Game::InitMenus()
 	//arrays
 
 	//main menu
-	Button* buttons = (Button*)malloc(sizeof(Button) * 3);
+	Button* buttons = new Button[3];
 	Vec2F position = Vec2F(-0.5f, 0.5f);
-	Vec2F size = Vec2F(1.0f, -0.5f);
-	buttons[0] = Button(BUTTON_ID_START_MATCH, &position, &size, "Play", 16);
-	position = Vec2F(-0.5f, 0.0f);
-	size = Vec2F(0.5f, -0.5f);
-	buttons[1] = Button(BUTTON_ID_GO_TO_OPTINS_MENU, &position, &size, "Options", 8);
-	position = Vec2F(0.0f, 0.0f);
-	buttons[2] = Button(BUTTON_ID_EXIT, &position, &size, "Exit", 8);
+	Vec2F size = Vec2F(1.0f, -0.60f);
+	buttons[0].Set(BUTTON_ID_START_MATCH, &position, &size, "Play", 16);
+	position = Vec2F(-0.5f, -0.15f);
+	size = Vec2F(0.475f, -0.25f);
+	buttons[1].Set(BUTTON_ID_GO_TO_OPTINS_MENU, &position, &size, "Options", 8);
+	position = Vec2F(0.025f, -0.15f);
+	buttons[2].Set(BUTTON_ID_EXIT, &position, &size, "Exit", 8);
 	main_menu = new Menu(&position, buttons, 3);
-	free(buttons);
+	delete[] buttons;
 
 	//option menu
-	buttons = (Button*)malloc(sizeof(Button) * 14);
+	buttons = new Button[14];
 	size = Vec2F(1.0f, -0.1f);
 	position = Vec2F(-0.5f, 0.5f - 0 * 0.1f);
-	buttons[0] = Button(BUTTON_ID_SET_RANDOM_SPAWN, &position, &size, "Random spawn", 6);
+	buttons[0].Set(BUTTON_ID_SET_RANDOM_SPAWN, &position, &size, "Random spawn", 6);
 	position = Vec2F(-0.5f, 0.5f - 1 * 0.1f);
-	buttons[1] = Button(BUTTON_ID_SET_RANDOM_SPAWN_DIRECTION, &position, &size, "Random spawn direction", 6);
+	buttons[1].Set(BUTTON_ID_SET_RANDOM_SPAWN_DIRECTION, &position, &size, "Random spawn direction", 6);
 	position = Vec2F(-0.5f, 0.5f - 2 * 0.1f);
-	buttons[2] = Button(BUTTON_ID_SET_SPAWN_THIS_BONUS, &position, &size, "Spawn this bonus", 6);
+	buttons[2].Set(BUTTON_ID_SET_SPAWN_THIS_BONUS, &position, &size, "Spawn this bonus", 6);
 	position = Vec2F(-0.5f, 0.5f - 3 * 0.1f);
-	buttons[3] = Button(BUTTON_ID_SET_SPAWN_THIS_RANDOM_BONUS, &position, &size, "Random start bonus", 6);
+	buttons[3].Set(BUTTON_ID_SET_SPAWN_THIS_RANDOM_BONUS, &position, &size, "Random start bonus", 6);
 	position = Vec2F(-0.5f, 0.5f - 4 * 0.1f);
-	buttons[4] = Button(BUTTON_ID_SET_SPAWN_WHIS_TRIPLE_BUFF, &position, &size, "Triple bonuses", 6);
+	buttons[4].Set(BUTTON_ID_SET_SPAWN_THIS_TRIPLE_BUFF, &position, &size, "Triple bonuses", 6);
 	position = Vec2F(-0.5f, 0.5f - 5 * 0.1f);
-	buttons[5] = Button(BUTTON_ID_SET_SPAWN_WHIT_SHIELD_BAFF, &position, &size, "Spawn whis shield", 6);
-	position = Vec2F(-0.5f, 0.5f - 6 * 0.1f);
-	buttons[7] = Button(BUTTON_ID_SET_FRIEDLY_SHEEP_CAN_RESTORE, &position, &size, "Friendly sheep can restore", 6);
+	buttons[5].Set(BUTTON_ID_SET_SPAWN_THIS_SHIELD_BAFF, &position, &size, "Spawn whis shield", 6);
 	position = Vec2F(-0.5f, 0.5f - 7 * 0.1f);
-	buttons[8] = Button(BUTTON_ID_SET_ACTIVE_FRIENDLY_FIRE, &position, &size, "Frendly fire", 6);
+	buttons[6].Set(BUTTON_ID_SET_KNIFES_CAN_DESTROY_BULLETS, &position, &size, "Knifes can destroy bullets", 6);
+	position = Vec2F(-0.5f, 0.5f - 7 * 0.1f);
+	buttons[7].Set(BUTTON_ID_SET_FRIEDLY_SHEEP_CAN_RESTORE, &position, &size, "Friendly sheep can restore", 6);
 	position = Vec2F(-0.5f, 0.5f - 8 * 0.1f);
-	buttons[9] = Button(BUTTON_ID_SET_PILOT_CAN_RESPAWN, &position, &size, "Pilot can respawn", 6);
+	buttons[8].Set(BUTTON_ID_SET_ACTIVE_FRIENDLY_FIRE, &position, &size, "Frendly fire", 6);
 	position = Vec2F(-0.5f, 0.5f - 9 * 0.1f);
-	buttons[10] = Button(BUTTON_ID_SET_NEED_KILL_PILOT, &position, &size, "Need kill pilot", 6);
+	buttons[9].Set(BUTTON_ID_SET_PILOT_CAN_RESPAWN, &position, &size, "Pilot can respawn", 6);
 	position = Vec2F(-0.5f, 0.5f - 10 * 0.1f);
-	buttons[11] = Button(BUTTON_ID_GO_TO_SELECT_MAP_MENU, &position, &size, "Map", 6);
+	buttons[10].Set(BUTTON_ID_SET_NEED_KILL_PILOT, &position, &size, "Need kill pilot", 6);
 	position = Vec2F(-0.5f, 0.5f - 11 * 0.1f);
-	buttons[12] = Button(BUTTON_ID_GO_TO_SELECT_OBJECTS_MENU, &position, &size, "Spawning", 6);
+	buttons[11].Set(BUTTON_ID_GO_TO_SELECT_MAP_MENU, &position, &size, "Map", 6);
 	position = Vec2F(-0.5f, 0.5f - 12 * 0.1f);
-	buttons[13] = Button(BUTTON_ID_SET_ACTIVE_BALANCE, &position, &size, "Balance", 6);
+	buttons[12].Set(BUTTON_ID_GO_TO_SELECT_OBJECTS_MENU, &position, &size, "Spawning", 6);
+	position = Vec2F(-0.5f, 0.5f - 13 * 0.1f);
+	buttons[13].Set(BUTTON_ID_SET_ACTIVE_BALANCE, &position, &size, "Balance", 6);
 	position = Vec2F(0.0f, 0.0f);
 	option_menu = new Menu(&position, buttons, 14);
-	free(buttons);
+	delete[] buttons;
 
 	//pause menu
-	buttons = (Button*)malloc(sizeof(Button) * 2);;
+	buttons = buttons = new Button[2];
 	position = Vec2F(-0.2f, 0.2f);
 	size = Vec2F(0.4f, -0.2f);
-	buttons[0] = Button(BUTTON_ID_RESUME_MATCH, &position, &size, "Resume", 16);
+	buttons[0].Set(BUTTON_ID_RESUME_MATCH, &position, &size, "Resume", 16);
 	position = Vec2F(-0.2f, 0.0f);
-	buttons[1] = Button(BUTTON_ID_GO_TO_MAIN_MENU, &position, &size, "Main menu", 8);
+	buttons[1].Set(BUTTON_ID_GO_TO_MAIN_MENU, &position, &size, "Main menu", 8);
 	position = Vec2F(0.0f, 0.0f);
-	pause_menu = new Menu(&position, buttons, 3);
-	free(buttons);
+	pause_menu = new Menu(&position, buttons, 2);
+	delete[] buttons;
 
 	//sheeps select menu
-	buttons = (Button*)malloc(sizeof(Button) * 4);
+	buttons = buttons = new Button[4];;
 	size = Vec2F(0.25f, -0.25f);
 	position = Vec2F(-0.5f, 0.5f);
-	buttons[0] = Button(BUTTON_ID_SELECT_SHIP_1, &position, &size, "Player 1", 6);
+	buttons[0].Set(BUTTON_ID_SELECT_SHIP_1, &position, &size, "Player 1", 6);
 	position = Vec2F(0.0f, 0.5f);
-	buttons[1] = Button(BUTTON_ID_SELECT_SHIP_2, &position, &size, "Player 2", 6);
+	buttons[1].Set(BUTTON_ID_SELECT_SHIP_2, &position, &size, "Player 2", 6);
 	position = Vec2F(0.0f, 0.0f);
-	buttons[2] = Button(BUTTON_ID_SELECT_SHIP_3, &position, &size, "Player 3", 6);
+	buttons[2].Set(BUTTON_ID_SELECT_SHIP_3, &position, &size, "Player 3", 6);
 	position = Vec2F(-0.5f, 0.0f);
-	buttons[3] = Button(BUTTON_ID_SELECT_SHIP_4, &position, &size, "Player 4", 6);
+	buttons[3].Set(BUTTON_ID_SELECT_SHIP_4, &position, &size, "Player 4", 6);
 	position = Vec2F();
 	ships_select_menu = new Menu(&position, buttons, 4);
-	free(buttons);
+	delete[] buttons;
 
 	//maps select menu
-	buttons = (Button*)malloc(sizeof(Button) * MAPS_COUNT);
-	for (uint8_t i = 1; i < MAPS_COUNT; i++)
+	buttons = buttons = new Button[MAPS_COUNT];;
+	for (uint8_t i = 0; i < MAPS_COUNT; i++)
 	{
 		position = Vec2F(-0.5f + (float)(i % 4), 0.5f - (float)(i / 4));
-		buttons[i] = Button(BUTTON_ID_SELECT_MAP + i - 1, &position, &size, "", 6);
+		buttons[i].Set(BUTTON_ID_SELECT_MAP + i - 1, &position, &size, "", 6);
 	}
 	position = Vec2F();
 	map_pull_select_menu = new Menu(&position, buttons, MAPS_COUNT);
-	free(buttons);
+	delete[] buttons;
 
 	//spawning objects select menu
-	buttons = (Button*)malloc(sizeof(Button) * 1);
+	buttons = buttons = new Button[1];
 	position = Vec2F(-0.5f, 0.5f);
-	buttons[0] = Button(BUTTON_ID_SELECT_OBJECT_ASTEROID, &position, &size, "Asteroid", 6);
+	buttons[0].Set(BUTTON_ID_SELECT_OBJECT_ASTEROID, &position, &size, "Asteroid", 6);
 	position = Vec2F();
 	spawning_objects_select_menu = new Menu(&position, buttons, 1);
-	free(buttons);
+	delete[] buttons;
+
+	current_active_menu = main_menu;
 }
 
 
