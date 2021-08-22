@@ -92,19 +92,20 @@ void MenuFunctions::Exit()
 	exit(0);
 }
 
-void MenuFunctions::ChangeOption(GameTypes::game_rules_t option_id)
+//Function changes and returns value of option.
+bool MenuFunctions::ChangeOption(GameTypes::game_rules_t option_id)
 {
 	if (*game_p__game_rules & option_id)
 	{
 		*game_p__game_rules &= GAME_RULES_T_MAX - option_id;
-		return;
+		return false;
 	}
 	*game_p__game_rules |= option_id;
+	return true;
 }
 
 void MenuFunctions::MainMenuFunction(Vec2F* clk_pos)
 {
-	std::cout << clk_pos->x << ' ' << clk_pos->y << std::endl;
 	for (uint8_t i = 0; i < game_p__main_menu->GetButtonsCount(); i++)
 	{
 		if (game_p__main_menu->current_buttons[i].HavePoint(clk_pos))
@@ -128,47 +129,50 @@ void MenuFunctions::MainMenuFunction(Vec2F* clk_pos)
 
 void MenuFunctions::OptionMenuFunction(Vec2F* clk_pos)
 {
+	Button* current_button;
 	for (uint8_t i = 0; i < game_p__option_menu->GetButtonsCount(); i++)
 	{
-		if (game_p__option_menu->current_buttons[i].HavePoint(clk_pos))
+		current_button = &game_p__option_menu->current_buttons[i];
+		if (current_button->HavePoint(clk_pos))
 		{
-			switch (game_p__option_menu->current_buttons[i].GetId())
+			switch (current_button->GetId())
 			{
 			case BUTTON_ID_SET_RANDOM_SPAWN:
-				ChangeOption(GAME_RULE_PLAYERS_SPAWN_POSITION_RANDOMIZE);
+				std::cout << clk_pos->x << ' ' << clk_pos->y << std::endl;
+				current_button->status = (ClassTypes::Button::button_status_t)ChangeOption(GAME_RULE_PLAYERS_SPAWN_POSITION_RANDOMIZE);
 				return;
 			case BUTTON_ID_SET_RANDOM_SPAWN_DIRECTION:
-				ChangeOption(GAME_RULE_PLAYERS_SPAWN_DIRECTION_RANDOMIZE);
+				current_button->status = (ClassTypes::Button::button_status_t)ChangeOption(GAME_RULE_PLAYERS_SPAWN_DIRECTION_RANDOMIZE);
 				return;
 			case BUTTON_ID_SET_SPAWN_THIS_BONUS:
-				ChangeOption(GAME_RULE_PLAYERS_SPAWN_THIS_BONUS);
+				current_button->status = (ClassTypes::Button::button_status_t)ChangeOption(GAME_RULE_PLAYERS_SPAWN_THIS_BONUS);
 				return;
 			case BUTTON_ID_SET_SPAWN_THIS_RANDOM_BONUS:
-				ChangeOption(GAME_RULE_START_BONUS_RANDOMIZE);
+				current_button->status = (ClassTypes::Button::button_status_t)ChangeOption(GAME_RULE_START_BONUS_RANDOMIZE);
 				return;
 			case BUTTON_ID_SET_SPAWN_THIS_TRIPLE_BUFF:
-				ChangeOption(GAME_RULE_PLAYERS_SPAWN_THIS_TRIPLE_BONUS);
+				current_button->status = (ClassTypes::Button::button_status_t)ChangeOption(GAME_RULE_PLAYERS_SPAWN_THIS_TRIPLE_BONUS);
 				return;
 			case BUTTON_ID_SET_SPAWN_THIS_SHIELD_BAFF:
-				ChangeOption(GAME_RULE_PLAYERS_SPAWN_THIS_SHIELD);
+				current_button->status = (ClassTypes::Button::button_status_t)ChangeOption(GAME_RULE_PLAYERS_SPAWN_THIS_SHIELD);
 				return;
 			case BUTTON_ID_SET_ACTIVE_BALANCE:
-				ChangeOption(GAME_RULE_BALANCE_ACTIVE);
+				current_button->status = (ClassTypes::Button::button_status_t)ChangeOption(GAME_RULE_BALANCE_ACTIVE);
 				return;
 			case BUTTON_ID_SET_FRIEDLY_SHEEP_CAN_RESTORE:
-				ChangeOption(GAME_RULE_FRIEDNLY_SHEEP_CAN_RESTORE);
+				current_button->status = (ClassTypes::Button::button_status_t)ChangeOption(GAME_RULE_FRIEDNLY_SHEEP_CAN_RESTORE);
 				return;
 			case BUTTON_ID_SET_ACTIVE_FRIENDLY_FIRE:
-				ChangeOption(GAME_RULE_FRENDLY_FIRE);
+				current_button->status = (ClassTypes::Button::button_status_t)ChangeOption(GAME_RULE_FRENDLY_FIRE);
 				return;
 			case BUTTON_ID_SET_PILOT_CAN_RESPAWN:
-				ChangeOption(GAME_RULE_PILOT_CAN_RESPAWN);
+				current_button->status = (ClassTypes::Button::button_status_t)ChangeOption(GAME_RULE_PILOT_CAN_RESPAWN);
 				return;
 			case BUTTON_ID_SET_NEED_KILL_PILOT:
-				ChangeOption(GAME_RULE_NEED_KILL_PILOT);
+				current_button->status = (ClassTypes::Button::button_status_t)ChangeOption(GAME_RULE_NEED_KILL_PILOT);
 				return;
 			case BUTTON_ID_SET_KNIFES_CAN_DESTROY_BULLETS:
-				ChangeOption(GAME_RULE_KNIFES_CAN_BREAKE_BULLETS);
+				current_button->status = (ClassTypes::Button::button_status_t)ChangeOption(GAME_RULE_KNIFES_CAN_BREAKE_BULLETS);
 				return;
 			case BUTTON_ID_GO_TO_SELECT_MAP_MENU:
 				OpenMapPullSelectMenu();

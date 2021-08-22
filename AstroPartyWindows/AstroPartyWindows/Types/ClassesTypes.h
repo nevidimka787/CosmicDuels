@@ -25,5 +25,7 @@ namespace ClassTypes
 	namespace Button
 	{
 		typedef uint32_t button_id_t;
+		typedef uint8_t button_status_t;
+		typedef int32_t button_text_t;
 	}
 }

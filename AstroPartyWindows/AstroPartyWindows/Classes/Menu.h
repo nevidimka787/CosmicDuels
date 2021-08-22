@@ -14,23 +14,26 @@ class Button
 protected:
 	Vec2F* position;
 	Vec2F* size;
-	char* text;
-	uint8_t text_size;
+	ClassTypes::Button::button_text_t* text;
+	uint16_t text_length;
 	ClassTypes::Button::button_id_t id;
 public:
-	uint8_t status;
+	uint8_t text_size;
+	ClassTypes::Button::button_status_t status;
 
 	Button();
-	Button(uint32_t id, Vec2F* position, Vec2F* size, const char* text, uint8_t text_size);
+	Button(ClassTypes::Button::button_id_t id, Vec2F* position, Vec2F* size, const char* text, uint8_t text_size);
 
 	ClassTypes::Button::button_id_t GetId();
 	Vec2F GetPosition();
 	Vec2F GetSize();
+	ClassTypes::Button::button_text_t* GetText();
+	uint16_t GetTextLength();
 	bool HavePoint(Vec2F* point);
 	void Move(Vec2F* move_vector);
 	void Set(Button* button);
-	void Set(uint32_t id, Vec2F* position, Vec2F* size, const char* text, uint8_t text_size);
-	void SetId(uint32_t id);
+	void Set(ClassTypes::Button::button_id_t id, Vec2F* position, Vec2F* size, const char* text, uint8_t text_size);
+	void SetId(ClassTypes::Button::button_id_t id);
 	void SetPosition(Vec2F* position);
 	void SetSize(Vec2F* size);
 	void SetText(const char* text);

@@ -33,7 +33,7 @@ public:
 	void ResumeGame();
 	void SelectSheep(GameTypes::players_count_t sheep_number, GameTypes::players_count_t team_number);
 	void Exit();
-	void ChangeOption(GameTypes::game_rules_t option_number);
+	bool ChangeOption(GameTypes::game_rules_t option_number);
 
 	void MainMenuFunction(Vec2F* clk_pos);
 	void OptionMenuFunction(Vec2F* clk_pos);

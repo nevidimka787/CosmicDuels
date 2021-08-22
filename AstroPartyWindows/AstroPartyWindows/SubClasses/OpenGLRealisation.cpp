@@ -3,6 +3,8 @@
 
 OpenGL::OpenGL(int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share, GLFWframebuffersizefun Function, GLFWwindow** window)
 {
+    flag_update_menu = false;
+    
     InitOpenGL();
     *window = CreateWindows(width, height, title, monitor, share, Function);
     window_height = height;
@@ -10,6 +12,7 @@ OpenGL::OpenGL(int width, int height, const char* title, GLFWmonitor* monitor, G
     InitGlad();
     InitBuffers();
     InitShaders();
+    InitTextures();
 }
 
 GLFWwindow* OpenGL::CreateWindows(int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share, GLFWframebuffersizefun Function)
@@ -41,24 +44,31 @@ void OpenGL::DrawFrame()
 
 void OpenGL::ProcessInput(GLFWwindow* window)
 {
+    if (flag_update_menu > 0)
+    {
+        flag_update_menu--;
+    }
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     {
+        flag_update_menu = 10;
         glfwSetWindowShouldClose(window, true);
         exit(0);
     }
     if (glfwGetKey(window, GLFW_KEY_BACKSPACE) == GLFW_PRESS && (mouse_buttons & OPEN_GL_REALISATION_BACK) == OPEN_GL_REALISATION_NOTHING)
     {
+        flag_update_menu = 10;
         mouse_buttons |= OPEN_GL_REALISATION_BACK;
         object_p__menu_functions->Back();
     }
     else if (glfwGetKey(window, GLFW_KEY_BACKSPACE) == GLFW_RELEASE && (mouse_buttons & OPEN_GL_REALISATION_BACK) != OPEN_GL_REALISATION_NOTHING)
     {
+        flag_update_menu = 10;
         mouse_buttons &= OPEN_GL_REALISATION_FULL - OPEN_GL_REALISATION_BACK;
     }
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS && (mouse_buttons & OPEN_GL_REALISATION_SELECT) == OPEN_GL_REALISATION_NOTHING)
     {
+        flag_update_menu = 10;
         mouse_buttons |= OPEN_GL_REALISATION_SELECT;
-        std::cout << "CLK" << std::endl;
         Vec2D clk_pos_d;
         glfwGetCursorPos(window, &clk_pos_d.x, &clk_pos_d.y);
         Vec2F clk_pos = Vec2F(((float)clk_pos_d.x / window_width - 0.5f) * 2.0f, ((float)clk_pos_d.y / -window_height + 0.5f) * 2.0f);
@@ -66,15 +76,21 @@ void OpenGL::ProcessInput(GLFWwindow* window)
         {
             object_p__menu_functions->MainMenuFunction(&clk_pos);
         }
+        else if (*game_p__current_active_menu == game_p__option_menu)
+        {
+            object_p__menu_functions->OptionMenuFunction(&clk_pos);
+        }
     }
     else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE && (mouse_buttons & OPEN_GL_REALISATION_SELECT) != OPEN_GL_REALISATION_NOTHING)
     {
+        flag_update_menu = 10;
         mouse_buttons &= OPEN_GL_REALISATION_FULL - OPEN_GL_REALISATION_SELECT;
     }
 }
 
 void OpenGL::FramebufferSizeCallback(GLFWwindow* window, int width, int height)
 {
+    flag_update_menu = 10;
     window_height = height;
     window_width = width;
     glViewport(0, 0, width, height);
@@ -88,12 +104,9 @@ void OpenGL::DrawObjectCurrentMenu()
 void OpenGL::DrawObjectIndicatedMenu(Menu* menu)
 {
     button_shader->Use();
+    symbols_texture->Use();
     for (ClassTypes::Menu::buttons_count_t button = 0; button < menu->GetButtonsCount(); button++)
     {
-        //Vec2F pos = menu->current_buttons[button].GetPosition();
-        //Vec2F size = menu->current_buttons[button].GetSize();
-        //std::cout << "Position: " << pos.x << ' ' << pos.y << std::endl
-        //    << "Size: " << size.x << ' ' << size.y << std::endl << std::endl;
         DrawObject(&menu->current_buttons[button], false);
     }
 }
@@ -219,6 +232,11 @@ void OpenGL::InitShaders()
     button_shader = new Shader("Shaders/Menu/Vertex/Button.glsl", "Shaders/Menu/Fragment/Button.glsl");
 }
 
+void OpenGL::InitTextures()
+{
+    symbols_texture = new Texture2D("Textures/Sample.bmp");
+}
+
 void OpenGL::DrawObjectCurrentMap()
 {
 
@@ -322,15 +340,32 @@ void OpenGL::DrawObject(Polygon* polygon, bool update_shader)
 
 void OpenGL::DrawObject(Button* button, bool update_shader)
 {
-#define BUTTON_SHADER_UNIFORM_POSITION  0
-#define BUTTON_SHADER_UNIFORM_SIZE      1
+#define BUTTON_SHADER_VERTEX_UNIFORMS_COUNT             2
+#define BUTTON_SHADER_FRAGMENT_UNIFORMS_COUNT           5
+#define BUTTON_SHADER_VERTEX_UNIFORM_START_POSITION     0
+#define BUTTON_SHADER_FRAGMENT_UNIFORM_START_POSITION   BUTTON_SHADER_VERTEX_UNIFORMS_COUNT
+
+#define BUTTON_SHADER_UNIFORM_POSITION          (BUTTON_SHADER_VERTEX_UNIFORM_START_POSITION + 0)
+#define BUTTON_SHADER_UNIFORM_SIZE              (BUTTON_SHADER_VERTEX_UNIFORM_START_POSITION + 1)
+
+#define BUTTON_SHADER_UNIFORM_COLOR             (BUTTON_SHADER_FRAGMENT_UNIFORM_START_POSITION + 0)
+#define BUTTON_SHADER_UNIFORM_TEXT_SIZE         (BUTTON_SHADER_FRAGMENT_UNIFORM_START_POSITION + 1)
+#define BUTTON_SHADER_UNIFORM_TEXT_LENGTH       (BUTTON_SHADER_FRAGMENT_UNIFORM_START_POSITION + 2)
+
+#define BUTTON_SHADER_UNIFORM_TEXT              (BUTTON_SHADER_FRAGMENT_UNIFORM_START_POSITION + 3)
+#define BUTTON_SHADER_UNIFORM_TEXT_BUFFER_SIZE  500
 
     if (update_shader)
     {
         button_shader->Use();
+        symbols_texture->Use();
     }
-    button_shader->SetUniform(BUTTON_SHADER_UNIFORM_POSITION, button->GetPosition());
-    button_shader->SetUniform(BUTTON_SHADER_UNIFORM_SIZE, button->GetSize());
+    button_shader->SetUniform("position", button->GetPosition());
+    button_shader->SetUniform("size", button->GetSize());
+    button_shader->SetUniform("color", (button->status & BUTTOM_STATUS_ACTIVE) ? Color3F(0.3f) : Color3F(0.7f));
+    button_shader->SetUniform("text", button->GetText(), button->GetTextLength());
+    button_shader->SetUniform("text_length", button->GetTextLength());
+    button_shader->SetUniform("text_size", button->text_size);
     glBindVertexArray(basic_square);
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }

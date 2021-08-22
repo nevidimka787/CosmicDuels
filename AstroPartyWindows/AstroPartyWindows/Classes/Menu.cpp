@@ -3,18 +3,17 @@
 #pragma warning(disable : 6386)
 #pragma warning(disable : 6385)
 
-Button::Button() : position(new Vec2F()), size(new Vec2F()), text(nullptr), text_size(0), id(0), status(BUTTOM_STATUS_INACTIVE)
+Button::Button() : position(new Vec2F()), size(new Vec2F()), text(nullptr), text_size(0), id(0), status(BUTTOM_STATUS_INACTIVE), text_length(0)
 {
 
 }
 
-Button::Button(uint32_t id, Vec2F* position, Vec2F* size, const char* text, uint8_t text_size) : id(id), position(new Vec2F(*position)), size(new Vec2F(*size)), text_size(text_size), status(BUTTOM_STATUS_INACTIVE)
+Button::Button(ClassTypes::Button::button_id_t id, Vec2F* position, Vec2F* size, const char* text, uint8_t text_size) : id(id), position(new Vec2F(*position)), size(new Vec2F(*size)), text_size(text_size), status(BUTTOM_STATUS_INACTIVE)
 {
-	uint32_t length;
-	for (length = 0; text[length] != '\0'; length++);
+	for (text_length = 0; text[text_length] != '\0'; text_length++);
 
-	this->text = new char[length + 1];
-	for (uint32_t i = 0; i <= length; i++)
+	this->text = new ClassTypes::Button::button_text_t[text_length + 1];
+	for (uint32_t i = 0; i <= text_length; i++)
 	{
 		this->text[i] = text[i];
 	}
@@ -35,6 +34,16 @@ Vec2F Button::GetSize()
 	return *size;
 }
 
+ClassTypes::Button::button_text_t* Button::GetText()
+{
+	return text;
+}
+
+uint16_t Button::GetTextLength()
+{
+	return text_length;
+}
+
 void Button::Set(Button* button)
 {
 	*position = *button->position;
@@ -47,18 +56,17 @@ void Button::Set(Button* button)
 		delete[] text;
 	}
 
-	uint32_t length;
-	for (length = 0; button->text[length] != '\0'; length++);
+	for (text_length = 0; button->text[text_length] != '\0'; text_length++);
 
-	text = new char[length + 1];
-	for (uint32_t i = 0; i <= length; i++)
+	text = new ClassTypes::Button::button_text_t[text_length + 1];
+	for (uint32_t i = 0; i <= text_length; i++)
 	{
 		text[i] = button->text[i];
 	}
 	status = button->status;
 }
 
-void Button::Set(uint32_t id, Vec2F* position, Vec2F* size, const char* text, uint8_t text_size)
+void Button::Set(ClassTypes::Button::button_id_t id, Vec2F* position, Vec2F* size, const char* text, uint8_t text_size)
 {
 	this->id = id;
 	*this->position = *position;
@@ -69,11 +77,10 @@ void Button::Set(uint32_t id, Vec2F* position, Vec2F* size, const char* text, ui
 		delete[] this->text;
 	}
 
-	uint32_t length;
-	for (length = 0; text[length] != '\0'; length++);
+	for (text_length = 0; text[text_length] != '\0'; text_length++);
 
-	this->text = new char[length + 1];
-	for (uint32_t i = 0; i <= length; i++)
+	this->text = new ClassTypes::Button::button_text_t[text_length + 1];
+	for (uint32_t i = 0; i <= text_length; i++)
 	{
 		this->text[i] = text[i];
 	}
@@ -86,7 +93,7 @@ void Button::Move(Vec2F* move_vector)
 	*position += *move_vector;
 }
 
-void Button::SetId(uint32_t id)
+void Button::SetId(ClassTypes::Button::button_id_t id)
 {
 	this->id = id;
 }
@@ -125,11 +132,10 @@ void Button::SetText(const char* text)
 		delete[] this->text;
 	}
 
-	uint32_t length;
-	for (length = 0; text[length] != '\0'; length++);
+	for (text_length = 0; text[text_length] != '\0'; text_length++);
 
-	this->text = new char[length + 1];
-	for (uint32_t i = 0; i <= length; i++)
+	this->text = new ClassTypes::Button::button_text_t[text_length + 1];
+	for (uint32_t i = 0; i <= text_length; i++)
 	{
 		this->text[i] = text[i];
 	}
@@ -162,11 +168,10 @@ void Button::operator=(Button button)
 		delete[] text;
 	}
 
-	uint32_t length;
-	for (length = 0; button.text[length] != '\0'; length++);
+	for (text_length = 0; button.text[text_length] != '\0'; text_length++);
 
-	text = new char[length + 1];
-	for (uint32_t i = 0; i <= length; i++)
+	text = new ClassTypes::Button::button_text_t[text_length + 1];
+	for (uint32_t i = 0; i <= text_length; i++)
 	{
 		text[i] = button.text[i];
 	}

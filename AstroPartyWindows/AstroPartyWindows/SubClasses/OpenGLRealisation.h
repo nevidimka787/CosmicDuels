@@ -10,6 +10,7 @@
 #include "../Classes/Line.h"
 #include "../Classes/GameEngine.h"
 #include "../Classes/Shader.h"
+#include "../Classes/Texture.h"
 
 class OpenGL
 {
@@ -45,6 +46,7 @@ public:
 	void InitGlad();
 	void InitBuffers();
 	void InitShaders();
+	void InitTextures();
 
 	//start functions
 
@@ -72,6 +74,10 @@ public:
 	Shader* polygon_shader;
 
 	Shader* button_shader;
+
+	Texture2D* symbols_texture;
+
+	uint8_t flag_update_menu;
 
 	//shaders
 
