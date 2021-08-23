@@ -6,14 +6,33 @@ uniform vec2 size;//size
 
 uniform int text_size;
 uniform int text_length;
+uniform float scale;
 
 out vec2 texture_position;
 out vec2 pixel_position;
 
+vec2 SetCurrentTexturePosition(vec2 textarea_pos)
+{
+    return (pixel_position - vec2(textarea_pos.x - text_size / 200.0f / abs(size.x) * text_length, textarea_pos.y * scale - text_size / 200.0f / abs(size.y / scale)))
+    * vec2(size.x, -size.y / scale) / 4.0f * 25.0f / text_size;
+}
+
 void main()
 {
-    pixel_position = aPos;
-    texture_position = (aPos - vec2(0.5f - text_size / 200.0f / abs(size.x) * text_length, 0.5f - text_size / 200.0f / abs(size.y)))
-    * vec2(size.x, -size.y) / 4.0f * 25.0f / text_size;
-    gl_Position = vec4(aPos * size + position, 0.0f, 1.0f);
-}
+    pixel_position = aPos * vec2(1.0f, scale);
+    texture_position = SetCurrentTexturePosition(vec2(0.5f, 0.5f));
+    gl_Position = vec4(pixel_position * size + position * vec2(1.0f, scale) + vec2(0.0f, 1.0f -  scale), 0.0f, 1.0f);
+}// + vec2(0.0f, 1.0f / scale - 1.0f)
+
+/*
+Scale = 1
+1
+0
+
+Scale = 2
+0.5
+-0.25
+
+
+
+*/

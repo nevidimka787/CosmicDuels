@@ -12,7 +12,7 @@
 #include "SubClasses/OpenGLRealisation.h"
 #include "SubClasses/Linker.h"
 
-#define SCR_WIDTH 800
+#define SCR_WIDTH 1600
 #define SCR_HEIGHT 800
 
 #define TIK_UPDATE_INIT 0x01
@@ -46,7 +46,6 @@ int main()
     main_linker = new Linker(main_game, main_menu_functions, main_draw_functions);
 
     //game cycle
-    main_draw_functions->flag_update_menu = 10;
     while (true)
     {
         main_draw_functions->ProcessInput(window);

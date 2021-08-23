@@ -31,7 +31,6 @@ Linker::Linker(Game* game_object, MenuFunctions* menu_functions_object, OpenGL* 
 	menu_functions_object->game_p__main_menu = game_object->main_menu;
 	menu_functions_object->game_p__pause_menu = game_object->pause_menu;
 	menu_functions_object->game_p__ships_select_menu = game_object->ships_select_menu;
-	menu_functions_object->game_p__team_sheeps_select_menu = game_object->team_sheeps_select_menu;
 	menu_functions_object->game_p__map_pull_select_menu = game_object->map_pull_select_menu;
 	menu_functions_object->game_p__spawning_objects_select_menu = game_object->spawning_objects_select_menu;
 	menu_functions_object->game_p__ships_control_menu = game_object->ships_control_menu;
@@ -47,7 +46,6 @@ Linker::Linker(Game* game_object, MenuFunctions* menu_functions_object, OpenGL* 
 	open_gl_object->game_p__main_menu = game_object->main_menu;
 	open_gl_object->game_p__pause_menu = game_object->pause_menu;
 	open_gl_object->game_p__ships_select_menu = game_object->ships_select_menu;
-	open_gl_object->game_p__team_sheeps_select_menu = game_object->team_sheeps_select_menu;
 	open_gl_object->game_p__map_pull_select_menu = game_object->map_pull_select_menu;
 	open_gl_object->game_p__spawning_objects_select_menu = game_object->spawning_objects_select_menu;
 	open_gl_object->game_p__ships_control_menu = game_object->ships_control_menu;

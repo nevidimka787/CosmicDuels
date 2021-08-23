@@ -12,6 +12,7 @@ uniform vec3 color;
 
 uniform int text_size;
 uniform int text_length;
+uniform float scale;
 
 uniform int text[500];
 
@@ -34,14 +35,19 @@ bool TexturePositionInNeedCell(vec2 position, int cell_id)
 		position.y < (cell_id / 16 + 1) / 16.0f;
 }
 
+bool PixelInTextarea(vec2 pixel_pos, vec2 textarea_pos)
+{
+	return pixel_pos.x < textarea_pos.x + text_size / 200.0f / abs(size.x) * text_length &&
+	pixel_pos.x > textarea_pos.x - text_size / 200.0f / abs(size.x) * text_length &&
+	pixel_pos.y < (textarea_pos.y + text_size / 200.0f / abs(size.y)) * scale &&
+	pixel_pos.y > (textarea_pos.y - text_size / 200.0f / abs(size.y)) * scale;
+}
+
 void main()
 {
 	bool white = false; 
 	vec2 current_texture_position;
-	if(pixel_position.x < 0.5f + text_size / 200.0f / abs(size.x) * text_length &&
-	pixel_position.x > 0.5f - text_size / 200.0f / abs(size.x) * text_length &&
-	pixel_position.y < 0.5f + text_size / 200.0f / abs(size.y) &&
-	pixel_position.y > 0.5f - text_size / 200.0f / abs(size.y))
+	if(PixelInTextarea(pixel_position, vec2(0.5f, 0.5f)))
 	{
 		for(int letter = 0; letter < text_length; letter++)
 		{
@@ -49,13 +55,13 @@ void main()
 			if(texture(text_texture, current_texture_position).z > 0.9f &&
 				TexturePositionInNeedCell(current_texture_position, text[letter]))
 			{
-				frag_color = vec4(1.0f);
+				frag_color = vec4(0.95f, 0.95f, 0.95f, 1.0f);
 				white = true;
 			}
 		}
 		if(!white)
 		{
-			frag_color = vec4(color, 1.0f);
+			frag_color = vec4(color * 0.7f, 1.0f);
 		}
 	}
 	else

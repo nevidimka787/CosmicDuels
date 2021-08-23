@@ -151,7 +151,6 @@ public:
 	Menu* pause_menu;
 
 	Menu* ships_select_menu;
-	Menu* team_sheeps_select_menu;
 	Menu* map_pull_select_menu;
 	Menu* spawning_objects_select_menu;
 

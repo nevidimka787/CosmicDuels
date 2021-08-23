@@ -7,3 +7,5 @@
 *.log
 *.tlog
 *.suo
+*.tlog
+*.obj

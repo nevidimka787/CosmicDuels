@@ -8,14 +8,14 @@ Vec2D::Vec2D(double x, double y) : x(x), y(y)
 {
 }
 
-Vec2D Vec2D::operator+(Vec2D add_vector)
+Vec2D Vec2D::operator+(Vec2D vector)
 {
-	return Vec2D(this->x + add_vector.x, this->y + add_vector.y);
+	return Vec2D(this->x + vector.x, this->y + vector.y);
 }
 
-Vec2D Vec2D::operator-(Vec2D add_vector)
+Vec2D Vec2D::operator-(Vec2D vector)
 {
-	return Vec2D(this->x - add_vector.x, this->y - add_vector.y);
+	return Vec2D(this->x - vector.x, this->y - vector.y);
 }
 
 Vec2D Vec2D::operator-()
@@ -23,9 +23,9 @@ Vec2D Vec2D::operator-()
 	return Vec2D(-this->x, -this->y);
 }
 
-Vec2D Vec2D::operator*(double mult)
+Vec2D Vec2D::operator*(double value)
 {
-	return Vec2D(this->x * mult, this->y * mult);
+	return Vec2D(this->x * value, this->y * value);
 }
 
 double Vec2D::operator*(Vec2D vector)
@@ -33,44 +33,43 @@ double Vec2D::operator*(Vec2D vector)
 	return x * vector.x + y * vector.y;
 }
 
-Vec2D Vec2D::operator/(double div)
+Vec2D Vec2D::operator/(double value)
 {
-	return Vec2D(this->x / div, this->y / div);
+	return Vec2D(this->x / value, this->y / value);
 }
 
-Vec2D Vec2D::operator+=(Vec2D add_vector)
+void Vec2D::operator+=(Vec2D vector)
 {
-	return Vec2D(this->x + add_vector.x, this->y + add_vector.y);
+	x += vector.x;
+	y += vector.y;
 }
 
-Vec2D Vec2D::operator-=(Vec2D add_vector)
+void Vec2D::operator-=(Vec2D vector)
 {
-	return Vec2D(this->x - add_vector.x, this->y - add_vector.y);
+	x -= vector.x;
+	y -= vector.y;
 }
 
-Vec2D Vec2D::operator*=(double mult)
+void Vec2D::operator*=(double value)
 {
-	return Vec2D(this->x * mult, this->y * mult);
+	x *= value;
+	y *= value;
 }
 
-double Vec2D::operator*=(Vec2D vector)
+void Vec2D::operator/=(double value)
 {
-	return x * vector.x + y * vector.y;
+	x /= value;
+	y /= value;
 }
 
-Vec2D Vec2D::operator/=(double div)
+bool Vec2D::operator==(Vec2D vector)
 {
-	return Vec2D(this->x / div, this->y / div);
+	return (this->x == vector.x && this->y == vector.y);
 }
 
-bool Vec2D::operator==(Vec2D vec)
+bool Vec2D::operator!=(Vec2D vector)
 {
-	return (this->x == vec.x && this->y == vec.y);
-}
-
-bool Vec2D::operator!=(Vec2D vec)
-{
-	return (this->x != vec.x && this->y != vec.y);
+	return (this->x != vector.x && this->y != vector.y);
 }
 
 double Vec2D::GetAbsoluteAngle()
@@ -78,9 +77,9 @@ double Vec2D::GetAbsoluteAngle()
 	return (atan2(-y, x));
 }
 
-double Vec2D::GetDistance(Vec2D* target_vector)
+double Vec2D::GetDistance(Vec2D* vector)
 {
-	return (*this - *target_vector).GetLength();
+	return (*this - *vector).GetLength();
 }
 
 double Vec2D::GetLength()
@@ -152,14 +151,14 @@ Vec2F::Vec2F(float x, float y) : x(x), y(y)
 {
 }
 
-Vec2F Vec2F::operator+(Vec2F add_vector)
+Vec2F Vec2F::operator+(Vec2F vector)
 {
-	return Vec2F(this->x + add_vector.x, this->y + add_vector.y);
+	return Vec2F(this->x + vector.x, this->y + vector.y);
 }
 
-Vec2F Vec2F::operator-(Vec2F add_vector)
+Vec2F Vec2F::operator-(Vec2F vector)
 {
-	return Vec2F(this->x - add_vector.x, this->y - add_vector.y);
+	return Vec2F(this->x - vector.x, this->y - vector.y);
 }
 
 Vec2F Vec2F::operator-()
@@ -177,44 +176,44 @@ float Vec2F::operator*(Vec2F vector)
 	return x * vector.x + y * vector.y;
 }
 
-Vec2F Vec2F::operator/(float div)
+Vec2F Vec2F::operator/(float value)
 {
-	return Vec2F(this->x / div, this->y / div);
+
+	return Vec2F(this->x / value, this->y / value);
 }
 
-Vec2F Vec2F::operator+=(Vec2F add_vector)
+void Vec2F::operator+=(Vec2F vector)
 {
-	return Vec2F(this->x + add_vector.x, this->y + add_vector.y);
+	x += vector.x;
+	y += vector.y;
 }
 
-Vec2F Vec2F::operator-=(Vec2F add_vector)
+void Vec2F::operator-=(Vec2F vector)
 {
-	return Vec2F(this->x - add_vector.x, this->y - add_vector.y);
+	x -= vector.x;
+	y -= vector.y;
 }
 
-Vec2F Vec2F::operator*=(float mult)
+void Vec2F::operator*=(float value)
 {
-	return Vec2F(this->x * mult, this->y * mult);
+	x *= value;
+	y *= value;
 }
 
-float Vec2F::operator*=(Vec2F vector)
+void Vec2F::operator/=(float value)
 {
-	return x * vector.x + y * vector.y;
+	x /= value;
+	y /= value;
 }
 
-Vec2F Vec2F::operator/=(float div)
+bool Vec2F::operator==(Vec2F vector)
 {
-	return Vec2F(this->x / div, this->y / div);
+	return x == vector.x && y == vector.y;
 }
 
-bool Vec2F::operator==(Vec2F vec)
+bool Vec2F::operator!=(Vec2F vector)
 {
-	return (this->x == vec.x && this->y == vec.y);
-}
-
-bool Vec2F::operator!=(Vec2F vec)
-{
-	return (this->x != vec.x && this->y != vec.y);
+	return (this->x != vector.x && this->y != vector.y);
 }
 
 float Vec2F::GetAbsoluteAngle()

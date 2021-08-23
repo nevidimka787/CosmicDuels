@@ -18,6 +18,12 @@ protected:
 	uint8_t mouse_buttons = 0x00;
 	GLint window_height;
 	GLint window_width;
+	//width / height
+	float window_scale;
+	Vec2D* cursore_current_position;
+	Vec2D* cursore_last_position;
+	Vec2D* cursore_press_position;
+	Vec2D* cursore_release_position;
 public:
 	void (*FramebufferSizeCallbackPointer)(GLFWwindow* window, int width, int height);
 
@@ -53,6 +59,8 @@ public:
 	//callback functions
 
 	void ProcessInput(GLFWwindow* window);
+	void LimitMenuPosition(Menu* menu);
+	void CallMenuFunction(Menu* menu, Vec2F* clk_pos, uint8_t clk_statuse);
 	void FramebufferSizeCallback(GLFWwindow* window, int width, int height);
 	
 	//callback functions
@@ -78,6 +86,8 @@ public:
 	Texture2D* symbols_texture;
 
 	uint8_t flag_update_menu;
+	bool flag_update_menu_can_change;
+	bool flag_move_menu;
 
 	//shaders
 
@@ -132,7 +142,6 @@ public:
 	Menu* game_p__main_menu;
 	Menu* game_p__pause_menu;
 	Menu* game_p__ships_select_menu;
-	Menu* game_p__team_sheeps_select_menu;
 	Menu* game_p__map_pull_select_menu;
 	Menu* game_p__spawning_objects_select_menu;
 	Menu* game_p__ships_control_menu;

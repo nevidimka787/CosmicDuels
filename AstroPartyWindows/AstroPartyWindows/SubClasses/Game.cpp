@@ -679,13 +679,13 @@ void Game::InitGame()
 	game_rules = GAME_RULE_DEFAULT_GAME_RULES;
 	global_timer = 0;
 
-	menu_p__ships_select_buttons = new GameTypes::players_count_t[GAME_PLAYERS_MAX_COUNT];
 	teams = new GameTypes::entities_count_t[GAME_PLAYERS_MAX_COUNT];
-	for (GameTypes::players_count_t i = 0; i < GAME_PLAYERS_MAX_COUNT; i++)
+	object_pull_array = new bool[GAME_OBJECT_TYPES_COUNT];
+	map_pull_array = new bool[GAME_MAPS_COUNT];
+	for (GameTypes::objects_types_count_t i = 0; i < GAME_OBJECT_TYPES_COUNT; i++)
 	{
-		menu_p__ships_select_buttons[i] = SHIPS_SELECT_BUTTONS_NO_TEAM;
+		object_pull_array[i] = false;
 	}
-
 	srand((unsigned int)ships * (unsigned int)pilots);
 }
 
@@ -746,7 +746,7 @@ void Game::InitMach()
 	//create map pull array
 
 	selected_maps_id_array_length = 0;
-	for (GameTypes::maps_count_t map_id = 0; map_id < MAPS_COUNT; map_id++)
+	for (GameTypes::maps_count_t map_id = 0; map_id < GAME_MAPS_COUNT; map_id++)
 	{
 		if (map_pull_array[map_id] == true)
 		{
@@ -756,7 +756,7 @@ void Game::InitMach()
 
 	if (selected_maps_id_array_length == 0)
 	{
-		selected_maps_id_array_length = MAPS_COUNT;
+		selected_maps_id_array_length = GAME_MAPS_COUNT;
 	}
 	selected_maps_id_array = new GameTypes::maps_count_t[selected_maps_id_array_length];
 
@@ -810,7 +810,7 @@ void Game::InitLevel()
 		}
 		if (game_rules & GAME_RULE_PLAYERS_SPAWN_POSITION_RANDOMIZE)
 		{
-			for (uint8_t i = 0; i < RANDOM_ITERATIONS_COUNT; i++)
+			for (uint8_t i = 0; i < GAME_RANDOM_ITERATIONS_COUNT; i++)
 			{
 				GameTypes::players_count_t temp1 = rand() % players_count;
 				GameTypes::players_count_t temp2 = rand() % players_count;
@@ -853,7 +853,7 @@ void Game::InitLevel()
 		for (GameTypes::players_count_t i = 0; i < players_count; i++)
 		{
 			Vec2F temp_vel = Vec2F();
-			if (game_rules & GAME_RULE_BALANCE_ACTIVE && scores[i] <= max_score - BALANCE_ACTIVATE_DIFFERENCE_SCORES)
+			if (game_rules & GAME_RULE_BALANCE_ACTIVE && scores[i] <= max_score - GAME_BALANCE_ACTIVATE_DIFFERENCE_SCORES)
 			{
 				temp__ship = Ship(i, teams[i], (void*)&rotate_flags[i], (void*)&shoot_flags[i], &temp_points[i], &temp_vel, temp_angles[i], 0.0f, start_bonus | BUFF_SHIELD);
 				Game::AddEntity(temp__ship);
@@ -873,53 +873,68 @@ void Game::InitMenus()
 
 	//main menu
 	Button* buttons = new Button[3];
-	Vec2F position = Vec2F(-0.5f, 0.5f);
+	Vec2F position = Vec2F(-0.5f, 0.95f);
 	Vec2F size = Vec2F(1.0f, -0.60f);
-	buttons[0].Set(BUTTON_ID_START_MATCH, &position, &size, "Start", 20);
-	position = Vec2F(-0.5f, -0.15f);
+	buttons[0].Set(BUTTON_ID_START_MATCH, &position, &size, "PLAY", 20);
+	position = Vec2F(-0.5f, 0.3f);
 	size = Vec2F(0.475f, -0.25f);
 	buttons[1].Set(BUTTON_ID_GO_TO_OPTINS_MENU, &position, &size, "Options", 6);
-	position = Vec2F(0.025f, -0.15f);
+	position = Vec2F(0.025f, 0.3f);
 	buttons[2].Set(BUTTON_ID_EXIT, &position, &size, "Exit", 6);
-	main_menu = new Menu(&position, buttons, 3);
+	position = Vec2F();
+	size = Vec2F(1.0f, -1.0f);
+	main_menu = new Menu(&position, &size, buttons, 3);
 	delete[] buttons;
 
 	//option menu
 	buttons = new Button[14];
 	size = Vec2F(1.5f, -0.1f);
 #define GAME_OPTION_MENU_BORD	0.11f
-#define GAME_OPTION_MENU_UP_Y	0.8f
+#define GAME_OPTION_MENU_UP_Y	0.9f
 #define GAME_OPTIONS_STAT_X		-0.75f
 	position = Vec2F(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 0 * GAME_OPTION_MENU_BORD);
 	buttons[0].Set(BUTTON_ID_SET_RANDOM_SPAWN, &position, &size, "Random spawn", 5);
+	buttons[0].status = (game_rules & GAME_RULE_PLAYERS_SPAWN_POSITION_RANDOMIZE) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_INACTIVE;
 	position = Vec2F(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 1 * GAME_OPTION_MENU_BORD);
-	buttons[1].Set(BUTTON_ID_SET_RANDOM_SPAWN_DIRECTION, &position, &size, "Random spawn direction", 6);
+	buttons[1].Set(BUTTON_ID_SET_RANDOM_SPAWN_DIRECTION, &position, &size, "Random spawn direction", 5);
+	buttons[1].status = (game_rules & GAME_RULE_PLAYERS_SPAWN_DIRECTION_RANDOMIZE) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_INACTIVE;
 	position = Vec2F(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 2 * GAME_OPTION_MENU_BORD);
 	buttons[2].Set(BUTTON_ID_SET_SPAWN_THIS_BONUS, &position, &size, "Spawn this bonus", 5);
+	buttons[2].status = (game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_BONUS) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_INACTIVE;
 	position = Vec2F(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 3 * GAME_OPTION_MENU_BORD);
 	buttons[3].Set(BUTTON_ID_SET_SPAWN_THIS_RANDOM_BONUS, &position, &size, "Random start bonus", 5);
+	buttons[3].status = (game_rules & GAME_RULE_START_BONUS_RANDOMIZE) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_INACTIVE;
 	position = Vec2F(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 4 * GAME_OPTION_MENU_BORD);
 	buttons[4].Set(BUTTON_ID_SET_SPAWN_THIS_TRIPLE_BUFF, &position, &size, "Triple bonuses", 5);
+	buttons[4].status = (game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_TRIPLE_BONUS) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_INACTIVE;
 	position = Vec2F(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 5 * GAME_OPTION_MENU_BORD);
 	buttons[5].Set(BUTTON_ID_SET_SPAWN_THIS_SHIELD_BAFF, &position, &size, "Spawn whis shield", 5);
+	buttons[5].status = (game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_SHIELD) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_INACTIVE;
 	position = Vec2F(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 6 * GAME_OPTION_MENU_BORD);
 	buttons[6].Set(BUTTON_ID_SET_KNIFES_CAN_DESTROY_BULLETS, &position, &size, "Knifes can destroy bullets", 5);
+	buttons[6].status = (game_rules & GAME_RULE_KNIFES_CAN_DESTROY_BULLETS) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_INACTIVE;
 	position = Vec2F(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 7 * GAME_OPTION_MENU_BORD);
 	buttons[7].Set(BUTTON_ID_SET_FRIEDLY_SHEEP_CAN_RESTORE, &position, &size, "Friendly sheep can restore", 5);
+	buttons[7].status = (game_rules & GAME_RULE_FRIEDNLY_SHEEP_CAN_RESTORE) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_INACTIVE;
 	position = Vec2F(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 8 * GAME_OPTION_MENU_BORD);
 	buttons[8].Set(BUTTON_ID_SET_ACTIVE_FRIENDLY_FIRE, &position, &size, "Frendly fire", 5);
+	buttons[8].status = (game_rules & GAME_RULE_FRENDLY_FIRE) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_INACTIVE;
 	position = Vec2F(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 9 * GAME_OPTION_MENU_BORD);
 	buttons[9].Set(BUTTON_ID_SET_PILOT_CAN_RESPAWN, &position, &size, "Pilot can respawn", 5);
+	buttons[9].status = (game_rules & GAME_RULE_PILOT_CAN_RESPAWN) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_INACTIVE;
 	position = Vec2F(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 10 * GAME_OPTION_MENU_BORD);
 	buttons[10].Set(BUTTON_ID_SET_NEED_KILL_PILOT, &position, &size, "Need kill pilot", 5);
+	buttons[10].status = (game_rules & GAME_RULE_NEED_KILL_PILOT) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_INACTIVE;
 	position = Vec2F(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 11 * GAME_OPTION_MENU_BORD);
-	buttons[11].Set(BUTTON_ID_GO_TO_SELECT_MAP_MENU, &position, &size, "Map", 5);
+	buttons[11].Set(BUTTON_ID_GO_TO_SELECT_MAP_MENU, &position, &size, "Map pull menu", 5);
 	position = Vec2F(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 12 * GAME_OPTION_MENU_BORD);
-	buttons[12].Set(BUTTON_ID_GO_TO_SELECT_OBJECTS_MENU, &position, &size, "Spawning", 5);
+	buttons[12].Set(BUTTON_ID_GO_TO_SELECT_OBJECTS_MENU, &position, &size, "Spawning objects menu", 5);
 	position = Vec2F(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 13 * GAME_OPTION_MENU_BORD);
 	buttons[13].Set(BUTTON_ID_SET_ACTIVE_BALANCE, &position, &size, "Auto balance", 5);
+	buttons[13].status = (game_rules & GAME_RULE_BALANCE_ACTIVE) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_INACTIVE;
 	position = Vec2F(0.0f, 0.0f);
-	option_menu = new Menu(&position, buttons, 14);
+	size = Vec2F(1.5f, GAME_OPTION_MENU_UP_Y - 1.0f - 15.0f * GAME_OPTION_MENU_BORD);
+	option_menu = new Menu(&position, &size, buttons, 14);
 	delete[] buttons;
 
 	//pause menu
@@ -930,41 +945,52 @@ void Game::InitMenus()
 	position = Vec2F(-0.2f, 0.0f);
 	buttons[1].Set(BUTTON_ID_GO_TO_MAIN_MENU, &position, &size, "Main menu", 8);
 	position = Vec2F(0.0f, 0.0f);
-	pause_menu = new Menu(&position, buttons, 2);
+	size = Vec2F(1.0f, -1.0f);
+	pause_menu = new Menu(&position, &size, buttons, 2);
 	delete[] buttons;
 
 	//sheeps select menu
-	buttons = buttons = new Button[4];;
-	size = Vec2F(0.25f, -0.25f);
-	position = Vec2F(-0.5f, 0.5f);
+	buttons = buttons = new Button[5];;
+	size = Vec2F(0.475f, -0.25f);
+	position = Vec2F(-0.5f, 0.9f);
 	buttons[0].Set(BUTTON_ID_SELECT_SHIP_1, &position, &size, "Player 1", 6);
-	position = Vec2F(0.0f, 0.5f);
+	position = Vec2F(0.025f, 0.9f);
 	buttons[1].Set(BUTTON_ID_SELECT_SHIP_2, &position, &size, "Player 2", 6);
-	position = Vec2F(0.0f, 0.0f);
+	position = Vec2F(0.025f, 0.6f);
 	buttons[2].Set(BUTTON_ID_SELECT_SHIP_3, &position, &size, "Player 3", 6);
-	position = Vec2F(-0.5f, 0.0f);
+	position = Vec2F(-0.5f, 0.6f);
 	buttons[3].Set(BUTTON_ID_SELECT_SHIP_4, &position, &size, "Player 4", 6);
+	position = Vec2F(-0.5f, 0.3f);
+	size = Vec2F(1.0f, -0.25f);
+	buttons[4].Set(BUTTON_ID_START_GAME, &position, &size, "Start game!", 7);
 	position = Vec2F();
-	ships_select_menu = new Menu(&position, buttons, 4);
+	size = Vec2F(1.0f, -1.0f);
+	ships_select_menu = new Menu(&position, &size, buttons, 5);
 	delete[] buttons;
 
 	//maps select menu
-	buttons = buttons = new Button[MAPS_COUNT];;
-	for (uint8_t i = 0; i < MAPS_COUNT; i++)
+#define GAME_MAPPULL_MENU_UP_Y		0.9f
+#define GAME_MAPPULL_MENU_BORDER	0.25f
+	buttons = buttons = new Button[GAME_MAPS_COUNT];
+	size = Vec2F(0.25f, -0.25f);
+	for (uint8_t i = 0; i < GAME_MAPS_COUNT; i++)
 	{
-		position = Vec2F(-0.5f + (float)(i % 4), 0.5f - (float)(i / 4));
+		position = Vec2F(-0.5f + (float)(i % 2) * GAME_MAPPULL_MENU_BORDER, GAME_MAPPULL_MENU_UP_Y - (float)(i / 2) * GAME_MAPPULL_MENU_BORDER);
 		buttons[i].Set(BUTTON_ID_SELECT_MAP + i - 1, &position, &size, "", 6);
 	}
 	position = Vec2F();
-	map_pull_select_menu = new Menu(&position, buttons, MAPS_COUNT);
+	size = Vec2F(1.0f, GAME_MAPPULL_MENU_BORDER * (float)(((GAME_MAPS_COUNT + 1) / 2) + 1));
+	map_pull_select_menu = new Menu(&position, &size, buttons, GAME_MAPS_COUNT);
 	delete[] buttons;
 
 	//spawning objects select menu
 	buttons = buttons = new Button[1];
-	position = Vec2F(-0.5f, 0.5f);
+	position = Vec2F(-0.5f, 0.9f);
+	size = Vec2F(0.475f, -0.475f);
 	buttons[0].Set(BUTTON_ID_SELECT_OBJECT_ASTEROID, &position, &size, "Asteroid", 6);
 	position = Vec2F();
-	spawning_objects_select_menu = new Menu(&position, buttons, 1);
+	size = Vec2F(0.5f, -0.5f);
+	spawning_objects_select_menu = new Menu(&position, &size, buttons, 1);
 	delete[] buttons;
 
 	current_active_menu = main_menu;
@@ -1460,7 +1486,7 @@ void Game::UpdateBullets()
 					found_asteroids++;
 				}
 			}
-			if (game_rules & GAME_RULE_KNIFES_CAN_BREAKE_BULLETS)
+			if (game_rules & GAME_RULE_KNIFES_CAN_DESTROY_BULLETS)
 			{
 				for (GameTypes::entities_count_t knife = 0, found_knifes = 0; found_knifes < knifes_count; knife++)
 				{

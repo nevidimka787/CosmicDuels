@@ -11,19 +11,18 @@ public:
 	Vec2D();
 	Vec2D(double x, double y);
 
-	Vec2D operator+(Vec2D add_vector);
-	Vec2D operator+=(Vec2D add_vector);
+	Vec2D operator+(Vec2D vector);
+	void operator+=(Vec2D vector);
 	Vec2D operator-();
-	Vec2D operator-(Vec2D sub_vector);
-	Vec2D operator-=(Vec2D sub_vector);
-	Vec2D operator*(double mult);
-	double operator*(Vec2D vec);
-	Vec2D operator*=(double mult);
-	double operator*=(Vec2D vec);
-	Vec2D operator/(double div);
-	Vec2D operator/=(double div);
-	bool operator==(Vec2D vec);
-	bool operator!=(Vec2D vec);
+	Vec2D operator-(Vec2D vector);
+	void operator-=(Vec2D vector);
+	Vec2D operator*(double value);
+	double operator*(Vec2D vector);
+	void operator*=(double value);
+	Vec2D operator/(double value);
+	void operator/=(double value);
+	bool operator==(Vec2D vector);
+	bool operator!=(Vec2D vector);
 
 	double GetAbsoluteAngle();
 	double GetDistance(Vec2D* target);
@@ -48,19 +47,18 @@ public:
 	Vec2F();
 	Vec2F(float x, float y);
 
-	Vec2F operator+(Vec2F add_vector);
-	Vec2F operator+=(Vec2F add_vector);
+	Vec2F operator+(Vec2F vector);
+	void operator+=(Vec2F vector);
 	Vec2F operator-();
-	Vec2F operator-(Vec2F sub_vector);
-	Vec2F operator-=(Vec2F sub_vector);
-	Vec2F operator*(float mult);
-	float operator*(Vec2F vec);
-	Vec2F operator*=(float mult);
-	float operator*=(Vec2F vec);
-	Vec2F operator/(float div);
-	Vec2F operator/=(float div);
-	bool operator==(Vec2F vec);
-	bool operator!=(Vec2F vec);
+	Vec2F operator-(Vec2F vector);
+	void operator-=(Vec2F vector);
+	Vec2F operator*(float value);
+	float operator*(Vec2F vector);
+	void operator*=(float value);
+	Vec2F operator/(float value);
+	void operator/=(float value);
+	bool operator==(Vec2F vector);
+	bool operator!=(Vec2F vector);
 
 	float GetAbsoluteAngle();
 	float GetDistance(Vec2F* target);
