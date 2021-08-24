@@ -1,7 +1,10 @@
 #include "Menu.h"
-#pragma warning(disable : 26451)//All integer operations can be overflow. It is absolutly useless warnintg.
+#pragma warning(disable : 6011)
+#pragma warning(disable : 6308)
 #pragma warning(disable : 6386)
 #pragma warning(disable : 6385)
+#pragma warning(disable : 26451)//All integer operations can be overflow. It is absolutly useless warnintg.
+#pragma warning(disable : 28182)
 
 Button::Button() : position(new Vec2F()), size(new Vec2F()), text(nullptr), text_size(0), id(0), status(BUTTON_STATUS_INACTIVE), text_length(0)
 {
@@ -12,7 +15,7 @@ Button::Button(ClassTypes::Button::button_id_t id, Vec2F* position, Vec2F* size,
 {
 	for (text_length = 0; text[text_length] != '\0'; text_length++);
 
-	this->text = new ClassTypes::Button::button_text_t[text_length + 1];
+	this->text = (ClassTypes::Button::button_text_t*)malloc(sizeof(ClassTypes::Button::button_text_t) * (text_length + 1));
 	for (uint32_t i = 0; i <= text_length; i++)
 	{
 		this->text[i] = text[i];
@@ -55,20 +58,15 @@ void Button::Set(Button* button)
 	*size = *button->size;
 	text_size = button->text_size;
 	id = button->id;
-	
-	if (text != nullptr)
-	{
-		delete[] text;
-	}
+	status = button->status;
 
 	for (text_length = 0; button->text[text_length] != '\0'; text_length++);
 
-	text = new ClassTypes::Button::button_text_t[text_length + 1];
+	text = (ClassTypes::Button::button_text_t*)realloc(text, sizeof(ClassTypes::Button::button_text_t) * (text_length + 1));
 	for (uint32_t i = 0; i <= text_length; i++)
 	{
 		text[i] = button->text[i];
 	}
-	status = button->status;
 }
 
 void Button::Set(ClassTypes::Button::button_id_t id, Vec2F* position, Vec2F* size, const char* text, uint8_t text_size)
@@ -77,21 +75,15 @@ void Button::Set(ClassTypes::Button::button_id_t id, Vec2F* position, Vec2F* siz
 	*this->position = *position;
 	*this->size = *size;
 	this->status = 0x00;
-
-	if (this->text != nullptr)
-	{
-		delete[] this->text;
-	}
+	this->text_size = text_size;
 
 	for (text_length = 0; text[text_length] != '\0'; text_length++);
 
-	this->text = new ClassTypes::Button::button_text_t[text_length + 1];
+	this->text = (ClassTypes::Button::button_text_t*)realloc(this->text, sizeof(ClassTypes::Button::button_text_t) * (text_length + 1));
 	for (uint32_t i = 0; i <= text_length; i++)
 	{
 		this->text[i] = text[i];
 	}
-
-	this->text_size = text_size;
 }
 
 void Button::Set(ClassTypes::Button::button_id_t id, Vec2F* position, Vec2F* size, const char* text, uint8_t text_size, ClassTypes::Button::button_status_t status)
@@ -100,21 +92,15 @@ void Button::Set(ClassTypes::Button::button_id_t id, Vec2F* position, Vec2F* siz
 	*this->position = *position;
 	*this->size = *size;
 	this->status = status;
-
-	if (this->text != nullptr)
-	{
-		delete[] this->text;
-	}
+	this->text_size = text_size;
 
 	for (text_length = 0; text[text_length] != '\0'; text_length++);
 
-	this->text = new ClassTypes::Button::button_text_t[text_length + 1];
+	this->text = (ClassTypes::Button::button_text_t*)realloc(this->text, sizeof(ClassTypes::Button::button_text_t) * (text_length + 1));
 	for (uint32_t i = 0; i <= text_length; i++)
 	{
 		this->text[i] = text[i];
 	}
-
-	this->text_size = text_size;
 }
 
 void Button::Move(Vec2F* move_vector)
@@ -125,6 +111,12 @@ void Button::Move(Vec2F* move_vector)
 void Button::SetId(ClassTypes::Button::button_id_t id)
 {
 	this->id = id;
+}
+
+void Button::SetOnlyCustomStatus(ClassTypes::Button::button_status_t status_mask)
+{
+	status |= status_mask & (BUTTON_STATUSE_ALL - (BUTTON_STATUS_ACTIVE | BUTTON_STATUS_SELECT));
+	status &= status_mask | (BUTTON_STATUS_ACTIVE | BUTTON_STATUS_SELECT);
 }
 
 void Button::SetPosition(Vec2F* position)
@@ -166,14 +158,11 @@ bool Button::HavePoint(Vec2F* point)
 
 void Button::SetText(const char* text)
 {
-	if (this->text != nullptr)
-	{
-		delete[] this->text;
-	}
-
 	for (text_length = 0; text[text_length] != '\0'; text_length++);
-
-	this->text = new ClassTypes::Button::button_text_t[text_length + 1];
+	std::cout << text_length << ' ' << this->text << ' ' << sizeof(ClassTypes::Button::button_text_t) * (text_length + 1) << std::endl;
+	free(this->text);
+	std::cout << this->text << std::endl;
+	this->text = (ClassTypes::Button::button_text_t*)malloc(sizeof(ClassTypes::Button::button_text_t) * (text_length + 1));
 	for (uint32_t i = 0; i <= text_length; i++)
 	{
 		this->text[i] = text[i];
@@ -192,44 +181,19 @@ void Button::TakeData(Button* button)
 	*position = *button->position;
 	*size = *button->size;
 	text_size = button->text_size;
-
-	if (text != nullptr)
-	{
-		delete[] text;
-	}
-
-	for (text_length = 0; button->text[text_length] != '\0'; text_length++);
-
-	text = new ClassTypes::Button::button_text_t[text_length + 1];
-	for (uint32_t i = 0; i <= text_length; i++)
-	{
-		text[i] = button->text[i];
-	}
+	text = button->text;
 }
 
 void Button::operator=(Button button)
 {
-	if (position == nullptr)
-	{
-		position = new Vec2F();
-	}
-	if (size == nullptr)
-	{
-		size = new Vec2F();
-	}
 	*position = *button.position;
 	*size = *button.size;
 	text_size = button.text_size;
 	id = button.id;
 
-	if (text != nullptr)
-	{
-		delete[] text;
-	}
-
 	for (text_length = 0; button.text[text_length] != '\0'; text_length++);
 
-	text = new ClassTypes::Button::button_text_t[text_length + 1];
+	text = (ClassTypes::Button::button_text_t*)realloc(text, sizeof(ClassTypes::Button::button_text_t) * (text_length + 1));
 	for (uint32_t i = 0; i <= text_length; i++)
 	{
 		text[i] = button.text[i];
@@ -241,7 +205,7 @@ Button::~Button()
 {
 	delete position;
 	delete size;
-	delete[] text;
+	free(text);
 }
 
 
@@ -286,10 +250,12 @@ void Menu::Set(Menu* menu)
 	if (default_buttons != nullptr)
 	{
 		delete[] default_buttons;
+		default_buttons = nullptr;
 	}
 	if (current_buttons != nullptr)
 	{
 		delete[] current_buttons;
+		current_buttons = nullptr;
 	}
 	default_buttons = new Button[menu->buttons_count];
 	current_buttons = new Button[menu->buttons_count];

@@ -285,6 +285,10 @@ public:
 	//The function runs when the program starts.
 	//The function creates all nemus objects.
 	void InitMenus();
+
+	void EndLevel();
+	void NextLevel();
+	void EndMatch();
 	
 
 	//The function calculates forces of collisions between entities in the array.

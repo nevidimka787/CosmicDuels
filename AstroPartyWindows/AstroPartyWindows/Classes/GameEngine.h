@@ -38,7 +38,12 @@ public:
 	bool exist;
 	float radius;
 	Entity();
-	Entity(Vec2F* position, float radius, float angle);
+	Entity(const Entity& entity);
+	Entity(
+		Vec2F* position, 
+		float radius, 
+		float angle = 0.0f,
+		bool exist = true);
 
 	float GetAngle();
 	/*
@@ -58,6 +63,11 @@ public:
 	Vec2F GetDirection();
 	void Rotate(float angle);
 	void Set(Entity* entity);
+	void Set(
+		Vec2F* position,
+		float radius,
+		float angle = 0.0f,
+		bool exist = true);
 	void SetAngle(float angle);
 	void SetDirection(Vec2F* direction);
 	void SetPosition(Vec2F* position);
@@ -87,13 +97,22 @@ class DynamicEntity : public Entity
 protected:
 	float angular_velocity;
 	Vec2F* velocity;
+	//This variable set only by force functions.
 	Vec2F* force;
 public:
-	const float FORCE_COLLISION_COEFFICIENT;
-	const float FORCE_RESISTANSE_AIR_COEFFICIENT;
+	float force_collision_coeffisient;
+	float force_resistance_air_coefficient;
 	DynamicEntity();
-	DynamicEntity(Vec2F* position, float angle, float radius);
-	DynamicEntity(Vec2F* position, Vec2F* velosity, float angle, float angular_velosity, float radius, float FORCE_COLLISION_COEFFICIENT, float FORCE_RESISTANSE_AIR_COEFFICIENT);
+	DynamicEntity(const DynamicEntity& dynamic_entity);
+	DynamicEntity(
+		Vec2F* position,
+		Vec2F* velocity,
+		float radius,
+		float angle = 0.0f,
+		float angular_velocity = 0.0f,
+		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
+		bool exist = true);
 	
 	void AddForce(Vec2F* force);
 	void AddForceAlongDirection(float force);
@@ -112,10 +131,19 @@ public:
 	float GetAngularVelocity();
 	Vec2F GetVelocity();
 	void Recalculate();
-	void Set(DynamicEntity* entity);
+	void Set(DynamicEntity* dynamic_entity);
+	void Set(
+		Vec2F* position,
+		Vec2F* velocity,
+		float radius,
+		float angle = 0.0f,
+		float angular_velocity = 0.0f,
+		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
+		bool exist = true);
 	void SetAngularVelocity(float angulat_velocity);
 
-	void operator=(DynamicEntity entity);
+	void operator=(DynamicEntity dynamic_entity);
 
 	~DynamicEntity();
 };
@@ -126,13 +154,23 @@ protected:
 	Vec2F* last_position;
 public:
 	StaticEntity();
-	StaticEntity(Vec2F* position, float angle);
+	StaticEntity(const StaticEntity& static_entity);
+	StaticEntity(
+		Vec2F* position,
+		float radius,
+		float angle = 0.0f,
+		bool exist = true);
 	
-	Vec2F GetVelosity();
+	Vec2F GetVelocity();
 	void Recalculate();
-	void Set(StaticEntity* entity);
+	void Set(StaticEntity* static_entity);
+	void Set(
+		Vec2F* position,
+		float radius,
+		float angle = 0.0f,
+		bool exist = true);
 
-	void operator=(StaticEntity entity);
+	void operator=(StaticEntity static_entity);
 	
 	~StaticEntity();
 };
@@ -163,7 +201,17 @@ protected:
 public:
 	ClassTypes::Bonus::bonus_t bonus_type;
 	Bonus();
-	Bonus(ClassTypes::Bonus::bonus_t bonus_type, Vec2F* position, Vec2F* velocity);
+	Bonus(const Bonus& bonus);
+	Bonus(
+		Vec2F* position,
+		Vec2F* velocity,
+		float radius,
+		ClassTypes::Bonus::bonus_t bonus_type,
+		float angle = 0.0f,
+		float angular_velocity = 0.0f,
+		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
+		bool exist = true);
 	
 	/*
 		If an object has more than one bonus type,
@@ -177,6 +225,16 @@ public:
 	uint8_t GetGameRulesCount();
 	uint8_t GetTypesCount();
 	void Set(Bonus* entity);
+	void Set(
+		Vec2F* position,
+		Vec2F* velocity,
+		float radius,
+		ClassTypes::Bonus::bonus_t bonus_type,
+		float angle = 0.0f,
+		float angular_velocity = 0.0f,
+		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
+		bool exist = true);
 
 	void operator=(Bonus entity);
 
@@ -199,7 +257,17 @@ protected:
 	uint8_t size;
 public:
 	Asteroid();
-	Asteroid(ClassTypes::Bonus::bonus_t buff_bonus, uint8_t size);
+	Asteroid(const Asteroid& asteroid);
+	Asteroid(
+		Vec2F* position,
+		Vec2F* velocity,
+		ClassTypes::Bonus::bonus_t bonus_type,
+		uint8_t size = ASTEROID_DEFAULT_SIZE,
+		float angle = 0.0f,
+		float angular_velocity = 0.0f,
+		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
+		bool exist = true);
 	Bonus Destroy();
 	/*
 	*The function creates a new smaller asteroid.
@@ -209,6 +277,16 @@ public:
 	uint8_t GetSize();
 	uint16_t GetBuffBonus();
 	void Set(Asteroid* entity);
+	void Set(
+		Vec2F* position,
+		Vec2F* velocity,
+		ClassTypes::Bonus::bonus_t bonus_type,
+		uint8_t size = ASTEROID_DEFAULT_SIZE,
+		float angle = 0.0f,
+		float angular_velocity = 0.0f,
+		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
+		bool exist = true);
 
 	void operator=(Asteroid entity);
 
@@ -222,6 +300,7 @@ protected:
 	GameTypes::players_count_t player_master_team_number;
 public:
 	KillerEntity();
+	KillerEntity(const KillerEntity& killer_entity);
 	KillerEntity(GameTypes::players_count_t player_master_number, GameTypes::players_count_t player_master_team_number);
 	GameTypes::players_count_t GetPlayerMasterNumber();
 	GameTypes::players_count_t GetPlayerMasterTeamNumber();
@@ -241,7 +320,16 @@ protected:
 	void* shoot_input_value_pointer;
 public:
 	ControledEntity();
-	ControledEntity(GameTypes::players_count_t player_number, GameTypes::players_count_t player_team_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* position, Vec2F* velosity, float angle, float angular_velosity);
+	ControledEntity(const ControledEntity& controled_entity);
+	ControledEntity(
+		GameTypes::players_count_t player_number, 
+		GameTypes::players_count_t player_team_number, 
+		void* rotate_input_value_pointer, 
+		void* shoot_input_value_pointer, 
+		Vec2F* position,
+		Vec2F* velocity, 
+		float angle, 
+		float angular_velocity);
 	
 	GameTypes::players_count_t GetPlayerNumber();
 	GameTypes::players_count_t GetTeamNumber();
@@ -261,12 +349,15 @@ class Ship : public ControledEntity
 #define BULLET_DEFAULT_VELOCITY 0.1f
 #define BULLET_DEFAULT_RADIUS	0.01f
 #define BULLET_DEFAULT_RESISTANCE_AIR_COEFFICIENT 0.001f
+
+#define SHIP_DEFAULT_RADIUS	0.1f;
 protected:
 	ClassTypes::Bonus::bonus_t buffs_bonuses;
 	ClassTypes::Bonus::bonus_t active_baffs;
 	uint16_t unbrakable;
 public:
 	Ship();
+	Ship(const Ship& ship);
 	Ship(GameTypes::players_count_t player_number, GameTypes::players_count_t player_team_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* position, Vec2F* velocity, float angle, float angular_velocity);
 	Ship(GameTypes::players_count_t player_number, GameTypes::players_count_t player_team_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* position, Vec2F* velocity, float angle, float angular_velocity, ClassTypes::Bonus::bonus_t buffs_bonuses);
 	
@@ -294,6 +385,8 @@ public:
 	//The function reduces the amount of this bonus.
 	void SpendBonusNoCheck(ClassTypes::Bonus::bonus_t bonus);
 	void Set(Ship* entity);
+	void Set(GameTypes::players_count_t player_number, GameTypes::players_count_t player_team_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* position, Vec2F* velocity, float angle, float angular_velocity);
+	void Set(GameTypes::players_count_t player_number, GameTypes::players_count_t player_team_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* position, Vec2F* velocity, float angle, float angular_velocity, ClassTypes::Bonus::bonus_t buffs_bonuses);
 	void TakeBonus(Bonus* bonus);
 
 	void operator=(Ship entity);
@@ -306,7 +399,8 @@ class Pilot : public ControledEntity
 protected:
 public:
 	Pilot();
-	Pilot(GameTypes::players_count_t player_number, GameTypes::players_count_t player_team_number, void* rotate_keyboard_key_pointer, void* move_keyboard_key_pointer, Vec2F* position, Vec2F* velosity, float angle, float angular_velosity);
+	Pilot(const Pilot& pilot);
+	Pilot(GameTypes::players_count_t player_number, GameTypes::players_count_t player_team_number, void* rotate_keyboard_key_pointer, void* move_keyboard_key_pointer, Vec2F* position, Vec2F* velocity, float angle, float angular_velocity);
 
 	Ship Respawn();
 	void Set(Pilot* entity);
@@ -335,6 +429,7 @@ public:
 	//Shoots count in one attack period.
 	uint8_t shoots_count;
 	AggressiveEntity();
+	AggressiveEntity(const AggressiveEntity& aggressive_entity);
 	AggressiveEntity(GameTypes::tic_t current_tic, GameTypes::tic_t first_activation_dellay, GameTypes::tic_t attack_period, GameTypes::tic_t passive_period, uint8_t shoots_count);
 	bool CanShoot(GameTypes::tic_t current_tic);
 	void PostponeAttack(GameTypes::tic_t dellay);
@@ -350,6 +445,7 @@ class Turel : public AggressiveEntity
 #define ATACK_ENTITY_DEFAULT_ATACK_PERIOD
 public:
 	Turel();
+	Turel(const Turel& turel);
 	Turel(Vec2F* position, float angle);
 	
 	Bullet Shoot();
@@ -367,6 +463,7 @@ public:
 	float gravity;
 
 	GravGen();
+	GravGen(const GravGen& grav_gen);
 	GravGen(Vec2F* position, float gravity);
 	void Set(GravGen* entity);
 
@@ -381,6 +478,7 @@ protected:
 	bool active;
 public:
 	MegaLaser();
+	MegaLaser(const MegaLaser& mega_laser);
 	MegaLaser(Segment* lazer_segment);
 
 	Segment GetSegment();
@@ -402,6 +500,7 @@ protected:
 	GameTypes::tic_t shoot_period;
 public:
 	Laser();
+	Laser(const Laser& laser);
 	Laser(Vec2F* position, Vec2F* direction, GameTypes::players_count_t player_master_number, GameTypes::players_count_t player_master_team_number, GameTypes::tic_t shoot_period);
 	bool CanShoot(GameTypes::tic_t current_tic);
 	Beam GetBeam();
@@ -420,6 +519,7 @@ class Bullet : public KillerEntity
 protected:
 public:
 	Bullet();
+	Bullet(const Bullet& bullet);
 	Bullet(Vec2F* position, Vec2F* velocity, uint8_t host_number);
 	bool IsCollision(Map* map);
 	void Set(Bullet* bullet);
@@ -435,6 +535,7 @@ protected:
 	ClassTypes::Knife::knife_health_t health;
 public:
 	Knife();
+	Knife(const Knife& knife);
 	Knife(Vec2F* point1, Vec2F* point2, uint8_t host_number);
 	Segment GetSegment();
 	void Set(Knife* knife);
@@ -457,7 +558,8 @@ protected:
 	bool boom;
 public:
 	Bomb();
-	Bomb(Vec2F* position, Vec2F* velosity, float angle, float angular_velosity, uint8_t player_master_number);
+	Bomb(const Bomb& bomb);
+	Bomb(Vec2F* position, Vec2F* velocity, float angle, float angular_velocity, uint8_t player_master_number);
 	
 	void Activate();
 	void Boom();
@@ -479,8 +581,9 @@ protected:
 	Vec2F* last_position;
 	bool unbreakable;
 public:
-	bool is_exist;
+	bool exist;
 	MapElement();
+	MapElement(const MapElement& map_element);
 
 	Vec2F GetPosition();
 	Vec2F GetVelocity();
@@ -504,6 +607,7 @@ public:
 	ClassTypes::Rectangle::sides_t show_sides;
 	ClassTypes::Rectangle::sides_t collision_sides;
 	Rectangle();
+	Rectangle(const Rectangle& rectangle);
 	Rectangle(Vec2F* point1, Vec2F* point2, bool unbreakable);
 
 	Vec2F GetUpRightPoint();
@@ -516,6 +620,7 @@ public:
 	Segment GetLeftSide();
 	void Move(Vec2F* move_vector);
 	void Set(Rectangle* patent);
+	void Set(Vec2F* point1, Vec2F* point2, bool unbreakable);
 
 	~Rectangle();
 };
@@ -526,6 +631,7 @@ protected:
 	float radius;
 public:
 	Cyrcle();
+	Cyrcle(const Cyrcle& cyrcle);
 	Cyrcle(Vec2F* position, float radius, bool unbreakable);
 
 	float GetRadius();
@@ -547,6 +653,7 @@ protected:
 
 public:
 	Polygon();
+	Polygon(const Polygon& polygon);
 	Polygon(Vec2F* position, Vec2F* default_points_array, uint32_t points_array_length, bool unbreakable);
 	
 	void Rotate(float angle, Vec2F* rotating_point);
@@ -565,11 +672,12 @@ protected:
 	Polygon* polygons_array;
 
 public:
-	const uint8_t rectangles_array_length;
-	const uint8_t cyrcles_array_length;
-	const uint8_t polygons_array_length;
+	const ClassTypes::Map::elements_array_length_t rectangles_array_length;
+	const ClassTypes::Map::elements_array_length_t cyrcles_array_length;
+	const ClassTypes::Map::elements_array_length_t polygons_array_length;
 	const Vec2F size;
 
+	Map(const Map& map);
 	Map(Rectangle* rectangles_array, uint8_t rectangles_array_length, Cyrcle* cyrcles_array, uint8_t cyrcles_array_length, Polygon* polygons_array, uint8_t polygons_array_length, Vec2F* size);
 
 	Vec2F GetSize();

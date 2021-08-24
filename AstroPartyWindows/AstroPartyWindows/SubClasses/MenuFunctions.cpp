@@ -82,12 +82,6 @@ void MenuFunctions::OpenSheepsControlMenu()
 void MenuFunctions::StartGame()
 {
 	*game_p__start_game = true;
-	OpenSheepsControlMenu();
-}
-
-void MenuFunctions::StartMatch()
-{
-
 }
 
 void MenuFunctions::PauseGame()
@@ -102,10 +96,10 @@ void MenuFunctions::ResumeGame()
 	OpenSheepsControlMenu();
 }
 
-void MenuFunctions::SelectSheep(GameTypes::players_count_t sheep_number, GameTypes::players_count_t team_number)
+void MenuFunctions::SelectShip(GameTypes::players_count_t sheep_number, GameTypes::players_count_t team_number)
 {
-	ships_select_buttons[sheep_number] = team_number;
-	game_p__teams[sheep_number] = team_number;
+	ships_select_buttons[sheep_number - BUTTON_ID_SELECT_SHIP_1] = team_number;
+	game_p__teams[sheep_number - BUTTON_ID_SELECT_SHIP_1] = team_number;
 }
 
 void MenuFunctions::Exit()
@@ -273,6 +267,7 @@ void MenuFunctions::ShipsSelectMenuFunction(Vec2F* clk_pos, uint8_t clk_status)
 		}
 		if (current_button->HavePoint(clk_pos))
 		{
+			unsigned id;
 			switch (clk_status)
 			{
 			case GLFW_PRESS:
@@ -285,122 +280,49 @@ void MenuFunctions::ShipsSelectMenuFunction(Vec2F* clk_pos, uint8_t clk_status)
 				{
 					return;
 				}
-				switch (current_button->GetId())
+				id = current_button->GetId();
+				switch (id)
 				{
 				case BUTTON_ID_SELECT_SHIP_1:
-					switch (current_button->status & (BUTTON_STATUS_CUSTOM_0 | BUTTON_STATUS_CUSTOM_1 | BUTTON_STATUS_CUSTOM_2 | BUTTON_STATUS_CUSTOM_3))
-					{
-					case BUTTON_STATUS_INACTIVE:
-						current_button->SetStatus(BUTTON_STATUS_CUSTOM_0, true);
-						SelectSheep(0, SHIPS_SELECT_BUTTONS_TEAM_RED);
-						return;
-					case BUTTON_STATUS_CUSTOM_0:
-						SelectSheep(0, SHIPS_SELECT_BUTTONS_TEAM_BLUE);
-						current_button->SetStatus(BUTTON_STATUS_CUSTOM_0, false);
-						current_button->SetStatus(BUTTON_STATUS_CUSTOM_1, true);
-						return;
-					case BUTTON_STATUS_CUSTOM_1:
-						SelectSheep(0, SHIPS_SELECT_BUTTONS_TEAM_GREEN);
-						current_button->SetStatus(BUTTON_STATUS_CUSTOM_1, false);
-						current_button->SetStatus(BUTTON_STATUS_CUSTOM_2, true);
-						return;
-					case BUTTON_STATUS_CUSTOM_2:
-						SelectSheep(0, SHIPS_SELECT_BUTTONS_TEAM_PURPURE);
-						current_button->SetStatus(BUTTON_STATUS_CUSTOM_2, false);
-						current_button->SetStatus(BUTTON_STATUS_CUSTOM_3, true);
-						return;
-					case BUTTON_STATUS_CUSTOM_3:
-					default:
-						SelectSheep(0, SHIPS_SELECT_BUTTONS_NO_TEAM);
-						current_button->SetStatus(BUTTON_STATUS_CUSTOM_3, false);
-						return;
-					}
 				case BUTTON_ID_SELECT_SHIP_2:
-					switch (current_button->status)
-					{
-					case BUTTON_STATUS_INACTIVE:
-						current_button->SetStatus(BUTTON_STATUS_CUSTOM_0, true);
-						SelectSheep(1, SHIPS_SELECT_BUTTONS_TEAM_RED);
-						return;
-					case BUTTON_STATUS_CUSTOM_0:
-						SelectSheep(1, SHIPS_SELECT_BUTTONS_TEAM_BLUE);
-						current_button->SetStatus(BUTTON_STATUS_CUSTOM_0, false);
-						current_button->SetStatus(BUTTON_STATUS_CUSTOM_1, true);
-						return;
-					case BUTTON_STATUS_CUSTOM_1:
-						SelectSheep(1, SHIPS_SELECT_BUTTONS_TEAM_GREEN);
-						current_button->SetStatus(BUTTON_STATUS_CUSTOM_1, false);
-						current_button->SetStatus(BUTTON_STATUS_CUSTOM_2, true);
-						return;
-					case BUTTON_STATUS_CUSTOM_2:
-						SelectSheep(1, SHIPS_SELECT_BUTTONS_TEAM_PURPURE);
-						current_button->SetStatus(BUTTON_STATUS_CUSTOM_2, false);
-						current_button->SetStatus(BUTTON_STATUS_CUSTOM_3, true);
-						return;
-					case BUTTON_STATUS_CUSTOM_3:
-					default:
-						SelectSheep(1, SHIPS_SELECT_BUTTONS_NO_TEAM);
-						current_button->SetStatus(BUTTON_STATUS_CUSTOM_3, false);
-						return;
-					}
 				case BUTTON_ID_SELECT_SHIP_3:
-					switch (current_button->status)
-					{
-					case BUTTON_STATUS_INACTIVE:
-						current_button->SetStatus(BUTTON_STATUS_CUSTOM_0, true);
-						SelectSheep(2, SHIPS_SELECT_BUTTONS_TEAM_RED);
-						return;
-					case BUTTON_STATUS_CUSTOM_0:
-						SelectSheep(2, SHIPS_SELECT_BUTTONS_TEAM_BLUE);
-						current_button->SetStatus(BUTTON_STATUS_CUSTOM_0, false);
-						current_button->SetStatus(BUTTON_STATUS_CUSTOM_1, true);
-						return;
-					case BUTTON_STATUS_CUSTOM_1:
-						SelectSheep(2, SHIPS_SELECT_BUTTONS_TEAM_GREEN);
-						current_button->SetStatus(BUTTON_STATUS_CUSTOM_1, false);
-						current_button->SetStatus(BUTTON_STATUS_CUSTOM_2, true);
-						return;
-					case BUTTON_STATUS_CUSTOM_2:
-						SelectSheep(2, SHIPS_SELECT_BUTTONS_TEAM_PURPURE);
-						current_button->SetStatus(BUTTON_STATUS_CUSTOM_2, false);
-						current_button->SetStatus(BUTTON_STATUS_CUSTOM_3, true);
-						return;
-					case BUTTON_STATUS_CUSTOM_3:
-					default:
-						SelectSheep(2, SHIPS_SELECT_BUTTONS_NO_TEAM);
-						current_button->SetStatus(BUTTON_STATUS_CUSTOM_3, false);
-						return;
-					}
 				case BUTTON_ID_SELECT_SHIP_4:
-					switch (current_button->status)
+					switch (current_button->status & (BUTTON_STATUS_CUSTOM_RED | BUTTON_STATUS_CUSTOM_GREEN | BUTTON_STATUS_CUSTOM_BLUE | BUTTON_STATUS_CUSTOM_PURPURE))
 					{
 					case BUTTON_STATUS_INACTIVE:
-						current_button->SetStatus(BUTTON_STATUS_CUSTOM_0, true);
-						SelectSheep(3, SHIPS_SELECT_BUTTONS_TEAM_RED);
+						current_button->SetOnlyCustomStatus(BUTTON_STATUS_CUSTOM_RED);
+						SelectShip(id, SHIPS_SELECT_BUTTONS_TEAM_RED);
 						return;
-					case BUTTON_STATUS_CUSTOM_0:
-						SelectSheep(3, SHIPS_SELECT_BUTTONS_TEAM_BLUE);
-						current_button->SetStatus(BUTTON_STATUS_CUSTOM_0, false);
-						current_button->SetStatus(BUTTON_STATUS_CUSTOM_1, true);
+					case BUTTON_STATUS_CUSTOM_RED:
+						SelectShip(id, SHIPS_SELECT_BUTTONS_TEAM_GREEN);
+						current_button->SetOnlyCustomStatus(BUTTON_STATUS_CUSTOM_GREEN);
 						return;
-					case BUTTON_STATUS_CUSTOM_1:
-						SelectSheep(3, SHIPS_SELECT_BUTTONS_TEAM_GREEN);
-						current_button->SetStatus(BUTTON_STATUS_CUSTOM_1, false);
-						current_button->SetStatus(BUTTON_STATUS_CUSTOM_2, true);
+					case BUTTON_STATUS_CUSTOM_GREEN:
+						SelectShip(id, SHIPS_SELECT_BUTTONS_TEAM_BLUE);
+						current_button->SetOnlyCustomStatus(BUTTON_STATUS_CUSTOM_BLUE);
 						return;
-					case BUTTON_STATUS_CUSTOM_2:
-						SelectSheep(3, SHIPS_SELECT_BUTTONS_TEAM_PURPURE);
-						current_button->SetStatus(BUTTON_STATUS_CUSTOM_2, false);
-						current_button->SetStatus(BUTTON_STATUS_CUSTOM_3, true);
+					case BUTTON_STATUS_CUSTOM_BLUE:
+						SelectShip(id, SHIPS_SELECT_BUTTONS_TEAM_PURPURE);
+						current_button->SetOnlyCustomStatus(BUTTON_STATUS_CUSTOM_PURPURE);
 						return;
-					case BUTTON_STATUS_CUSTOM_3:
+					case BUTTON_STATUS_CUSTOM_PURPURE:
 					default:
-						SelectSheep(3, SHIPS_SELECT_BUTTONS_NO_TEAM);
-						current_button->SetStatus(BUTTON_STATUS_CUSTOM_3, false);
+						SelectShip(id, SHIPS_SELECT_BUTTONS_NO_TEAM);
+						current_button->SetOnlyCustomStatus(BUTTON_STATUS_INACTIVE);
+						DefaultReturn:
 						return;
 					}
 				case BUTTON_ID_START_GAME:
-					StartGame();
+					for (GameTypes::players_count_t i = 0; i < GAME_PLAYERS_MAX_COUNT; i++)
+					{
+						if (game_p__teams[i] != SHIPS_SELECT_BUTTONS_NO_TEAM)
+						{
+							StartGame();
+							return;
+						}
+					}
+					SelectShip(BUTTON_ID_SELECT_SHIP_1, SHIPS_SELECT_BUTTONS_TEAM_RED);
+					game_p__ships_select_menu->current_buttons[0].SetOnlyCustomStatus(BUTTON_STATUS_CUSTOM_RED);
 				default:
 					return;
 				}
@@ -412,17 +334,47 @@ void MenuFunctions::ShipsSelectMenuFunction(Vec2F* clk_pos, uint8_t clk_status)
 
 void MenuFunctions::MapPullSelectMenuFunction(Vec2F* clk_pos, uint8_t clk_status)
 {
+	Button* current_button;
 	for (ClassTypes::Menu::buttons_count_t i = 0; i < game_p__map_pull_select_menu->GetButtonsCount(); i++)
 	{
+		current_button = &game_p__map_pull_select_menu->current_buttons[i];
+		if (clk_status == OPEN_GL_REALISATION_BUTTON_LOST)
+		{
+			current_button->SetStatus(BUTTON_STATUS_SELECT, false);
+			goto CycleEnd;
+		}
 		if (game_p__map_pull_select_menu->current_buttons[i].HavePoint(clk_pos))
 		{
-			ClassTypes::Button::button_id_t id = game_p__map_pull_select_menu->current_buttons[i].GetId() - BUTTON_ID_SELECT_MAP;
-			if (id < GAME_MAPS_COUNT)
+			switch (clk_status)
 			{
-				game_p__map_pull_array[id]++;
+			case GLFW_PRESS:
+				last_select_button_index = i;
+				current_button->SetStatus(BUTTON_STATUS_SELECT, true);
 				return;
+			case GLFW_RELEASE:
+				current_button->SetStatus(BUTTON_STATUS_SELECT, false);
+				if (last_select_button_index != i)
+				{
+					return;
+				}
+				ClassTypes::Button::button_id_t id = game_p__map_pull_select_menu->current_buttons[i].GetId() - BUTTON_ID_SELECT_MAP;
+				if (id < GAME_MAPS_COUNT)
+				{
+					if (game_p__map_pull_array[id])
+					{
+						game_p__map_pull_array[id] = false;
+					}
+					else
+					{
+						game_p__map_pull_array[id] = true;
+					}
+					std::cout << "Active: " << game_p__map_pull_array[id] << std::endl;
+					current_button->SetStatus(BUTTON_STATUS_ACTIVE, game_p__map_pull_array[id]);
+					return;
+				}
 			}
 		}
+	CycleEnd:;
 	}
 }
 

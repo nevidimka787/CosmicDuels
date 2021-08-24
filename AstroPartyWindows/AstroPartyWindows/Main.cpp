@@ -90,7 +90,9 @@ void Draw(GLFWwindow* window)
         main_draw_functions->ProcessInput(window);
 
         physic_calculation_mtx.lock();
+        std::cout << "Draw Begin" << std::endl;
         main_draw_functions->DrawFrame();
+        std::cout << "Draw End" << std::endl;
         physic_calculation_mtx.unlock();
 
         glfwSwapBuffers(window);
@@ -145,7 +147,9 @@ void PhysicsCalculation()
         physic_calculation_mtx.lock();
         //start physics calculation
 
+        std::cout << "Update Begin" << std::endl;
         main_game->Update();
+        std::cout << "Update End" << std::endl;
 
         //end physics calculation
         physic_calculation_mtx.unlock();

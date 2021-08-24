@@ -33,10 +33,9 @@ public:
 	void OpenSheepsControlMenu();
 
 	void StartGame();
-	void StartMatch();
 	void PauseGame();
 	void ResumeGame();
-	void SelectSheep(GameTypes::players_count_t sheep_number, GameTypes::players_count_t team_number);
+	void SelectShip(GameTypes::players_count_t sheep_number, GameTypes::players_count_t team_number);
 	void Exit();
 	bool ChangeOption(GameTypes::game_rules_t option_number);
 

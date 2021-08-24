@@ -36,6 +36,7 @@ public:
 	void Set(ClassTypes::Button::button_id_t id, Vec2F* position, Vec2F* size, const char* text, uint8_t text_size);
 	void Set(ClassTypes::Button::button_id_t id, Vec2F* position, Vec2F* size, const char* text, uint8_t text_size, ClassTypes::Button::button_status_t status);
 	void SetId(ClassTypes::Button::button_id_t id);
+	void SetOnlyCustomStatus(ClassTypes::Button::button_status_t status_mask);
 	void SetPosition(Vec2F* position);
 	void SetSize(Vec2F* size);
 	void SetStatus(ClassTypes::Button::button_status_t status_mask, bool value);

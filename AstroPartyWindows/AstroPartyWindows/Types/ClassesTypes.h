@@ -28,4 +28,9 @@ namespace ClassTypes
 		typedef uint8_t button_status_t;
 		typedef int32_t button_text_t;
 	}
+
+	namespace Map
+	{
+		typedef uint8_t elements_array_length_t;
+	}
 }

@@ -148,6 +148,10 @@ void OpenGL::CallMenuFunction(Menu* menu, Vec2F* clk_pos, uint8_t clk_status)
     {
         object_p__menu_functions->ShipsSelectMenuFunction(clk_pos, clk_status);
     }
+    else if (menu == game_p__map_pull_select_menu)
+    {
+        object_p__menu_functions->MapPullSelectMenuFunction(clk_pos, clk_status);
+    }
 }
 
 void OpenGL::FramebufferSizeCallback(GLFWwindow* window, int width, int height)
@@ -420,19 +424,19 @@ void OpenGL::DrawObject(Button* button, bool update_shader)
     {
         color = Color3F(0.1f, 0.6f, 0.1f);
     }
-    else if (button->GetStatus(BUTTON_STATUS_CUSTOM_0))
+    else if (button->GetStatus(BUTTON_STATUS_CUSTOM_RED))
     {
         color = Color3F(1.0f, 0.0f, 0.0f);
     }
-    else if (button->GetStatus(BUTTON_STATUS_CUSTOM_1))
+    else if (button->GetStatus(BUTTON_STATUS_CUSTOM_GREEN))
     {
         color = Color3F(0.0f, 1.0f, 0.0f);
     }
-    else if (button->GetStatus(BUTTON_STATUS_CUSTOM_2))
+    else if (button->GetStatus(BUTTON_STATUS_CUSTOM_BLUE))
     {
         color = Color3F(0.0f, 0.0f, 1.0f);
     }
-    else if (button->GetStatus(BUTTON_STATUS_CUSTOM_3))
+    else if (button->GetStatus(BUTTON_STATUS_CUSTOM_PURPURE))
     {
         color = Color3F(1.0f, 0.0f, 1.0f);
     }

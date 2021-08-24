@@ -7,6 +7,7 @@
 #pragma warning(disable : 6200)
 #pragma warning(disable : 6294)
 #pragma warning(disable : 6297)
+#pragma warning(disable : 6385)
 #pragma warning(disable : 6386)
 #pragma warning(disable : 26451)//All integer operations can be overflow. It is absolutly useless warnintg.
 #pragma warning(disable : 26495)
@@ -21,20 +22,20 @@ void Game::Update()
 
 	//collisions
 
-	DynamicEntitiesCollisions((DynamicEntity*)ships, players_count);
-	DynamicEntitiesCollisions((DynamicEntity*)pilots, players_count);
+	DynamicEntitiesCollisions((DynamicEntity*)ships, ships_count);
+	DynamicEntitiesCollisions((DynamicEntity*)pilots, pilots_count);
 	DynamicEntitiesCollisions((DynamicEntity*)asteroids, asteroids_count);
 
-	DynamicEntitiesCollisions((DynamicEntity*)ships, players_count, (DynamicEntity*)pilots, players_count);
-	DynamicEntitiesCollisions((DynamicEntity*)ships, players_count, (DynamicEntity*)asteroids, asteroids_count);
-	DynamicEntitiesCollisions((DynamicEntity*)asteroids, asteroids_count, (DynamicEntity*)pilots, players_count);
+	DynamicEntitiesCollisions((DynamicEntity*)ships, ships_count, (DynamicEntity*)pilots, pilots_count);
+	DynamicEntitiesCollisions((DynamicEntity*)ships, ships_count, (DynamicEntity*)asteroids, asteroids_count);
+	DynamicEntitiesCollisions((DynamicEntity*)asteroids, asteroids_count, (DynamicEntity*)pilots, pilots_count);
 
-	DynamicEntitiesCollisions((DynamicEntity*)ships, players_count, map);
-	DynamicEntitiesCollisions((DynamicEntity*)pilots, players_count, map);
+	DynamicEntitiesCollisions((DynamicEntity*)ships, ships_count, map);
+	DynamicEntitiesCollisions((DynamicEntity*)pilots, pilots_count, map);
 	DynamicEntitiesCollisions((DynamicEntity*)asteroids, asteroids_count, map);
 
-	DynamicEntitiesAddForce((DynamicEntity*)ships, players_count, grav_gens, grav_gens_count);
-	DynamicEntitiesAddForce((DynamicEntity*)pilots, players_count, grav_gens, grav_gens_count);
+	DynamicEntitiesAddForce((DynamicEntity*)ships, ships_count, grav_gens, grav_gens_count);
+	DynamicEntitiesAddForce((DynamicEntity*)pilots, pilots_count, grav_gens, grav_gens_count);
 	DynamicEntitiesAddForce((DynamicEntity*)asteroids, asteroids_count, grav_gens, grav_gens_count);
 	DynamicEntitiesAddForce((DynamicEntity*)bullets, asteroids_count, grav_gens, grav_gens_count);
 
@@ -43,7 +44,6 @@ void Game::Update()
 	//recalculation
 
 	TransportAllObjects();
-
 	//recalculation
 }
 
@@ -53,7 +53,7 @@ void Game::DynamicEntitiesCollisions(DynamicEntity* entities, GameTypes::entitie
 	{
 		if (entities[first].exist)
 		{
-			for (GameTypes::entities_count_t second = first + 1, found_entites_count2 = found_entites_count1; found_entites_count2 < entities_count; second++)
+			for (GameTypes::entities_count_t second = first + 1, found_entites_count2 = found_entites_count1 + 1; found_entites_count2 < entities_count; second++)
 			{
 				if (entities[second].exist)
 				{
@@ -680,6 +680,10 @@ void Game::InitGame()
 	global_timer = 0;
 
 	teams = new GameTypes::entities_count_t[GAME_PLAYERS_MAX_COUNT];
+	for (GameTypes::players_count_t i = 0; i < GAME_PLAYERS_MAX_COUNT; i++)
+	{
+		teams[i] = 0;
+	}
 	object_pull_array = new bool[GAME_OBJECT_TYPES_COUNT];
 	map_pull_array = new bool[GAME_MAPS_COUNT];
 	for (GameTypes::objects_types_count_t i = 0; i < GAME_OBJECT_TYPES_COUNT; i++)
@@ -699,6 +703,7 @@ void Game::InitMach()
 			players_count++;
 		}
 	}
+
 	ships_count = players_count;
 
 	ships = new Ship[players_count];
@@ -723,10 +728,6 @@ void Game::InitMach()
 	shoot_flags = new bool[players_count];
 	rotate_flags = new bool[players_count];
 	scores = new GameTypes::players_count_t[players_count];
-	for (GameTypes::players_count_t i = 0; i < GAME_PLAYERS_MAX_COUNT; i++)
-	{
-		scores[i] = 0;
-	}
 
 
 	start_bonus = game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_SHIELD ? BUFF_SHIELD : 0x0000;
@@ -742,6 +743,42 @@ void Game::InitMach()
 			start_bonus |= *menu_p__start_bonus;
 		}
 	}
+
+	//create buttons
+
+	Vec2F position;
+	Vec2F size = Vec2F(0.095f, -0.095f);
+	Button* buttons = new Button[players_count * 2];
+	if (players_count >= 1)
+	{
+		position = Vec2F(-1.0f, 1.0f);
+		buttons[0].Set(BUTTON_ID_SHIP1_SHOOT, &position, &size, "", 0, BUTTON_STATUS_CUSTOM_RED << teams[0]);
+		position = Vec2F(-0.9f, 1.0f);
+		buttons[1].Set(BUTTON_ID_SHIP1_ROTATE, &position, &size, "", 0, BUTTON_STATUS_CUSTOM_RED << teams[0]);
+	}
+	if (players_count >= 2)
+	{
+		position = Vec2F(0.805f, 1.0f);
+		buttons[2].Set(BUTTON_ID_SHIP1_SHOOT, &position, &size, "", 0, BUTTON_STATUS_CUSTOM_RED << teams[1]);
+		position = Vec2F(0.905f, 1.0f);
+		buttons[3].Set(BUTTON_ID_SHIP1_ROTATE, &position, &size, "", 0, BUTTON_STATUS_CUSTOM_RED << teams[1]);
+	}
+	if (players_count >= 3)
+	{
+		position = Vec2F(0.905f, -0.905f);
+		buttons[4].Set(BUTTON_ID_SHIP1_SHOOT, &position, &size, "", 0, BUTTON_STATUS_CUSTOM_RED << teams[2]);
+		position = Vec2F(0.805f, -0.905f);
+		buttons[5].Set(BUTTON_ID_SHIP1_ROTATE, &position, &size, "", 0, BUTTON_STATUS_CUSTOM_RED << teams[2]);
+	}
+	if (players_count >= 4)
+	{
+		position = Vec2F(-0.9f, -0.905f);
+		buttons[6].Set(BUTTON_ID_SHIP1_SHOOT, &position, &size, "", 0, BUTTON_STATUS_CUSTOM_RED << teams[3]);
+		position = Vec2F(-1.0f, -0.905f);
+		buttons[7].Set(BUTTON_ID_SHIP1_ROTATE, &position, &size, "", 0, BUTTON_STATUS_CUSTOM_RED << teams[3]);
+	}
+	ships_control_menu = new Menu(&position, &size, buttons, players_count * 2);
+	delete[] buttons;
 
 	//create map pull array
 
@@ -768,8 +805,6 @@ void Game::InitMach()
 			found++;
 		}
 	}
-
-	//create map pull array
 }
 
 void Game::InitLevel()
@@ -778,7 +813,7 @@ void Game::InitLevel()
 	current_map_id = selected_maps_id_array[rand() % selected_maps_id_array_length];
 
 
-	Vec2F* temp_points = new Vec2F[players_count];;
+	Vec2F* temp_positions;
 	Rectangle* temp_rectangles;
 
 	const GameTypes::score_t max_score = GetMaxScore();
@@ -788,45 +823,55 @@ void Game::InitLevel()
 	case MAP_TEST_MAP:
 	default:
 		/* Create map */
-		temp_points = new Vec2F[players_count];
-		temp_points[0] = Vec2F(1.0f, 1.0f);
-		temp_points[1] = Vec2F(2.0f - 1.0f / (float)((uint32_t)1 << 23), 2.0f - 1.0f / (float)((uint32_t)1 << 23));
+		temp_positions = new Vec2F[2];
+		temp_positions[0] = Vec2F(-1.0f, -1.0f);
+		temp_positions[1] = Vec2F(1.0f, 1.0f);
 		temp_rectangles = new Rectangle[1];
-		temp_rectangles[0] = Rectangle(&temp_points[0], &temp_points[1], true);
+		temp_rectangles[0].Set(&temp_positions[0], &temp_positions[1], true);
+		temp_positions[0] = Vec2F(2.0f, 2.0f);
 
-		map = new Map(temp_rectangles, 1, nullptr, 0, nullptr, 0, &temp_points[0]);
+		map = new Map(temp_rectangles, 1, nullptr, 0, nullptr, 0, &temp_positions[0]);
+
+		delete[] temp_positions;
+		delete[] temp_rectangles;
 
 		/*Spawn entities*/
-
-		temp_points[0] = Vec2F(1.1f, 1.1f);
-		temp_points[1] = Vec2F(1.9f, 1.9f);
+		temp_positions = new Vec2F[players_count];
+		temp_positions[0] = Vec2F(-1.9f, 1.9f);
+		if (players_count > 1)
+		{
+			temp_positions[1] = Vec2F(1.9f, 1.9f);
+		}
 		if (players_count > 2)
 		{
-			temp_points[2] = Vec2F(1.1f, 1.9f);
+			temp_positions[2] = Vec2F(1.9f, -1.9f);
 		}
 		if (players_count > 3)
 		{
-			temp_points[3] = Vec2F(1.9f, 1.1f);
+			temp_positions[3] = Vec2F(-1.9f, -1.9f);
 		}
 		if (game_rules & GAME_RULE_PLAYERS_SPAWN_POSITION_RANDOMIZE)
 		{
 			for (uint8_t i = 0; i < GAME_RANDOM_ITERATIONS_COUNT; i++)
 			{
 				GameTypes::players_count_t temp1 = rand() % players_count;
-				GameTypes::players_count_t temp2 = rand() % players_count;
-				Vec2F temp3 = temp_points[temp1];
-				temp_points[temp1] = temp_points[temp2];
-				temp_points[temp2] = temp3;
+				Vec2F temp2 = temp_positions[temp1];
+				temp_positions[temp1] = temp_positions[i];
+				temp_positions[i] = temp2;
 			}
 		}
 
 		break;
 	}
 
+	/* Spawn players */
 
-	float* temp_angles = new float[players_count];
+	float* temp_angles = new float[players_count];;
 	temp_angles[0] = -(float)M_PI_4;
-	temp_angles[1] = (float)M_PI - (float)M_PI_4;
+	if (players_count > 1)
+	{
+		temp_angles[1] = (float)M_PI - (float)M_PI_4;
+	}
 	if (players_count > 2)
 	{
 		temp_angles[2] = (float)M_PI_4;
@@ -839,13 +884,7 @@ void Game::InitLevel()
 	{
 		for (GameTypes::players_count_t i = 0; i < players_count; i++)
 		{
-			int temp1 = rand();
-			float temp2 = 1.0f;
-			float* temp1_pointer = (float*)&temp1;
-			int* temp2_pointer = (int*)&temp2;
-			temp1 &= 0x007FFFFF;					//0000 0000 0111 1111 1111 1111 1111 1111 - mantisa
-			temp1 |= *temp2_pointer & 0xFF800000;	//1111 1111 1000 0000 0000 0000 0000 0000
-			temp_angles[i] += (*temp1_pointer - 1.0f) * 2.0 * (float)M_PI;
+			temp_angles[i] += (float)rand() / (float)RAND_MAX;
 		}
 	}
 	if (game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_BONUS)
@@ -855,16 +894,16 @@ void Game::InitLevel()
 			Vec2F temp_vel = Vec2F();
 			if (game_rules & GAME_RULE_BALANCE_ACTIVE && scores[i] <= max_score - GAME_BALANCE_ACTIVATE_DIFFERENCE_SCORES)
 			{
-				temp__ship = Ship(i, teams[i], (void*)&rotate_flags[i], (void*)&shoot_flags[i], &temp_points[i], &temp_vel, temp_angles[i], 0.0f, start_bonus | BUFF_SHIELD);
-				Game::AddEntity(temp__ship);
+				ships[i].Set(i, teams[i], (void*)&rotate_flags[i], (void*)&shoot_flags[i], &temp_positions[i], &temp_vel, temp_angles[i], 0.0f, start_bonus | BUFF_SHIELD);
 			}
 			else
 			{
-				temp__ship = Ship(i, teams[i], (void*)&rotate_flags[i], (void*)&shoot_flags[i], &temp_points[i], &temp_vel, temp_angles[i], 0.0f, start_bonus);
-				Game::AddEntity(temp__ship);
+				ships[i].Set(i, teams[i], (void*)&rotate_flags[i], (void*)&shoot_flags[i], &temp_positions[i], &temp_vel, temp_angles[i], 0.0f, start_bonus);
 			}
 		}
 	}
+	delete[] temp_angles;
+	delete[] temp_positions;
 }
 
 void Game::InitMenus()
@@ -962,7 +1001,7 @@ void Game::InitMenus()
 	buttons[3].Set(BUTTON_ID_SELECT_SHIP_4, &position, &size, "Player 4", 6);
 	position = Vec2F(-0.5f, 0.3f);
 	size = Vec2F(1.0f, -0.25f);
-	buttons[4].Set(BUTTON_ID_START_GAME, &position, &size, "Start game!", 7);
+	buttons[4].Set(BUTTON_ID_START_GAME, &position, &size, "Start game", 7);
 	position = Vec2F();
 	size = Vec2F(1.0f, -1.0f);
 	ships_select_menu = new Menu(&position, &size, buttons, 5);
@@ -976,7 +1015,7 @@ void Game::InitMenus()
 	for (uint8_t i = 0; i < GAME_MAPS_COUNT; i++)
 	{
 		position = Vec2F(-0.5f + (float)(i % 2) * GAME_MAPPULL_MENU_BORDER, GAME_MAPPULL_MENU_UP_Y - (float)(i / 2) * GAME_MAPPULL_MENU_BORDER);
-		buttons[i].Set(BUTTON_ID_SELECT_MAP + i - 1, &position, &size, "", 6);
+		buttons[i].Set(BUTTON_ID_SELECT_MAP + i, &position, &size, "Test", 6, BUTTON_STATUS_ACTIVE);
 	}
 	position = Vec2F();
 	size = Vec2F(1.0f, GAME_MAPPULL_MENU_BORDER * (float)(((GAME_MAPS_COUNT + 1) / 2) + 1));
