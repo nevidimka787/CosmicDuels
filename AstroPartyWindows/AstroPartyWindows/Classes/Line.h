@@ -15,7 +15,11 @@ public:
 	Vec2F* vector;
 
 	Line();
-	Line(Vec2F* point, Vec2F* point_vector, bool second_argument_is_point);
+	Line(const Line& line);
+	Line(
+		Vec2F* point, 
+		Vec2F* point_vector, 
+		bool second_argument_is_point = false);
 
 	bool Intersection(Line* intersection_line, Vec2F* output_intersection_point);
 	bool Intersection(Beam* intersection_beam, Vec2F* output_intersection_point);
@@ -29,6 +33,19 @@ public:
 	float GetDistance(Line* target);
 	float GetDistance(Beam* target);
 	float GetDistance(Segment* target);
+
+	void Set(Line* line);
+	void Set(
+		Vec2F* point,
+		Vec2F* point_vector,
+		bool second_argument_is_point = false);
+
+	void operator=(Line line);
+	void operator=(Beam line);
+	void operator=(Segment line);
+
+	operator Beam();
+	operator Segment();
 
 	~Line();
 };
@@ -41,7 +58,11 @@ public:
 	Vec2F* vector;
 
 	Beam();
-	Beam(Vec2F* point, Vec2F* point_vector, bool second_argument_is_point);
+	Beam(const Beam& beam);
+	Beam(
+		Vec2F* point,
+		Vec2F* point_vector,
+		bool second_argument_is_point = false);
 
 	bool Intersection(Line* intersection_line, Vec2F* output_intersection_point);
 	bool Intersection(Beam* intersection_beam, Vec2F* output_intersection_point);
@@ -55,6 +76,19 @@ public:
 	float GetDistance(Line* target);
 	float GetDistance(Beam* target);
 	float GetDistance(Segment* target);
+	
+	void Set(Beam* beam);
+	void Set(
+		Vec2F* point,
+		Vec2F* point_vector,
+		bool second_argument_is_point = false);
+
+	void operator=(Line line);
+	void operator=(Beam line);
+	void operator=(Segment line);
+
+	operator Line();
+	operator Segment();
 
 	~Beam();
 };
@@ -67,7 +101,11 @@ public:
 	Vec2F* vector;
 
 	Segment();
-	Segment(Vec2F* point, Vec2F* point_vector, bool second_argument_is_point);
+	Segment(const Segment& segment);
+	Segment(
+		Vec2F* point,
+		Vec2F* point_vector,
+		bool second_argument_is_point = false);
 
 	bool Intersection(Line* intersection_line, Vec2F* output_intersection_point);
 	bool Intersection(Beam* intersection_beam, Vec2F* output_intersection_point);
@@ -83,6 +121,19 @@ public:
 	float GetDistance(Segment* target);
 
 	Vec2F GetSecondPoint();
+
+	void Set(Segment* segment);
+	void Set(
+		Vec2F* point,
+		Vec2F* point_vector,
+		bool second_argument_is_point = false);
+
+	void operator=(Line line);
+	void operator=(Beam line);
+	void operator=(Segment line);
+
+	operator Line();
+	operator Beam();
 
 	~Segment();
 };

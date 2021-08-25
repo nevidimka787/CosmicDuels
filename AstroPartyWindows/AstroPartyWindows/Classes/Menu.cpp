@@ -6,12 +6,39 @@
 #pragma warning(disable : 26451)//All integer operations can be overflow. It is absolutly useless warnintg.
 #pragma warning(disable : 28182)
 
-Button::Button() : position(new Vec2F()), size(new Vec2F()), text(nullptr), text_size(0), id(0), status(BUTTON_STATUS_INACTIVE), text_length(0)
+Button::Button() :
+	position(new Vec2F()),
+	status(BUTTON_STATUS_INACTIVE),
+	size(new Vec2F()),
+	text((ClassTypes::Button::button_text_t*)malloc(sizeof(ClassTypes::Button::button_text_t))),
+	text_size(0),
+	id(0),
+	text_length(0)
 {
-
+	text[0] = '\0';
 }
 
-Button::Button(ClassTypes::Button::button_id_t id, Vec2F* position, Vec2F* size, const char* text, uint8_t text_size) : id(id), position(new Vec2F(*position)), size(new Vec2F(*size)), text_size(text_size), status(BUTTON_STATUS_INACTIVE)
+Button::Button(const Button& button) :
+	position(new Vec2F(*button.position)),
+	size(new Vec2F(*button.size)),
+	text((ClassTypes::Button::button_text_t*)malloc(sizeof(ClassTypes::Button::button_text_t)* (text_length + 1))),
+	text_size(button.text_size),
+	id(button.id),
+	status(button.status),
+	text_length(button.text_length)
+{
+	for (ClassTypes::Button::text_length_t i = 0; i < text_length; i++)
+	{
+		text[i] = button.text[i];
+	}
+}
+
+Button::Button(ClassTypes::Button::button_id_t id, Vec2F* position, Vec2F* size, const char* text, ClassTypes::Button::text_size_t text_size) :
+	id(id), 
+	position(new Vec2F(*position)), 
+	size(new Vec2F(*size)),
+	status(BUTTON_STATUS_INACTIVE),
+	text_size(text_size)
 {
 	for (text_length = 0; text[text_length] != '\0'; text_length++);
 
@@ -54,11 +81,12 @@ uint16_t Button::GetTextLength()
 
 void Button::Set(Button* button)
 {
+	id = button->id;
 	*position = *button->position;
 	*size = *button->size;
-	text_size = button->text_size;
-	id = button->id;
 	status = button->status;
+	text_length = button->text_length;
+	text_size = button->text_size;
 
 	for (text_length = 0; button->text[text_length] != '\0'; text_length++);
 
@@ -69,24 +97,7 @@ void Button::Set(Button* button)
 	}
 }
 
-void Button::Set(ClassTypes::Button::button_id_t id, Vec2F* position, Vec2F* size, const char* text, uint8_t text_size)
-{
-	this->id = id;
-	*this->position = *position;
-	*this->size = *size;
-	this->status = 0x00;
-	this->text_size = text_size;
-
-	for (text_length = 0; text[text_length] != '\0'; text_length++);
-
-	this->text = (ClassTypes::Button::button_text_t*)realloc(this->text, sizeof(ClassTypes::Button::button_text_t) * (text_length + 1));
-	for (uint32_t i = 0; i <= text_length; i++)
-	{
-		this->text[i] = text[i];
-	}
-}
-
-void Button::Set(ClassTypes::Button::button_id_t id, Vec2F* position, Vec2F* size, const char* text, uint8_t text_size, ClassTypes::Button::button_status_t status)
+void Button::Set(ClassTypes::Button::button_id_t id, Vec2F* position, Vec2F* size, const char* text, ClassTypes::Button::text_size_t text_size, ClassTypes::Button::button_status_t status)
 {
 	this->id = id;
 	*this->position = *position;
@@ -101,6 +112,23 @@ void Button::Set(ClassTypes::Button::button_id_t id, Vec2F* position, Vec2F* siz
 	{
 		this->text[i] = text[i];
 	}
+}
+
+bool Button::HavePoint(Vec2F* point)
+{
+	if (size->x > 0.0f)
+	{
+		if (size->y > 0.0f)
+		{
+			return point->x >= position->x && point->y >= position->y && point->x <= position->x + size->x && point->y <= position->y + size->y;
+		}
+		return point->x >= position->x && point->y <= position->y && point->x <= position->x + size->x && point->y >= position->y + size->y;
+	}
+	if (size->y > 0.0f)
+	{
+		return point->x <= position->x && point->y >= position->y && point->x >= position->x + size->x && point->y <= position->y + size->y;
+	}
+	return point->x <= position->x && point->y <= position->y && point->x >= position->x + size->x && point->y >= position->y + size->y;
 }
 
 void Button::Move(Vec2F* move_vector)
@@ -139,23 +167,6 @@ void Button::SetStatus(ClassTypes::Button::button_status_t status_mask, bool val
 	status &= BUTTON_STATUSE_ALL - status_mask;
 }
 
-bool Button::HavePoint(Vec2F* point)
-{
-	if (size->x > 0.0f)
-	{
-		if (size->y > 0.0f)
-		{
-			return point->x >= position->x && point->y >= position->y && point->x <= position->x + size->x && point->y <= position->y + size->y;
-		}
-		return point->x >= position->x && point->y <= position->y && point->x <= position->x + size->x && point->y >= position->y + size->y;
-	}
-	if (size->y > 0.0f)
-	{
-		return point->x <= position->x && point->y >= position->y && point->x >= position->x + size->x && point->y <= position->y + size->y;
-	}
-	return point->x <= position->x && point->y <= position->y && point->x >= position->x + size->x && point->y >= position->y + size->y;
-}
-
 void Button::SetText(const char* text)
 {
 	for (text_length = 0; text[text_length] != '\0'; text_length++);
@@ -169,10 +180,8 @@ void Button::SetText(const char* text)
 	}
 }
 
-void Button::SetText(const char* text, uint8_t text_size)
+void Button::SetTextSize(ClassTypes::Button::text_size_t text_size)
 {
-	SetText(text);
-
 	this->text_size = text_size;
 }
 
@@ -210,17 +219,36 @@ Button::~Button()
 
 
 
-Menu::Menu() : default_buttons(nullptr), current_buttons(nullptr), buttons_count(0), position(new Vec2F()), size(new Vec2F())
+Menu::Menu() :
+	default_buttons(new Button[1]),
+	current_buttons(new Button[1]),
+	buttons_count(1),
+	position(new Vec2F()),
+	size(new Vec2F())
 {
-	
 }
 
-Menu::Menu(Vec2F* position, Vec2F* size, Button* buttons, ClassTypes::Menu::buttons_count_t buttons_count) : position(new Vec2F(*position)), size(new Vec2F(*size)), default_buttons(new Button[buttons_count]), current_buttons(new Button[buttons_count]), buttons_count(buttons_count)
+Menu::Menu(Vec2F* position, Vec2F* size, Button* buttons, ClassTypes::Menu::buttons_count_t buttons_count) :
+	position(new Vec2F(*position)),
+	size(new Vec2F(*size)),
+	buttons_count(buttons_count)
 {
-	for (ClassTypes::Menu::buttons_count_t i = 0; i < buttons_count; i++)
+	if (buttons_count == 0)
 	{
-		default_buttons[i].Set(&buttons[i]);
-		current_buttons[i].Set(&default_buttons[i]);
+		buttons_count = 1;
+		current_buttons = new Button[1];
+		default_buttons = new Button[1];
+	}
+	else
+	{
+		current_buttons = new Button[buttons_count];
+		default_buttons = new Button[buttons_count];
+
+		for (ClassTypes::Menu::buttons_count_t i = 0; i < buttons_count; i++)
+		{
+			default_buttons[i].Set(&buttons[i]);
+			current_buttons[i].Set(&default_buttons[i]);
+		}
 	}
 }
 
@@ -247,24 +275,47 @@ void Menu::Move(Vec2F* move_vector)
 
 void Menu::Set(Menu* menu)
 {
-	if (default_buttons != nullptr)
-	{
-		delete[] default_buttons;
-		default_buttons = nullptr;
-	}
-	if (current_buttons != nullptr)
-	{
-		delete[] current_buttons;
-		current_buttons = nullptr;
-	}
-	default_buttons = new Button[menu->buttons_count];
-	current_buttons = new Button[menu->buttons_count];
+	buttons_count = menu->buttons_count;
+	*position = *menu->position;
+	*size = *menu->size;
+
+	delete[] default_buttons;
+	delete[] current_buttons;
+
+	default_buttons = new Button[buttons_count];
+	current_buttons = new Button[buttons_count];
 	for (ClassTypes::Menu::buttons_count_t i = 0; i < buttons_count; i++)
 	{
 		default_buttons[i].Set(&menu->default_buttons[i]);
-		current_buttons[i].Set(&default_buttons[i]);
-		current_buttons[i].Move(position);
+		current_buttons[i].Set(&menu->current_buttons[i]);
 	}
+}
+
+void Menu::Set(Vec2F* position, Vec2F* size, Button* buttons, ClassTypes::Menu::buttons_count_t buttons_count)
+{
+	*this->position = *position;
+	*this->size = *size;
+	
+	delete[] this->current_buttons;
+	delete[] this->default_buttons;
+	if (buttons_count == 0)
+	{
+		this->buttons_count = 1;
+		current_buttons = new Button[1];
+		default_buttons = new Button[1];
+	}
+	else
+	{
+		this->buttons_count = buttons_count;
+		current_buttons = new Button[buttons_count];
+		default_buttons = new Button[buttons_count];
+
+		for (ClassTypes::Menu::buttons_count_t i = 0; i < buttons_count; i++)
+		{
+			default_buttons[i] = buttons[i];
+		}
+	}
+	Recalculate();
 }
 
 void Menu::SetPosition(Vec2F* position)

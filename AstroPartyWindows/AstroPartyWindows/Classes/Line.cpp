@@ -1,10 +1,19 @@
 #include "Line.h"
 
-Line::Line() : point(new Vec2F()), vector(new Vec2F())
+Line::Line() :
+	point(new Vec2F()),
+	vector(new Vec2F())
 {
 }
 
-Line::Line(Vec2F* point, Vec2F* point_vector, bool second_argument_is_point) : point(new Vec2F(*point))
+Line::Line(const Line& line) :
+	point(new Vec2F(*line.point)),
+	vector(new Vec2F(*line.vector))
+{
+}
+
+Line::Line(Vec2F* point, Vec2F* point_vector, bool second_argument_is_point) :
+	point(new Vec2F(*point))
 {
 	if (second_argument_is_point)
 	{
@@ -176,6 +185,53 @@ float Line::GetDistance(Segment* target)
 	return (mat1 * intersect_point2 + *target->point).GetDistance(point);
 }
 
+void Line::Set(Line* line)
+{
+	*point = *line->point;
+	*vector = *line->vector;
+}
+
+void Line::Set(Vec2F* point, Vec2F* point_vector, bool second_argument_is_point)
+{
+	*this->point = *point;
+	if (second_argument_is_point == true)
+	{
+		*this->vector = *point_vector - *point;
+	}
+	else
+	{
+		*this->vector = *point_vector;
+	}
+}
+
+void Line::operator=(Line line)
+{
+	*this->point = *line.point;
+	*this->vector = *line.vector;
+}
+
+void Line::operator=(Beam beam)
+{
+	*this->point = *beam.point;
+	*this->vector = *beam.vector;
+}
+
+void Line::operator=(Segment segment)
+{
+	*this->point = *segment.point;
+	*this->vector = *segment.vector;
+}
+
+Line::operator Beam()
+{
+	return Beam(point, vector);
+}
+
+Line::operator Segment()
+{
+	return Segment(point, vector);
+}
+
 Line::~Line()
 {
 	delete point;
@@ -184,12 +240,21 @@ Line::~Line()
 
 
 
-Beam::Beam() : point(new Vec2F()), vector(new Vec2F())
+Beam::Beam() :
+	point(new Vec2F()),
+	vector(new Vec2F())
 {
 
 }
 
-Beam::Beam(Vec2F* point, Vec2F* point_vector, bool second_argument_is_point) : point(new Vec2F(*point))
+Beam::Beam(const Beam& beam) :
+	point(new Vec2F(*beam.point)),
+	vector(new Vec2F(*beam.vector))
+{
+}
+
+Beam::Beam(Vec2F* point, Vec2F* point_vector, bool second_argument_is_point) :
+	point(new Vec2F(*point))
 {
 	if (second_argument_is_point)
 	{
@@ -371,8 +436,9 @@ float Beam::GetDistance(Segment* target)
 	{
 		return 0.0;
 	}
-
-	Line line = Line(point, &Vec2F(target->vector->y, -target->vector->x), false);
+	Vec2F line_vector;
+	line_vector.Set(target->vector->y, -target->vector->x);
+	Line line = Line(point, &line_vector, false);
 	Vec2F* intersect_point = new Vec2F();
 	float min, dist;
 	bool line_intersect = false;
@@ -424,6 +490,53 @@ float Beam::GetDistance(Segment* target)
 	return dist1;
 }
 
+void Beam::Set(Beam* beam)
+{
+	*point = *beam->point;
+	*vector = *beam->vector;
+}
+
+void Beam::Set(Vec2F* point, Vec2F* point_vector, bool second_argument_is_point)
+{
+	*this->point = *point;
+	if (second_argument_is_point == true)
+	{
+		*this->vector = *point_vector - *point;
+	}
+	else
+	{
+		*this->vector = *point_vector;
+	}
+}
+
+void Beam::operator=(Line line)
+{
+	*this->point = *line.point;
+	*this->vector = *line.vector;
+}
+
+void Beam::operator=(Beam beam)
+{
+	*this->point = *beam.point;
+	*this->vector = *beam.vector;
+}
+
+void Beam::operator=(Segment segment)
+{
+	*this->point = *segment.point;
+	*this->vector = *segment.vector;
+}
+
+Beam::operator Line()
+{
+	return Line(point, vector);
+}
+
+Beam::operator Segment()
+{
+	return Segment(point, vector);
+}
+
 Beam::~Beam()
 {
 	delete point;
@@ -435,6 +548,12 @@ Beam::~Beam()
 Segment::Segment() : point(new Vec2F()), vector(new Vec2F())
 {
 
+}
+
+Segment::Segment(const Segment& segment) :
+	point(new Vec2F(*segment.point)),
+	vector(new Vec2F(*segment.vector))
+{
 }
 
 Segment::Segment(Vec2F* point, Vec2F* point_vector, bool second_argument_is_point) : point(new Vec2F(*point))
@@ -679,6 +798,53 @@ float Segment::GetDistance(Segment* target)
 Vec2F Segment::GetSecondPoint()
 {
 	return *point + *vector;
+}
+
+void Segment::Set(Segment* segment)
+{
+	*point = *segment->point;
+	*vector = *segment->vector;
+}
+
+void Segment::Set(Vec2F* point, Vec2F* point_vector, bool second_argument_is_point)
+{
+	*this->point = *point;
+	if (second_argument_is_point == true)
+	{
+		*this->vector = *point_vector - *point;
+	}
+	else
+	{
+		*this->vector = *point_vector;
+	}
+}
+
+void Segment::operator=(Line line)
+{
+	*this->point = *line.point;
+	*this->vector = *line.vector;
+}
+
+void Segment::operator=(Beam beam)
+{
+	*this->point = *beam.point;
+	*this->vector = *beam.vector;
+}
+
+void Segment::operator=(Segment segment)
+{
+	*this->point = *segment.point;
+	*this->vector = *segment.vector;
+}
+
+Segment::operator Line()
+{
+	return Line(point, vector);
+}
+
+Segment::operator Beam()
+{
+	return Beam(point, vector);
 }
 
 Segment::~Segment()

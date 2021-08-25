@@ -47,6 +47,8 @@ public:
 	bool rotation_inverse;
 	//Buttons positions in inveres.
 	bool buttons_inverse;
+	//This flag will be active after the completion of the MatchInit function and inactive after the end of the match.
+	bool flag_all_entities_initialisate;
 
 	//Current scores of players.
 	GameTypes::score_t* scores;
@@ -72,7 +74,7 @@ public:
 	//Count of turels on the map.
 	GameTypes::entities_count_t turels_count;
 	//Count of map's lazers on the map.
-	GameTypes::entities_count_t mega_lazers_count;
+	GameTypes::entities_count_t mega_lasers_count;
 	//Count of asteroids on the map.
 	GameTypes::entities_count_t asteroids_count;
 	//Count of bonuses on the map.

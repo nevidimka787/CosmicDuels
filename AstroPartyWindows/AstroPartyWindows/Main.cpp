@@ -26,23 +26,21 @@ std::shared_mutex physic_calculation_mtx;
 
 void TikUpdate();
 void PhysicsCalculation();
-void Draw(GLFWwindow* window);
+
+bool physic_thread_flag = false;
+bool tik_update_thread_flag = false;
 
 void LocalFramebufferSizeCallback(GLFWwindow* window, int width, int height);
 
-Game* main_game = nullptr;
-MenuFunctions* main_menu_functions = nullptr;
-OpenGL* main_draw_functions = nullptr;
+GLFWwindow* window = nullptr;
+Game* main_game = new Game();
+MenuFunctions* main_menu_functions = new MenuFunctions();
+OpenGL* main_draw_functions = new OpenGL(SCR_WIDTH, SCR_HEIGHT, "AstroParty", nullptr, nullptr, LocalFramebufferSizeCallback, &window);
 
 Linker* main_linker;
 
 int main()
 {
-    GLFWwindow* window = nullptr;
-    main_game = new Game();
-    main_menu_functions = new MenuFunctions();
-    main_draw_functions = new OpenGL(SCR_WIDTH, SCR_HEIGHT, "AstroParty", nullptr, nullptr, LocalFramebufferSizeCallback, &window);
-
     main_linker = new Linker(main_game, main_menu_functions, main_draw_functions);
 
     //game cycle
@@ -62,9 +60,21 @@ int main()
             while (main_game->start_game == true)
             {
                 std::thread physic(PhysicsCalculation);
-                std::thread draw(Draw, window);
+                while (tik_update_thread_flag == false || physic_thread_flag == false)
+                {
+                    main_draw_functions->ProcessInput(window);
+                    main_draw_functions->DrawFrame();
+                    glfwSwapBuffers(window);
+                    glfwPollEvents();
+                }
+                while (tik_update_thread_flag == true || physic_thread_flag == true)
+                {
+                    main_draw_functions->ProcessInput(window);
+                    main_draw_functions->DrawFrame();
+                    glfwSwapBuffers(window);
+                    glfwPollEvents();
+                }
                 physic.join();
-                draw.join();
             }
         }
         glfwSwapBuffers(window);
@@ -75,35 +85,11 @@ int main()
     return 0;
 }
 
-void Draw(GLFWwindow* window)
-{
-    init_mtx.lock();
-    while ((init & (TIK_UPDATE_INIT | PHYSICS_CALCULATION_INIT)) != (TIK_UPDATE_INIT | PHYSICS_CALCULATION_INIT))
-    {
-        init_mtx.unlock();
-        init_mtx.lock();
-    }
-    init_mtx.unlock();
-
-    while (!glfwWindowShouldClose(window))
-    {
-        main_draw_functions->ProcessInput(window);
-
-        physic_calculation_mtx.lock();
-        std::cout << "Draw Begin" << std::endl;
-        main_draw_functions->DrawFrame();
-        std::cout << "Draw End" << std::endl;
-        physic_calculation_mtx.unlock();
-
-        glfwSwapBuffers(window);
-        glfwPollEvents();
-    }
-}
-
 void TikUpdate()
 {
     init_mtx.lock();
     init |= TIK_UPDATE_INIT;
+    tik_update_thread_flag = true;
     init_mtx.unlock();
     while (true)
     {
@@ -115,6 +101,7 @@ void TikUpdate()
         timer_mtx.unlock();
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
+    tik_update_thread_flag = false;
 }
 
 void PhysicsCalculation()
@@ -135,6 +122,7 @@ void PhysicsCalculation()
     //start initialisate all entities and variables
     physic_calculation_mtx.unlock();
     init |= PHYSICS_CALCULATION_INIT;
+    physic_thread_flag = true;
     init_mtx.unlock();
 
 
@@ -147,9 +135,7 @@ void PhysicsCalculation()
         physic_calculation_mtx.lock();
         //start physics calculation
 
-        std::cout << "Update Begin" << std::endl;
         main_game->Update();
-        std::cout << "Update End" << std::endl;
 
         //end physics calculation
         physic_calculation_mtx.unlock();
@@ -164,6 +150,7 @@ void PhysicsCalculation()
         timer_mtx.unlock();
 
     }
+    physic_thread_flag = false;
 }
 
 

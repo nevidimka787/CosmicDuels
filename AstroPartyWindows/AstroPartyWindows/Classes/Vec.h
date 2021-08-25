@@ -3,12 +3,16 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
+class Vec2F;
+class Vec2D;
+
 class Vec2D
 {
 public:
 	double x;
 	double y;
 	Vec2D();
+	Vec2D(const Vec2D& vector);
 	Vec2D(double x, double y);
 
 	Vec2D operator+(Vec2D vector);
@@ -24,6 +28,8 @@ public:
 	bool operator==(Vec2D vector);
 	bool operator!=(Vec2D vector);
 
+	operator Vec2F();
+
 	double GetAbsoluteAngle();
 	double GetDistance(Vec2D* target);
 	double GetLength();
@@ -35,6 +41,16 @@ public:
 	Vec2D Rotate(double angle);
 	void RotateThis(double angle);
 	Vec2D Scale(Vec2D* scale);
+
+	void Set(Vec2F* vector);
+	void Set(Vec2D* vector);
+	void Set(float x, float y);
+	void Set(double x, double y);
+
+	void operator=(Vec2F vector);
+	void operator=(Vec2D vector);
+
+	~Vec2D();
 };
 
 
@@ -45,6 +61,7 @@ public:
 	float x;
 	float y;
 	Vec2F();
+	Vec2F(const Vec2F& vector);
 	Vec2F(float x, float y);
 
 	Vec2F operator+(Vec2F vector);
@@ -60,6 +77,8 @@ public:
 	bool operator==(Vec2F vector);
 	bool operator!=(Vec2F vector);
 
+	operator Vec2D();
+
 	float GetAbsoluteAngle();
 	float GetDistance(Vec2F* target);
 	float GetLength();
@@ -71,4 +90,14 @@ public:
 	Vec2F Rotate(float angle);
 	void RotateThis(float angle);
 	Vec2F Scale(Vec2F* scale);
+
+	void Set(Vec2F* vector);
+	void Set(Vec2D* vector);
+	void Set(float x, float y);
+	void Set(double x, double y);
+
+	void operator=(Vec2F vector);
+	void operator=(Vec2D vector);
+
+	~Vec2F();
 };

@@ -53,18 +53,19 @@ public:
 
 	bool* game_p__start_game;
 	bool* game_p__pause_game;
-	bool* game_p__map_pull_array;
-	bool* game_p__object_pull_array;
 
-	GameTypes::entities_count_t* game_p__teams;
+	bool** game_p__map_pull_array;
+	bool** game_p__object_pull_array;
+
+	GameTypes::entities_count_t** game_p__teams;
 	GameTypes::game_rules_t* game_p__game_rules;
 	 
 	Menu** game_p__current_active_menu;
-	Menu* game_p__option_menu;
-	Menu* game_p__main_menu;
-	Menu* game_p__pause_menu;
-	Menu* game_p__ships_select_menu;
-	Menu* game_p__map_pull_select_menu;
-	Menu* game_p__spawning_objects_select_menu;
-	Menu* game_p__ships_control_menu;
+	Menu** game_p__option_menu;
+	Menu** game_p__main_menu;
+	Menu** game_p__pause_menu;
+	Menu** game_p__ships_select_menu;
+	Menu** game_p__map_pull_select_menu;
+	Menu** game_p__spawning_objects_select_menu;
+	Menu** game_p__ships_control_menu;
 };

@@ -301,12 +301,33 @@ protected:
 public:
 	KillerEntity();
 	KillerEntity(const KillerEntity& killer_entity);
-	KillerEntity(GameTypes::players_count_t player_master_number, GameTypes::players_count_t player_master_team_number);
+	KillerEntity(
+		Vec2F* position,
+		Vec2F* velocity,
+		float radius,
+		GameTypes::players_count_t player_master_number,
+		GameTypes::players_count_t player_master_team_number,
+		float angle = 0.0f,
+		float angular_velocity = 0.0f,
+		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
+		bool exist = true);
 	GameTypes::players_count_t GetPlayerMasterNumber();
 	GameTypes::players_count_t GetPlayerMasterTeamNumber();
-	void Set(KillerEntity* entity);
+	void Set(KillerEntity* killer_entity);
+	void Set(
+		Vec2F* position,
+		Vec2F* velocity,
+		float radius,
+		GameTypes::players_count_t player_master_number,
+		GameTypes::players_count_t player_master_team_number,
+		float angle = 0.0f,
+		float angular_velocity = 0.0f,
+		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
+		bool exist = true);
 
-	void operator=(KillerEntity entity);
+	void operator=(KillerEntity killer_entity);
 
 	~KillerEntity();
 };
@@ -322,20 +343,37 @@ public:
 	ControledEntity();
 	ControledEntity(const ControledEntity& controled_entity);
 	ControledEntity(
-		GameTypes::players_count_t player_number, 
-		GameTypes::players_count_t player_team_number, 
-		void* rotate_input_value_pointer, 
-		void* shoot_input_value_pointer, 
 		Vec2F* position,
-		Vec2F* velocity, 
-		float angle, 
-		float angular_velocity);
+		Vec2F* velocity,
+		float radius,
+		GameTypes::players_count_t player_number,
+		GameTypes::players_count_t player_team_number,
+		void* rotate_input_value_pointer,
+		void* shoot_input_value_pointer,
+		float angle = 0.0f,
+		float angular_velocity = 0.0f,
+		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
+		bool exist = true);
 	
 	GameTypes::players_count_t GetPlayerNumber();
 	GameTypes::players_count_t GetTeamNumber();
 	bool GetRotateInputValue();
 	bool GetShootInputValue();
 	void Set(ControledEntity* entity);
+	void Set(
+		Vec2F* position,
+		Vec2F* velocity,
+		float radius,
+		GameTypes::players_count_t player_number,
+		GameTypes::players_count_t player_team_number,
+		void* rotate_input_value_pointer,
+		void* shoot_input_value_pointer,
+		float angle = 0.0f,
+		float angular_velocity = 0.0f,
+		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
+		bool exist = true);
 
 	void operator=(ControledEntity entity);
 	
@@ -347,19 +385,32 @@ class Ship : public ControledEntity
 #define SHIP_UNBRAKABLE_PERIOD 100
 
 #define BULLET_DEFAULT_VELOCITY 0.1f
-#define BULLET_DEFAULT_RADIUS	0.01f
 #define BULLET_DEFAULT_RESISTANCE_AIR_COEFFICIENT 0.001f
 
-#define SHIP_DEFAULT_RADIUS	0.1f;
+#define SHIP_DEFAULT_RADIUS	0.1f
 protected:
 	ClassTypes::Bonus::bonus_t buffs_bonuses;
 	ClassTypes::Bonus::bonus_t active_baffs;
-	uint16_t unbrakable;
+	GameTypes::tic_t unbrakable;
 public:
 	Ship();
 	Ship(const Ship& ship);
-	Ship(GameTypes::players_count_t player_number, GameTypes::players_count_t player_team_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* position, Vec2F* velocity, float angle, float angular_velocity);
-	Ship(GameTypes::players_count_t player_number, GameTypes::players_count_t player_team_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* position, Vec2F* velocity, float angle, float angular_velocity, ClassTypes::Bonus::bonus_t buffs_bonuses);
+	Ship(
+		Vec2F* position,
+		Vec2F* velocity,
+		GameTypes::players_count_t player_number,
+		GameTypes::players_count_t player_team_number,
+		void* rotate_input_value_pointer,
+		void* shoot_input_value_pointer,
+		float angle = 0.0f,
+		ClassTypes::Bonus::bonus_t buffs_bonuses = BONUS_NO_BONUS,
+		ClassTypes::Bonus::bonus_t active_baffs = BONUS_NO_BONUS,
+		GameTypes::tic_t unbrakable = SHIP_UNBRAKABLE_PERIOD,
+		float angular_velocity = 0.0f,
+		float radius = SHIP_DEFAULT_RADIUS,
+		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
+		bool exist = true);
 	
 	void ActivateBuffs();
 	void BreakShield();
@@ -372,7 +423,7 @@ public:
 	//The function does not check for the presence of a bonus.
 	Bomb CreateBomb();
 	//The function does not check for the presence of a bonus.
-	Laser CreateLazer();
+	Laser CreateLaser();
 	//The function does not check for the presence of a bonus.
 	Knife CreateKnife(uint8_t knife_number);
 	Pilot Destroy();
@@ -385,8 +436,22 @@ public:
 	//The function reduces the amount of this bonus.
 	void SpendBonusNoCheck(ClassTypes::Bonus::bonus_t bonus);
 	void Set(Ship* entity);
-	void Set(GameTypes::players_count_t player_number, GameTypes::players_count_t player_team_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* position, Vec2F* velocity, float angle, float angular_velocity);
-	void Set(GameTypes::players_count_t player_number, GameTypes::players_count_t player_team_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* position, Vec2F* velocity, float angle, float angular_velocity, ClassTypes::Bonus::bonus_t buffs_bonuses);
+	void Set(
+		Vec2F* position,
+		Vec2F* velocity,
+		GameTypes::players_count_t player_number,
+		GameTypes::players_count_t player_team_number,
+		void* rotate_input_value_pointer,
+		void* shoot_input_value_pointer,
+		float angle = 0.0f,
+		ClassTypes::Bonus::bonus_t buffs_bonuses = BONUS_NO_BONUS,
+		ClassTypes::Bonus::bonus_t active_baffs = BONUS_NO_BONUS,
+		GameTypes::tic_t unbrakable = SHIP_UNBRAKABLE_PERIOD,
+		float angular_velocity = 0.0f,
+		float radius = SHIP_DEFAULT_RADIUS,
+		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
+		bool exist = true);
 	void TakeBonus(Bonus* bonus);
 
 	void operator=(Ship entity);
@@ -396,11 +461,27 @@ public:
 
 class Pilot : public ControledEntity
 {
+#define PILOT_DEFAULT_RADIUS 0.03f
 protected:
 public:
 	Pilot();
 	Pilot(const Pilot& pilot);
-	Pilot(GameTypes::players_count_t player_number, GameTypes::players_count_t player_team_number, void* rotate_keyboard_key_pointer, void* move_keyboard_key_pointer, Vec2F* position, Vec2F* velocity, float angle, float angular_velocity);
+	Pilot(
+		Vec2F* position,
+		Vec2F* velocity,
+		GameTypes::players_count_t player_number,
+		GameTypes::players_count_t player_team_number,
+		void* rotate_input_value_pointer,
+		void* shoot_input_value_pointer,
+		float angle = 0.0f,
+		ClassTypes::Bonus::bonus_t buffs_bonuses = BONUS_NO_BONUS,
+		ClassTypes::Bonus::bonus_t active_baffs = BONUS_NO_BONUS,
+		GameTypes::tic_t unbrakable = SHIP_UNBRAKABLE_PERIOD,
+		float angular_velocity = 0.0f,
+		float radius = PILOT_DEFAULT_RADIUS,
+		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
+		bool exist = true);
 
 	Ship Respawn();
 	void Set(Pilot* entity);
@@ -427,13 +508,30 @@ public:
 	//Period between shoots.
 	GameTypes::tic_t inactive_period;
 	//Shoots count in one attack period.
-	uint8_t shoots_count;
+	ClassTypes::AgressiveEntity::shoots_count_t shoots_count;
 	AggressiveEntity();
 	AggressiveEntity(const AggressiveEntity& aggressive_entity);
-	AggressiveEntity(GameTypes::tic_t current_tic, GameTypes::tic_t first_activation_dellay, GameTypes::tic_t attack_period, GameTypes::tic_t passive_period, uint8_t shoots_count);
+	AggressiveEntity(
+		Vec2F* position,
+		float radius,
+		float angle = 0.0f,
+		GameTypes::tic_t attack_dellay = 0,
+		GameTypes::tic_t attack_period = AGGRESIVE_ENTITY_DEFAULT_ATTACK_PERIOD,
+		GameTypes::tic_t inactive_period = AGGRESIVE_ENTITY_DEFAULT_INACTIVE_PERIOD,
+		ClassTypes::AgressiveEntity::shoots_count_t shoots_count = AGGRESIVE_ENTITY_DEFAULT_SHOOTS_COUNT,
+		bool exist = true);
 	bool CanShoot(GameTypes::tic_t current_tic);
 	void PostponeAttack(GameTypes::tic_t dellay);
 	void Set(AggressiveEntity* entity);
+	void Set(
+		Vec2F* position,
+		float radius,
+		float angle = 0.0f,
+		GameTypes::tic_t attack_dellay = 0,
+		GameTypes::tic_t attack_period = AGGRESIVE_ENTITY_DEFAULT_ATTACK_PERIOD,
+		GameTypes::tic_t inactive_period = AGGRESIVE_ENTITY_DEFAULT_INACTIVE_PERIOD,
+		ClassTypes::AgressiveEntity::shoots_count_t shoots_count = AGGRESIVE_ENTITY_DEFAULT_SHOOTS_COUNT,
+		bool exist = true);
 
 	void operator=(AggressiveEntity entity);
 
@@ -443,13 +541,31 @@ public:
 class Turel : public AggressiveEntity
 {
 #define ATACK_ENTITY_DEFAULT_ATACK_PERIOD
+#define TUREL_DEFAULT_RADIUS	0.01f
 public:
 	Turel();
 	Turel(const Turel& turel);
-	Turel(Vec2F* position, float angle);
+	Turel(
+		Vec2F* position,
+		float angle = 0.0f,
+		GameTypes::tic_t attack_dellay = 0,
+		GameTypes::tic_t attack_period = AGGRESIVE_ENTITY_DEFAULT_ATTACK_PERIOD,
+		GameTypes::tic_t inactive_period = AGGRESIVE_ENTITY_DEFAULT_INACTIVE_PERIOD,
+		ClassTypes::AgressiveEntity::shoots_count_t shoots_count = AGGRESIVE_ENTITY_DEFAULT_SHOOTS_COUNT,
+		float radius = TUREL_DEFAULT_RADIUS,
+		bool exist = true);
 	
 	Bullet Shoot();
 	void Set(Turel* entity);
+	void Set(
+		Vec2F* position,
+		float angle = 0.0f,
+		GameTypes::tic_t attack_dellay = 0,
+		GameTypes::tic_t attack_period = AGGRESIVE_ENTITY_DEFAULT_ATTACK_PERIOD,
+		GameTypes::tic_t inactive_period = AGGRESIVE_ENTITY_DEFAULT_INACTIVE_PERIOD,
+		ClassTypes::AgressiveEntity::shoots_count_t shoots_count = AGGRESIVE_ENTITY_DEFAULT_SHOOTS_COUNT,
+		float radius = TUREL_DEFAULT_RADIUS,
+		bool exist = true);
 
 	void operator=(Turel entity);
 
@@ -458,16 +574,28 @@ public:
 
 class GravGen : public StaticEntity
 {
-#define GRAVITY_GENERATOR_DEFAULT_GRAVITY 0.1f
+#define GRAVITY_GENERATOR_DEFAULT_GRAVITY	0.1f
+#define GRAVITY_GENERATOR_DEFAULT_RADIUS	0.01f
 public:
 	float gravity;
 
 	GravGen();
 	GravGen(const GravGen& grav_gen);
-	GravGen(Vec2F* position, float gravity);
-	void Set(GravGen* entity);
+	GravGen(
+		Vec2F* position,
+		float gravity = GRAVITY_GENERATOR_DEFAULT_GRAVITY,
+		float radius = GRAVITY_GENERATOR_DEFAULT_RADIUS,
+		float angle = 0.0f,
+		bool exist = true);
+	void Set(GravGen* grav_gen);
+	void Set(
+		Vec2F* position,
+		float gravity = GRAVITY_GENERATOR_DEFAULT_GRAVITY,
+		float radius = GRAVITY_GENERATOR_DEFAULT_RADIUS,
+		float angle = 0.0f,
+		bool exist = true);
 
-	void operator=(GravGen entity);
+	void operator=(GravGen grav_gen);
 
 	~GravGen();
 };
@@ -479,11 +607,26 @@ protected:
 public:
 	MegaLaser();
 	MegaLaser(const MegaLaser& mega_laser);
-	MegaLaser(Segment* lazer_segment);
+	MegaLaser(
+		Segment* segment,
+		GameTypes::tic_t attack_dellay = 0,
+		GameTypes::tic_t attack_period = AGGRESIVE_ENTITY_DEFAULT_ATTACK_PERIOD,
+		GameTypes::tic_t inactive_period = AGGRESIVE_ENTITY_DEFAULT_INACTIVE_PERIOD,
+		ClassTypes::AgressiveEntity::shoots_count_t shoots_count = AGGRESIVE_ENTITY_DEFAULT_SHOOTS_COUNT,
+		bool active = false,
+		bool exist = true);
 
 	Segment GetSegment();
 	void Rotate(float angle);
 	void Set(MegaLaser* entity);
+	void Set(
+		Segment* segment,
+		GameTypes::tic_t attack_dellay = 0,
+		GameTypes::tic_t attack_period = AGGRESIVE_ENTITY_DEFAULT_ATTACK_PERIOD,
+		GameTypes::tic_t inactive_period = AGGRESIVE_ENTITY_DEFAULT_INACTIVE_PERIOD,
+		ClassTypes::AgressiveEntity::shoots_count_t shoots_count = AGGRESIVE_ENTITY_DEFAULT_SHOOTS_COUNT,
+		bool active = false,
+		bool exist = true);
 	bool IsShooting();
 
 	void operator=(MegaLaser entity);
@@ -493,73 +636,142 @@ public:
 
 class Laser : public StaticEntity
 {
-#define LASER_DEFAULT_SHOOT_PERIOD 100
+#define LASER_DEFAULT_SHOOT_TIME 100
 protected:
 	GameTypes::players_count_t player_master_number;
 	GameTypes::players_count_t player_master_team_number;
-	GameTypes::tic_t shoot_period;
+	GameTypes::tic_t shoot_time;
 public:
 	Laser();
 	Laser(const Laser& laser);
-	Laser(Vec2F* position, Vec2F* direction, GameTypes::players_count_t player_master_number, GameTypes::players_count_t player_master_team_number, GameTypes::tic_t shoot_period);
+	Laser(
+		Beam* beam,
+		GameTypes::players_count_t player_master_number,
+		GameTypes::players_count_t player_master_team_number,
+		GameTypes::tic_t shoot_time = LASER_DEFAULT_SHOOT_TIME,
+		bool exist = true);
 	bool CanShoot(GameTypes::tic_t current_tic);
 	Beam GetBeam();
 	GameTypes::players_count_t GetPlayerMasterNumber();
 	GameTypes::players_count_t GetPlayerMasterTeamNumber();
 	void Recalculate();
-	void Set(Laser* lazer);
+	void Set(Laser* laser);
+	void Set(
+		Beam* beam,
+		GameTypes::players_count_t player_master_number,
+		GameTypes::players_count_t player_master_team_number,
+		GameTypes::tic_t shoot_time = LASER_DEFAULT_SHOOT_TIME,
+		bool exist = true);
 
-	void operator=(Laser entity);
+	void operator=(Laser laser);
 
 	~Laser();
 };
 
 class Bullet : public KillerEntity
 {
+#define BULLET_DEFAULT_RADIUS 0.005f
+#define BULLET_DEFAULT_RESISTANSE_AIR_COEFFICIENT 0.005f
 protected:
 public:
 	Bullet();
 	Bullet(const Bullet& bullet);
-	Bullet(Vec2F* position, Vec2F* velocity, uint8_t host_number);
+	Bullet(
+		Vec2F* position,
+		Vec2F* velocity,
+		GameTypes::players_count_t player_master_number,
+		GameTypes::players_count_t player_master_team_number,
+		float angle = 0.0f,
+		float angular_velocity = 0.0f,
+		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_resistance_air_coefficient = BULLET_DEFAULT_RESISTANSE_AIR_COEFFICIENT,
+		float radius = BULLET_DEFAULT_RADIUS,
+		bool exist = true);
 	bool IsCollision(Map* map);
 	void Set(Bullet* bullet);
+	void Set(
+		Vec2F* position,
+		Vec2F* velocity,
+		GameTypes::players_count_t player_master_number,
+		GameTypes::players_count_t player_master_team_number,
+		float angle = 0.0f,
+		float angular_velocity = 0.0f,
+		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_resistance_air_coefficient = BULLET_DEFAULT_RESISTANSE_AIR_COEFFICIENT,
+		float radius = BULLET_DEFAULT_RADIUS,
+		bool exist = true);
 
-	void operator=(Bullet entity);
+	void operator=(Bullet bullet);
 
 	~Bullet();
 };
 
 class Knife : public KillerEntity
 {
+#define KNIFE_DEFAULT_HEALTH 3
+#define KNIFE_DEFAULT_RESISTANSE_AIR_COEFFICIENT BULLET_DEFAULT_RESISTANSE_AIR_COEFFICIENT
 protected:
 	ClassTypes::Knife::knife_health_t health;
 public:
 	Knife();
 	Knife(const Knife& knife);
-	Knife(Vec2F* point1, Vec2F* point2, uint8_t host_number);
+	Knife(
+		Segment* segment,
+		Vec2F* velocity,
+		GameTypes::players_count_t player_master_number,
+		GameTypes::players_count_t player_master_team_number,
+		ClassTypes::Knife::knife_health_t health = KNIFE_DEFAULT_HEALTH,
+		float angular_velocity = 0.0f,
+		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_resistance_air_coefficient = KNIFE_DEFAULT_RESISTANSE_AIR_COEFFICIENT,
+		bool exist = true);
 	Segment GetSegment();
 	void Set(Knife* knife);
+	void Set(
+		Segment* segment,
+		Vec2F* velocity,
+		GameTypes::players_count_t player_master_number,
+		GameTypes::players_count_t player_master_team_number,
+		ClassTypes::Knife::knife_health_t health = KNIFE_DEFAULT_HEALTH,
+		float angular_velocity = 0.0f,
+		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_resistance_air_coefficient = KNIFE_DEFAULT_RESISTANSE_AIR_COEFFICIENT,
+		bool exist = true);
 	//The function will return false when health is zero.
 	bool LoseHealth();
 
-	void operator=(Knife entity);
+	void operator=(Knife knife);
 
 	~Knife();
 };
 
 class Bomb : public KillerEntity
 {
-#define MINE_DEFAULT_TIMER 100
-#define MINE_BOOM_TIMER 10
-#define MINE_BOOM_RADIUS 0.1f
+#define BOMB_DEFAULT_RADIUS 0.01f
+#define BOMB_BOOM_RADIUS 0.1f
+#define BOMB_DEFAULT_BOOM_DELLAY 100
+#define BOMB_BOOM_TIME 10
 protected:
-	uint8_t animation_tic;
+	GameTypes::tic_t animation_tic;
 	bool active;
 	bool boom;
 public:
 	Bomb();
 	Bomb(const Bomb& bomb);
-	Bomb(Vec2F* position, Vec2F* velocity, float angle, float angular_velocity, uint8_t player_master_number);
+	Bomb(
+		Vec2F* position,
+		Vec2F* velocity,
+		GameTypes::players_count_t player_master_number,
+		GameTypes::players_count_t player_master_team_number,
+		GameTypes::tic_t animation_tic = BOMB_DEFAULT_BOOM_DELLAY,
+		float angle = 0.0f,
+		float angular_velocity = 0.0f,
+		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_resistance_air_coefficient = BULLET_DEFAULT_RESISTANSE_AIR_COEFFICIENT,
+		float radius = BOMB_DEFAULT_RADIUS,
+		bool active = false,
+		bool boom = false,
+		bool exist = true);
 	
 	void Activate();
 	void Boom();
@@ -567,9 +779,23 @@ public:
 	bool IsBoom();
 	bool CanRemove();
 	void Recalculate();
-	void Set(Bomb* mine);
+	void Set(Bomb* bomb);
+	void Set(
+		Vec2F* position,
+		Vec2F* velocity,
+		GameTypes::players_count_t player_master_number,
+		GameTypes::players_count_t player_master_team_number,
+		GameTypes::tic_t animation_tic = BOMB_DEFAULT_BOOM_DELLAY,
+		float angle = 0.0f,
+		float angular_velocity = 0.0f,
+		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_resistance_air_coefficient = BULLET_DEFAULT_RESISTANSE_AIR_COEFFICIENT,
+		float radius = BOMB_DEFAULT_RADIUS,
+		bool active = false,
+		bool boom = false,
+		bool exist = true);
 
-	void operator=(Bomb entity);
+	void operator=(Bomb bomb);
 
 	~Bomb();
 };
@@ -584,13 +810,22 @@ public:
 	bool exist;
 	MapElement();
 	MapElement(const MapElement& map_element);
+	MapElement(
+		Vec2F* position,
+		bool unbreakable = true,
+		bool exist = true);
 
 	Vec2F GetPosition();
 	Vec2F GetVelocity();
 	bool IsUnbreacable();
 	void Move(Vec2F* move_vector);
 	void SetPosition(Vec2F* position);
-	void Set(MapElement* element);
+	void Set(MapElement* map_element);
+	void Set(
+		Vec2F* position,
+		bool unbreakable = true,
+		bool exist = true);
+	void operator=(MapElement map_element);
 
 	~MapElement();
 };
@@ -608,7 +843,12 @@ public:
 	ClassTypes::Rectangle::sides_t collision_sides;
 	Rectangle();
 	Rectangle(const Rectangle& rectangle);
-	Rectangle(Vec2F* point1, Vec2F* point2, bool unbreakable);
+	Rectangle(
+		Segment* diagonal,
+		ClassTypes::Rectangle::sides_t show_sides = (RECTANGLE_UP_SIDE | RECTANGLE_DOWN_SIDE | RECTANGLE_RIGHT_SIDE | RECTANGLE_LEFT_SIDE),
+		ClassTypes::Rectangle::sides_t collision_sides = (RECTANGLE_UP_SIDE | RECTANGLE_DOWN_SIDE | RECTANGLE_RIGHT_SIDE | RECTANGLE_LEFT_SIDE),
+		bool unbreakable = true,
+		bool exist = true);
 
 	Vec2F GetUpRightPoint();
 	Vec2F GetDownRightPoint();
@@ -620,23 +860,40 @@ public:
 	Segment GetLeftSide();
 	void Move(Vec2F* move_vector);
 	void Set(Rectangle* patent);
-	void Set(Vec2F* point1, Vec2F* point2, bool unbreakable);
+	void Set(
+		Segment* diagonal,
+		ClassTypes::Rectangle::sides_t show_sides = (RECTANGLE_UP_SIDE | RECTANGLE_DOWN_SIDE | RECTANGLE_RIGHT_SIDE | RECTANGLE_LEFT_SIDE),
+		ClassTypes::Rectangle::sides_t collision_sides = (RECTANGLE_UP_SIDE | RECTANGLE_DOWN_SIDE | RECTANGLE_RIGHT_SIDE | RECTANGLE_LEFT_SIDE),
+		bool unbreakable = true,
+		bool exist = true);
 
 	~Rectangle();
 };
 
 class Cyrcle : public MapElement
 {
+#define CYRCLE_DEFAULT_RADIUS 0.1f
 protected:
 	float radius;
 public:
 	Cyrcle();
 	Cyrcle(const Cyrcle& cyrcle);
-	Cyrcle(Vec2F* position, float radius, bool unbreakable);
+	Cyrcle(
+		Vec2F* position,
+		float radius = CYRCLE_DEFAULT_RADIUS,
+		bool unbreakable = true,
+		bool exist = true);
 
 	float GetRadius();
 	void SetRadius(float radius);
-	void Set(Cyrcle* parent);
+	void Set(Cyrcle* cyrcle);
+	void Set(
+		Vec2F* position,
+		float radius = CYRCLE_DEFAULT_RADIUS,
+		bool unbreakable = true,
+		bool exist = true);
+
+	void operator=(Cyrcle cyrcle);
 
 	~Cyrcle();
 };
@@ -649,18 +906,34 @@ class Polygon : public MapElement
 protected:
 	Vec2F* points_array;
 	Vec2F* default_points_array;
-	uint32_t points_array_length;
+	ClassTypes::Polygon::points_array_length_t points_array_length;
 
 public:
 	Polygon();
 	Polygon(const Polygon& polygon);
-	Polygon(Vec2F* position, Vec2F* default_points_array, uint32_t points_array_length, bool unbreakable);
+	Polygon(
+		Vec2F* position,
+		Vec2F* points_array,
+		ClassTypes::Polygon::points_array_length_t points_array_length,
+		bool unbreakable = true,
+		bool exist = true);
 	
-	void Rotate(float angle, Vec2F* rotating_point);
+	void RotateGlobal(float angle, Vec2F* global_rotating_point);
+	void RotateLocal(float angle, Vec2F* local_rotating_point);
 	void Move(Vec2F* move_vector);
 	void ToDefault();
 	void Set(Polygon* parent);
-	
+	void Set(Vec2F* position,
+		Vec2F* points_array,
+		ClassTypes::Polygon::points_array_length_t points_array_length,
+		bool unbreakable = true,
+		bool exist = true);
+
+	void operator=(Polygon polygon)
+	{
+
+	}
+
 	~Polygon();
 };
 
@@ -672,15 +945,19 @@ protected:
 	Polygon* polygons_array;
 
 public:
-	const ClassTypes::Map::elements_array_length_t rectangles_array_length;
-	const ClassTypes::Map::elements_array_length_t cyrcles_array_length;
-	const ClassTypes::Map::elements_array_length_t polygons_array_length;
-	const Vec2F size;
+	ClassTypes::Map::elements_array_length_t rectangles_array_length;
+	ClassTypes::Map::elements_array_length_t cyrcles_array_length;
+	ClassTypes::Map::elements_array_length_t polygons_array_length;
 
 	Map(const Map& map);
-	Map(Rectangle* rectangles_array, uint8_t rectangles_array_length, Cyrcle* cyrcles_array, uint8_t cyrcles_array_length, Polygon* polygons_array, uint8_t polygons_array_length, Vec2F* size);
+	Map(
+		Rectangle* rectangles_array = nullptr, 
+		ClassTypes::Map::elements_array_length_t rectangles_array_length = 0,
+		Cyrcle* cyrcles_array = nullptr,
+		ClassTypes::Map::elements_array_length_t cyrcles_array_length = 0,
+		Polygon* polygons_array = nullptr,
+		ClassTypes::Map::elements_array_length_t polygons_array_length = 0);
 
-	Vec2F GetSize();
 	Rectangle GetRectangle(uint8_t number);
 	Cyrcle GetCyrcle(uint8_t number);
 	Polygon GetPolygon(uint8_t number);

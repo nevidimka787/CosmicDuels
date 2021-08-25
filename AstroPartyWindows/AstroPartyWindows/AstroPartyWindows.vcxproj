@@ -170,7 +170,9 @@
     <None Include="Shaders\Map\Vertex\Polygon.glsl" />
     <None Include="Shaders\Map\Vertex\Rectangle.glsl" />
     <None Include="Shaders\Menu\Fragment\Button.glsl" />
+    <None Include="Shaders\Menu\Fragment\Controler.glsl" />
     <None Include="Shaders\Menu\Vertex\Button.glsl" />
+    <None Include="Shaders\Menu\Vertex\Controler.glsl" />
     <None Include="Shaders\Objects\Fragment\Asteroid.glsl" />
     <None Include="Shaders\Objects\Fragment\Bomb.glsl" />
     <None Include="Shaders\Objects\Fragment\Bonus.glsl" />

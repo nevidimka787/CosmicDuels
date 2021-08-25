@@ -42,6 +42,13 @@ void OpenGL::DrawFrame()
 {
     glClearColor(0.1f, 0.1f, 0.5f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
+
+    if (*game_p__flag_all_entities_initialisate == true)
+    {
+        DrawShips();
+    }
+
+
     DrawObjectCurrentMenu();
 }
 
@@ -132,23 +139,23 @@ void OpenGL::LimitMenuPosition(Menu* menu)
 
 void OpenGL::CallMenuFunction(Menu* menu, Vec2F* clk_pos, uint8_t clk_status)
 {
-    if (menu == game_p__main_menu)
+    if (menu == *game_p__main_menu)
     {
         object_p__menu_functions->MainMenuFunction(clk_pos, clk_status);
     }
-    else if (menu == game_p__option_menu)
+    else if (menu == *game_p__option_menu)
     {
         object_p__menu_functions->OptionMenuFunction(clk_pos, clk_status);
     }
-    else if (menu == game_p__spawning_objects_select_menu)
+    else if (menu == *game_p__spawning_objects_select_menu)
     {
         object_p__menu_functions->SpawnObjectsSelectMenuFunction(clk_pos, clk_status);
     }
-    else if (menu == game_p__ships_select_menu)
+    else if (menu == *game_p__ships_select_menu)
     {
         object_p__menu_functions->ShipsSelectMenuFunction(clk_pos, clk_status);
     }
-    else if (menu == game_p__map_pull_select_menu)
+    else if (menu == *game_p__map_pull_select_menu)
     {
         object_p__menu_functions->MapPullSelectMenuFunction(clk_pos, clk_status);
     }
@@ -171,12 +178,26 @@ void OpenGL::DrawObjectCurrentMenu()
 
 void OpenGL::DrawObjectIndicatedMenu(Menu* menu)
 {
-    button_shader->Use();
-    symbols_texture->Use();
-    button_shader->SetUniform("scale", window_scale);
-    for (ClassTypes::Menu::buttons_count_t button = 0; button < menu->GetButtonsCount(); button++)
+    if (menu == *game_p__ships_control_menu)
     {
-        DrawObject(&menu->current_buttons[button], false);
+        controler_shader->Use();
+        controler_shader->SetUniform("scale", window_scale);
+        glBindVertexArray(right_triangle_buffer);
+        for (ClassTypes::Menu::buttons_count_t button = 0; button < menu->GetButtonsCount(); button++)
+        {
+            DrawObject((ControledButton*)&menu->current_buttons[button]);
+        }
+    }
+    else
+    {
+        button_shader->Use();
+        symbols_texture->Use();
+        button_shader->SetUniform("scale", window_scale);
+        glBindVertexArray(basic_square);
+        for (ClassTypes::Menu::buttons_count_t button = 0; button < menu->GetButtonsCount(); button++)
+        {
+            DrawObject(&menu->current_buttons[button]);
+        }
     }
 }
 
@@ -263,6 +284,30 @@ void OpenGL::InitBuffers()
     glBindVertexArray(0);               //unbind array
 
     //long trriangle
+
+    //right åriangle
+
+    vertexes[0] = 1.0f;                 //x1
+    vertexes[1] = 0.0f;                 //y1
+    vertexes[2] = 0.0f;                 //x2
+    vertexes[3] = 0.0f;                 //y2
+    vertexes[4] = 0.0f;                 //x3
+    vertexes[5] = 1.0f;                 //y3
+
+    glGenVertexArrays(1, &right_triangle);
+    glGenBuffers(1, &right_triangle_buffer);
+
+    glBindVertexArray(right_triangle);
+
+    glBindBuffer(GL_ARRAY_BUFFER, right_triangle_buffer);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertexes), vertexes, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+
+    glEnableVertexAttribArray(0);       //disable vertex array
+    glBindBuffer(GL_ARRAY_BUFFER, 0);   //unbind buffer
+    glBindVertexArray(0);               //unbind array
+
+    //right åriangle
 }
 
 void OpenGL::InitGlad()
@@ -284,26 +329,42 @@ void OpenGL::InitOpenGL()
 
 void OpenGL::InitShaders()
 {
-    asteroid_shader = new Shader("Shaders/Objects/Vertex/Asteroid.glsl", "Shaders/Objects/Fragment/Asteroid.glsl");
-    bomb_shader = new Shader("Shaders/Objects/Vertex/Bomb.glsl", "Shaders/Objects/Fragment/Bomb.glsl");
-    bonus_shader = new Shader("Shaders/Objects/Vertex/Bonus.glsl", "Shaders/Objects/Fragment/Bonus.glsl");
-    bullet_shader = new Shader("Shaders/Objects/Vertex/Bullet.glsl", "Shaders/Objects/Fragment/Bullet.glsl");
-    knife_shader = new Shader("Shaders/Objects/Vertex/Knife.glsl", "Shaders/Objects/Fragment/Knife.glsl");
-    mega_laser_sahder = new Shader("Shaders/Objects/Vertex/MegaLaser.glsl", "Shaders/Objects/Fragment/MegaLaser.glsl");
-    pilot_shader = new Shader("Shaders/Objects/Vertex/Pilot.glsl", "Shaders/Objects/Fragment/Pilot.glsl");
-    ship_shader = new Shader("Shaders/Objects/Vertex/Ship.glsl", "Shaders/Objects/Fragment/Ship.glsl");
-    turel_shader = new Shader("Shaders/Objects/Vertex/Turel.glsl", "Shaders/Objects/Fragment/Turel.glsl");
-
-    rectangle_shader = new Shader("Shaders/Map/Vertex/Rectangle.glsl", "Shaders/Map/Fragment/Rectangle.glsl");
-    cyrcle_shader = new Shader("Shaders/Map/Vertex/Cyrcle.glsl", "Shaders/Map/Fragment/Cyrcle.glsl");
-    polygon_shader = new Shader("Shaders/Map/Vertex/Polygon.glsl", "Shaders/Map/Fragment/Polygon.glsl");
-
-    button_shader = new Shader("Shaders/Menu/Vertex/Button.glsl", "Shaders/Menu/Fragment/Button.glsl");
+    asteroid_shader = new Shader();
+    asteroid_shader->Initialisate("Shaders/Objects/Vertex/Asteroid.glsl", "Shaders/Objects/Fragment/Asteroid.glsl");
+    bomb_shader = new Shader();
+    bomb_shader->Initialisate("Shaders/Objects/Vertex/Bomb.glsl", "Shaders/Objects/Fragment/Bomb.glsl");
+    bonus_shader = new Shader();
+    bonus_shader->Initialisate("Shaders/Objects/Vertex/Bonus.glsl", "Shaders/Objects/Fragment/Bonus.glsl");
+    bullet_shader = new Shader();
+    bullet_shader->Initialisate("Shaders/Objects/Vertex/Bullet.glsl", "Shaders/Objects/Fragment/Bullet.glsl");
+    knife_shader = new Shader();
+    knife_shader->Initialisate("Shaders/Objects/Vertex/Knife.glsl", "Shaders/Objects/Fragment/Knife.glsl");
+    mega_laser_sahder = new Shader();
+    mega_laser_sahder->Initialisate("Shaders/Objects/Vertex/MegaLaser.glsl", "Shaders/Objects/Fragment/MegaLaser.glsl");
+    pilot_shader = new Shader();
+    pilot_shader->Initialisate("Shaders/Objects/Vertex/Pilot.glsl", "Shaders/Objects/Fragment/Pilot.glsl");
+    ship_shader = new Shader();
+    ship_shader->Initialisate("Shaders/Objects/Vertex/Ship.glsl", "Shaders/Objects/Fragment/Ship.glsl");
+    turel_shader = new Shader();
+    turel_shader->Initialisate("Shaders/Objects/Vertex/Turel.glsl", "Shaders/Objects/Fragment/Turel.glsl");
+    
+    rectangle_shader = new Shader();
+    rectangle_shader->Initialisate("Shaders/Map/Vertex/Rectangle.glsl", "Shaders/Map/Fragment/Rectangle.glsl");
+    cyrcle_shader = new Shader();
+    cyrcle_shader->Initialisate("Shaders/Map/Vertex/Cyrcle.glsl", "Shaders/Map/Fragment/Cyrcle.glsl");
+    polygon_shader = new Shader();
+    polygon_shader->Initialisate("Shaders/Map/Vertex/Polygon.glsl", "Shaders/Map/Fragment/Polygon.glsl");
+    
+    button_shader = new Shader();
+    button_shader->Initialisate("Shaders/Menu/Vertex/Button.glsl", "Shaders/Menu/Fragment/Button.glsl");
+    controler_shader = new Shader();
+    controler_shader->Initialisate("Shaders/Menu/Vertex/Controler.glsl", "Shaders/Menu/Fragment/Controler.glsl");
 }
 
 void OpenGL::InitTextures()
 {
-    symbols_texture = new Texture2D("Textures/Sample.bmp");
+    symbols_texture = new Texture2D();
+    symbols_texture->Initialisate("Textures/Sample.bmp");
 }
 
 void OpenGL::DrawObjectCurrentMap()
@@ -378,7 +439,14 @@ void OpenGL::DrawObject(Pilot* pilot, bool update_shader)
 
 void OpenGL::DrawObject(Ship* ship, bool update_shader)
 {
-
+    if (update_shader)
+    {
+        ship_shader->Use();
+        ship_shader->SetUniform("scale", window_scale);
+        glBindVertexArray(basic_square);
+    }
+    ship_shader->SetUniform("position", ship->GetPosition());
+    glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
 void OpenGL::DrawObject(Turel* turel, bool update_shader)
@@ -414,13 +482,10 @@ void OpenGL::DrawObject(Button* button, bool update_shader)
         button_shader->Use();
         symbols_texture->Use();
         button_shader->SetUniform("scale", window_scale);
+        glBindVertexArray(basic_square);
     }
     Color3F color;
-    if (button->GetStatus(BUTTON_STATUS_SELECT))
-    {
-        color = Color3F(0.3f, 0.1f, 0.1f);
-    }
-    else if(button->GetStatus(BUTTON_STATUS_ACTIVE))
+    if(button->GetStatus(BUTTON_STATUS_ACTIVE))
     {
         color = Color3F(0.1f, 0.6f, 0.1f);
     }
@@ -444,14 +509,60 @@ void OpenGL::DrawObject(Button* button, bool update_shader)
     {
         color = Color3F(0.6f, 0.1f, 0.1f);
     }
+    if (button->GetStatus(BUTTON_STATUS_SELECT))
+    {
+        color *= 0.6f;
+    }
     button_shader->SetUniform("position", button->GetPosition());
     button_shader->SetUniform("size", button->GetSize());
     button_shader->SetUniform("color", &color);
     button_shader->SetUniform("text", button->GetText(), button->GetTextLength());
     button_shader->SetUniform("text_length", button->GetTextLength());
     button_shader->SetUniform("text_size", button->text_size);
-    glBindVertexArray(basic_square);
     glDrawArrays(GL_TRIANGLES, 0, 6);
+}
+
+void OpenGL::DrawObject(ControledButton* button, bool update_shader)
+{
+    if (update_shader)
+    {
+        controler_shader->Use();
+        controler_shader->SetUniform("scale", window_scale);
+        glBindVertexArray(right_triangle_buffer);
+    }
+    Color3F color;
+    if (((Button*)button)->GetStatus(BUTTON_STATUS_ACTIVE))
+    {
+        color = Color3F(0.1f, 0.6f, 0.1f);
+    }
+    else if (((Button*)button)->GetStatus(BUTTON_STATUS_CUSTOM_RED))
+    {
+        color = Color3F(1.0f, 0.0f, 0.0f);
+    }
+    else if (((Button*)button)->GetStatus(BUTTON_STATUS_CUSTOM_GREEN))
+    {
+        color = Color3F(0.0f, 1.0f, 0.0f);
+    }
+    else if (((Button*)button)->GetStatus(BUTTON_STATUS_CUSTOM_BLUE))
+    {
+        color = Color3F(0.0f, 0.0f, 1.0f);
+    }
+    else if (((Button*)button)->GetStatus(BUTTON_STATUS_CUSTOM_PURPURE))
+    {
+        color = Color3F(1.0f, 0.0f, 1.0f);
+    }
+    else
+    {
+        color = Color3F(0.6f, 0.1f, 0.1f);
+    }
+    if (((Button*)button)->GetStatus(BUTTON_STATUS_SELECT))
+    {
+        color *= 0.6f;
+    }
+    controler_shader->SetUniform("position", ((Button*)button)->GetPosition());
+    controler_shader->SetUniform("size", ((Button*)button)->GetSize());
+    controler_shader->SetUniform("color", &color);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
 }
 
 void OpenGL::DrawAsteroids()
@@ -491,7 +602,9 @@ void OpenGL::DrawPilots()
 
 void OpenGL::DrawShips()
 {
-
+    ship_shader->Use();
+    ship_shader->SetUniform("scale", window_scale);
+    DrawObject(&(*game_p__ships)[0]);
 }
 
 void OpenGL::DrawTurels()

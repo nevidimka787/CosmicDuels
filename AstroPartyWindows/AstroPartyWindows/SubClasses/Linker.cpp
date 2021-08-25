@@ -20,20 +20,20 @@ Linker::Linker(Game* game_object, MenuFunctions* menu_functions_object, OpenGL* 
 
 	//menu functions object
 
-	menu_functions_object->game_p__start_game = &game_object->start_game;
-	menu_functions_object->game_p__pause_game = &game_object->pause_game;
-	menu_functions_object->game_p__map_pull_array = game_object->map_pull_array;
-	menu_functions_object->game_p__object_pull_array = game_object->object_pull_array;
-	menu_functions_object->game_p__teams = game_object->teams;
-	menu_functions_object->game_p__game_rules = &game_object->game_rules;
 	menu_functions_object->game_p__current_active_menu = &game_object->current_active_menu;
-	menu_functions_object->game_p__option_menu = game_object->option_menu;
-	menu_functions_object->game_p__main_menu = game_object->main_menu;
-	menu_functions_object->game_p__pause_menu = game_object->pause_menu;
-	menu_functions_object->game_p__ships_select_menu = game_object->ships_select_menu;
-	menu_functions_object->game_p__map_pull_select_menu = game_object->map_pull_select_menu;
-	menu_functions_object->game_p__spawning_objects_select_menu = game_object->spawning_objects_select_menu;
-	menu_functions_object->game_p__ships_control_menu = game_object->ships_control_menu;
+	menu_functions_object->game_p__game_rules = &game_object->game_rules;
+	menu_functions_object->game_p__main_menu = &game_object->main_menu;
+	menu_functions_object->game_p__map_pull_array = &game_object->map_pull_array;
+	menu_functions_object->game_p__map_pull_select_menu = &game_object->map_pull_select_menu;
+	menu_functions_object->game_p__object_pull_array = &game_object->object_pull_array;
+	menu_functions_object->game_p__option_menu = &game_object->option_menu;
+	menu_functions_object->game_p__pause_game = &game_object->pause_game;
+	menu_functions_object->game_p__pause_menu = &game_object->pause_menu;
+	menu_functions_object->game_p__ships_control_menu = &game_object->ships_control_menu;
+	menu_functions_object->game_p__ships_select_menu = &game_object->ships_select_menu;
+	menu_functions_object->game_p__spawning_objects_select_menu = &game_object->spawning_objects_select_menu;
+	menu_functions_object->game_p__start_game = &game_object->start_game;
+	menu_functions_object->game_p__teams = &game_object->teams;
 
 	//menu functions object
 
@@ -42,13 +42,16 @@ Linker::Linker(Game* game_object, MenuFunctions* menu_functions_object, OpenGL* 
 	open_gl_object->object_p__menu_functions = menu_functions_object;
 
 	open_gl_object->game_p__current_active_menu = &game_object->current_active_menu;
-	open_gl_object->game_p__option_menu = game_object->option_menu;
-	open_gl_object->game_p__main_menu = game_object->main_menu;
-	open_gl_object->game_p__pause_menu = game_object->pause_menu;
-	open_gl_object->game_p__ships_select_menu = game_object->ships_select_menu;
-	open_gl_object->game_p__map_pull_select_menu = game_object->map_pull_select_menu;
-	open_gl_object->game_p__spawning_objects_select_menu = game_object->spawning_objects_select_menu;
-	open_gl_object->game_p__ships_control_menu = game_object->ships_control_menu;
+	open_gl_object->game_p__flag_all_entities_initialisate = &game_object->flag_all_entities_initialisate;
+	open_gl_object->game_p__main_menu = &game_object->main_menu;
+	open_gl_object->game_p__map_pull_select_menu = &game_object->map_pull_select_menu;
+	open_gl_object->game_p__option_menu = &game_object->option_menu;
+	open_gl_object->game_p__pause_menu = &game_object->pause_menu;
+	open_gl_object->game_p__start_game = &game_object->start_game;
+	open_gl_object->game_p__ships = &game_object->ships;
+	open_gl_object->game_p__ships_control_menu = &game_object->ships_control_menu;
+	open_gl_object->game_p__ships_select_menu = &game_object->ships_select_menu;
+	open_gl_object->game_p__spawning_objects_select_menu = &game_object->spawning_objects_select_menu;
 
 	//open gl object
 }

@@ -40,6 +40,9 @@ public:
 	//3 vertexes
 	OpenGLTypes::buffer_t long_triangle;
 	OpenGLTypes::buffer_t long_triangle_buffer;
+	//3 vertexes
+	OpenGLTypes::buffer_t right_triangle;
+	OpenGLTypes::buffer_t right_triangle_buffer;
 
 	//buffers
 
@@ -82,6 +85,8 @@ public:
 	Shader* polygon_shader;
 
 	Shader* button_shader;
+	//shader for ships control buttons
+	Shader* controler_shader;
 
 	Texture2D* symbols_texture;
 
@@ -99,30 +104,31 @@ public:
 	void DrawObjectCurrentMap();
 	void DrawObjectIndicatedMenu(Menu* menu);
 
-	void DrawObject(Line* line, bool update_shader);
-	void DrawObject(Beam* beam, bool update_shader);
-	void DrawObject(Segment* segment, bool update_shader);
+	void DrawObject(Line* line, bool update_shader = false);
+	void DrawObject(Beam* beam, bool update_shader = false);
+	void DrawObject(Segment* segment, bool update_shader = false);
 
-	void DrawObject(Entity* entity, bool update_shader);
-	void DrawObject(StaticEntity* static_entity, bool update_shader);
-	void DrawObject(DynamicEntity* dynamic_entity, bool update_shader);
+	void DrawObject(Entity* entity, bool update_shader = false);
+	void DrawObject(StaticEntity* static_entity, bool update_shader = false);
+	void DrawObject(DynamicEntity* dynamic_entity, bool update_shader = false);
 
-	void DrawObject(Asteroid* asteroid, bool update_shader);
-	void DrawObject(Bomb* mine, bool update_shader);
-	void DrawObject(Bonus* bonus, bool update_shader);
-	void DrawObject(Bullet* bullet, bool update_shader);
-	void DrawObject(Knife* knife, bool update_shader);
-	void DrawObject(MegaLaser* mega_laser, bool update_shader);
-	void DrawObject(Pilot* pilot, bool update_shader);
-	void DrawObject(Ship* ship, bool update_shader);
-	void DrawObject(Turel* turel, bool update_shader);
+	void DrawObject(Asteroid* asteroid, bool update_shader = false);
+	void DrawObject(Bomb* mine, bool update_shader = false);
+	void DrawObject(Bonus* bonus, bool update_shader = false);
+	void DrawObject(Bullet* bullet, bool update_shader = false);
+	void DrawObject(Knife* knife, bool update_shader = false);
+	void DrawObject(MegaLaser* mega_laser, bool update_shader = false);
+	void DrawObject(Pilot* pilot, bool update_shader = false);
+	void DrawObject(Ship* ship, bool update_shader = false);
+	void DrawObject(Turel* turel, bool update_shader = false);
 
-	void DrawObject(MapElement* map_element, bool update_shader);
-	void DrawObject(Rectangle* rectangle, bool update_shader);
-	void DrawObject(Cyrcle* cyrcle, bool update_shader);
-	void DrawObject(Polygon* polygon, bool update_shader);
+	void DrawObject(MapElement* map_element, bool update_shader = false);
+	void DrawObject(Rectangle* rectangle, bool update_shader = false);
+	void DrawObject(Cyrcle* cyrcle, bool update_shader = false);
+	void DrawObject(Polygon* polygon, bool update_shader = false);
 
-	void DrawObject(Button* button, bool update_shader);
+	void DrawObject(Button* button, bool update_shader = false);
+	void DrawObject(ControledButton* button, bool update_shader = false);
 
 	void DrawAsteroids();
 	void DrawBombs();
@@ -137,14 +143,19 @@ public:
 
 	//game pointers
 
+	bool* game_p__start_game;
+	bool* game_p__flag_all_entities_initialisate;
+
+	Ship** game_p__ships;
+
 	Menu** game_p__current_active_menu;
-	Menu* game_p__option_menu;
-	Menu* game_p__main_menu;
-	Menu* game_p__pause_menu;
-	Menu* game_p__ships_select_menu;
-	Menu* game_p__map_pull_select_menu;
-	Menu* game_p__spawning_objects_select_menu;
-	Menu* game_p__ships_control_menu;
+	Menu** game_p__option_menu;
+	Menu** game_p__main_menu;
+	Menu** game_p__pause_menu;
+	Menu** game_p__ships_select_menu;
+	Menu** game_p__map_pull_select_menu;
+	Menu** game_p__spawning_objects_select_menu;
+	Menu** game_p__ships_control_menu;
 
 
 	//menu functions pointers

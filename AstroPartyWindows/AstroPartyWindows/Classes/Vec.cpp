@@ -1,6 +1,14 @@
 #include "Vec.h"
 
-Vec2D::Vec2D() : x(0.0), y(0.0)
+Vec2D::Vec2D() :
+	x(0.0),
+	y(0.0)
+{
+}
+
+Vec2D::Vec2D(const Vec2D& vector) :
+	x(vector.x),
+	y(vector.y)
 {
 }
 
@@ -72,6 +80,11 @@ bool Vec2D::operator!=(Vec2D vector)
 	return (this->x != vector.x && this->y != vector.y);
 }
 
+Vec2D::operator Vec2F()
+{
+	return Vec2F(x, y);
+}
+
 double Vec2D::GetAbsoluteAngle()
 {
 	return (atan2(-y, x));
@@ -141,13 +154,61 @@ Vec2D Vec2D::Scale(Vec2D* scale)
 	return Vec2D(x * scale->x, y * scale->y);
 }
 
+void Vec2D::Set(Vec2F* vector)
+{
+	x = vector->x;
+	y = vector->y;
+}
+
+void Vec2D::Set(Vec2D* vector)
+{
+	x = vector->x;
+	y = vector->y;
+}
+
+void Vec2D::Set(float x, float y)
+{
+	this->x = x;
+	this->y = y;
+}
+
+void Vec2D::Set(double x, double y)
+{
+	this->x = x;
+	this->y = y;
+}
+
+void Vec2D::operator=(Vec2F vector)
+{
+	x = vector.x;
+	y = vector.y;
+}
+
+void Vec2D::operator=(Vec2D vector)
+{
+	x = vector.x;
+	y = vector.y;
+}
+
+Vec2D::~Vec2D()
+{
+}
+
 
 
 Vec2F::Vec2F() : x(0.0), y(0.0)
 {
 }
 
-Vec2F::Vec2F(float x, float y) : x(x), y(y)
+Vec2F::Vec2F(const Vec2F& vector) :
+	x(vector.x),
+	y(vector.y)
+{
+}
+
+Vec2F::Vec2F(float x, float y) :
+	x(x),
+	y(y)
 {
 }
 
@@ -214,6 +275,11 @@ bool Vec2F::operator==(Vec2F vector)
 bool Vec2F::operator!=(Vec2F vector)
 {
 	return (this->x != vector.x && this->y != vector.y);
+}
+
+Vec2F::operator Vec2D()
+{
+	return Vec2D(x, y);
 }
 
 float Vec2F::GetAbsoluteAngle()
@@ -288,4 +354,44 @@ void Vec2F::RotateThis(float angle)
 Vec2F Vec2F::Scale(Vec2F* scale)
 {
 	return Vec2F(x * scale->x, y * scale->y);
+}
+
+void Vec2F::Set(Vec2F* vector)
+{
+	x = vector->x;
+	y = vector->y;
+}
+
+void Vec2F::Set(Vec2D* vector)
+{
+	x = vector->x;
+	y = vector->y;
+}
+
+void Vec2F::Set(float x, float y)
+{
+	this->x = x;
+	this->y = y;
+}
+
+void Vec2F::Set(double x, double y)
+{
+	this->x = x;
+	this->y = y;
+}
+
+void Vec2F::operator=(Vec2F vector)
+{
+	x = vector.x;
+	y = vector.y;
+}
+
+void Vec2F::operator=(Vec2D vector)
+{
+	x = vector.x;
+	y = vector.y;
+}
+
+Vec2F::~Vec2F()
+{
 }

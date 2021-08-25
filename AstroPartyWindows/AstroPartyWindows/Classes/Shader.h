@@ -13,11 +13,13 @@
 
 class Shader
 {
-public:
+private:
     GLuint id;
+public:
     //GLuint* uniform_ids_array;
 
-    Shader(const char* vertexPath, const char* fragmentPath);
+    Shader();
+    bool Initialisate(const char* vertexPath, const char* fragmentPath);
     void Use();
     void SetUniform(const std::string& name, ClassTypes::Button::button_text_t* text, uint16_t text_length) const;
     void SetUniform(const std::string& name, int value) const;
@@ -26,4 +28,5 @@ public:
     void SetUniform(const std::string& name, Color3F* color) const;
     void SetUniform(const std::string& name, Vec2F vector) const;
     void SetUniform(const std::string& name, Vec2F* vector) const;
+    ~Shader();
 };
