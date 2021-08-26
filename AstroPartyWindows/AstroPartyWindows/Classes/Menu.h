@@ -1,10 +1,11 @@
 #pragma once
 
-#include "Vec.h"
 #include <iostream>
-#include "../Types/ClassesTypes.h"
-#include "../Constants/ClassesConstants.h"
 
+#include "Math.h"
+
+#include "../Types/AllTypes.h"
+#include "../Constants/AllConstants.h"
 
 class Button;
 class ControledButton;

@@ -1,15 +1,8 @@
 #pragma once
 
-#include "MenuFunctions.h"
-
-#include "../Types/GameRealisationTypes.h"
-#include "../Types/OpenGLRealisationTypes.h"
 #include "../Classes/GameEngine.h"
-#include "../Classes/Menu.h"
-#include "../Classes/Shader.h"
 
-#include "../Constants/GameRealisationConstants.h"
-#include "../Constants/MenuRealisationConstants.h"
+#include "MenuFunctions.h"
 
 class Game;
 
@@ -28,15 +21,6 @@ public:
 	bool start_game;
 	//Game status true = The game is paused. false = The game is on.
 	bool pause_game;
-
-	//Controled entities refer to this array.
-	bool* shoot_flags;
-	//Controled entities refer to this array.
-	bool* rotate_flags;
-	//Controled entities refer to this array.
-	bool* burnout_flags;
-	//true = The sheep can shoot one time. false = The sheep can't shoot.
-	bool* sheeps_can_shoot_flags;
 	//Index of array is ship's player number. Values of array are numbers of teams by every ship.
 	//Array changed in Game::Init::Menus.
 	GameTypes::entities_count_t* teams;
@@ -96,6 +80,16 @@ public:
 
 	//game lists
 
+
+	//Controled entities refer to this array.
+	bool* shoot_flags;
+	//Controled entities refer to this array.
+	bool* rotate_flags;
+	//Controled entities refer to this array.
+	bool* burnout_flags;
+	//true - The sheep can shoot one time.
+	//false - The sheep can't shoot.
+	bool* sheeps_can_shoot_flags;
 	//This array contains flags for maps that will be used in the current match.
 	bool* map_pull_array;
 	//This array contains maps' ids that will be used in the current match.
@@ -112,23 +106,23 @@ public:
 	//Array of pilots.
 	Pilot* pilots;
 
+	//Array of asteroids.
+	Asteroid* asteroids;
+	//Array of bonuses.
+	Bonus* bonuses;
+	//Array of bombs.
+	Bomb* bombs;
 	//Array of bullets.
 	Bullet* bullets;
 	//Array of knifes.
 	Knife* knifes;
 	//Array of lazers.
 	Laser* lasers;
-	//Array of bombs.
-	Bomb* bombs;
 	//Array of particles.
 	DynamicEntity* particles;
-	//Array of asteroids.
-	Asteroid* asteroids;
-	//Array of bonuses.
-	Bonus* bonuses;
 
 	//Object stores data about map on current level.
-	Map* map;
+	Map map;
 	//Array of rectangles.
 	Rectangle* rectangles;
 	//Array of gravity generators.
@@ -137,6 +131,8 @@ public:
 	Turel* turels;
 	//Array of lasers of the map.
 	MegaLaser* mega_lasers;
+
+	Camera camera;
 
 	//game objects
 
@@ -239,6 +235,7 @@ public:
 	Turel temp__turel;
 	//Memory space for temporary values.
 	Vec2F temp__vector;
+	bool ttttt = false;
 
 	//Memory space for temporary pointers.
 	Asteroid* temp__asteroid_p;
@@ -288,7 +285,6 @@ public:
 	//The function creates all nemus objects.
 	void InitMenus();
 
-	void EndLevel();
 	void NextLevel();
 	void EndMatch();
 	

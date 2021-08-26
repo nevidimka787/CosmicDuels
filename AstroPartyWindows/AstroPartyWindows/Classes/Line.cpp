@@ -1,134 +1,172 @@
 #include "Line.h"
 
-Line::Line() :
-	point(new Vec2F()),
-	vector(new Vec2F())
+LightLine::LightLine()
+{
+}
+
+LightLine::LightLine(const LightLine& line) :
+	point(line.point),
+	vector(line.vector)
+{
+}
+
+void LightLine::Set(Vec2F* point, Vec2F* vector)
+{
+	this->point = *point;
+	this->vector = *vector;
+}
+
+LightLine::~LightLine()
+{
+}
+
+
+
+Line::Line()
 {
 }
 
 Line::Line(const Line& line) :
-	point(new Vec2F(*line.point)),
-	vector(new Vec2F(*line.vector))
+	point(line.point),
+	vector(line.vector)
 {
 }
 
 Line::Line(Vec2F* point, Vec2F* point_vector, bool second_argument_is_point) :
-	point(new Vec2F(*point))
+	point(*point)
 {
 	if (second_argument_is_point)
 	{
-		vector = new Vec2F(*point_vector - *point);
+		vector = *point_vector - *point;
 	}
 	else
 	{
-		vector = new Vec2F(*point_vector);
+		vector = *point_vector;
 	}
 }
 
 bool Line::Intersection(Line* intersection_line, Vec2F* output_intersection_point)
 {
-	if (*vector == *intersection_line->vector || -*vector == *intersection_line->vector)
+	if (vector == intersection_line->vector || -vector == intersection_line->vector)
 	{
 		return false;
 	}
 
-	Vec2F temp = *intersection_line->point - *point;
-	Mat2F mat = Mat2F(&temp, vector);
-	Mat2F invers_mat = mat.InverseNotNormalize();
-	*output_intersection_point = invers_mat * *intersection_line->vector;
-	output_intersection_point->y = output_intersection_point->y / -output_intersection_point->x / mat.Determinant();
+	temp_vector1 = intersection_line->point - point;
+	temp_matrix1.Set(&temp_vector1, &vector);
+	temp_matrix2 = temp_matrix1.InverseNotNormalize();
+	*output_intersection_point = temp_matrix2 * intersection_line->vector;
+	output_intersection_point->y = output_intersection_point->y / -output_intersection_point->x / temp_matrix1.Determinant();
 	output_intersection_point->x = 0.0;
-	*output_intersection_point = mat * *output_intersection_point + *point;
+	*output_intersection_point = temp_matrix1 * *output_intersection_point + point;
 	
+	return true;
+}
+
+bool Line::Intersection(LightLine* intersection_line, Vec2F* output_intersection_point)
+{
+	if (vector == intersection_line->vector || -vector == intersection_line->vector)
+	{
+		return false;
+	}
+
+	temp_vector1 = intersection_line->point - point;
+	temp_matrix1.Set(&temp_vector1, &vector);
+	temp_matrix2 = temp_matrix1.InverseNotNormalize();
+	*output_intersection_point = temp_matrix2 * intersection_line->vector;
+	output_intersection_point->y = output_intersection_point->y / -output_intersection_point->x / temp_matrix1.Determinant();
+	output_intersection_point->x = 0.0;
+	*output_intersection_point = temp_matrix1 * *output_intersection_point + point;
+
 	return true;
 }
 
 bool Line::Intersection(Beam* intersection_beam, Vec2F* output_intersection_point)
 {
-	if (*vector == *intersection_beam->vector || -*vector == *intersection_beam->vector)
+	if (vector == intersection_beam->vector || -vector == intersection_beam->vector)
 	{
 		return false;
 	}
 
-	Vec2F temp = *intersection_beam->point - *point;
-	Mat2F mat = Mat2F(&temp, vector);
-	Mat2F invers_mat = mat.InverseNotNormalize();
-	*output_intersection_point = invers_mat * *intersection_beam->vector;
+	temp_vector1 = intersection_beam->point - point;
+	temp_matrix1.Set(&temp_vector1, &vector);
+	temp_matrix2 = temp_matrix1.InverseNotNormalize();
+	*output_intersection_point = temp_matrix2 * intersection_beam->vector;
 	if (output_intersection_point->x > 0.0)
 	{
 		return false;
 	}
-	output_intersection_point->y = output_intersection_point->y / -output_intersection_point->x / mat.Determinant();
+	output_intersection_point->y = output_intersection_point->y / -output_intersection_point->x / temp_matrix1.Determinant();
 	output_intersection_point->x = 0.0;
-	*output_intersection_point = mat * *output_intersection_point + *point;
+	*output_intersection_point = temp_matrix1 * *output_intersection_point + point;
 
 	return true;
 }
 
 bool Line::Intersection(Segment* intersection_segment, Vec2F* output_intersection_point)
 {
-	if (*vector == *intersection_segment->vector || -*vector == *intersection_segment->vector)
+	if (vector == intersection_segment->vector || -vector == intersection_segment->vector)
 	{
 		return false;
 	}
 
-	Vec2F temp = *intersection_segment->point - *point;
-	Mat2F mat = Mat2F(&temp, vector);
-	Mat2F invers_mat = mat.InverseNotNormalize();
-	*output_intersection_point = invers_mat * *intersection_segment->vector / mat.Determinant();
+	temp_vector1 = intersection_segment->point - point;
+	temp_matrix1.Set(&temp_vector1, &vector);
+	temp_matrix2 = temp_matrix1.InverseNotNormalize();
+	*output_intersection_point = temp_matrix2 * intersection_segment->vector / temp_matrix1.Determinant();
 	if (output_intersection_point->x > -1.0)
 	{
 		return false;
 	}
 	output_intersection_point->y = output_intersection_point->y / -output_intersection_point->x;
 	output_intersection_point->x = 0.0;
-	*output_intersection_point = mat * *output_intersection_point + *point;
+	*output_intersection_point = temp_matrix1 * *output_intersection_point + point;
 
 	return true;
 }
 
 bool Line::IsIntersection(Line* intersection_line)
 {
-	return *vector != *intersection_line->vector && -*vector != *intersection_line->vector;
+	return vector != intersection_line->vector && -vector != intersection_line->vector;
 }
 
 bool Line::IsIntersection(Beam* intersection_beam)
 {
-	if (*vector == *intersection_beam->vector || -*vector == *intersection_beam->vector)
+	if (vector == intersection_beam->vector || -vector == intersection_beam->vector)
 	{
 		return false;
 	}
 
-	Vec2F temp = *intersection_beam->point - *point;
-	Mat2F mat = Mat2F(&temp, vector);
-	Mat2F invers_mat = mat.InverseNotNormalize();
-	Vec2F vec = invers_mat * *intersection_beam->vector;
+	temp_vector1 = intersection_beam->point - point;
+	temp_matrix1.Set(&temp_vector1, &vector);
+	temp_matrix2 = temp_matrix1.InverseNotNormalize();
+	temp_vector1 = temp_matrix2 * intersection_beam->vector / temp_matrix1.Determinant();
 
-	return vec.x <= 0.0;
+	return temp_vector1.x <= 0.0;
 }
 
 bool Line::IsIntersection(Segment* intersection_segment)
 {
-	if (*vector == *intersection_segment->vector || -*vector == *intersection_segment->vector)
+	if (vector == intersection_segment->vector || -vector == intersection_segment->vector)
 	{
 		return false;
 	}
-	Vec2F temp = *intersection_segment->point - *point;
-	Mat2F mat = Mat2F(&temp, vector);
-	Mat2F invers_mat = mat.InverseNotNormalize();
-	Vec2F vec = invers_mat * *intersection_segment->vector / mat.Determinant();
+	temp_vector1 = intersection_segment->point - point;
+	temp_matrix1 = Mat2F(&temp_vector1, &vector);
+	temp_matrix2 = temp_matrix1.InverseNotNormalize();
+	temp_vector1 = temp_matrix2 * intersection_segment->vector / temp_matrix1.Determinant();
 
-	return vec.x <= -1.0;
+	return temp_vector1.x <= -1.0;
 }
 
 float Line::GetDistance(Vec2F* target)
 {
-	Vec2F temp = Vec2F(vector->y, -vector->x);
-	Line line = Line(target, &temp, false);
-	Vec2F* intersect_point = new Vec2F();
-	Intersection(&line, intersect_point);
+	temp_vector2;
+	temp_vector2.Set(vector.y, -vector.x);
+	temp_line1.Set(target, &temp_vector2);
+	Intersection(&temp_line1, &temp_vector2);
 
-	return intersect_point->GetDistance(target);
+	return temp_vector2.GetDistance(target);
 }
 
 float Line::GetDistance(Line* target)
@@ -138,7 +176,7 @@ float Line::GetDistance(Line* target)
 		return 0.0;
 	}
 
-	return GetDistance(target->point);
+	return GetDistance(&target->point);
 }
 
 float Line::GetDistance(Beam* target)
@@ -148,7 +186,7 @@ float Line::GetDistance(Beam* target)
 		return 0.0;
 	}
 
-	return GetDistance(target->point);
+	return GetDistance(&target->point);
 }
 
 float Line::GetDistance(Segment* target)
@@ -157,237 +195,253 @@ float Line::GetDistance(Segment* target)
 	{
 		return 0.0;
 	}
-	Vec2F temp1 = target->vector->Perpendicular();
-	Line line = Line(target->point, &temp1, false);
-	Vec2F intersect_point1, intersect_point2;
+	temp_vector1 = target->vector.Perpendicular();
+	temp_line1.Set(&target->point, &temp_vector1);
 
-	Vec2F temp2 = *line.point - *target->point;
-	Mat2F mat1 = Mat2F(&temp2, target->vector);
-	Mat2F invers_mat = mat1.InverseNotNormalize();
-	intersect_point1 = invers_mat * *line.vector;
-	intersect_point1.y = intersect_point1.y / -intersect_point1.x / mat1.Determinant();
+	target->temp_vector1 = temp_line1.point - target->point;
+	temp_matrix1.Set(&target->temp_vector1, &target->vector);
+	temp_matrix2 = temp_matrix1.InverseNotNormalize();
+	temp_vector2 = temp_matrix2 * temp_line1.vector;
+	temp_vector2.y = temp_vector2.y / -temp_vector2.x / temp_matrix1.Determinant();
 
-	temp2 = *target->point + *target->vector;
-	line = Line(&temp2, &temp1, false);
-	temp2 = *line.point - *target->point;
-	Mat2F mat2 = Mat2F(&temp2, target->vector);
-	invers_mat = mat2.InverseNotNormalize();
-	intersect_point1 = invers_mat * *line.vector;
-	intersect_point1.y = intersect_point1.y / -intersect_point1.x / mat2.Determinant();
+	target->temp_vector1 = target->point + target->vector;
+	temp_line1.Set(&target->temp_vector1, &temp_vector1);
+	target->temp_vector1 = temp_line1.point - target->point;
+	temp_matrix2.Set(&target->temp_vector1, &target->vector);
+	target->temp_matrix1 = temp_matrix2.InverseNotNormalize();
+	temp_vector2 = target->temp_matrix1 * temp_line1.vector;
+	temp_vector2.y = temp_vector2.y / -temp_vector2.x / temp_matrix2.Determinant();
 
-	if (abs(intersect_point1.y) < abs(intersect_point2.y))
+	if (abs(temp_vector2.y) < abs(target->temp_vector1.y))
 	{
-		intersect_point1.x = 0.0;
-		return (mat1 * intersect_point1 + *target->point).GetDistance(point);
+		temp_vector2.x = 0.0;
+		return (temp_matrix1 * temp_vector2 + target->point).GetDistance(&point);
 	}
 
-	intersect_point2.x = 0.0;
-	return (mat1 * intersect_point2 + *target->point).GetDistance(point);
+	target->temp_vector1.x = 0.0;
+	return (temp_matrix1 * target->temp_vector1 + target->point).GetDistance(&point);
 }
 
 void Line::Set(Line* line)
 {
-	*point = *line->point;
-	*vector = *line->vector;
+	point = line->point;
+	vector = line->vector;
 }
 
 void Line::Set(Vec2F* point, Vec2F* point_vector, bool second_argument_is_point)
 {
-	*this->point = *point;
+	this->point = *point;
 	if (second_argument_is_point == true)
 	{
-		*this->vector = *point_vector - *point;
+		this->vector = *point_vector - *point;
 	}
 	else
 	{
-		*this->vector = *point_vector;
+		this->vector = *point_vector;
 	}
 }
 
 void Line::operator=(Line line)
 {
-	*this->point = *line.point;
-	*this->vector = *line.vector;
+	this->point = line.point;
+	this->vector = line.vector;
 }
 
 void Line::operator=(Beam beam)
 {
-	*this->point = *beam.point;
-	*this->vector = *beam.vector;
+	this->point = beam.point;
+	this->vector = beam.vector;
 }
 
 void Line::operator=(Segment segment)
 {
-	*this->point = *segment.point;
-	*this->vector = *segment.vector;
+	this->point = segment.point;
+	this->vector = segment.vector;
 }
 
 Line::operator Beam()
 {
-	return Beam(point, vector);
+	return Beam(&point, &vector);
 }
 
 Line::operator Segment()
 {
-	return Segment(point, vector);
+	return Segment(&point, &vector);
 }
 
 Line::~Line()
 {
-	delete point;
-	delete vector;
 }
 
 
 
-Beam::Beam() :
-	point(new Vec2F()),
-	vector(new Vec2F())
+Beam::Beam()
 {
 
 }
 
 Beam::Beam(const Beam& beam) :
-	point(new Vec2F(*beam.point)),
-	vector(new Vec2F(*beam.vector))
+	point(beam.point),
+	vector(beam.vector)
 {
 }
 
 Beam::Beam(Vec2F* point, Vec2F* point_vector, bool second_argument_is_point) :
-	point(new Vec2F(*point))
+	point(*point)
 {
 	if (second_argument_is_point)
 	{
-		vector = new Vec2F(*point_vector - *point);
+		vector = *point_vector - *point;
 	}
 	else
 	{
-		vector = new Vec2F(*point_vector);
+		vector = *point_vector;
 	}
 }
 
 bool Beam::Intersection(Line* intersection_line, Vec2F* output_intersection_point)
 {
-	if (*vector == *intersection_line->vector || -*vector == *intersection_line->vector)
+	if (vector == intersection_line->vector || -vector == intersection_line->vector)
 	{
 		return false;
 	}
 
-	Vec2F temp = *intersection_line->point - *point;
-	Mat2F mat = Mat2F(&temp, vector);
-	Mat2F invers_mat = mat.InverseNotNormalize();
-	*output_intersection_point = invers_mat * *intersection_line->vector;
+	temp_vector1 = intersection_line->point - point;
+	temp_matrix1.Set(&temp_vector1, &vector);
+	temp_matrix2 = temp_matrix1.InverseNotNormalize();
+	*output_intersection_point = temp_matrix2 * intersection_line->vector;
 	if ((((*(uint64_t*)&output_intersection_point->x) & 0x8000000000000000) ^ ((*(uint64_t*)&output_intersection_point->y) & 0x8000000000000000)) == false)//x and y have equilar sign
 	{
 		return false;
 	}
-	output_intersection_point->y = output_intersection_point->y / -output_intersection_point->x / mat.Determinant();
+	output_intersection_point->y = output_intersection_point->y / -output_intersection_point->x / temp_matrix1.Determinant();
 	output_intersection_point->x = 0.0;
-	*output_intersection_point = mat * *output_intersection_point + *point;
+	*output_intersection_point = temp_matrix1 * *output_intersection_point + point;
+
+	return true;
+}
+
+bool Beam::Intersection(LightLine* intersection_line, Vec2F* output_intersection_point)
+{
+	if (vector == intersection_line->vector || -vector == intersection_line->vector)
+	{
+		return false;
+	}
+
+	temp_vector1 = intersection_line->point - point;
+	temp_matrix1.Set(&temp_vector1, &vector);
+	temp_matrix2 = temp_matrix1.InverseNotNormalize();
+	*output_intersection_point = temp_matrix2 * intersection_line->vector;
+	if ((((*(uint64_t*)&output_intersection_point->x) & 0x8000000000000000) ^ ((*(uint64_t*)&output_intersection_point->y) & 0x8000000000000000)) == false)//x and y have equilar sign
+	{
+		return false;
+	}
+	output_intersection_point->y = output_intersection_point->y / -output_intersection_point->x / temp_matrix1.Determinant();
+	output_intersection_point->x = 0.0;
+	*output_intersection_point = temp_matrix1 * *output_intersection_point + point;
 
 	return true;
 }
 
 bool Beam::Intersection(Beam* intersection_beam, Vec2F* output_intersection_point)
 {
-	if (*vector == *intersection_beam->vector || -*vector == *intersection_beam->vector)
+	if (vector == intersection_beam->vector || -vector == intersection_beam->vector)
 	{
 		return false;
 	}
 
-	Vec2F temp = *intersection_beam->point - *point;
-	Mat2F mat = Mat2F(&temp, vector);
-	Mat2F invers_mat = mat.InverseNotNormalize();
-	*output_intersection_point = invers_mat * *intersection_beam->vector;
+	temp_vector1 = intersection_beam->point - point;
+	temp_matrix1.Set(&temp_vector1, &vector);
+	temp_matrix2 = temp_matrix1.InverseNotNormalize();
+	*output_intersection_point = temp_matrix2 * intersection_beam->vector;
 	if (output_intersection_point->x > 0.0 || output_intersection_point->y < 0.0)
 	{
 		return false;
 	}
-	output_intersection_point->y = output_intersection_point->y / -output_intersection_point->x / mat.Determinant();
+	output_intersection_point->y = output_intersection_point->y / -output_intersection_point->x / temp_matrix1.Determinant();
 	output_intersection_point->x = 0.0;
-	*output_intersection_point = mat * *output_intersection_point + *point;
+	*output_intersection_point = temp_matrix1 * *output_intersection_point + point;
 
 	return true;
 }
 
 bool Beam::Intersection(Segment* intersection_segment, Vec2F* output_intersection_point)
 {
-	if (*vector == *intersection_segment->vector || -*vector == *intersection_segment->vector)
+	if (vector == intersection_segment->vector || -vector == intersection_segment->vector)
 	{
 		return false;
 	}
 
-	Vec2F temp = *intersection_segment->point - *point;
-	Mat2F mat = Mat2F(&temp, vector);
-	Mat2F invers_mat = mat.InverseNotNormalize();
-	*output_intersection_point = invers_mat * *intersection_segment->vector / mat.Determinant();
+	temp_vector1 = intersection_segment->point - point;
+	temp_matrix1.Set(&temp_vector1, &vector);
+	temp_matrix2 = temp_matrix1.InverseNotNormalize();
+	*output_intersection_point = temp_matrix2 * intersection_segment->vector / temp_matrix1.Determinant();
 	if (output_intersection_point->x > -1.0 || output_intersection_point->y < 0.0)
 	{
 		return false;
 	}
 	output_intersection_point->y = output_intersection_point->y / -output_intersection_point->x;
 	output_intersection_point->x = 0.0;
-	*output_intersection_point = mat * *output_intersection_point + *point;
+	*output_intersection_point = temp_matrix1 * *output_intersection_point + point;
 
 	return true;
 }
 
 bool Beam::IsIntersection(Line* intersection_line)
 {
-	if (*vector == *intersection_line->vector || -*vector == *intersection_line->vector)
+	if (vector == intersection_line->vector || -vector == intersection_line->vector)
 	{
 		return false;
 	}
 
-	Vec2F temp = *intersection_line->point - *point;
-	Mat2F mat = Mat2F(&temp, vector);
-	Mat2F invers_mat = mat.InverseNotNormalize();
-	Vec2F vec = invers_mat * *intersection_line->vector;
+	temp_vector1 = intersection_line->point - point;
+	temp_matrix1.Set(&temp_vector1, &vector);
+	temp_matrix2 = temp_matrix1.InverseNotNormalize();
+	temp_vector1 = temp_matrix2 * intersection_line->vector;
 
-	return *(uint64_t*)&vec.x & 0x8000000000000000 ^ *(uint64_t*)&vec.y & 0x8000000000000000;//x and y have equilar sign
+	return *(uint64_t*)&temp_vector1.x & 0x8000000000000000 ^ *(uint64_t*)&temp_vector1.y & 0x8000000000000000;//x and y have equilar sign
 }
 
 bool Beam::IsIntersection(Beam* intersection_beam)
 {
-	if (*vector == *intersection_beam->vector || -*vector == *intersection_beam->vector)
+	if (vector == intersection_beam->vector || -vector == intersection_beam->vector)
 	{
 		return false;
 	}
 
-	Vec2F temp = *intersection_beam->point - *point;
-	Mat2F mat = Mat2F(&temp, vector);
-	Mat2F invers_mat = mat.InverseNotNormalize();
-	Vec2F vec = invers_mat * *intersection_beam->vector;
+	temp_vector1 = intersection_beam->point - point;
+	temp_matrix1.Set(&temp_vector1, &vector);
+	temp_matrix2 = temp_matrix1.InverseNotNormalize();
+	temp_vector1 = temp_matrix2 * intersection_beam->vector;
 	
-	return vec.x <= -1.0 && vec.y >= 0.0;
+	return temp_vector1.x <= -1.0 && temp_vector1.y >= 0.0;
 }
 
 bool Beam::IsIntersection(Segment* intersection_segment)
 {
-	if (*vector == *intersection_segment->vector || -*vector == *intersection_segment->vector)
+	if (vector == intersection_segment->vector || -vector == intersection_segment->vector)
 	{
 		return false;
 	}
 
-	Vec2F temp = *intersection_segment->point - *point;
-	Mat2F mat = Mat2F(&temp, vector);
-	Mat2F invers_mat = mat.InverseNotNormalize();
-	Vec2F vec = invers_mat * *intersection_segment->vector / mat.Determinant();
+	temp_vector1 = intersection_segment->point - point;
+	temp_matrix1.Set(&temp_vector1, &vector);
+	temp_matrix2 = temp_matrix1.InverseNotNormalize();
+	temp_vector1 = temp_matrix2 * intersection_segment->vector / temp_matrix1.Determinant();
 
-	return vec.x <= -1.0 && vec.y >= 0.0;
+	return temp_vector1.x <= -1.0 && temp_vector1.y >= 0.0;
 }
 
 float Beam::GetDistance(Vec2F* target)
 {
-	Vec2F temp = vector->Perpendicular();
-	Line line = Line(target, &temp, false);
-	Vec2F* intersect_point = new Vec2F();
-	if (Intersection(&line, intersect_point))
+	temp_vector2 = vector.Perpendicular();
+	temp_line1.Set(target, &temp_vector2);
+	if (Intersection(&temp_line1, &temp_vector2))
 	{
-		return intersect_point->GetDistance(target);
+		return temp_vector2.GetDistance(target);
 	}
 
-	return point->GetDistance(target);
+	return point.GetDistance(target);
 }
 
 float Beam::GetDistance(Line* target)
@@ -402,32 +456,30 @@ float Beam::GetDistance(Beam* target)
 		return 0.0;
 	}
 
-	float dist1 = target->GetDistance(point);
-	float dist2;
-	bool set_dist2 = false;
+	temp_float1 = target->GetDistance(&point);
+	temp_bool1 = false;
 
-	Vec2F temp = vector->Perpendicular();
-	Line line = Line(target->point, &temp, false);
-	Vec2F* intersect_point = new Vec2F();
-	if (Intersection(&line, intersect_point))
+	temp_vector1 = vector.Perpendicular();
+	temp_line1.Set(&target->point, &temp_vector1);
+	if (Intersection(&temp_line1, &temp_vector2))
 	{
-		 dist2 = intersect_point->GetDistance(target->point);
-		 set_dist2 = true;
+		 temp_float2 = temp_vector2.GetDistance(&target->point);
+		 temp_bool1 = true;
 	}
 
-	float dist3 =  point->GetDistance(target->point);
+	target->temp_float1 =  point.GetDistance(&target->point);
 
-	if (set_dist2 == true && dist2 < dist1 && dist2 < dist3)
+	if (temp_bool1 == true && temp_float2 < temp_float1 && temp_float2 < target->temp_float1)
 	{
-		return dist2;
+		return temp_float2;
 	}
 
-	if (dist1 < dist3)
+	if (temp_float1 < target->temp_float1)
 	{
-		return dist1;
+		return temp_float1;
 	}
 
-	return dist3;
+	return target->temp_float1;
 }
 
 float Beam::GetDistance(Segment* target)
@@ -436,201 +488,223 @@ float Beam::GetDistance(Segment* target)
 	{
 		return 0.0;
 	}
-	Vec2F line_vector;
-	line_vector.Set(target->vector->y, -target->vector->x);
-	Line line = Line(point, &line_vector, false);
-	Vec2F* intersect_point = new Vec2F();
-	float min, dist;
-	bool line_intersect = false;
-	if (line.Intersection(target, intersect_point))
+	temp_vector1.Set(target->vector.y, -target->vector.x);
+	temp_line1.Set(&point, &temp_vector1);
+	temp_bool1 = false;
+	if (target->Intersection(&temp_line1, &temp_vector2))
 	{
-		line_intersect = true;
-		min = intersect_point->GetDistance(point);
+		temp_bool1 = true;
+		temp_float1 = temp_vector2.GetDistance(&point);
 	}
-	Vec2F temp = vector->Perpendicular();
-	line = Line(target->point, &temp, false);
-	if (line.Intersection(this, intersect_point))
+	target->temp_vector1 = vector.Perpendicular();
+	temp_line1.Set(&target->point, &target->temp_vector1);
+	if (Intersection(&temp_line1, &temp_vector2))
 	{
-		dist = intersect_point->GetDistance(point);
-		if (line_intersect == false)
+		temp_float2 = temp_vector2.GetDistance(&point);
+		if (temp_bool1 == false)
 		{
-			line_intersect = true;
-			min = dist;
+			temp_bool1 = true;
+			temp_float1 = temp_float2;
 		}
-		else if (dist < min)
+		else if (temp_float2 < temp_float1)
 		{
-			min = dist;
+			temp_float1 = temp_float2;
 		}
 	}
-	Vec2F point2 = *target->point + *target->vector;
-	line = Line(&point2, &temp, false);
-	if (line.Intersection(this, intersect_point))
+	target->temp_vector2 = target->point + target->vector;
+	temp_line1.Set(&target->temp_vector2, &target->temp_vector1);
+	if (Intersection(&temp_line1, &temp_vector2))
 	{
-		dist = intersect_point->GetDistance(point);
-		if (line_intersect == false)
+		temp_float2 = temp_vector2.GetDistance(&point);
+		if (temp_bool1 == false)
 		{
-			return dist;
+			return temp_float2;
 		}
-		if (dist < min)
+		if (temp_float2 < temp_float1)
 		{
-			return dist;
+			return temp_float2;
 		}
-		return min;
+		return temp_float1;
 	}
-	if (line_intersect)
+	if (temp_bool1)
 	{
-		return min;
+		return temp_float1;
 	}
-	float dist1 = GetDistance(target->point);
-	float dist2 = GetDistance(&point2);
-	if (dist1 > dist2)
+	temp_float1 = GetDistance(&target->point);
+	temp_float2 = GetDistance(&target->temp_vector2);
+	if (temp_float1 > temp_float2)
 	{
-		return dist2;
+		return temp_float2;
 	}
-	return dist1;
+	return temp_float1;
 }
 
 void Beam::Set(Beam* beam)
 {
-	*point = *beam->point;
-	*vector = *beam->vector;
+	point = beam->point;
+	vector = beam->vector;
 }
 
 void Beam::Set(Vec2F* point, Vec2F* point_vector, bool second_argument_is_point)
 {
-	*this->point = *point;
+	this->point = *point;
 	if (second_argument_is_point == true)
 	{
-		*this->vector = *point_vector - *point;
+		this->vector = *point_vector - *point;
 	}
 	else
 	{
-		*this->vector = *point_vector;
+		this->vector = *point_vector;
 	}
 }
 
 void Beam::operator=(Line line)
 {
-	*this->point = *line.point;
-	*this->vector = *line.vector;
+	this->point = line.point;
+	this->vector = line.vector;
 }
 
 void Beam::operator=(Beam beam)
 {
-	*this->point = *beam.point;
-	*this->vector = *beam.vector;
+	this->point = beam.point;
+	this->vector = beam.vector;
 }
 
 void Beam::operator=(Segment segment)
 {
-	*this->point = *segment.point;
-	*this->vector = *segment.vector;
+	this->point = segment.point;
+	this->vector = segment.vector;
 }
 
 Beam::operator Line()
 {
-	return Line(point, vector);
+	return Line(&point, &vector);
 }
 
 Beam::operator Segment()
 {
-	return Segment(point, vector);
+	return Segment(&point, &vector);
 }
 
 Beam::~Beam()
 {
-	delete point;
-	delete vector;
 }
 
 
 
-Segment::Segment() : point(new Vec2F()), vector(new Vec2F())
+Segment::Segment()
 {
 
 }
 
 Segment::Segment(const Segment& segment) :
-	point(new Vec2F(*segment.point)),
-	vector(new Vec2F(*segment.vector))
+	point(segment.point),
+	vector(segment.vector)
 {
 }
 
-Segment::Segment(Vec2F* point, Vec2F* point_vector, bool second_argument_is_point) : point(new Vec2F(*point))
+Segment::Segment(Vec2F* point, Vec2F* point_vector, bool second_argument_is_point) : 
+	point(*point)
 {
 	if (second_argument_is_point)
 	{
-		vector = new Vec2F(*point_vector - *point);
+		vector = *point_vector - *point;
 	}
 	else
 	{
-		vector = new Vec2F(*point_vector);
+		vector = *point_vector;
 	}
 }
 
 bool Segment::Intersection(Line* intersection_line, Vec2F* output_intersection_point)
 {
-	if (*vector == *intersection_line->vector || -*vector == *intersection_line->vector)
+	if (vector == intersection_line->vector || -vector == intersection_line->vector)
 	{
 		return false;
 	}
 
-	Vec2F temp = *intersection_line->point - *point;
-	Mat2F mat = Mat2F(&temp, vector);
-	Mat2F invers_mat = mat.InverseNotNormalize();
-	*output_intersection_point = invers_mat * *intersection_line->vector;
+	temp_vector1 = intersection_line->point - point;
+	temp_matrix1.Set(&temp_vector1, &vector);
+	temp_matrix2 = temp_matrix1.InverseNotNormalize();
+	*output_intersection_point = temp_matrix2 * intersection_line->vector;
 	if (((*(uint64_t*)&output_intersection_point->x & 0x8000000000000000) ^ (*(uint64_t*)&output_intersection_point->y & 0x8000000000000000)) == false)//x and y have equilar sign
 	{
 		return false;
 	}
-	output_intersection_point->y = output_intersection_point->y / -output_intersection_point->x / mat.Determinant();
+	output_intersection_point->y = output_intersection_point->y / -output_intersection_point->x / temp_matrix1.Determinant();
 	if (output_intersection_point->y > 1.0)
 	{
 		return false;
 	}
 	output_intersection_point->x = 0.0;
-	*output_intersection_point = mat * *output_intersection_point + *point;
+	*output_intersection_point = temp_matrix1 * *output_intersection_point + point;
+
+	return true;
+}
+
+bool Segment::Intersection(LightLine* intersection_line, Vec2F* output_intersection_point)
+{
+	if (vector == intersection_line->vector || -vector == intersection_line->vector)
+	{
+		return false;
+	}
+
+	temp_vector1 = intersection_line->point - point;
+	temp_matrix1.Set(&temp_vector1, &vector);
+	temp_matrix2 = temp_matrix1.InverseNotNormalize();
+	*output_intersection_point = temp_matrix2 * intersection_line->vector;
+	if (((*(uint64_t*)&output_intersection_point->x & 0x8000000000000000) ^ (*(uint64_t*)&output_intersection_point->y & 0x8000000000000000)) == false)//x and y have equilar sign
+	{
+		return false;
+	}
+	output_intersection_point->y = output_intersection_point->y / -output_intersection_point->x / temp_matrix1.Determinant();
+	if (output_intersection_point->y > 1.0)
+	{
+		return false;
+	}
+	output_intersection_point->x = 0.0;
+	*output_intersection_point = temp_matrix1 * *output_intersection_point + point;
 
 	return true;
 }
 
 bool Segment::Intersection(Beam* intersection_beam, Vec2F* output_intersection_point)
 {
-	if (*vector == *intersection_beam->vector || -*vector == *intersection_beam->vector)
+	if (vector == intersection_beam->vector || -vector == intersection_beam->vector)
 	{
 		return false;
 	}
 
-	Vec2F temp = *intersection_beam->point - *point;
-	Mat2F mat = Mat2F(&temp, vector);
-	Mat2F invers_mat = mat.InverseNotNormalize();
-	*output_intersection_point = invers_mat * *intersection_beam->vector;
+	temp_vector1 = intersection_beam->point - point;
+	temp_matrix1.Set(&temp_vector1, &vector);
+	temp_matrix2 = temp_matrix1.InverseNotNormalize();
+	*output_intersection_point = temp_matrix2 * intersection_beam->vector;
 	if (output_intersection_point->x > 0.0 || output_intersection_point->y < 0.0)
 	{
 		return false;
 	}
-	output_intersection_point->y = output_intersection_point->y / -output_intersection_point->x / mat.Determinant();
+	output_intersection_point->y = output_intersection_point->y / -output_intersection_point->x / temp_matrix1.Determinant();
 	if (output_intersection_point->y > 1.0)
 	{
 		return false;
 	}
 	output_intersection_point->x = 0.0;
-	*output_intersection_point = mat * *output_intersection_point + *point;
+	*output_intersection_point = temp_matrix1 * *output_intersection_point + point;
 
 	return true;
 }
 
 bool Segment::Intersection(Segment* intersection_segment, Vec2F* output_intersection_point)
 {
-	if (*vector == *intersection_segment->vector || -*vector == *intersection_segment->vector)
+	if (vector == intersection_segment->vector || -vector == intersection_segment->vector)
 	{
 		return false;
 	}
 
-	Vec2F temp = *intersection_segment->point - *point;
-	Mat2F mat = Mat2F(&temp, vector);
-	Mat2F invers_mat = mat.InverseNotNormalize();
-	*output_intersection_point = invers_mat * *intersection_segment->vector / mat.Determinant();
+	temp_vector1 = intersection_segment->point - point;
+	temp_matrix1.Set(&temp_vector1, &vector);
+	temp_matrix2 = temp_matrix1.InverseNotNormalize();
+	*output_intersection_point = temp_matrix2 * intersection_segment->vector / temp_matrix1.Determinant();
 	if (output_intersection_point->x > -1.0 || output_intersection_point->y < 0.0)
 	{
 		return false;
@@ -641,88 +715,86 @@ bool Segment::Intersection(Segment* intersection_segment, Vec2F* output_intersec
 		return false;
 	}
 	output_intersection_point->x = 0.0;
-	*output_intersection_point = mat * *output_intersection_point + *point;
+	*output_intersection_point = temp_matrix1 * *output_intersection_point + point;
 
 	return true;
 }
 
 bool Segment::IsIntersection(Line* intersection_line)
 {
-	if (*vector == *intersection_line->vector || -*vector == *intersection_line->vector)
+	if (vector == intersection_line->vector || -vector == intersection_line->vector)
 	{
 		return false;
 	}
 
-	Vec2F temp = *intersection_line->point - *point;
-	Mat2F mat = Mat2F(&temp, vector);
-	Mat2F invers_mat = mat.InverseNotNormalize();
-	Vec2F vec = invers_mat * *intersection_line->vector;
-	if ((((*(uint64_t*)&vec.x) & 0x8000000000000000) ^ ((*(uint64_t*)&vec.y) & 0x8000000000000000)) == false)//x and y have equilar sign
+	temp_vector1 = intersection_line->point - point;
+	temp_matrix1.Set(&temp_vector1, &vector);
+	temp_matrix2 = temp_matrix1.InverseNotNormalize();
+	temp_vector1 = temp_matrix2 * intersection_line->vector;
+	if ((((*(uint64_t*)&temp_vector1.x) & 0x8000000000000000) ^ ((*(uint64_t*)&temp_vector1.y) & 0x8000000000000000)) == false)//x and y have equilar sign
 	{
 		return false;
 	}
-	vec.y = vec.y / -vec.x / mat.Determinant();
+	temp_vector1.y = temp_vector1.y / -temp_vector1.x / temp_matrix1.Determinant();
 
-	return vec.y <= 1.0;
+	return temp_vector1.y <= 1.0;
 }
 
 bool Segment::IsIntersection(Beam* intersection_beam)
 {
-	if (*vector == *intersection_beam->vector || -*vector == *intersection_beam->vector)
+	if (vector == intersection_beam->vector || -vector == intersection_beam->vector)
 	{
 		return false;
 	}
 
-	Vec2F temp = *intersection_beam->point - *point;
-	Mat2F mat = Mat2F(&temp, vector);
-	Mat2F invers_mat = mat.InverseNotNormalize();
-	Vec2F vec = invers_mat * *intersection_beam->vector;
-	if (vec.x > 0.0 || vec.y < 0.0)
+	temp_vector1 = intersection_beam->point - point;
+	temp_matrix1 = Mat2F(&temp_vector1, &vector);
+	temp_matrix2 = temp_matrix1.InverseNotNormalize();
+	temp_vector1 = temp_matrix2 * intersection_beam->vector;
+	if (temp_vector1.x > 0.0 || temp_vector1.y < 0.0)
 	{
 		return false;
 	}
-	vec.y = vec.y / -vec.x / mat.Determinant();
-	return vec.y <= 1.0;
+	temp_vector1.y = temp_vector1.y / -temp_vector1.x / temp_matrix1.Determinant();
+	return temp_vector1.y <= 1.0;
 }
 
 bool Segment::IsIntersection(Segment* intersection_segment)
 {
-	if (*vector == *intersection_segment->vector || -*vector == *intersection_segment->vector)
+	if (vector == intersection_segment->vector || -vector == intersection_segment->vector)
 	{
 		return false;
 	}
 
-	Vec2F temp = *intersection_segment->point - *point;
-	Mat2F mat = Mat2F(&temp, vector);
-	Mat2F invers_mat = mat.InverseNotNormalize();
-	Vec2F vec = invers_mat * *intersection_segment->vector / mat.Determinant();
-	if (vec.x > -1.0 || vec.y < 0.0)
+	temp_vector1 = intersection_segment->point - point;
+	temp_matrix2 = temp_matrix1.InverseNotNormalize();
+	temp_vector1 = temp_matrix2 * intersection_segment->vector / temp_matrix1.Determinant();
+	if (temp_vector1.x > -1.0 || temp_vector1.y < 0.0)
 	{
 		return false;
 	}
-	vec.y = vec.y / -vec.x;
-	return vec.y <= 1.0;
+	temp_vector1.y = temp_vector1.y / -temp_vector1.x;
+	return temp_vector1.y <= 1.0;
 }
 
 float Segment::GetDistance(Vec2F* target)
 {
-	Vec2F temp = vector->Perpendicular();
-	Line line = Line(target, &temp, false);
-	Vec2F* intersect_point = new Vec2F();
-	if (Intersection(&line, intersect_point))
+	temp_vector1 = vector.Perpendicular();
+	temp_line1.Set(target, &temp_vector1);
+	if (Intersection(&temp_line1, &temp_vector2))
 	{
-		return intersect_point->GetDistance(target);
+		return temp_vector2.GetDistance(target);
 	}
 
-	float dist1 = point->GetDistance(target);
-	float dist2 = (*point + *vector).GetDistance(target);
+	temp_float1 = point.GetDistance(target);
+	temp_float2 = (point + vector).GetDistance(target);
 
-	if (dist1 > dist2)
+	if (temp_float1 > temp_float2)
 	{
-		return dist2;
+		return temp_float2;
 	}
 	
-	return dist1;
+	return temp_float1;
 }
 
 float Segment::GetDistance(Line* target)
@@ -742,113 +814,108 @@ float Segment::GetDistance(Segment* target)
 		return 0.0;
 	}
 
-	Vec2F point2 = *point + *vector;
-	Vec2F target_point2 = *target->point + *target->vector;
+	temp_vector1 = point + vector;
+	temp_vector2 = target->point + target->vector;
 
-	float dist1 = GetDistance(target->point);
-	float dist2 = GetDistance(&target_point2);
-	float dist3 = dist1;
-	float dist4 = dist1;
+	temp_float1 = GetDistance(&target->point);
+	temp_float2 = GetDistance(&temp_vector2);
 
-	Vec2F perpendicular = target->vector->Perpendicular();
-	Line line = Line(point, &perpendicular, false);
-	Vec2F* intersect_point = new Vec2F();
-	if (Intersection(&line, intersect_point))
+	target->temp_vector1 = target->vector.Perpendicular();
+	temp_line1.Set(&point, &target->temp_vector1);
+	if (Intersection(&temp_line1, &temp_vector2))
 	{
-		dist3 = intersect_point->GetDistance(point);
+		target->temp_float1 = temp_vector2.GetDistance(&point);
 	}
 
-	line = Line(&point2, &perpendicular, false);
-	if (Intersection(&line, intersect_point))
+	temp_line1.Set(&temp_vector1, &target->temp_vector1);
+	if (Intersection(&temp_line1, &temp_vector2))
 	{
-		dist4 = intersect_point->GetDistance(&point2);
+		target->temp_float2 = temp_vector2.GetDistance(&temp_vector1);
 	}
 
-	if (dist1 < dist2)
+	if (temp_float1 < temp_float2)
 	{
-		if (dist3 < dist4)
+		if (target->temp_float1 < target->temp_float2)
 		{
-			if (dist1 < dist3)
+			if (temp_float1 < target->temp_float1)
 			{
-				return dist1;
+				return temp_float1;
 			}
-			return dist3;
+			return target->temp_float1;
 		}
-		if (dist1 < dist4)
+		if (temp_float1 < target->temp_float2)
 		{
-			return dist1;
+			return temp_float1;
 		}
-		return dist4;
+		return target->temp_float2;
 	}
-	if (dist3 < dist4)
+	if (target->temp_float1 < target->temp_float2)
 	{
-		if (dist2 < dist3)
+		if (temp_float2 < target->temp_float1)
 		{
-			return dist2;
+			return temp_float2;
 		}
-		return dist3;
+		return target->temp_float1;
 	}
-	if (dist2 < dist4)
+	if (temp_float2 < target->temp_float2)
 	{
-		return dist2;
+		return temp_float2;
 	}
-	return dist4;
+	return target->temp_float2;
 }
 
 Vec2F Segment::GetSecondPoint()
 {
-	return *point + *vector;
+	return point + vector;
 }
 
 void Segment::Set(Segment* segment)
 {
-	*point = *segment->point;
-	*vector = *segment->vector;
+	point = segment->point;
+	vector = segment->vector;
 }
 
 void Segment::Set(Vec2F* point, Vec2F* point_vector, bool second_argument_is_point)
 {
-	*this->point = *point;
+	this->point = *point;
 	if (second_argument_is_point == true)
 	{
-		*this->vector = *point_vector - *point;
+		this->vector = *point_vector - *point;
 	}
 	else
 	{
-		*this->vector = *point_vector;
+		this->vector = *point_vector;
 	}
 }
 
 void Segment::operator=(Line line)
 {
-	*this->point = *line.point;
-	*this->vector = *line.vector;
+	this->point = line.point;
+	this->vector = line.vector;
 }
 
 void Segment::operator=(Beam beam)
 {
-	*this->point = *beam.point;
-	*this->vector = *beam.vector;
+	this->point = beam.point;
+	this->vector = beam.vector;
 }
 
 void Segment::operator=(Segment segment)
 {
-	*this->point = *segment.point;
-	*this->vector = *segment.vector;
+	this->point = segment.point;
+	this->vector = segment.vector;
 }
 
 Segment::operator Line()
 {
-	return Line(point, vector);
+	return Line(&point, &vector);
 }
 
 Segment::operator Beam()
 {
-	return Beam(point, vector);
+	return Beam(&point, &vector);
 }
 
 Segment::~Segment()
 {
-	delete point;
-	delete vector;
 }

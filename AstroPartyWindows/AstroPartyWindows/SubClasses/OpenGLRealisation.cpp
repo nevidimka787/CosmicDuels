@@ -446,6 +446,8 @@ void OpenGL::DrawObject(Ship* ship, bool update_shader)
         glBindVertexArray(basic_square);
     }
     ship_shader->SetUniform("position", ship->GetPosition());
+    ship_shader->SetUniform("angle", ship->GetAngle());
+    ship_shader->SetUniform("size", ship->radius);
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 

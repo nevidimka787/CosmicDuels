@@ -1,15 +1,6 @@
 #pragma once
 
-#include <iostream>
-#include "../Classes/Vec.h"
 #include "../Classes/GameEngine.h"
-#include "../Classes/Menu.h"
-
-#include "../Constants/MenuRealisationConstants.h"
-#include "../Constants/GameRealisationConstants.h"
-#include "../Constants/OpenGLRealisationConstants.h"
-
-#include "../Types/ClassesTypes.h"
 
 class MenuFunctions
 {

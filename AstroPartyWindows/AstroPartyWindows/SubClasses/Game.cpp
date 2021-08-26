@@ -1,4 +1,5 @@
 #include "Game.h"
+#include <math.h>
 
 #pragma warning(disable : 4244)
 #pragma warning(disable : 4302)
@@ -11,6 +12,9 @@
 #pragma warning(disable : 6386)
 #pragma warning(disable : 26451)//All integer operations can be overflow. It is absolutly useless warnintg.
 #pragma warning(disable : 26495)
+
+#define M_PI       3.14159265358979323846   // pi
+#define M_PI_4     0.785398163397448309616  // pi/4
 
 
 void Game::Update()
@@ -30,9 +34,9 @@ void Game::Update()
 	DynamicEntitiesCollisions((DynamicEntity*)ships, ships_count, (DynamicEntity*)asteroids, asteroids_count);
 	DynamicEntitiesCollisions((DynamicEntity*)asteroids, asteroids_count, (DynamicEntity*)pilots, pilots_count);
 
-	DynamicEntitiesCollisions((DynamicEntity*)ships, ships_count, map);
-	DynamicEntitiesCollisions((DynamicEntity*)pilots, pilots_count, map);
-	DynamicEntitiesCollisions((DynamicEntity*)asteroids, asteroids_count, map);
+	DynamicEntitiesCollisions((DynamicEntity*)ships, ships_count, &map);
+	DynamicEntitiesCollisions((DynamicEntity*)pilots, pilots_count, &map);
+	DynamicEntitiesCollisions((DynamicEntity*)asteroids, asteroids_count, &map);
 
 	DynamicEntitiesAddForce((DynamicEntity*)ships, ships_count, grav_gens, grav_gens_count);
 	DynamicEntitiesAddForce((DynamicEntity*)pilots, pilots_count, grav_gens, grav_gens_count);
@@ -41,7 +45,17 @@ void Game::Update()
 
 	//collisions
 
-	//recalculation
+	//recalculationtemp__vector.Set(0.0f, 0.0f);
+	ships[0].SetPosition(&temp__vector);
+	temp__vector.Set(0.0f, 0.0f);
+	ships[0].SetVelocity(&temp__vector);
+	if (ttttt == false)
+	{
+		
+		ships[0].SetAngle(1.0f);
+		ships[0].SetAngularVelocity(0.02f);
+		ttttt = true;
+	}
 
 	TransportAllObjects();
 	//recalculation
@@ -730,6 +744,8 @@ void Game::InitMach()
 	scores = new GameTypes::players_count_t[players_count];
 
 
+
+
 	start_bonus = game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_SHIELD ? BUFF_SHIELD : 0x0000;
 	start_bonus |= game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_TRIPLE_BONUS ? BUFF_TRIPLE : 0x0000;
 	if (game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_BONUS)
@@ -815,7 +831,6 @@ void Game::InitLevel()
 
 
 	Vec2F* temp_positions;
-	Rectangle* temp_rectangles;
 
 	const GameTypes::score_t max_score = GetMaxScore();
 
@@ -825,7 +840,7 @@ void Game::InitLevel()
 	default:
 		/* Create map */
 		
-		map = new Map();
+		map.Set();
 
 		/*Spawn entities*/
 		temp_positions = new Vec2F[players_count];
@@ -1038,6 +1053,45 @@ void Game::InitMenus()
 	current_active_menu = main_menu;
 }
 
+void Game::NextLevel()
+{
+	EndMatch();
+}
+
+void Game::EndMatch()
+{
+	delete[] asteroids;
+	asteroids_count = 0;
+	delete[] bombs;
+	bombs_count = 0;
+	delete[] bonuses;
+	bonuses_count = 0;
+	delete[] bullets;
+	bullets_count = 0;
+	delete[] knifes;
+	knifes_count = 0;
+	delete[] lasers;
+	lasers_count = 0;
+	delete[] particles;
+	particles_count = 0;
+
+	delete[] ships;
+	ships_count = 0;
+	delete[] pilots;
+	pilots_count = 0;
+	players_count = 0;
+
+	delete[] rectangles;
+	rectangles_count = 0;
+	delete[] grav_gens;
+	grav_gens_count = 0;
+	delete[] turels;
+	turels_count = 0;
+	delete[] mega_lasers;
+	mega_lasers_count = 0;
+
+	object_p__menu_functions->OpenMainMenu();
+}
 
 
 void Game::ShipShoot(Ship* ship)
@@ -1479,7 +1533,7 @@ void Game::UpdateBullets()
 		temp__bullet_p = &bullets[bullet];
 		if (temp__bullet_p->exist == true)
 		{
-			if (temp__bullet_p->IsCollision(map))
+			if (temp__bullet_p->IsCollision(&map))
 			{
 				RemoveEntity(temp__bullet_p);
 				goto end_of_cycle;
@@ -1859,7 +1913,7 @@ void Game::UpdateShips()
 			}
 			else
 			{
-				temp__ship_p->SetAngularVelocity(0.0f);
+				//temp__ship_p->SetAngularVelocity(0.0f);
 			}
 		}
 	}

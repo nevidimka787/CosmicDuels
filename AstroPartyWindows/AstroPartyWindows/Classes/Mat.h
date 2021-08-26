@@ -1,6 +1,15 @@
 #pragma once
+
+#include <iostream>
 #include <math.h>
+
 #include "Vec.h"
+
+#include "../Types/AllTypes.h"
+#include "../Constants/AllConstants.h"
+
+class Mat2F;
+class Mat2D;
 
 class Mat2D
 {
@@ -28,11 +37,21 @@ public:
 	Mat2D operator/=(double div);
 	bool operator==(Mat2D vec);
 
+	operator Mat2F();
+
 	double Determinant();
 	Mat2D Inverse();
 	void InverseThis();
 	Mat2D InverseNotNormalize();
 	void InverseThisNotNormalize();
+
+	void Set(double value);
+	void Set(double a11, double a12, double a21, double a22);
+	void Set(Vec2D* abscisse, Vec2D* ardinate);
+
+	void operator=(Mat2D matrix);
+
+	~Mat2D();
 };
 
 
@@ -62,9 +81,19 @@ public:
 	Mat2F operator/=(float div);
 	bool operator==(Mat2F vec);
 
+	operator Mat2D();
+
 	float Determinant();
 	Mat2F Inverse();
 	void InverseThis();
 	Mat2F InverseNotNormalize();
 	void InverseThisNotNormalize();
+
+	void Set(float value);
+	void Set(float a11, float a12, float a21, float a22);
+	void Set(Vec2F* abscisse, Vec2F* ardinate);
+
+	void operator=(Mat2F matrix);
+
+	~Mat2F();
 };

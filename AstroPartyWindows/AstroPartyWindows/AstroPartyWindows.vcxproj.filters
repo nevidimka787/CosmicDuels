@@ -40,9 +40,6 @@
     <ClCompile Include="gald.c">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\GameEngine.cpp">
-      <Filter>Classes\Файлы ресурсов</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Line.cpp">
       <Filter>Classes\Файлы ресурсов</Filter>
     </ClCompile>
@@ -77,6 +74,15 @@
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Texture.cpp">
+      <Filter>Classes\Файлы ресурсов</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Camera.cpp">
+      <Filter>Classes\Файлы ресурсов</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Entity.cpp">
+      <Filter>Classes\Файлы ресурсов</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Map.cpp">
       <Filter>Classes\Файлы ресурсов</Filter>
     </ClCompile>
   </ItemGroup>
@@ -165,11 +171,11 @@
     <None Include="Shaders\Menu\Fragment\Button.glsl">
       <Filter>Shaders\Fragment</Filter>
     </None>
-    <None Include="Shaders\Menu\Vertex\Controler.glsl">
-      <Filter>Shaders\Vertex</Filter>
-    </None>
     <None Include="Shaders\Menu\Fragment\Controler.glsl">
       <Filter>Shaders\Fragment</Filter>
+    </None>
+    <None Include="Shaders\Menu\Vertex\Controler.glsl">
+      <Filter>Shaders\Vertex</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -237,6 +243,21 @@
       <Filter>Исходные файлы</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Texture.h">
+      <Filter>Classes\Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Camera.h">
+      <Filter>Classes\Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Types\AllTypes.h">
+      <Filter>Types</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Entity.h">
+      <Filter>Classes\Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Map.h">
+      <Filter>Classes\Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Math.h">
       <Filter>Classes\Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

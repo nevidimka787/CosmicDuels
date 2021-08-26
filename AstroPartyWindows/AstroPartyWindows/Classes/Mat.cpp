@@ -91,6 +91,11 @@ double Mat2D::Determinant()
 	return a11 * a22 - a21 * a12;
 }
 
+Mat2D::operator Mat2F()
+{
+	return Mat2F((float)a11, (float)a12, (float)a21, (float)a22);
+}
+
 Mat2D Mat2D::Inverse()
 {
 	return Mat2D(a22, -a12, -a21, a11) / Determinant();
@@ -118,6 +123,42 @@ void Mat2D::InverseThisNotNormalize()
 	a22 = a11;
 	a12 = -a12;
 	a21 = -a12;
+}
+
+void Mat2D::Set(double value)
+{
+	a11 = value;
+	a12 = value;
+	a21 = value;
+	a22 = value;
+}
+
+void Mat2D::Set(double a11, double a12, double a21, double a22)
+{
+	this->a11 = a11;
+	this->a12 = a12;
+	this->a21 = a21;
+	this->a22 = a22;
+}
+
+void Mat2D::Set(Vec2D* abscissa, Vec2D* ordinata)
+{
+	a11 = abscissa->x;
+	a12 = abscissa->y;
+	a21 = ordinata->x;
+	a22 = ordinata->y;
+}
+
+void Mat2D::operator=(Mat2D matrix)
+{
+	a11 = matrix.a11;
+	a12 = matrix.a12;
+	a21 = matrix.a21;
+	a22 = matrix.a22;
+}
+
+Mat2D::~Mat2D()
+{
 }
 
 
@@ -240,4 +281,40 @@ void Mat2F::InverseThisNotNormalize()
 	a22 = a11;
 	a12 = -a12;
 	a21 = -a12;
+}
+
+void Mat2F::Set(float value)
+{
+	a11 = value;
+	a12 = value;
+	a21 = value;
+	a22 = value;
+}
+
+void Mat2F::Set(float a11, float a12, float a21, float a22)
+{
+	this->a11 = a11;
+	this->a12 = a12;
+	this->a21 = a21;
+	this->a22 = a22;
+}
+
+void Mat2F::Set(Vec2F* abscissa, Vec2F* ordinata)
+{
+	a11 = abscissa->x;
+	a12 = abscissa->y;
+	a21 = ordinata->x;
+	a22 = ordinata->y;
+}
+
+void Mat2F::operator=(Mat2F matrix)
+{
+	a11 = matrix.a11;
+	a12 = matrix.a12;
+	a21 = matrix.a21;
+	a22 = matrix.a22;
+}
+
+Mat2F::~Mat2F()
+{
 }

@@ -1,7 +1,10 @@
 #pragma once
 
-#define _USE_MATH_DEFINES
+#include <iostream>
 #include <math.h>
+
+#include "../Types/AllTypes.h"
+#include "../Constants/AllConstants.h"
 
 class Vec2F;
 class Vec2D;

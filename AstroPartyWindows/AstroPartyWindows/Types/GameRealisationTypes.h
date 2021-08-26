@@ -19,7 +19,7 @@ namespace GameTypes
 #define MAPS_COUNT_T_MIN			0ui16
 #define GAME_RULES_T_MIN			0ui32
 #define SCORE_T_MIN					0ui8
-#define OBJECTS_TYPE_COUNT_T_MAX	0ui8
+#define OBJECTS_TYPE_COUNT_T_MIN	0ui8
 
 	//typedefs
 

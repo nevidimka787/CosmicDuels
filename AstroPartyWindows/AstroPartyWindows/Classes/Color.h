@@ -1,6 +1,11 @@
 #pragma once
 
-#include <math.h>
+#include <iostream>
+
+#include "Math.h"
+
+#include "../Types/AllTypes.h"
+#include "../Constants/AllConstants.h"
 
 class Color3F
 {

@@ -1,16 +1,8 @@
 #pragma once
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-
-#include "../Types/OpenGLRealisationTypes.h"
-#include "../Constants/OpenGLRealisationConstants.h"
-#include "Game.h"
-#include "../Classes/Menu.h"
-#include "../Classes/Line.h"
 #include "../Classes/GameEngine.h"
-#include "../Classes/Shader.h"
-#include "../Classes/Texture.h"
+
+#include "Game.h"
 
 class OpenGL
 {

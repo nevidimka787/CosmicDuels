@@ -1,12 +1,7 @@
-#include "GameEngine.h"
-#include "../Types/GameRealisationTypes.h"
-#include "../Types/ClassesTypes.h"
+#include "Entity.h"
 #include <math.h>
 
-#pragma warning (disable : 6385)
-#pragma warning (disable : 6386)
-
-#define M_PI       3.14159265358979323846   // pi
+#define M_PI 3.14159265358979323846
 
 Entity::Entity() :
 	angle(0.0),
@@ -442,7 +437,7 @@ bool DynamicEntity::Collision(Rectangle* rectangle)
 
 	if (up_side.GetDistance(&position) < radius)
 	{
-		if(right_side.GetDistance(&position) < radius)
+		if (right_side.GetDistance(&position) < radius)
 		{
 			Vec2F force_vec = position - rectangle->GetUpRightPoint();
 			velocity += rectangle->GetVelocity() - force_vec.Project(&velocity);
@@ -593,10 +588,14 @@ Vec2F DynamicEntity::GetVelocity()
 void DynamicEntity::Recalculate()
 {
 	angle += angular_velocity;
+	if (angular_velocity > 0.02f)
+	{
+		int i = 0;
+	}
 
 	velocity += force;
 	velocity *= 1.0f - force_resistance_air_coefficient;
-	force = Vec2F();
+	force.Set(0.0f, 0.0f);
 	Move(&velocity);
 }
 
@@ -626,9 +625,20 @@ void DynamicEntity::Set(Vec2F* position, Vec2F* velocity, float radius, float an
 	this->velocity = *velocity;
 }
 
-void DynamicEntity::SetAngularVelocity(float angulat_velocity)
+void DynamicEntity::SetAngularVelocity(float angular_velocity)
 {
 	this->angular_velocity = angular_velocity;
+}
+
+void DynamicEntity::SetCoefficients(float force_collision_coeffisient, float force_resistance_air_coefficient)
+{
+	this->force_collision_coeffisient = force_collision_coeffisient;
+	this->force_resistance_air_coefficient = force_resistance_air_coefficient;
+}
+
+void DynamicEntity::SetVelocity(Vec2F* velocity)
+{
+	this->velocity = *velocity;
 }
 
 void DynamicEntity::operator=(DynamicEntity dynamic_entity)
@@ -662,7 +672,7 @@ StaticEntity::StaticEntity(const StaticEntity& static_entity) :
 {
 }
 
-StaticEntity::StaticEntity(Vec2F* position, float radius, float angle, bool exist) : 
+StaticEntity::StaticEntity(Vec2F* position, float radius, float angle, bool exist) :
 	Entity(position, radius, angle, exist),
 	last_position(*position)
 {
@@ -713,14 +723,14 @@ StaticEntity::~StaticEntity()
 
 
 
-Bonus::Bonus() : 
+Bonus::Bonus() :
 	DynamicEntity(),
 	bonus_type(0)
 {
 	radius = BONUS_DEFAULT_RADIUS;
 }
 
-Bonus::Bonus(const Bonus& bonus) : 
+Bonus::Bonus(const Bonus& bonus) :
 	DynamicEntity(bonus),
 	bonus_type(bonus.bonus_type)
 {
@@ -734,16 +744,16 @@ Bonus::Bonus(Vec2F* position, Vec2F* velocity, ClassTypes::Bonus::bonus_t bonus_
 
 Bonus Bonus::Division()
 {
-	ClassTypes::Bonus::bonus_t temp;
+	ClassTypes::Bonus::bonus_t temp_bonus;
 	bool last = false;
 	for (uint8_t i = 0; i < 6; i++)
 	{
-		temp = 0x11 << (i << 1);
-		if (bonus_type & temp)
+		temp_bonus = 0x11 << (i << 1);
+		if (bonus_type & temp_bonus)
 		{
 			if (last)
 			{
-				return Bonus(&this->position, &this->velocity, this->radius, bonus_type & temp);
+				return Bonus(&this->position, &this->velocity, bonus_type & temp_bonus);
 			}
 			else
 			{
@@ -873,7 +883,7 @@ Asteroid::Asteroid(const Asteroid& asteroid) :
 }
 
 Asteroid::Asteroid(Vec2F* position, Vec2F* velocity, ClassTypes::Bonus::bonus_t bonus_type, uint8_t size, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, bool exist) :
-	Bonus(position, velocity, 0.0f, bonus_type, angle, angular_velocity, force_collision_coeffisient, force_resistance_air_coefficient, exist),
+	Bonus(position, velocity, bonus_type, 0.0f, angle, angular_velocity, force_collision_coeffisient, force_resistance_air_coefficient, exist),
 	size(size)
 {
 	switch (this->size)
@@ -898,7 +908,7 @@ Asteroid::Asteroid(Vec2F* position, Vec2F* velocity, ClassTypes::Bonus::bonus_t 
 
 Bonus Asteroid::Destroy()
 {
-	return Bonus(&position, &velocity, radius, bonus_type);
+	return Bonus(&position, &velocity, bonus_type);
 }
 
 Asteroid Asteroid::Division()
@@ -1251,7 +1261,7 @@ Bullet Ship::CreateLoop(GameTypes::entities_count_t bullet_number)
 Bomb Ship::CreateBomb()
 {
 	Vec2F temp = Vec2F();
-	return Bomb(&position, &temp, 0.0f, 0.0f, player_number);
+	return Bomb(&position, &temp, player_number, player_team_number);
 }
 
 Laser Ship::CreateLaser()
@@ -1310,7 +1320,7 @@ bool Ship::HaveBonus(ClassTypes::Bonus::bonus_t bonus)
 
 Bonus Ship::LoseBonus()
 {
-	return Bonus(&position, &velocity, radius, buffs_bonuses);
+	return Bonus(&position, &velocity, buffs_bonuses);
 }
 
 void Ship::Recalculate()
@@ -1342,7 +1352,7 @@ void Ship::Set(Ship* ship)
 	velocity = ship->velocity;
 }
 
-void Ship::Set(Vec2F* position, Vec2F* velocity,  GameTypes::players_count_t player_number, GameTypes::players_count_t player_team_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, float angle , ClassTypes::Bonus::bonus_t buffs_bonuses , ClassTypes::Bonus::bonus_t active_baffs, GameTypes::tic_t unbrakable , float angular_velocity , float radius, float force_collision_coeffisient , float force_resistance_air_coefficient , bool exist )
+void Ship::Set(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t player_number, GameTypes::players_count_t player_team_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, float angle, ClassTypes::Bonus::bonus_t buffs_bonuses, ClassTypes::Bonus::bonus_t active_baffs, GameTypes::tic_t unbrakable, float angular_velocity, float radius, float force_collision_coeffisient, float force_resistance_air_coefficient, bool exist)
 {
 	this->active_baffs = active_baffs;
 	this->angle = angle;
@@ -1432,7 +1442,7 @@ Pilot::Pilot(const Pilot& pilot) :
 {
 }
 
-Pilot::Pilot(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t player_number, GameTypes::players_count_t player_team_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, float angle, ClassTypes::Bonus::bonus_t buffs_bonuses, ClassTypes::Bonus::bonus_t active_baffs, GameTypes::tic_t unbrakable, float angular_velocity, float radius, float force_collision_coeffisient, float force_resistance_air_coefficient, bool exist):
+Pilot::Pilot(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t player_number, GameTypes::players_count_t player_team_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, float angle, ClassTypes::Bonus::bonus_t buffs_bonuses, ClassTypes::Bonus::bonus_t active_baffs, GameTypes::tic_t unbrakable, float angular_velocity, float radius, float force_collision_coeffisient, float force_resistance_air_coefficient, bool exist) :
 	ControledEntity(position, velocity, radius, player_number, player_team_number, rotate_input_value_pointer, shoot_input_value_pointer, angle, angular_velocity, force_collision_coeffisient, force_resistance_air_coefficient, exist)
 {
 }
@@ -1702,13 +1712,13 @@ MegaLaser::MegaLaser() :
 {
 }
 
-MegaLaser::MegaLaser(const MegaLaser& mega_laser) : 
+MegaLaser::MegaLaser(const MegaLaser& mega_laser) :
 	AggressiveEntity(mega_laser),
 	active(mega_laser.active)
 {
 }
 
-MegaLaser::MegaLaser(Segment* segment, GameTypes::tic_t attack_dellay, GameTypes::tic_t attack_period, GameTypes::tic_t inactive_period, ClassTypes::AgressiveEntity::shoots_count_t shoots_count, bool active, bool exist):
+MegaLaser::MegaLaser(Segment* segment, GameTypes::tic_t attack_dellay, GameTypes::tic_t attack_period, GameTypes::tic_t inactive_period, ClassTypes::AgressiveEntity::shoots_count_t shoots_count, bool active, bool exist) :
 	AggressiveEntity(&segment->point, segment->vector.GetLength(), segment->vector.GetAbsoluteAngle(), attack_dellay, attack_period, inactive_period, shoots_count, exist),
 	active(active)
 {
@@ -1740,7 +1750,7 @@ void MegaLaser::Set(MegaLaser* mega_laser)
 	shoots_count = mega_laser->shoots_count;
 }
 
-void MegaLaser::Set(Segment* segment, GameTypes::tic_t attack_dellay, GameTypes::tic_t attack_period, GameTypes::tic_t inactive_period, ClassTypes::AgressiveEntity::shoots_count_t shoots_count, bool active , bool exist )
+void MegaLaser::Set(Segment* segment, GameTypes::tic_t attack_dellay, GameTypes::tic_t attack_period, GameTypes::tic_t inactive_period, ClassTypes::AgressiveEntity::shoots_count_t shoots_count, bool active, bool exist)
 {
 	this->active = active;
 	this->angle = segment->vector.GetAbsoluteAngle();
@@ -1881,19 +1891,18 @@ Bullet::Bullet() :
 {
 }
 
-Bullet::Bullet(const Bullet & bullet) :
+Bullet::Bullet(const Bullet& bullet) :
 	KillerEntity(bullet)
 {
 }
 
-Bullet::Bullet(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t player_master_number, GameTypes::players_count_t player_master_team_number, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, float radius, bool exist):
+Bullet::Bullet(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t player_master_number, GameTypes::players_count_t player_master_team_number, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, float radius, bool exist) :
 	KillerEntity(position, velocity, radius, player_master_number, player_master_number, angle, angular_velocity, force_collision_coeffisient, force_resistance_air_coefficient, exist)
 {
 }
 
 bool Bullet::IsCollision(Map* map)
 {
-	void* pointer;
 	for (ClassTypes::Map::elements_array_length_t i = 0; i < map->rectangles_array_length; i++)
 	{
 		return Entity::IsCollision(map->GetRectanglePointer(i));
@@ -1924,7 +1933,7 @@ void Bullet::Set(Bullet* bullet)
 	velocity = bullet->velocity;
 }
 
-void Bullet::Set(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t player_master_number, GameTypes::players_count_t player_master_team_number, float angle , float angular_velocity , float force_collision_coeffisient , float force_resistance_air_coefficient , float radius , bool exist )
+void Bullet::Set(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t player_master_number, GameTypes::players_count_t player_master_team_number, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, float radius, bool exist)
 {
 	this->angle = angle;
 	this->angular_velocity = angular_velocity;
@@ -1962,7 +1971,7 @@ Bullet::~Bullet()
 
 
 
-Knife::Knife() : 
+Knife::Knife() :
 	KillerEntity(),
 	health(KNIFE_DEFAULT_HEALTH)
 {
@@ -1970,7 +1979,7 @@ Knife::Knife() :
 }
 
 Knife::Knife(const Knife& knife) : KillerEntity(knife),
-	health(knife.health)
+health(knife.health)
 {
 }
 
@@ -2056,7 +2065,7 @@ Knife::~Knife()
 
 
 
-Bomb::Bomb() : 
+Bomb::Bomb() :
 	KillerEntity(),
 	animation_tic(BOMB_DEFAULT_BOOM_DELLAY),
 	active(false),
@@ -2064,7 +2073,7 @@ Bomb::Bomb() :
 {
 }
 
-Bomb::Bomb(const Bomb& bomb) : 
+Bomb::Bomb(const Bomb& bomb) :
 	KillerEntity(bomb),
 	animation_tic(bomb.animation_tic),
 	active(bomb.active),
@@ -2146,7 +2155,7 @@ void Bomb::Set(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t paye
 	this->angle = angle;
 	this->angular_velocity = angular_velocity;
 	this->animation_tic = animation_tic;
-	this->boom = boom; 
+	this->boom = boom;
 	UpdateDirection();
 	this->exist = exist;
 	this->force_collision_coeffisient = force_collision_coeffisient;

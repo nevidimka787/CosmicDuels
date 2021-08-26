@@ -146,9 +146,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Classes\Camera.cpp" />
     <ClCompile Include="Classes\Color.cpp" />
-    <ClCompile Include="Classes\GameEngine.cpp" />
+    <ClCompile Include="Classes\Entity.cpp" />
     <ClCompile Include="Classes\Line.cpp" />
+    <ClCompile Include="Classes\Map.cpp" />
     <ClCompile Include="Classes\Mat.cpp" />
     <ClCompile Include="Classes\Menu.cpp" />
     <ClCompile Include="Classes\Shader.cpp" />
@@ -195,10 +197,14 @@
     <None Include="Shaders\Objects\Vertex\Turel.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Classes\Camera.h" />
     <ClInclude Include="Classes\Color.h" />
+    <ClInclude Include="Classes\Entity.h" />
     <ClInclude Include="Classes\GameEngine.h" />
     <ClInclude Include="Classes\Line.h" />
+    <ClInclude Include="Classes\Map.h" />
     <ClInclude Include="Classes\Mat.h" />
+    <ClInclude Include="Classes\Math.h" />
     <ClInclude Include="Classes\Menu.h" />
     <ClInclude Include="Classes\Shader.h" />
     <ClInclude Include="Classes\Texture.h" />
@@ -213,6 +219,7 @@
     <ClInclude Include="SubClasses\Linker.h" />
     <ClInclude Include="SubClasses\MenuFunctions.h" />
     <ClInclude Include="SubClasses\OpenGLRealisation.h" />
+    <ClInclude Include="Types\AllTypes.h" />
     <ClInclude Include="Types\ClassesTypes.h" />
     <ClInclude Include="Types\GameRealisationTypes.h" />
     <ClInclude Include="Types\MenuRealisationTypes.h" />

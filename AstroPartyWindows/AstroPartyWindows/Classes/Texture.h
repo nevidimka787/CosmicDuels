@@ -2,10 +2,12 @@
 
 #include <iostream>
 #include <glad/glad.h>
-#include "Vec.h"
-#include "Color.h"
-#include "../Types/ClassesTypes.h"
+#include <GLFW/glfw3.h>
+
 #include "../stb_image.h"
+
+#include "../Types/AllTypes.h"
+#include "../Constants/AllConstants.h"
 
 class Texture2D
 {
