@@ -369,7 +369,6 @@ void MenuFunctions::MapPullSelectMenuFunction(Vec2F* clk_pos, uint8_t clk_status
 					{
 						(*game_p__map_pull_array)[id] = true;
 					}
-					std::cout << "Active: " << (*game_p__map_pull_array)[id] << std::endl;
 					current_button->SetStatus(BUTTON_STATUS_ACTIVE, (*game_p__map_pull_array)[id]);
 					return;
 				}

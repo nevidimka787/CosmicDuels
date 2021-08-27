@@ -19,7 +19,7 @@ OpenGL::OpenGL(int width, int height, const char* title, GLFWmonitor* monitor, G
 
 GLFWwindow* OpenGL::CreateWindows(int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share, GLFWframebuffersizefun Function)
 {
-    GLFWwindow* window = glfwCreateWindow(width, height, "OpenGL", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(width, height, title, NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;

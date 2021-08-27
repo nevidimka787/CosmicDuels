@@ -40,6 +40,9 @@ OpenGL* main_draw_functions = new OpenGL(SCR_WIDTH, SCR_HEIGHT, "AstroParty", nu
 
 Linker* main_linker;
 
+unsigned frame = 0;
+unsigned physic = 0;
+
 int main()
 {
     main_linker = new Linker(main_game, main_menu_functions, main_draw_functions);
@@ -54,6 +57,8 @@ int main()
         
         //Frame();
         
+        //std::cout << main_game->start_game << std::endl;
+
         if (main_game->start_game == true)
         {
             main_game->InitMach();
@@ -62,23 +67,25 @@ int main()
                 std::thread physic(PhysicsCalculation);
                 while (tik_update_thread_flag == false || physic_thread_flag == false)
                 {
-                    //physic_calculation_mtx.lock();
+                    physic_calculation_mtx.lock();
                     main_draw_functions->ProcessInput(window);
                     main_draw_functions->DrawFrame();
+                    physic_calculation_mtx.unlock();
                     glfwSwapBuffers(window);
                     glfwPollEvents();
-                    //physic_calculation_mtx.unlock();
                     glfwSwapInterval(1);
                 }
                 while (tik_update_thread_flag == true || physic_thread_flag == true)
                 {
-                    //physic_calculation_mtx.lock();
+                    physic_calculation_mtx.lock();
                     main_draw_functions->ProcessInput(window);
                     main_draw_functions->DrawFrame();
+                    physic_calculation_mtx.unlock();
                     glfwSwapBuffers(window);
                     glfwPollEvents();
-                    //physic_calculation_mtx.unlock();
+                    //std::cout << main_game->ships[0].GetAngle() << std::endl;
                     glfwSwapInterval(1);
+                    frame++;
                 }
                 physic.join();
             }
@@ -97,7 +104,6 @@ void TikUpdate()
 {
     init_mtx.lock();
     init |= TIK_UPDATE_INIT;
-    GameTypes::tic_t* global_timer_p = &main_game->global_timer;
     tik_update_thread_flag = true;
     global_time_point = std::chrono::system_clock::now();
     init_mtx.unlock();
@@ -108,7 +114,14 @@ void TikUpdate()
         timer_mtx.lock();
         if (main_game->pause_game == false)
         {
-            (*global_timer_p)++;
+            main_game->global_timer++;
+            if (!(main_game->global_timer % 100))
+            {
+                std::cout << "Frame: " << frame << std::endl 
+                    << "Physic: " << physic << std::endl;
+                frame = 0;
+                physic = 0;
+            }
         }
         timer_mtx.unlock();
         std::this_thread::sleep_until(global_time_point);
@@ -137,27 +150,24 @@ void PhysicsCalculation()
     physic_thread_flag = true;
     init_mtx.unlock();
 
+    std::chrono::system_clock::time_point local_time_point = std::chrono::system_clock::now();
 
     timer_mtx.lock();
     main_game->current_tic = main_game->global_timer;
-    std::chrono::system_clock::time_point local_timer_point;
     timer_mtx.unlock();
 
     while (main_game->start_game == true)
     {
+        local_time_point += std::chrono::milliseconds(10);
         physic_calculation_mtx.lock();
         //start physics calculation
 
         main_game->Update();
-
+        physic++;
         //end physics calculation
         physic_calculation_mtx.unlock();
 
-        timer_mtx.lock();
-        local_timer_point = global_time_point;
-        timer_mtx.unlock();
-        std::this_thread::sleep_until(local_timer_point);
-
+        std::this_thread::sleep_until(local_time_point);
     }
     physic_thread_flag = false;
 
