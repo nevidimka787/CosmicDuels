@@ -19,7 +19,11 @@
 
 void Game::Update()
 {
+	global_timer++;
+	current_tic = global_timer;
+
 	//update
+
 	UpdateAll();
 
 	//update
@@ -49,12 +53,12 @@ void Game::Update()
 	ships[0].SetPosition(&temp__vector);
 	temp__vector.Set(0.0f, 0.0f);
 	ships[0].SetVelocity(&temp__vector);
-	if (ttttt == false)
+	if (update_start_properties == true)
 	{
 		
 		ships[0].SetAngle(1.0f);
 		ships[0].SetAngularVelocity(0.02f);
-		ttttt = true;
+		update_start_properties = false;
 	}
 
 	TransportAllObjects();
@@ -826,9 +830,16 @@ void Game::InitMach()
 
 void Game::InitLevel()
 {
-
 	current_map_id = selected_maps_id_array[rand() % selected_maps_id_array_length];
 
+	global_timer = 0;
+	current_tic = 0;
+	update_start_properties = true;
+
+	camera.SetCoefficients();
+	camera.SetHightLimits();
+	camera.SetLowLimits(0.5f, 0.5f);
+	camera.SetScale();
 
 	Vec2F* temp_positions;
 
@@ -915,6 +926,8 @@ void Game::InitLevel()
 	current_active_menu = ships_control_menu;
 
 	flag_all_entities_initialisate = true;
+
+	pause_game = false;
 }
 
 void Game::InitMenus()
@@ -991,11 +1004,11 @@ void Game::InitMenus()
 
 	//pause menu
 	buttons = new Button[2];
-	position.Set(-0.2f, 0.2f);
-	size.Set(0.4f, -0.2f);
-	buttons[0].Set(BUTTON_ID_RESUME_MATCH, &position, &size, "Resume", 16);
-	position.Set(-0.2f, 0.0f);
-	buttons[1].Set(BUTTON_ID_GO_TO_MAIN_MENU, &position, &size, "Main menu", 8);
+	position.Set(-0.4f, 0.825f);
+	size.Set(0.8f, -0.2f);
+	buttons[0].Set(BUTTON_ID_RESUME_MATCH, &position, &size, "Resume", 6);
+	position.Set(-0.4f, 0.6f);
+	buttons[1].Set(BUTTON_ID_GO_TO_MAIN_MENU, &position, &size, "Main menu", 6);
 	position.Set(0.0f, 0.0f);
 	size.Set(1.0f, -1.0f);
 	pause_menu = new Menu(&position, &size, buttons, 2);

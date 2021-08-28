@@ -1,10 +1,87 @@
 #version 330 core
 layout (location = 0) in vec2 aPos;
- 
-out vec2 position;
 
+uniform float scale;
+uniform vec2 position;
+uniform float size;
+uniform float angle;
+
+out vec2 pixel_position;
+
+uniform vec2 camera_position;
+uniform vec2 camera_size;
+
+mat3 Rotate(mat3 matrix, float angel);
+mat3 Transport(mat3 matrix, vec2 vector);
+mat3 Scale(mat3 matrix, vec2 vector);
+mat3 Rotate(float angel);
+mat3 Transport(vec2 vector);
+mat3 Scale(vec2 vector);
+
+mat3 matrix;
+
+vec3 _position;
 void main()
 {
-    position = vec2(aPos * 0.9f);
-    gl_Position = vec4(0.9f * aPos.x, 0.9f * aPos.y, 0.0f, 1.0f);
+
+    matrix = 
+        Rotate(radians(-90.0f)) *
+        Scale(vec2(size * 1.5, size)) * 
+        Rotate(angle) * 
+        Transport(position) * 
+        Scale(vec2(1.0f, scale));
+
+        pixel_position = (vec3(aPos, 1.0f) * matrix).xy;
+ 
+    gl_Position = vec4(vec3(aPos, 1.0f) * matrix, 1.0f);
+}
+
+mat3 Transport(mat3 matrix, vec2 vector)
+{
+    return matrix * mat3(
+        1.0f,   0.0f,   vector.x, 
+        0.0f,   1.0f,   vector.y,
+        0.0f,   0.0f,   1.0f);
+}
+
+
+mat3 Scale(mat3 matrix, vec2 vector)
+{
+    return matrix * mat3(
+        vector.x,   0.0f,       0.0f,
+        0.0f,       vector.y,   0.0f,
+        0.0f,       0.0f,       1.0f);
+}
+
+mat3 Rotate(mat3 matrix, float angle)
+{
+    return matrix * mat3(
+        cos(angle),    -sin(angle),     0.0f,
+        sin(angle),     cos(angle),     0.0f,
+        0.0f,           0.0f,           1.0f);
+}
+
+mat3 Transport(vec2 vector)
+{
+    return mat3(
+        1.0f,   0.0f,   vector.x, 
+        0.0f,   1.0f,   vector.y,
+        0.0f,   0.0f,   1.0f);
+}
+
+
+mat3 Scale(vec2 vector)
+{
+    return mat3(
+        vector.x,   0.0f,       0.0f,
+        0.0f,       vector.y,   0.0f,
+        0.0f,       0.0f,       1.0f);
+}
+
+mat3 Rotate(float angle)
+{
+    return mat3(
+        cos(angle),    -sin(angle),     0.0f,
+        sin(angle),     cos(angle),     0.0f,
+        0.0f,           0.0f,           1.0f);
 }

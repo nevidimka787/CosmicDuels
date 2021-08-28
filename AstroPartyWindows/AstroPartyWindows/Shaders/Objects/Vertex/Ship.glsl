@@ -1,4 +1,4 @@
-#version 420 core
+#version 330 core
 layout (location = 0) in vec2 aPos;
 
 uniform float scale;
@@ -7,7 +7,7 @@ uniform float size;
 uniform float angle;
 
 uniform vec2 camera_position;
-uniform vec2 camera_size;
+uniform float camera_size;
 
 mat3 Rotate(mat3 matrix, float angel);
 mat3 Transport(mat3 matrix, vec2 vector);
@@ -22,10 +22,13 @@ vec3 _position;
 void main()
 {
     matrix = 
+        Rotate(radians(-90.0f)) *
+        Scale(vec2(size * 1.5, size)) * 
         Rotate(angle) * 
-        Scale(vec2(size)) * 
         Transport(position) * 
-        Scale(vec2(1.0f, 1.0f / scale));
+        Scale(vec2(1.0f / camera_size)) *
+        Transport(camera_position) *
+        Scale(vec2(1.0f, scale));
  
     gl_Position = vec4(vec3(aPos, 1.0f) * matrix, 1.0f);
 }

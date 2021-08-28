@@ -2,7 +2,7 @@
 
 out vec4 FragColor;
  
-in vec2 position;
+in vec2 pixel_position;
 
 struct Grav
 {
@@ -43,10 +43,10 @@ float SqrLength(vec2 vec)
 
 void main()
 {
-    vec2 f1 = GetForce(sun, position);
-    vec2 f2 = GetForce(earth, position);
-    vec2 fc = -(position - GetMasPos(sun, earth)) * GetSqrAngularVel(sun, earth);
+    vec2 f1 = GetForce(sun, pixel_position);
+    vec2 f2 = GetForce(earth, pixel_position);
+    vec2 fc = -(pixel_position - GetMasPos(sun, earth)) * GetSqrAngularVel(sun, earth);
     vec2 res = f1 + f2 + fc;
     float blue = 0.00001f / SqrLength(res) / SqrLength(res);
-    FragColor = vec4(length(res) / 50 * sign(dot(res, sun.pos - position)), length(res) / 50 * -sign(dot(res, sun.pos - position)), blue, 1.0f);
+    FragColor = vec4(length(res) / 50 * sign(dot(res, sun.pos - pixel_position)), length(res) / 50 * -sign(dot(res, sun.pos - pixel_position)), blue, 1.0f);
 }

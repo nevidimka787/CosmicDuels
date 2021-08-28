@@ -33,7 +33,8 @@ private:
 
 
 	//Maximun and ninimun coordinates that can be show in the camera.
-	Mat2F limits;
+	Mat2F hight_limits;
+	Vec2F low_limits;
 	//How mach space after limits camera can show.
 	float margin;
 	//0 - not move
@@ -44,8 +45,11 @@ private:
 	//0 - not resize
 	//1 - momental resize
 	float resize_velocity_coefficient;
-	//Size of the camera.
-	Vec2F size;
+	//Scale of the camera.
+	//size.x / size.y
+	float scale;
+	//Size of the view area of the camera.
+	Vec2F view_area_size;
 
 	void Limit();
 public:
@@ -58,24 +62,37 @@ public:
 		float margin = CAMERA_DEFAULT_MARGIN,
 		float move_velocity_coefficient = CAMERA_DEFAULT_MOVE_VELOCITY,
 		float resize_velocity_coefficient = CAMERA_DEFAULT_RESIZE_VELOCITY,
-		Mat2F* limits = nullptr);
+		Mat2F* hight_limits = nullptr,
+		Vec2F* low_limits = nullptr);
 
+	Mat2F GetLimits();
+	Vec2F GetPosition();
+	Vec2F GetSize();
 	float GetScale();
-	//All ships will be show in the camera.
+	//All ships and pilots will be show in the camera.
 	void Focus(
 		Ship* ships_array,
 		Pilot* pilots_array,
-		GameTypes::players_count_t ships_array_length = 0,
-		GameTypes::players_count_t pilots_array_length = 0);
+		GameTypes::players_count_t players_count = 0);
 
 	void Set(Camera* camera);
 	void SetCoefficients(
 		float margin = CAMERA_DEFAULT_MARGIN,
 		float move_velocity_coefficient = CAMERA_DEFAULT_MOVE_VELOCITY,
 		float resize_velocity_coefficient = CAMERA_DEFAULT_RESIZE_VELOCITY);
-	void SetLimits(float min_x, float min_y, float max_x, float max_y);
-	void SetPosition(Vec2F* position);
-	void SetSize(float size);
+	void SetHightLimits(
+		float min_x = -1.0f,
+		float min_y = -1.0f,
+		float max_x = 1.0f,
+		float max_y = 1.0f);
+	void SetLowLimits(
+		float size_x = 0.1f, 
+		float size_y = 0.1f);
+	void SetPosition(Vec2F* position = nullptr);
+	void SetScale(
+		float scale = 16.0f / 9.0f,
+		bool x_is_const = false);
+	void SetSize(float size = 1.0f);
 
 	~Camera();
 };

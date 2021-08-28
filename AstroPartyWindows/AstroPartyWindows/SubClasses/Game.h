@@ -4,6 +4,7 @@
 
 #include "MenuFunctions.h"
 
+
 class Game;
 
 class Game
@@ -235,7 +236,7 @@ public:
 	Turel temp__turel;
 	//Memory space for temporary values.
 	Vec2F temp__vector;
-	bool ttttt = false;
+	bool update_start_properties = false;
 
 	//Memory space for temporary pointers.
 	Asteroid* temp__asteroid_p;

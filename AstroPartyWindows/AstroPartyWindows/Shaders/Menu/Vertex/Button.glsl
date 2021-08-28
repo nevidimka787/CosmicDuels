@@ -22,17 +22,4 @@ void main()
     pixel_position = aPos * vec2(1.0f, scale);
     texture_position = SetCurrentTexturePosition(vec2(0.5f, 0.5f));
     gl_Position = vec4(pixel_position * size + position * vec2(1.0f, scale) + vec2(0.0f, 1.0f -  scale), 0.0f, 1.0f);
-}// + vec2(0.0f, 1.0f / scale - 1.0f)
-
-/*
-Scale = 1
-1
-0
-
-Scale = 2
-0.5
--0.25
-
-
-
-*/
+}

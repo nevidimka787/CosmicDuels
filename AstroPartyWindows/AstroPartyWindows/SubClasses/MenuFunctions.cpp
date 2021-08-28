@@ -20,11 +20,21 @@ void::MenuFunctions::Back()
 	}
 	else if (*game_p__current_active_menu == *game_p__option_menu || *game_p__current_active_menu == *game_p__ships_select_menu)
 	{
-		*game_p__current_active_menu = *game_p__main_menu;
+		OpenMainMenu();
 	}
 	else if (*game_p__current_active_menu == *game_p__map_pull_select_menu || *game_p__current_active_menu == *game_p__spawning_objects_select_menu)
 	{
-		*game_p__current_active_menu = *game_p__option_menu;
+		OpenOptionsMenu();
+	}
+	else if (*game_p__current_active_menu == *game_p__ships_control_menu)
+	{
+		*game_p__pause_game = true;
+		OpenPauseMenu();
+	}
+	else if (*game_p__current_active_menu == *game_p__pause_menu)
+	{
+		*game_p__pause_game = false;
+		*game_p__current_active_menu = *game_p__ships_control_menu;
 	}
 }
 
@@ -309,7 +319,6 @@ void MenuFunctions::ShipsSelectMenuFunction(Vec2F* clk_pos, uint8_t clk_status)
 					default:
 						SelectShip(id, SHIPS_SELECT_BUTTONS_NO_TEAM);
 						current_button->SetOnlyCustomStatus(BUTTON_STATUS_INACTIVE);
-						DefaultReturn:
 						return;
 					}
 				case BUTTON_ID_START_GAME:

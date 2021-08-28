@@ -23,9 +23,12 @@ uint8_t init = 0x00;
 
 std::shared_mutex timer_mtx;
 std::shared_mutex physic_calculation_mtx;
+
 std::chrono::system_clock::time_point global_time_point;
 
+//This thread update 100 times per second and use for show information about app.
 void TikUpdate();
+//This thread update 100 times per second and use for update all physical data of all entities.
 void PhysicsCalculation();
 
 bool physic_thread_flag = false;
@@ -50,7 +53,7 @@ int main()
     while (true)
     {
         main_draw_functions->ProcessInput(window);
-        if (main_draw_functions->flag_update_menu > 0)
+        if (main_draw_functions->update_menu > 0)
         {
             main_draw_functions->DrawFrame();
         }
@@ -64,7 +67,7 @@ int main()
             main_game->InitMach();
             while (main_game->start_game == true)
             {
-                std::thread physic(PhysicsCalculation);
+                std::thread timer_thread(TikUpdate);
                 while (tik_update_thread_flag == false || physic_thread_flag == false)
                 {
                     physic_calculation_mtx.lock();
@@ -87,7 +90,7 @@ int main()
                     glfwSwapInterval(1);
                     frame++;
                 }
-                physic.join();
+                timer_thread.join();
             }
         }
         glfwSwapBuffers(window);
@@ -100,38 +103,52 @@ int main()
 }
 
 #pragma warning(disable : 6269)
+
+#define SECOND  100
+#define MINUTE  6000
+#define HOUR    360000
+
+
+#define LOGS_UPDATE_PERIOD
+
 void TikUpdate()
 {
+    global_time_point = std::chrono::system_clock::now();
     init_mtx.lock();
     init |= TIK_UPDATE_INIT;
     tik_update_thread_flag = true;
-    global_time_point = std::chrono::system_clock::now();
+    std::chrono::system_clock::time_point local_time_point = global_time_point;
     init_mtx.unlock();
 
-    while (true)
+    unsigned lock_timer = 0;
+
+    std::thread physics_calculation(PhysicsCalculation);
+
+    while (main_game->start_game == true)
     {
-        global_time_point += std::chrono::milliseconds(10);
         timer_mtx.lock();
         if (main_game->pause_game == false)
         {
-            main_game->global_timer++;
-            if (!(main_game->global_timer % 100))
+            lock_timer++;
+            if (!(lock_timer % 100))
             {
                 std::cout << "Frame: " << frame << std::endl 
-                    << "Physic: " << physic << std::endl;
+                    << "Physic: " << physic  << std::endl << std::endl;
                 frame = 0;
                 physic = 0;
             }
         }
         timer_mtx.unlock();
-        std::this_thread::sleep_until(global_time_point);
+
+        local_time_point += std::chrono::milliseconds(10);
+        std::this_thread::sleep_until(local_time_point);
     }
+    physics_calculation.join();
     tik_update_thread_flag = false;
 }
 
 void PhysicsCalculation()
 {
-    std::thread timer(TikUpdate);
 
     init_mtx.lock();
     while (!(init & TIK_UPDATE_INIT))
@@ -150,23 +167,22 @@ void PhysicsCalculation()
     physic_thread_flag = true;
     init_mtx.unlock();
 
-    std::chrono::system_clock::time_point local_time_point = std::chrono::system_clock::now();
-
-    timer_mtx.lock();
-    main_game->current_tic = main_game->global_timer;
-    timer_mtx.unlock();
+    std::chrono::system_clock::time_point local_time_point = global_time_point;
 
     while (main_game->start_game == true)
     {
+        if (main_game->pause_game == false)
+        {
+            physic_calculation_mtx.lock();
+            //start physics calculation
+
+            main_game->Update();
+            physic++;
+            //end physics calculation
+            physic_calculation_mtx.unlock();
+        }
+
         local_time_point += std::chrono::milliseconds(10);
-        physic_calculation_mtx.lock();
-        //start physics calculation
-
-        main_game->Update();
-        physic++;
-        //end physics calculation
-        physic_calculation_mtx.unlock();
-
         std::this_thread::sleep_until(local_time_point);
     }
     physic_thread_flag = false;
