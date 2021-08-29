@@ -9,13 +9,6 @@ Linker::Linker(Game* game_object, MenuFunctions* menu_functions_object, OpenGL* 
 	game_object->menu_p__ships_select_buttons = menu_functions_object->ships_select_buttons;
 	game_object->menu_p__start_bonus = &menu_functions_object->start_bonus;
 
-	game_object->open_gl_p__basic_square = &open_gl_object->basic_square;
-	game_object->open_gl_p__basic_square_vertex = &open_gl_object->basic_square;
-	game_object->open_gl_p__basic_triangle = &open_gl_object->basic_triangle;
-	game_object->open_gl_p__basic_triangle_vertex = &open_gl_object->basic_triangle_buffer;
-	game_object->open_gl_p__long_triangle = &open_gl_object->long_triangle;
-	game_object->open_gl_p__long_triangle_vertex = &open_gl_object->long_triangle_buffer;
-
 	//game object
 
 	//menu functions object

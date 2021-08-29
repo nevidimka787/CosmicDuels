@@ -48,14 +48,14 @@ class Rectangle : public MapElement
 protected:
 	Vec2F point2;//down right point
 public:
-	ClassTypes::Rectangle::sides_t show_sides;
-	ClassTypes::Rectangle::sides_t collision_sides;
+	EngineTypes::Rectangle::sides_t show_sides;
+	EngineTypes::Rectangle::sides_t collision_sides;
 	Rectangle();
 	Rectangle(const Rectangle& rectangle);
 	Rectangle(
 		Segment* diagonal,
-		ClassTypes::Rectangle::sides_t show_sides = (RECTANGLE_UP_SIDE | RECTANGLE_DOWN_SIDE | RECTANGLE_RIGHT_SIDE | RECTANGLE_LEFT_SIDE),
-		ClassTypes::Rectangle::sides_t collision_sides = (RECTANGLE_UP_SIDE | RECTANGLE_DOWN_SIDE | RECTANGLE_RIGHT_SIDE | RECTANGLE_LEFT_SIDE),
+		EngineTypes::Rectangle::sides_t show_sides = (RECTANGLE_UP_SIDE | RECTANGLE_DOWN_SIDE | RECTANGLE_RIGHT_SIDE | RECTANGLE_LEFT_SIDE),
+		EngineTypes::Rectangle::sides_t collision_sides = (RECTANGLE_UP_SIDE | RECTANGLE_DOWN_SIDE | RECTANGLE_RIGHT_SIDE | RECTANGLE_LEFT_SIDE),
 		bool unbreakable = true,
 		bool exist = true);
 
@@ -71,8 +71,8 @@ public:
 	void Set(Rectangle* patent);
 	void Set(
 		Segment* diagonal,
-		ClassTypes::Rectangle::sides_t show_sides = (RECTANGLE_UP_SIDE | RECTANGLE_DOWN_SIDE | RECTANGLE_RIGHT_SIDE | RECTANGLE_LEFT_SIDE),
-		ClassTypes::Rectangle::sides_t collision_sides = (RECTANGLE_UP_SIDE | RECTANGLE_DOWN_SIDE | RECTANGLE_RIGHT_SIDE | RECTANGLE_LEFT_SIDE),
+		EngineTypes::Rectangle::sides_t show_sides = (RECTANGLE_UP_SIDE | RECTANGLE_DOWN_SIDE | RECTANGLE_RIGHT_SIDE | RECTANGLE_LEFT_SIDE),
+		EngineTypes::Rectangle::sides_t collision_sides = (RECTANGLE_UP_SIDE | RECTANGLE_DOWN_SIDE | RECTANGLE_RIGHT_SIDE | RECTANGLE_LEFT_SIDE),
 		bool unbreakable = true,
 		bool exist = true);
 
@@ -114,7 +114,7 @@ class Polygon : public MapElement
 protected:
 	Vec2F* points_array;
 	Vec2F* default_points_array;
-	ClassTypes::Polygon::points_array_length_t points_array_length;
+	EngineTypes::Polygon::points_array_length_t points_array_length;
 
 public:
 	Polygon();
@@ -122,7 +122,7 @@ public:
 	Polygon(
 		Vec2F* position,
 		Vec2F* points_array,
-		ClassTypes::Polygon::points_array_length_t points_array_length,
+		EngineTypes::Polygon::points_array_length_t points_array_length,
 		bool unbreakable = true,
 		bool exist = true);
 
@@ -133,7 +133,7 @@ public:
 	void Set(Polygon* parent);
 	void Set(Vec2F* position,
 		Vec2F* points_array,
-		ClassTypes::Polygon::points_array_length_t points_array_length,
+		EngineTypes::Polygon::points_array_length_t points_array_length,
 		bool unbreakable = true,
 		bool exist = true);
 
@@ -153,18 +153,18 @@ protected:
 	Polygon* polygons_array;
 
 public:
-	ClassTypes::Map::elements_array_length_t rectangles_array_length;
-	ClassTypes::Map::elements_array_length_t cyrcles_array_length;
-	ClassTypes::Map::elements_array_length_t polygons_array_length;
+	EngineTypes::Map::elements_array_length_t rectangles_array_length;
+	EngineTypes::Map::elements_array_length_t cyrcles_array_length;
+	EngineTypes::Map::elements_array_length_t polygons_array_length;
 
 	Map(const Map& map);
 	Map(
 		Rectangle* rectangles_array = nullptr,
-		ClassTypes::Map::elements_array_length_t rectangles_array_length = 0,
+		EngineTypes::Map::elements_array_length_t rectangles_array_length = 0,
 		Cyrcle* cyrcles_array = nullptr,
-		ClassTypes::Map::elements_array_length_t cyrcles_array_length = 0,
+		EngineTypes::Map::elements_array_length_t cyrcles_array_length = 0,
 		Polygon* polygons_array = nullptr,
-		ClassTypes::Map::elements_array_length_t polygons_array_length = 0);
+		EngineTypes::Map::elements_array_length_t polygons_array_length = 0);
 
 	Rectangle GetRectangle(uint8_t number);
 	Cyrcle GetCyrcle(uint8_t number);
@@ -175,11 +175,11 @@ public:
 	void Set(Map* map);
 	void Set(
 		Rectangle* rectangles_array = nullptr,
-		ClassTypes::Map::elements_array_length_t rectangles_array_length = 0,
+		EngineTypes::Map::elements_array_length_t rectangles_array_length = 0,
 		Cyrcle* cyrcles_array = nullptr,
-		ClassTypes::Map::elements_array_length_t cyrcles_array_length = 0,
+		EngineTypes::Map::elements_array_length_t cyrcles_array_length = 0,
 		Polygon* polygons_array = nullptr,
-		ClassTypes::Map::elements_array_length_t polygons_array_length = 0);
+		EngineTypes::Map::elements_array_length_t polygons_array_length = 0);
 
 	~Map();
 };

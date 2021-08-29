@@ -7,6 +7,7 @@
 
 #include "../stb_image.h"
 
+#include "Buffer.h"
 #include "Camera.h"
 #include "Color.h"
 #include "Entity.h"

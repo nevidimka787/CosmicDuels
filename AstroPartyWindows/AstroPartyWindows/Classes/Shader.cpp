@@ -133,7 +133,7 @@ void Shader::Use()
     glUseProgram(id);
 }
 
-void Shader::SetUniform(const std::string& name, ClassTypes::Button::button_text_t* text, uint16_t text_length) const
+void Shader::SetUniform(const std::string& name, EngineTypes::Button::text_t* text, uint16_t text_length) const
 {
     glUniform1iv(glGetUniformLocation(id, name.c_str()), text_length, (GLint*)text);
 }

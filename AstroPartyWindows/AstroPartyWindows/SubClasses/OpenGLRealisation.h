@@ -23,18 +23,22 @@ public:
 	
 	//buffers
 
-	//3 vertexes
-	OpenGLTypes::buffer_t basic_triangle;
-	OpenGLTypes::buffer_t basic_triangle_buffer;
-	//6 vertexes
-	OpenGLTypes::buffer_t basic_square;
-	OpenGLTypes::buffer_t basic_square_buffer;
-	//3 vertexes
-	OpenGLTypes::buffer_t long_triangle;
-	OpenGLTypes::buffer_t long_triangle_buffer;
-	//3 vertexes
-	OpenGLTypes::buffer_t right_triangle;
-	OpenGLTypes::buffer_t right_triangle_buffer;
+	StaticBuffer asteroid_buffer;
+	StaticBuffer bomb_buffer;
+	StaticBuffer bonus_buffer;
+	StaticBuffer bullet_buffer;
+	StaticBuffer knife_buffer;
+	StaticBuffer mega_laser_buffer;
+	StaticBuffer pilot_buffer;
+	StaticBuffer ship_buffer;
+	StaticBuffer turel_buffer;
+
+	StaticBuffer cyrcle_buffer;
+	StaticBuffer polygon_buffer;
+	StaticBuffer rectangle_buffer;
+
+	StaticBuffer controler_buffer;
+	StaticBuffer button_buffer;
 
 	//buffers
 
@@ -70,38 +74,38 @@ public:
 	//shaders
 
 	//The shader use for draw asteroids.
-	Shader* asteroid_shader;
+	Shader asteroid_shader;
 	//The shader use for draw bombs.
-	Shader* bomb_shader;
+	Shader bomb_shader;
 	//The shader use for draw bonuses.
-	Shader* bonus_shader;
+	Shader bonus_shader;
 	//The shader use for draw bullets.
-	Shader* bullet_shader;
+	Shader bullet_shader;
 	//The shader use for draw knifes.
-	Shader* knife_shader;
+	Shader knife_shader;
 	//The shader use for draw mega lasers.
-	Shader* mega_laser_sahder;
+	Shader mega_laser_shader;
 	//The shader use for draw pilots.
-	Shader* pilot_shader;
+	Shader pilot_shader;
 	//The shader use for draw shipd.
-	Shader* ship_shader;
+	Shader ship_shader;
 	//The shader use for draw turels.
-	Shader* turel_shader;
+	Shader turel_shader;
 
 	//The shader use for draw rectangles.
-	Shader* rectangle_shader;
+	Shader rectangle_shader;
 	//The shader use for draw cyrcles.
-	Shader* cyrcle_shader;
+	Shader cyrcle_shader;
 	//The shader use for draw polygons.
-	Shader* polygon_shader;
+	Shader polygon_shader;
 
 	//The shader use for draw buttons.
-	Shader* button_shader;
+	Shader button_shader;
 	//The shader use for draw control buttons of ships.
-	Shader* controler_shader;
+	Shader controler_shader;
 
 	//The texture stores symbols and signs that will be drawn on the buttons.
-	Texture2D* symbols_texture;
+	Texture2D symbols_texture;
 
 	//This values is set by defaultafter each click on the menu.
 	//Each frame this value will be decrease until it reached zero.
@@ -159,7 +163,7 @@ public:
 	//The function draw turel.
 	void DrawObject(Turel* turel, bool update_shader = false);
 
-	//The function draw map element.
+	//The function draw map element as vague object.
 	void DrawObject(MapElement* map_element, bool update_shader = false);
 	//The function draw map's rectangle.
 	void DrawObject(Rectangle* rectangle, bool update_shader = false);
@@ -258,13 +262,14 @@ public:
 	MegaLaser** game_p__mega_lasers;
 
 	Menu** game_p__current_active_menu;
-	Menu** game_p__option_menu;
-	Menu** game_p__main_menu;
-	Menu** game_p__pause_menu;
-	Menu** game_p__ships_select_menu;
-	Menu** game_p__map_pull_select_menu;
-	Menu** game_p__spawning_objects_select_menu;
-	Menu** game_p__ships_control_menu;
+	
+	Menu* game_p__option_menu;
+	Menu* game_p__main_menu;
+	Menu* game_p__pause_menu;
+	Menu* game_p__ships_select_menu;
+	Menu* game_p__map_pull_select_menu;
+	Menu* game_p__spawning_objects_select_menu;
+	Menu* game_p__ships_control_menu;
 
 	Camera* game_p__camera;
 

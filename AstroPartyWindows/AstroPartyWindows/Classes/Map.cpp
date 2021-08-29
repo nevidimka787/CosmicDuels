@@ -94,7 +94,7 @@ Rectangle::Rectangle(const Rectangle& rectangle) :
 {
 }
 
-Rectangle::Rectangle(Segment* diagonal, ClassTypes::Rectangle::sides_t show_sides, ClassTypes::Rectangle::sides_t collision_sides, bool unbreakable, bool exist) :
+Rectangle::Rectangle(Segment* diagonal, EngineTypes::Rectangle::sides_t show_sides, EngineTypes::Rectangle::sides_t collision_sides, bool unbreakable, bool exist) :
 	MapElement(&diagonal->point, unbreakable, exist),
 	collision_sides(collision_sides),
 	point2(diagonal->point + diagonal->vector),
@@ -165,7 +165,7 @@ void Rectangle::Set(Rectangle* rectangle)
 	unbreakable = rectangle->unbreakable;
 }
 
-void Rectangle::Set(Segment* diagonal, ClassTypes::Rectangle::sides_t show_sides, ClassTypes::Rectangle::sides_t collision_sides, bool unbreakable, bool exist)
+void Rectangle::Set(Segment* diagonal, EngineTypes::Rectangle::sides_t show_sides, EngineTypes::Rectangle::sides_t collision_sides, bool unbreakable, bool exist)
 {
 	this->collision_sides = collision_sides;
 	this->exist = exist;
@@ -260,13 +260,13 @@ Polygon::Polygon(const Polygon& polygon) :
 	}
 }
 
-Polygon::Polygon(Vec2F* position, Vec2F* points_array, ClassTypes::Polygon::points_array_length_t points_array_length, bool unbreakable, bool exist) :
+Polygon::Polygon(Vec2F* position, Vec2F* points_array, EngineTypes::Polygon::points_array_length_t points_array_length, bool unbreakable, bool exist) :
 	MapElement(position, unbreakable, exist),
 	points_array_length(points_array_length),
 	default_points_array(new Vec2F[points_array_length]),
 	points_array(new Vec2F[points_array_length])
 {
-	for (ClassTypes::Polygon::points_array_length_t i = 0; i < points_array_length; i++)
+	for (EngineTypes::Polygon::points_array_length_t i = 0; i < points_array_length; i++)
 	{
 		default_points_array[i] = points_array[i];
 		this->points_array[i] = default_points_array[i] + *position;
@@ -340,7 +340,7 @@ void Polygon::Set(Polygon* parent)
 	}
 }
 
-void Polygon::Set(Vec2F* position, Vec2F* points_array, ClassTypes::Polygon::points_array_length_t points_array_length, bool unbreakable, bool exist)
+void Polygon::Set(Vec2F* position, Vec2F* points_array, EngineTypes::Polygon::points_array_length_t points_array_length, bool unbreakable, bool exist)
 {
 	delete[] this->points_array;
 	delete[] default_points_array;
@@ -390,7 +390,7 @@ Map::Map(const Map& map) :
 	if (cyrcles_array_length > 0)
 	{
 		cyrcles_array = new Cyrcle[cyrcles_array_length];
-		for (ClassTypes::Map::elements_array_length_t i = 0; i < cyrcles_array_length; i++)
+		for (EngineTypes::Map::elements_array_length_t i = 0; i < cyrcles_array_length; i++)
 		{
 			cyrcles_array[i] = map.cyrcles_array[i];
 		}
@@ -402,7 +402,7 @@ Map::Map(const Map& map) :
 	if (polygons_array_length > 0)
 	{
 		polygons_array = new Polygon[polygons_array_length];
-		for (ClassTypes::Map::elements_array_length_t i = 0; i < polygons_array_length; i++)
+		for (EngineTypes::Map::elements_array_length_t i = 0; i < polygons_array_length; i++)
 		{
 			polygons_array[i] = map.polygons_array[i];
 		}
@@ -414,7 +414,7 @@ Map::Map(const Map& map) :
 	if (rectangles_array_length > 0)
 	{
 		rectangles_array = new Rectangle[rectangles_array_length];
-		for (ClassTypes::Map::elements_array_length_t i = 0; i < rectangles_array_length; i++)
+		for (EngineTypes::Map::elements_array_length_t i = 0; i < rectangles_array_length; i++)
 		{
 			rectangles_array[i] = map.rectangles_array[i];
 		}
@@ -425,7 +425,7 @@ Map::Map(const Map& map) :
 	}
 }
 
-Map::Map(Rectangle* rectangles_array, ClassTypes::Map::elements_array_length_t rectangles_array_length, Cyrcle* cyrcles_array, ClassTypes::Map::elements_array_length_t cyrcles_array_length, Polygon* polygons_array, ClassTypes::Map::elements_array_length_t polygons_array_length) :
+Map::Map(Rectangle* rectangles_array, EngineTypes::Map::elements_array_length_t rectangles_array_length, Cyrcle* cyrcles_array, EngineTypes::Map::elements_array_length_t cyrcles_array_length, Polygon* polygons_array, EngineTypes::Map::elements_array_length_t polygons_array_length) :
 	rectangles_array_length(rectangles_array_length),
 	cyrcles_array_length(cyrcles_array_length),
 	polygons_array_length(polygons_array_length)
@@ -613,7 +613,7 @@ void Map::Set(Map* map)
 	}
 }
 
-void Map::Set(Rectangle* rectangles_array, ClassTypes::Map::elements_array_length_t rectangles_array_length, Cyrcle* cyrcles_array, ClassTypes::Map::elements_array_length_t cyrcles_array_length, Polygon* polygons_array, ClassTypes::Map::elements_array_length_t polygons_array_length)
+void Map::Set(Rectangle* rectangles_array, EngineTypes::Map::elements_array_length_t rectangles_array_length, Cyrcle* cyrcles_array, EngineTypes::Map::elements_array_length_t cyrcles_array_length, Polygon* polygons_array, EngineTypes::Map::elements_array_length_t polygons_array_length)
 {
 	this->cyrcles_array_length = cyrcles_array_length;
 	this->polygons_array_length = polygons_array_length;

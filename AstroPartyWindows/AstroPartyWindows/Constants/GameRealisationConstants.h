@@ -87,10 +87,10 @@ Asteroid
 
 	//main menu
 
-#define BUTTON_ID_START_MATCH		0
-#define BUTTON_ID_START_GAME		1
-#define BUTTON_ID_GO_TO_OPTINS_MENU	2
-#define BUTTON_ID_EXIT				3
+#define BUTTON_ID_START_MATCH			1
+#define BUTTON_ID_START_GAME			2
+#define BUTTON_ID_GO_TO_OPTINS_MENU		3
+#define BUTTON_ID_EXIT					4
 
 	//main menu
 

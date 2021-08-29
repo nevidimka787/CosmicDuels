@@ -31,6 +31,7 @@ void main()
         Scale(vec2(1.0f, scale));
  
     gl_Position = vec4(vec3(aPos, 1.0f) * matrix, 1.0f);
+    //gl_Position = vec4(aPos, 0.0f, 1.0f);
 }
 
 mat3 Transport(mat3 matrix, vec2 vector)

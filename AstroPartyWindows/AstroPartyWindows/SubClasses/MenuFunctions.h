@@ -5,11 +5,11 @@
 class MenuFunctions
 {
 private:
-	ClassTypes::Menu::buttons_count_t last_select_button_index;
+	EngineTypes::Menu::buttons_count_t last_select_button_index;
 public:
 	uint8_t* ships_select_buttons;
 
-	ClassTypes::Bonus::bonus_t start_bonus;
+	EngineTypes::Bonus::bonus_t start_bonus;
 
 	MenuFunctions();
 
@@ -52,11 +52,12 @@ public:
 	GameTypes::game_rules_t* game_p__game_rules;
 	 
 	Menu** game_p__current_active_menu;
-	Menu** game_p__option_menu;
-	Menu** game_p__main_menu;
-	Menu** game_p__pause_menu;
-	Menu** game_p__ships_select_menu;
-	Menu** game_p__map_pull_select_menu;
-	Menu** game_p__spawning_objects_select_menu;
-	Menu** game_p__ships_control_menu;
+
+	Menu* game_p__option_menu;
+	Menu* game_p__main_menu;
+	Menu* game_p__pause_menu;
+	Menu* game_p__ships_select_menu;
+	Menu* game_p__map_pull_select_menu;
+	Menu* game_p__spawning_objects_select_menu;
+	Menu* game_p__ships_control_menu;
 };

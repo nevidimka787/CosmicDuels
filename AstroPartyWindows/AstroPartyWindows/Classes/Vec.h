@@ -104,3 +104,6 @@ public:
 
 	~Vec2F();
 };
+
+std::ostream& operator<<(std::ostream& stream, Vec2D vector);
+std::ostream& operator<<(std::ostream& stream, Vec2F vector);

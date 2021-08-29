@@ -395,3 +395,17 @@ void Vec2F::operator=(Vec2D vector)
 Vec2F::~Vec2F()
 {
 }
+
+
+
+std::ostream& operator<<(std::ostream& stream, Vec2F vector)
+{
+	stream << "X: " << vector.x << ' ' << "Y: " << vector.y;
+	return stream;
+}
+
+std::ostream& operator<<(std::ostream& stream, Vec2D vector)
+{
+	stream << "X: " << vector.x << ' ' << "Y: " << vector.y;
+	return stream;
+}

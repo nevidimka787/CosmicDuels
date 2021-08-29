@@ -14,75 +14,75 @@ MenuFunctions::MenuFunctions()
 
 void::MenuFunctions::Back()
 {
-	if (*game_p__current_active_menu == *game_p__main_menu)
+	if (*game_p__current_active_menu == game_p__main_menu)
 	{
 		Exit();
 	}
-	else if (*game_p__current_active_menu == *game_p__option_menu || *game_p__current_active_menu == *game_p__ships_select_menu)
+	else if (*game_p__current_active_menu == game_p__option_menu || *game_p__current_active_menu == game_p__ships_select_menu)
 	{
 		OpenMainMenu();
 	}
-	else if (*game_p__current_active_menu == *game_p__map_pull_select_menu || *game_p__current_active_menu == *game_p__spawning_objects_select_menu)
+	else if (*game_p__current_active_menu == game_p__map_pull_select_menu || *game_p__current_active_menu == game_p__spawning_objects_select_menu)
 	{
 		OpenOptionsMenu();
 	}
-	else if (*game_p__current_active_menu == *game_p__ships_control_menu)
+	else if (*game_p__current_active_menu == game_p__ships_control_menu)
 	{
 		*game_p__pause_game = true;
 		OpenPauseMenu();
 	}
-	else if (*game_p__current_active_menu == *game_p__pause_menu)
+	else if (*game_p__current_active_menu == game_p__pause_menu)
 	{
 		*game_p__pause_game = false;
-		*game_p__current_active_menu = *game_p__ships_control_menu;
+		*game_p__current_active_menu = game_p__ships_control_menu;
 	}
 }
 
 void MenuFunctions::OpenOptionsMenu()
 {
-	*game_p__current_active_menu = *game_p__option_menu;
+	*game_p__current_active_menu = game_p__option_menu;
 	Vec2F position = Vec2F();
 	(*game_p__current_active_menu)->SetPosition(&position);
 }
 
 void MenuFunctions::OpenMainMenu()
 {
-	*game_p__current_active_menu = *game_p__main_menu;
+	*game_p__current_active_menu = game_p__main_menu;
 	Vec2F position = Vec2F();
 	(*game_p__current_active_menu)->SetPosition(&position);
 }
 
 void MenuFunctions::OpenPauseMenu()
 {
-	*game_p__current_active_menu = *game_p__pause_menu;
+	*game_p__current_active_menu = game_p__pause_menu;
 	Vec2F position = Vec2F();
 	(*game_p__current_active_menu)->SetPosition(&position);
 }
 
 void MenuFunctions::OpenSheepsSelectMenu()
 {
-	*game_p__current_active_menu = *game_p__ships_select_menu;
+	*game_p__current_active_menu = game_p__ships_select_menu;
 	Vec2F position = Vec2F();
 	(*game_p__current_active_menu)->SetPosition(&position);
 }
 
 void MenuFunctions::OpenMapPullSelectMenu()
 {
-	*game_p__current_active_menu = *game_p__map_pull_select_menu;
+	*game_p__current_active_menu = game_p__map_pull_select_menu;
 	Vec2F position = Vec2F();
 	(*game_p__current_active_menu)->SetPosition(&position);
 }
 
 void MenuFunctions::OpenSpawnObjectsSelectMenu()
 {
-	*game_p__current_active_menu = *game_p__spawning_objects_select_menu;
+	*game_p__current_active_menu = game_p__spawning_objects_select_menu;
 	Vec2F position = Vec2F();
 	(*game_p__current_active_menu)->SetPosition(&position);
 }
 
 void MenuFunctions::OpenSheepsControlMenu()
 {
-	*game_p__current_active_menu = *game_p__ships_control_menu;
+	*game_p__current_active_menu = game_p__ships_control_menu;
 	Vec2F position = Vec2F();
 	(*game_p__current_active_menu)->SetPosition(&position);
 }
@@ -131,23 +131,23 @@ bool MenuFunctions::ChangeOption(GameTypes::game_rules_t option_id)
 
 void MenuFunctions::MainMenuFunction(Vec2F* clk_pos, uint8_t clk_status)
 {
-	for (ClassTypes::Menu::buttons_count_t i = 0; i < (*game_p__main_menu)->GetButtonsCount(); i++)
+	for (EngineTypes::Menu::buttons_count_t i = 0; i < game_p__main_menu->GetButtonsCount(); i++)
 	{
 		if (clk_status == OPEN_GL_REALISATION_BUTTON_LOST)
 		{
-			(*game_p__main_menu)->current_buttons[i].SetStatus(BUTTON_STATUS_SELECT, false);
+			game_p__main_menu->current_buttons[i].SetStatus(BUTTON_STATUS_SELECT, false);
 			goto CycleEnd;
 		}
-		if ((*game_p__main_menu)->current_buttons[i].HavePoint(clk_pos))
+		if (game_p__main_menu->current_buttons[i].HavePoint(clk_pos))
 		{
 			switch(clk_status)
 			{
 			case GLFW_PRESS:
-				(*game_p__main_menu)->current_buttons[i].SetStatus(BUTTON_STATUS_SELECT, true);
+				game_p__main_menu->current_buttons[i].SetStatus(BUTTON_STATUS_SELECT, true);
 				return;
 			case GLFW_RELEASE:
-				(*game_p__main_menu)->current_buttons[i].SetStatus(BUTTON_STATUS_SELECT, false);
-				switch ((*game_p__main_menu)->current_buttons[i].GetId())
+				game_p__main_menu->current_buttons[i].SetStatus(BUTTON_STATUS_SELECT, false);
+				switch (game_p__main_menu->current_buttons[i].GetId())
 				{
 				case BUTTON_ID_START_MATCH:
 					OpenSheepsSelectMenu();
@@ -169,9 +169,9 @@ void MenuFunctions::MainMenuFunction(Vec2F* clk_pos, uint8_t clk_status)
 void MenuFunctions::OptionMenuFunction(Vec2F* clk_pos, uint8_t clk_status)
 {
 	Button* current_button;
-	for (ClassTypes::Menu::buttons_count_t i = 0; i < (*game_p__option_menu)->GetButtonsCount(); i++)
+	for (EngineTypes::Menu::buttons_count_t i = 0; i < game_p__option_menu->GetButtonsCount(); i++)
 	{
-		current_button = &(*game_p__option_menu)->current_buttons[i];
+		current_button = &game_p__option_menu->current_buttons[i];
 		if (clk_status == OPEN_GL_REALISATION_BUTTON_LOST)
 		{
 			current_button->SetStatus(BUTTON_STATUS_SELECT, false);
@@ -246,11 +246,11 @@ void MenuFunctions::OptionMenuFunction(Vec2F* clk_pos, uint8_t clk_status)
 
 void MenuFunctions::PauseMenuFunction(Vec2F* clk_pos, uint8_t clk_status)
 {
-	for (ClassTypes::Menu::buttons_count_t i = 0; i < (*game_p__pause_menu)->GetButtonsCount(); i++)
+	for (EngineTypes::Menu::buttons_count_t i = 0; i < game_p__pause_menu->GetButtonsCount(); i++)
 	{
-		if ((*game_p__pause_menu)->current_buttons[i].HavePoint(clk_pos))
+		if (game_p__pause_menu->current_buttons[i].HavePoint(clk_pos))
 		{
-			switch ((*game_p__pause_menu)->current_buttons[i].GetId())
+			switch (game_p__pause_menu->current_buttons[i].GetId())
 			{
 			case BUTTON_ID_GO_TO_MAIN_MENU:
 				OpenMainMenu();
@@ -267,9 +267,9 @@ void MenuFunctions::PauseMenuFunction(Vec2F* clk_pos, uint8_t clk_status)
 void MenuFunctions::ShipsSelectMenuFunction(Vec2F* clk_pos, uint8_t clk_status)
 {
 	Button* current_button;
-	for (ClassTypes::Menu::buttons_count_t i = 0; i < (*game_p__ships_select_menu)->GetButtonsCount(); i++)
+	for (EngineTypes::Menu::buttons_count_t i = 0; i < game_p__ships_select_menu->GetButtonsCount(); i++)
 	{
-		current_button = &(*game_p__ships_select_menu)->current_buttons[i];
+		current_button = &game_p__ships_select_menu->current_buttons[i];
 		if (clk_status == OPEN_GL_REALISATION_BUTTON_LOST)
 		{
 			current_button->SetStatus(BUTTON_STATUS_SELECT, false);
@@ -326,13 +326,13 @@ void MenuFunctions::ShipsSelectMenuFunction(Vec2F* clk_pos, uint8_t clk_status)
 					{
 						if  ((*game_p__teams)[i] != SHIPS_SELECT_BUTTONS_NO_TEAM)
 						{
-							std::cout << (*game_p__teams)[i] << std::endl;
+							//std::cout << (*game_p__teams)[i] << std::endl;
 							StartGame();
 							return;
 						}
 					}
 					SelectShip(BUTTON_ID_SELECT_SHIP_1, SHIPS_SELECT_BUTTONS_TEAM_RED);
-					(*game_p__ships_select_menu)->current_buttons[0].SetOnlyCustomStatus(BUTTON_STATUS_CUSTOM_RED);
+					game_p__ships_select_menu->current_buttons[0].SetOnlyCustomStatus(BUTTON_STATUS_CUSTOM_RED);
 				default:
 					return;
 				}
@@ -345,15 +345,15 @@ void MenuFunctions::ShipsSelectMenuFunction(Vec2F* clk_pos, uint8_t clk_status)
 void MenuFunctions::MapPullSelectMenuFunction(Vec2F* clk_pos, uint8_t clk_status)
 {
 	Button* current_button;
-	for (ClassTypes::Menu::buttons_count_t i = 0; i < (*game_p__map_pull_select_menu)->GetButtonsCount(); i++)
+	for (EngineTypes::Menu::buttons_count_t i = 0; i < game_p__map_pull_select_menu->GetButtonsCount(); i++)
 	{
-		current_button = &(*game_p__map_pull_select_menu)->current_buttons[i];
+		current_button = &game_p__map_pull_select_menu->current_buttons[i];
 		if (clk_status == OPEN_GL_REALISATION_BUTTON_LOST)
 		{
 			current_button->SetStatus(BUTTON_STATUS_SELECT, false);
 			goto CycleEnd;
 		}
-		if ((*game_p__map_pull_select_menu)->current_buttons[i].HavePoint(clk_pos))
+		if (game_p__map_pull_select_menu->current_buttons[i].HavePoint(clk_pos))
 		{
 			switch (clk_status)
 			{
@@ -367,7 +367,7 @@ void MenuFunctions::MapPullSelectMenuFunction(Vec2F* clk_pos, uint8_t clk_status
 				{
 					return;
 				}
-				ClassTypes::Button::button_id_t id = (*game_p__map_pull_select_menu)->current_buttons[i].GetId() - BUTTON_ID_SELECT_MAP;
+				EngineTypes::Button::button_id_t id = game_p__map_pull_select_menu->current_buttons[i].GetId() - BUTTON_ID_SELECT_MAP;
 				if (id < GAME_MAPS_COUNT)
 				{
 					if ((*game_p__map_pull_array)[id])
@@ -390,9 +390,9 @@ void MenuFunctions::MapPullSelectMenuFunction(Vec2F* clk_pos, uint8_t clk_status
 void MenuFunctions::SpawnObjectsSelectMenuFunction(Vec2F* clk_pos, uint8_t clk_status)
 {
 	Button* current_button;
-	for (ClassTypes::Menu::buttons_count_t i = 0; i < (*game_p__spawning_objects_select_menu)->GetButtonsCount(); i++)
+	for (EngineTypes::Menu::buttons_count_t i = 0; i < game_p__spawning_objects_select_menu->GetButtonsCount(); i++)
 	{
-		current_button = &(*game_p__spawning_objects_select_menu)->current_buttons[i];
+		current_button = &game_p__spawning_objects_select_menu->current_buttons[i];
 		if (clk_status == OPEN_GL_REALISATION_BUTTON_LOST)
 		{
 			current_button->SetStatus(BUTTON_STATUS_SELECT, false);
@@ -412,7 +412,7 @@ void MenuFunctions::SpawnObjectsSelectMenuFunction(Vec2F* clk_pos, uint8_t clk_s
 				{
 					return;
 				}
-				ClassTypes::Button::button_id_t id = current_button->GetId() - BUTTON_ID_SELECT_OBJECT;
+				EngineTypes::Button::button_id_t id = current_button->GetId() - BUTTON_ID_SELECT_OBJECT;
 				if (id < GAME_OBJECTS_COUNT)
 				{
 					if ((*game_p__object_pull_array)[id])

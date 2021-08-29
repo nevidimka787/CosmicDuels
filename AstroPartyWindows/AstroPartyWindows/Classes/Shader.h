@@ -26,7 +26,7 @@ public:
     Shader();
     bool Initialisate(const char* vertexPath, const char* fragmentPath);
     void Use();
-    void SetUniform(const std::string& name, ClassTypes::Button::button_text_t* text, uint16_t text_length) const;
+    void SetUniform(const std::string& name, EngineTypes::Button::text_t* text, uint16_t text_length) const;
     void SetUniform(const std::string& name, int value) const;
     void SetUniform(const std::string& name, float value) const;
     void SetUniform(const std::string& name, Color3F color) const;

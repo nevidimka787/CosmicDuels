@@ -50,14 +50,14 @@ void Game::Update()
 	//collisions
 
 	//recalculationtemp__vector.Set(0.0f, 0.0f);
-	ships[0].SetPosition(&temp__vector);
 	temp__vector.Set(0.0f, 0.0f);
-	ships[0].SetVelocity(&temp__vector);
+	ships[3].SetPosition(&temp__vector);
+	ships[3].SetVelocity(&temp__vector);
 	if (update_start_properties == true)
 	{
 		
-		ships[0].SetAngle(1.0f);
-		ships[0].SetAngularVelocity(0.02f);
+		ships[3].SetAngle(1.0f);
+		ships[3].SetAngularVelocity(0.02f);
 		update_start_properties = false;
 	}
 
@@ -169,7 +169,7 @@ void Game::DynamicEntitiesAddForce(DynamicEntity* entities, GameTypes::entities_
 	}
 }
 
-ClassTypes::Bonus::bonus_t Game::GenerateRandomBonus()
+EngineTypes::Bonus::bonus_t Game::GenerateRandomBonus()
 {
 	return 1 << (((rand() % BONUS_BONUSES_COUNT)) * 2);
 }
@@ -724,8 +724,8 @@ void Game::InitMach()
 
 	ships_count = players_count;
 
-	ships = new Ship[players_count];
-	pilots = new Pilot[players_count];
+	ships = new Ship[GAME_PLAYERS_MAX_COUNT];
+	pilots = new Pilot[GAME_PLAYERS_MAX_COUNT];
 
 	knifes = new Knife[players_count << 1];
 	knifes_count = 0;
@@ -798,7 +798,7 @@ void Game::InitMach()
 		position.Set(-1.0f, -0.905f);
 		buttons[7].Set(BUTTON_ID_SHIP1_ROTATE, &position, &size, "", 0, BUTTON_STATUS_CUSTOM_RED << (teams[3] - 1));
 	}
-	ships_control_menu = new Menu(&position, &size, buttons, players_count * 2);
+	ships_control_menu.Set(&position, &size, buttons, players_count * 2);
 	delete[] buttons;
 
 	//create map pull array
@@ -854,7 +854,7 @@ void Game::InitLevel()
 		map.Set();
 
 		/*Spawn entities*/
-		temp_positions = new Vec2F[players_count];
+		temp_positions = new Vec2F[GAME_PLAYERS_MAX_COUNT];
 		temp_positions[0].Set(-1.9f, 1.9f);
 		if (players_count > 1)
 		{
@@ -884,7 +884,7 @@ void Game::InitLevel()
 
 	/* Spawn players */
 
-	float* temp_angles = new float[players_count];;
+	float* temp_angles = new float[GAME_PLAYERS_MAX_COUNT];;
 	temp_angles[0] = -(float)M_PI_4;
 	if (players_count > 1)
 	{
@@ -900,7 +900,7 @@ void Game::InitLevel()
 	}
 	if (game_rules & GAME_RULE_PLAYERS_SPAWN_DIRECTION_RANDOMIZE)
 	{
-		for (GameTypes::players_count_t i = 0; i < players_count; i++)
+		for (GameTypes::players_count_t i = 0; i < GAME_PLAYERS_MAX_COUNT; i++)
 		{
 			temp_angles[i] += (float)rand() / (float)RAND_MAX;
 		}
@@ -908,7 +908,7 @@ void Game::InitLevel()
 	if (game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_BONUS)
 	{
 		Vec2F zero_velocity;
-		for (GameTypes::players_count_t i = 0; i < players_count; i++)
+		for (GameTypes::players_count_t i = 0; i < GAME_PLAYERS_MAX_COUNT; i++)
 		{
 			if (game_rules & GAME_RULE_BALANCE_ACTIVE && scores[i] <= max_score - GAME_BALANCE_ACTIVATE_DIFFERENCE_SCORES)
 			{
@@ -923,7 +923,7 @@ void Game::InitLevel()
 	delete[] temp_angles;
 	delete[] temp_positions;
 
-	current_active_menu = ships_control_menu;
+	current_active_menu = &ships_control_menu;
 
 	flag_all_entities_initialisate = true;
 
@@ -948,7 +948,7 @@ void Game::InitMenus()
 	buttons[2].Set(BUTTON_ID_EXIT, &position, &size, "Exit", 6);
 	position.Set(0.0f, 0.0f);
 	size.Set(1.0f, -1.0f);
-	main_menu = new Menu(&position, &size, buttons, 3);
+	main_menu.Set(&position, &size, buttons, 3);
 	delete[] buttons;
 
 	//option menu
@@ -999,7 +999,7 @@ void Game::InitMenus()
 	buttons[13].status = (game_rules & GAME_RULE_BALANCE_ACTIVE) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_INACTIVE;
 	position.Set(0.0f, 0.0f);
 	size.Set(1.5f, GAME_OPTION_MENU_UP_Y - 1.0f - 15.0f * GAME_OPTION_MENU_BORD);
-	option_menu = new Menu(&position, &size, buttons, 14);
+	option_menu.Set(&position, &size, buttons, 14);
 	delete[] buttons;
 
 	//pause menu
@@ -1011,7 +1011,7 @@ void Game::InitMenus()
 	buttons[1].Set(BUTTON_ID_GO_TO_MAIN_MENU, &position, &size, "Main menu", 6);
 	position.Set(0.0f, 0.0f);
 	size.Set(1.0f, -1.0f);
-	pause_menu = new Menu(&position, &size, buttons, 2);
+	pause_menu.Set(&position, &size, buttons, 2);
 	delete[] buttons;
 
 	//sheeps select menu
@@ -1030,7 +1030,7 @@ void Game::InitMenus()
 	buttons[4].Set(BUTTON_ID_START_GAME, &position, &size, "Start game", 7);
 	position.Set(0.0f, 0.0f);
 	size.Set(1.0f, -1.0f);
-	ships_select_menu = new Menu(&position, &size, buttons, 5);
+	ships_select_menu.Set(&position, &size, buttons, 5);
 	delete[] buttons;
 
 	//maps select menu
@@ -1045,7 +1045,7 @@ void Game::InitMenus()
 	}
 	position.Set(0.0f, 0.0f);
 	size.Set(1.0f, GAME_MAPPULL_MENU_BORDER * (float)(((GAME_MAPS_COUNT + 1) / 2) + 1));
-	map_pull_select_menu = new Menu(&position, &size, buttons, GAME_MAPS_COUNT);
+	map_pull_select_menu.Set(&position, &size, buttons, GAME_MAPS_COUNT);
 	delete[] buttons;
 
 	//spawning objects select menu
@@ -1055,15 +1055,15 @@ void Game::InitMenus()
 	buttons[0].Set(BUTTON_ID_SELECT_OBJECT_ASTEROID, &position, &size, "Asteroid", 6);
 	position.Set(0.0f, 0.0f);
 	size.Set(0.5f, -0.5f);
-	spawning_objects_select_menu = new Menu(&position, &size, buttons, 1);
+	spawning_objects_select_menu.Set(&position, &size, buttons, 1);
 	delete[] buttons;
 
 	//ship control menu
 	position.Set(-1.0f, -1.0f);
 	size.Set(2.0f, 2.0f);
-	ships_control_menu = new Menu(&position, &size);
+	ships_control_menu.Set(&position, &size);
 
-	current_active_menu = main_menu;
+	current_active_menu = &main_menu;
 }
 
 void Game::NextLevel()

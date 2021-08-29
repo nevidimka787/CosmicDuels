@@ -50,13 +50,17 @@ void OpenGL::DrawFrame()
         temp__game__camera_position = game_p__camera->GetPosition();
         temp__game__camera_size = game_p__camera->GetSize().x;
 
+        DrawObjectCurrentMap();
+        DrawTurels();
+
         DrawAsteroids();
         DrawBombs();
         DrawBonuses();
         DrawBullets();
         DrawKnifes();
         DrawMegaLasers();
-        DrawObjectCurrentMap();
+
+        DrawPilots();
         DrawShips();
     }
 
@@ -150,23 +154,23 @@ void OpenGL::LimitMenuPosition(Menu* menu)
 
 void OpenGL::CallMenuFunction(Menu* menu, Vec2F* clk_pos, uint8_t clk_status)
 {
-    if (menu == *game_p__main_menu)
+    if (menu == game_p__main_menu)
     {
         object_p__menu_functions->MainMenuFunction(clk_pos, clk_status);
     }
-    else if (menu == *game_p__option_menu)
+    else if (menu == game_p__option_menu)
     {
         object_p__menu_functions->OptionMenuFunction(clk_pos, clk_status);
     }
-    else if (menu == *game_p__spawning_objects_select_menu)
+    else if (menu == game_p__spawning_objects_select_menu)
     {
         object_p__menu_functions->SpawnObjectsSelectMenuFunction(clk_pos, clk_status);
     }
-    else if (menu == *game_p__ships_select_menu)
+    else if (menu == game_p__ships_select_menu)
     {
         object_p__menu_functions->ShipsSelectMenuFunction(clk_pos, clk_status);
     }
-    else if (menu == *game_p__map_pull_select_menu)
+    else if (menu == game_p__map_pull_select_menu)
     {
         object_p__menu_functions->MapPullSelectMenuFunction(clk_pos, clk_status);
     }
@@ -184,143 +188,81 @@ void OpenGL::FramebufferSizeCallback(GLFWwindow* window, int width, int height)
 
 void OpenGL::DrawObjectCurrentMenu()
 {
-    if (*game_p__current_active_menu == *game_p__pause_menu)
+    if (*game_p__current_active_menu == game_p__pause_menu)
     {
-        DrawObjectIndicatedMenu(*game_p__ships_control_menu);
+        DrawObjectIndicatedMenu(game_p__ships_control_menu);
     }
     DrawObjectIndicatedMenu(*game_p__current_active_menu);
 }
 
 void OpenGL::DrawObjectIndicatedMenu(Menu* menu)
 {
-    if (menu == *game_p__ships_control_menu)
+    if (menu == game_p__ships_control_menu)
     {
-        controler_shader->Use();
-        controler_shader->SetUniform("scale", window_scale);
-        glBindVertexArray(right_triangle_buffer);
-        for (ClassTypes::Menu::buttons_count_t button = 0; button < menu->GetButtonsCount(); button++)
+        controler_buffer.Use();
+        controler_shader.Use();
+        controler_shader.SetUniform("scale", window_scale);
+        for (EngineTypes::Menu::buttons_count_t button = 0; button < menu->GetButtonsCount(); button++)
         {
             DrawObject((ControledButton*)&menu->current_buttons[button]);
         }
     }
     else
     {
-        button_shader->Use();
-        symbols_texture->Use();
-        button_shader->SetUniform("scale", window_scale);
-        glBindVertexArray(basic_square);
-        for (ClassTypes::Menu::buttons_count_t button = 0; button < menu->GetButtonsCount(); button++)
+        button_buffer.Use();
+        button_shader.Use();
+        symbols_texture.Use();
+        button_shader.SetUniform("scale", window_scale);
+        for (EngineTypes::Menu::buttons_count_t button = 0; button < menu->GetButtonsCount(); button++)
         {
             DrawObject(&menu->current_buttons[button]);
         }
     }
 }
 
-#define VERTEX_ARRAY_LENGTH 12
+#define VERTEX_ARRAY_LENGTH 6
 
 void OpenGL::InitBuffers()
 {
-    float vertexes[VERTEX_ARRAY_LENGTH];
+    Vec2F points[VERTEX_ARRAY_LENGTH];
 
-    //basic triangle
+    points[0].Set(0.0f, 0.5f);
+    points[1].Set(sqrt(3.0f) / 4.0f, -0.25f);
+    points[2].Set(-points[1].x, -0.25f);
 
-    vertexes[0] = 0.0f;                 //x1
-    vertexes[1] = 0.5f;                 //y1
-    vertexes[2] = sqrtf(3.0f) / 4.0f;   //x2
-    vertexes[3] = -0.25f;               //y2
-    vertexes[4] = -vertexes[2];         //x3
-    vertexes[5] = -0.25f;               //y3
-
-    glGenVertexArrays(1, &basic_triangle);
-    glGenBuffers(1, &basic_triangle_buffer);
-
-    glBindVertexArray(basic_triangle);
-
-    glBindBuffer(GL_ARRAY_BUFFER, basic_triangle_buffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertexes), vertexes, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
-
-    glEnableVertexAttribArray(0);       //disable vertex array
-    glBindBuffer(GL_ARRAY_BUFFER, 0);   //unbind buffer
-    glBindVertexArray(0);               //unbind array
+    pilot_buffer.Initialisate(points, 3);
+    ship_buffer.Initialisate(points, 3);
 
     //basic triangle
 
     //basic square
 
-    vertexes[0] = 1.0f;                 //x1
-    vertexes[1] = 1.0f;                 //y1
-    vertexes[2] = 0.0f;                 //x2
-    vertexes[3] = 1.0f;                 //y2
-    vertexes[4] = 1.0f;                 //x3
-    vertexes[5] = 0.0f;                 //y3
-    vertexes[6] = 0.0f;                 //x1
-    vertexes[7] = 0.0f;                 //y1
-    vertexes[8] = 0.0f;                 //x4
-    vertexes[9] = 1.0f;                 //y4
-    vertexes[10] = 1.0f;                //x3
-    vertexes[11] = 0.0f;                //y3
-    
-    glGenVertexArrays(1, &basic_square);
-    glGenBuffers(1, &basic_square_buffer);
+    points[0].Set(1.0f, 1.0f);
+    points[1].Set(0.0f, 1.0f);
+    points[2].Set(1.0f, 0.0f);
+    points[3].Set(0.0f, 0.0f);
+    points[4].Set(0.0f, 1.0f);
+    points[5].Set(1.0f, 0.0f);
 
-    glBindVertexArray(basic_square);
-
-    glBindBuffer(GL_ARRAY_BUFFER, basic_square_buffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertexes), vertexes, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
-
-    glEnableVertexAttribArray(0);       //disable vertex array
-    glBindBuffer(GL_ARRAY_BUFFER, 0);   //unbind buffer
-    glBindVertexArray(0);               //unbind array
+    button_buffer.Initialisate(points, 6);
 
     //basic square
 
     //long triangle
 
-    vertexes[0] = 0.0f;                 //x1
-    vertexes[1] = 1.0f;                 //y1
-    vertexes[2] = -0.5f;                //x2
-    vertexes[3] = -1.0f;                //y2
-    vertexes[4] = 0.5f;                 //x3
-    vertexes[5] = -1.0f;                //y3
-
-    glGenVertexArrays(1, &long_triangle);
-    glGenBuffers(1, &long_triangle_buffer);
-
-    glBindVertexArray(long_triangle);
-
-    glBindBuffer(GL_ARRAY_BUFFER, long_triangle_buffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertexes), vertexes, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
-
-    glEnableVertexAttribArray(0);       //disable vertex array
-    glBindBuffer(GL_ARRAY_BUFFER, 0);   //unbind buffer
-    glBindVertexArray(0);               //unbind array
+    points[0].Set(0.0f, 1.0f);
+    points[1].Set(-0.5f, -1.0f);
+    points[2].Set(0.5f, -1.0f);
 
     //long trriangle
 
     //right åriangle
+ 
+    points[0].Set(1.0f, 0.0f);
+    points[1].Set(0.0f, 0.0f);
+    points[2].Set(0.0f, 1.0f);
 
-    vertexes[0] = 1.0f;                 //x1
-    vertexes[1] = 0.0f;                 //y1
-    vertexes[2] = 0.0f;                 //x2
-    vertexes[3] = 0.0f;                 //y2
-    vertexes[4] = 0.0f;                 //x3
-    vertexes[5] = 1.0f;                 //y3
-
-    glGenVertexArrays(1, &right_triangle);
-    glGenBuffers(1, &right_triangle_buffer);
-
-    glBindVertexArray(right_triangle);
-
-    glBindBuffer(GL_ARRAY_BUFFER, right_triangle_buffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertexes), vertexes, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
-
-    glEnableVertexAttribArray(0);       //disable vertex array
-    glBindBuffer(GL_ARRAY_BUFFER, 0);   //unbind buffer
-    glBindVertexArray(0);               //unbind array
+    controler_buffer.Initialisate(points, 3);
 
     //right åriangle
 }
@@ -344,47 +286,55 @@ void OpenGL::InitOpenGL()
 
 void OpenGL::InitShaders()
 {
-    asteroid_shader = new Shader();
-    asteroid_shader->Initialisate("Shaders/Objects/Vertex/Asteroid.glsl", "Shaders/Objects/Fragment/Asteroid.glsl");
-    bomb_shader = new Shader();
-    bomb_shader->Initialisate("Shaders/Objects/Vertex/Bomb.glsl", "Shaders/Objects/Fragment/Bomb.glsl");
-    bonus_shader = new Shader();
-    bonus_shader->Initialisate("Shaders/Objects/Vertex/Bonus.glsl", "Shaders/Objects/Fragment/Bonus.glsl");
-    bullet_shader = new Shader();
-    bullet_shader->Initialisate("Shaders/Objects/Vertex/Bullet.glsl", "Shaders/Objects/Fragment/Bullet.glsl");
-    knife_shader = new Shader();
-    knife_shader->Initialisate("Shaders/Objects/Vertex/Knife.glsl", "Shaders/Objects/Fragment/Knife.glsl");
-    mega_laser_sahder = new Shader();
-    mega_laser_sahder->Initialisate("Shaders/Objects/Vertex/MegaLaser.glsl", "Shaders/Objects/Fragment/MegaLaser.glsl");
-    pilot_shader = new Shader();
-    pilot_shader->Initialisate("Shaders/Objects/Vertex/Pilot.glsl", "Shaders/Objects/Fragment/Pilot.glsl");
-    ship_shader = new Shader();
-    ship_shader->Initialisate("Shaders/Objects/Vertex/Ship.glsl", "Shaders/Objects/Fragment/Ship.glsl");
-    turel_shader = new Shader();
-    turel_shader->Initialisate("Shaders/Objects/Vertex/Turel.glsl", "Shaders/Objects/Fragment/Turel.glsl");
+    asteroid_shader.Initialisate("Shaders/Objects/Vertex/Asteroid.glsl", "Shaders/Objects/Fragment/Asteroid.glsl");
+    bomb_shader.Initialisate("Shaders/Objects/Vertex/Bomb.glsl", "Shaders/Objects/Fragment/Bomb.glsl");
+    bonus_shader.Initialisate("Shaders/Objects/Vertex/Bonus.glsl", "Shaders/Objects/Fragment/Bonus.glsl");
+    bullet_shader.Initialisate("Shaders/Objects/Vertex/Bullet.glsl", "Shaders/Objects/Fragment/Bullet.glsl");
+    knife_shader.Initialisate("Shaders/Objects/Vertex/Knife.glsl", "Shaders/Objects/Fragment/Knife.glsl");
+    mega_laser_shader.Initialisate("Shaders/Objects/Vertex/MegaLaser.glsl", "Shaders/Objects/Fragment/MegaLaser.glsl");
+    pilot_shader.Initialisate("Shaders/Objects/Vertex/Pilot.glsl", "Shaders/Objects/Fragment/Pilot.glsl");
+    ship_shader.Initialisate("Shaders/Objects/Vertex/Ship.glsl", "Shaders/Objects/Fragment/Ship.glsl");
+    turel_shader.Initialisate("Shaders/Objects/Vertex/Turel.glsl", "Shaders/Objects/Fragment/Turel.glsl");
     
-    rectangle_shader = new Shader();
-    rectangle_shader->Initialisate("Shaders/Map/Vertex/Rectangle.glsl", "Shaders/Map/Fragment/Rectangle.glsl");
-    cyrcle_shader = new Shader();
-    cyrcle_shader->Initialisate("Shaders/Map/Vertex/Cyrcle.glsl", "Shaders/Map/Fragment/Cyrcle.glsl");
-    polygon_shader = new Shader();
-    polygon_shader->Initialisate("Shaders/Map/Vertex/Polygon.glsl", "Shaders/Map/Fragment/Polygon.glsl");
+    rectangle_shader.Initialisate("Shaders/Map/Vertex/Rectangle.glsl", "Shaders/Map/Fragment/Rectangle.glsl");
+    cyrcle_shader.Initialisate("Shaders/Map/Vertex/Cyrcle.glsl", "Shaders/Map/Fragment/Cyrcle.glsl");
+    polygon_shader.Initialisate("Shaders/Map/Vertex/Polygon.glsl", "Shaders/Map/Fragment/Polygon.glsl");
     
-    button_shader = new Shader();
-    button_shader->Initialisate("Shaders/Menu/Vertex/Button.glsl", "Shaders/Menu/Fragment/Button.glsl");
-    controler_shader = new Shader();
-    controler_shader->Initialisate("Shaders/Menu/Vertex/Controler.glsl", "Shaders/Menu/Fragment/Controler.glsl");
+    button_shader.Initialisate("Shaders/Menu/Vertex/Button.glsl", "Shaders/Menu/Fragment/Button.glsl");
+    controler_shader.Initialisate("Shaders/Menu/Vertex/Controler.glsl", "Shaders/Menu/Fragment/Controler.glsl");
 }
 
 void OpenGL::InitTextures()
 {
-    symbols_texture = new Texture2D();
-    symbols_texture->Initialisate("Textures/Sample.bmp");
+    symbols_texture.Initialisate("Textures/Sample.bmp");
 }
 
 void OpenGL::DrawObjectCurrentMap()
 {
+    void* map_element_p;
+    for (EngineTypes::Map::elements_array_length_t rectangle = 0; rectangle < game_p__map->rectangles_array_length; rectangle++)
+    {
+        if (((Rectangle*)(map_element_p = (void*)game_p__map->GetRectanglePointer(rectangle)))->exist == true)
+        {
+            DrawObject((Rectangle*)map_element_p);
+        }
+    }
 
+    for (EngineTypes::Map::elements_array_length_t cyrcle = 0; cyrcle < game_p__map->rectangles_array_length; cyrcle++)
+    {
+        if (((Cyrcle*)(map_element_p = (void*)game_p__map->GetRectanglePointer(cyrcle)))->exist == true)
+        {
+            DrawObject((Cyrcle*)map_element_p);
+        }
+    }
+
+    for (EngineTypes::Map::elements_array_length_t polygon = 0; polygon < game_p__map->rectangles_array_length; polygon++)
+    {
+        if (((Polygon*)(map_element_p = (void*)game_p__map->GetRectanglePointer(polygon)))->exist == true)
+        {
+            DrawObject((Polygon*)map_element_p);
+        }
+    }
 }
 
 void OpenGL::DrawObject(Line* line, bool update_shader)
@@ -451,31 +401,31 @@ void OpenGL::DrawObject(Pilot* pilot, bool update_shader)
 {
     if (update_shader)
     {
-        pilot_shader->Use();
-        pilot_shader->SetUniform("scale", window_scale);
-        pilot_shader->SetUniform("camera_position", temp__game__camera_position);
-        pilot_shader->SetUniform("camera_size", temp__game__camera_size);
-        glBindVertexArray(basic_triangle);
+        pilot_buffer.Use();
+        pilot_shader.Use();
+        pilot_shader.SetUniform("scale", window_scale);
+        pilot_shader.SetUniform("camera_position", temp__game__camera_position);
+        pilot_shader.SetUniform("camera_size", temp__game__camera_size);
     }
-    pilot_shader->SetUniform("position", pilot->GetPosition());
-    pilot_shader->SetUniform("angle", pilot->GetAngle());
-    pilot_shader->SetUniform("size", pilot->radius);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    pilot_shader.SetUniform("position", pilot->GetPosition());
+    pilot_shader.SetUniform("angle", pilot->GetAngle());
+    pilot_shader.SetUniform("size", pilot->radius);
+    pilot_buffer.Draw();
 }
 
 void OpenGL::DrawObject(Ship* ship, bool update_shader)
 {
     if (update_shader)
     {
-        ship_shader->Use();
-        ship_shader->SetUniform("scale", window_scale);
-        ship_shader->SetUniform("camera_position", temp__game__camera_position);
-        ship_shader->SetUniform("camera_size", temp__game__camera_size);
-        glBindVertexArray(basic_triangle);
+        ship_buffer.Use();
+        ship_shader.Use();
+        ship_shader.SetUniform("scale", window_scale);
+        ship_shader.SetUniform("camera_position", temp__game__camera_position);
+        ship_shader.SetUniform("camera_size", temp__game__camera_size);
     }
 
     GameTypes::players_count_t number_of_player_in_team = 0;
-    for (GameTypes::players_count_t player = 0; player < *game_p__players_count; player++)
+    for (GameTypes::players_count_t player = 0; player < GAME_PLAYERS_MAX_COUNT; player++)
     {
         if ((*game_p__ships)[player].GetPlayerNumber() == ship->GetPlayerNumber())
         {
@@ -487,12 +437,15 @@ void OpenGL::DrawObject(Ship* ship, bool update_shader)
         }
     }
 
-    ship_shader->SetUniform("position", ship->GetPosition());
-    ship_shader->SetUniform("angle", ship->GetAngle());
-    ship_shader->SetUniform("size", ship->radius);
-    ship_shader->SetUniform("team", ship->GetTeamNumber());
-    ship_shader->SetUniform("player", number_of_player_in_team);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    ship_shader.SetUniform("position", ship->GetPosition());
+    ship_shader.SetUniform("angle", ship->GetAngle());
+    ship_shader.SetUniform("size", ship->radius);
+    ship_shader.SetUniform("team", ship->GetTeamNumber());
+    ship_shader.SetUniform("player", number_of_player_in_team);
+    std::cout << ship->GetPosition() << std::endl
+        << ship->GetAngle() << std::endl
+        << ship->radius << std::endl;
+    ship_buffer.Draw();
 }
 
 void OpenGL::DrawObject(Turel* turel, bool update_shader)
@@ -507,7 +460,14 @@ void OpenGL::DrawObject(MapElement* map_element, bool update_shader)
 
 void OpenGL::DrawObject(Rectangle* rectangle, bool update_shader)
 {
-
+    if (update_shader)
+    {
+        rectangle_shader.Use();
+        rectangle_shader.SetUniform("scale", window_scale);
+        rectangle_shader.SetUniform("camera_position", temp__game__camera_position);
+        rectangle_shader.SetUniform("camera_size", temp__game__camera_size);
+    }
+    rectangle_shader.SetUniform("position",rectangle->GetPosition());
 }
 
 void OpenGL::DrawObject(Cyrcle* cyrcle, bool update_shader)
@@ -525,10 +485,10 @@ void OpenGL::DrawObject(Button* button, bool update_shader)
 {
     if (update_shader)
     {
-        button_shader->Use();
-        symbols_texture->Use();
-        button_shader->SetUniform("scale", window_scale);
-        glBindVertexArray(basic_square);
+        button_buffer.Use();
+        button_shader.Use();
+        symbols_texture.Use();
+        button_shader.SetUniform("scale", window_scale);
     }
     Color3F color;
     if(button->GetStatus(BUTTON_STATUS_ACTIVE))
@@ -559,22 +519,22 @@ void OpenGL::DrawObject(Button* button, bool update_shader)
     {
         color *= 0.6f;
     }
-    button_shader->SetUniform("position", button->GetPosition());
-    button_shader->SetUniform("size", button->GetSize());
-    button_shader->SetUniform("color", &color);
-    button_shader->SetUniform("text", button->GetText(), button->GetTextLength());
-    button_shader->SetUniform("text_length", button->GetTextLength());
-    button_shader->SetUniform("text_size", button->text_size);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
+    button_shader.SetUniform("position", button->GetPosition());
+    button_shader.SetUniform("size", button->GetSize());
+    button_shader.SetUniform("color", &color);
+    button_shader.SetUniform("text", button->GetText(), button->GetTextLength());
+    button_shader.SetUniform("text_length", button->GetTextLength());
+    button_shader.SetUniform("text_size", button->text_size);
+    button_buffer.Draw();
 }
 
 void OpenGL::DrawObject(ControledButton* button, bool update_shader)
 {
     if (update_shader)
     {
-        controler_shader->Use();
-        controler_shader->SetUniform("scale", window_scale);
-        glBindVertexArray(right_triangle_buffer);
+        controler_buffer.Use();
+        controler_shader.Use();
+        controler_shader.SetUniform("scale", window_scale);
     }
     Color3F color;
     if (((Button*)button)->GetStatus(BUTTON_STATUS_ACTIVE))
@@ -605,113 +565,143 @@ void OpenGL::DrawObject(ControledButton* button, bool update_shader)
     {
         color *= 0.6f;
     }
-    controler_shader->SetUniform("position", ((Button*)button)->GetPosition());
-    controler_shader->SetUniform("size", ((Button*)button)->GetSize());
-    controler_shader->SetUniform("color", &color);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    controler_shader.SetUniform("position", ((Button*)button)->GetPosition());
+    controler_shader.SetUniform("size", ((Button*)button)->GetSize());
+    controler_shader.SetUniform("color", &color);
+    controler_buffer.Draw();
 }
 
 void OpenGL::DrawAsteroids()
 {
-    asteroid_shader->Use();
-    asteroid_shader->SetUniform("scale", window_scale);
-    asteroid_shader->SetUniform("camera_position", temp__game__camera_position);
-    asteroid_shader->SetUniform("camera_size", temp__game__camera_size);
-    glBindVertexArray(basic_square);
-    for (GameTypes::players_count_t asteroid = 0; asteroid < *game_p__asteroids_count; asteroid++)
+    asteroid_buffer.Use();
+    asteroid_shader.Use();
+    asteroid_shader.SetUniform("scale", window_scale);
+    asteroid_shader.SetUniform("camera_position", temp__game__camera_position);
+    asteroid_shader.SetUniform("camera_size", temp__game__camera_size);
+    for (GameTypes::entities_count_t asteroid = 0, found_ateroids = 0; found_ateroids < *game_p__asteroids_count; asteroid++)
     {
-        DrawObject(&(*game_p__asteroids)[asteroid]);
+        if ((*game_p__asteroids)[asteroid].exist == true)
+        {
+            found_ateroids++;
+            DrawObject(&(*game_p__asteroids)[asteroid]);
+        }
     }
 }
 
 void OpenGL::DrawBombs()
 {
-    bomb_shader->Use();
-    bomb_shader->SetUniform("scale", window_scale);
-    bomb_shader->SetUniform("camera_position", temp__game__camera_position);
-    bomb_shader->SetUniform("camera_size", temp__game__camera_size);
-    glBindVertexArray(basic_square);
-    for (GameTypes::players_count_t bomb = 0; bomb < *game_p__bombs_count; bomb++)
+    bomb_buffer.Use();
+    bomb_shader.Use();
+    bomb_shader.SetUniform("scale", window_scale);
+    bomb_shader.SetUniform("camera_position", temp__game__camera_position);
+    bomb_shader.SetUniform("camera_size", temp__game__camera_size);
+    for (GameTypes::entities_count_t bomb = 0, found_bombs = 0; found_bombs < *game_p__bombs_count; bomb++)
     {
-        DrawObject(&(*game_p__bombs)[bomb]);
+        if ((*game_p__bombs)[bomb].exist == true)
+        {
+            found_bombs++;
+            DrawObject(&(*game_p__bombs)[bomb]);
+        }
     }
 }
 
 void OpenGL::DrawBonuses()
 {
-    bonus_shader->Use();
-    bonus_shader->SetUniform("scale", window_scale);
-    bonus_shader->SetUniform("camera_position", temp__game__camera_position);
-    bonus_shader->SetUniform("camera_size", temp__game__camera_size);
-    glBindVertexArray(basic_square);
-    for (GameTypes::players_count_t bonus = 0; bonus < *game_p__bonuses_count; bonus++)
+    bonus_buffer.Use();
+    bonus_shader.Use();
+    bonus_shader.SetUniform("scale", window_scale);
+    bonus_shader.SetUniform("camera_position", temp__game__camera_position);
+    bonus_shader.SetUniform("camera_size", temp__game__camera_size);
+    for (GameTypes::entities_count_t bonus = 0, found_bonus = 0; found_bonus < *game_p__bonuses_count; bonus++)
     {
-        DrawObject(&(*game_p__bonuses)[bonus]);
+        if ((*game_p__bonuses)[bonus].exist == true)
+        {
+            found_bonus++;
+            DrawObject(&(*game_p__bonuses)[bonus]);
+        }
     }
 }
 
 void OpenGL::DrawBullets()
 {
-    bullet_shader->Use();
-    bullet_shader->SetUniform("scale", window_scale);
-    bullet_shader->SetUniform("camera_position", temp__game__camera_position);
-    bullet_shader->SetUniform("camera_size", temp__game__camera_size);
-    glBindVertexArray(basic_square);
-    for (GameTypes::players_count_t bullet = 0; bullet < *game_p__bullets_count; bullet++)
+    bullet_buffer.Use();
+    bullet_shader.Use();
+    bullet_shader.SetUniform("scale", window_scale);
+    bullet_shader.SetUniform("camera_position", temp__game__camera_position);
+    bullet_shader.SetUniform("camera_size", temp__game__camera_size);
+    for (GameTypes::entities_count_t bullet = 0, found_bullets = 0; found_bullets < *game_p__bullets_count; bullet++)
     {
-        DrawObject(&(*game_p__bullets)[bullet]);
+        if ((*game_p__bullets)[bullet].exist == true)
+        {
+            found_bullets++;
+            DrawObject(&(*game_p__bullets)[bullet]);
+        }
     }
 }
 
 void OpenGL::DrawKnifes()
 {
-    knife_shader->Use();
-    knife_shader->SetUniform("scale", window_scale);
-    knife_shader->SetUniform("camera_position", temp__game__camera_position);
-    knife_shader->SetUniform("camera_size", temp__game__camera_size);
-    glBindVertexArray(basic_square);
-    for (GameTypes::players_count_t knife = 0; knife < *game_p__knifes_count; knife++)
+    knife_buffer.Use();
+    knife_shader.Use();
+    knife_shader.SetUniform("scale", window_scale);
+    knife_shader.SetUniform("camera_position", temp__game__camera_position);
+    knife_shader.SetUniform("camera_size", temp__game__camera_size);
+    for (GameTypes::entities_count_t knife = 0, found_knifes = 0; found_knifes < *game_p__knifes_count; knife++)
     {
-        DrawObject(&(*game_p__knifes)[knife]);
+        if ((*game_p__knifes)[knife].exist == true)
+        {
+            found_knifes++;
+            DrawObject(&(*game_p__knifes)[knife]);
+        }
     }
 }
 
 void OpenGL::DrawMegaLasers()
 {
-    mega_laser_sahder->Use();
-    mega_laser_sahder->SetUniform("scale", window_scale);
-    mega_laser_sahder->SetUniform("camera_position", temp__game__camera_position);
-    mega_laser_sahder->SetUniform("camera_size", temp__game__camera_size);
-    glBindVertexArray(basic_square);
-    for (GameTypes::players_count_t mega_laser = 0; mega_laser < *game_p__mega_lasers_count; mega_laser++)
+    mega_laser_buffer.Use();
+    mega_laser_shader.Use();
+    mega_laser_shader.SetUniform("scale", window_scale);
+    mega_laser_shader.SetUniform("camera_position", temp__game__camera_position);
+    mega_laser_shader.SetUniform("camera_size", temp__game__camera_size);
+    for (GameTypes::entities_count_t mega_laser = 0, found_mega_lasers = 0; found_mega_lasers < *game_p__mega_lasers_count; mega_laser++)
     {
-        DrawObject(&(*game_p__mega_lasers)[mega_laser]);
+        if ((*game_p__mega_lasers)[mega_laser].exist == true)
+        {
+            found_mega_lasers++;
+            DrawObject(&(*game_p__mega_lasers)[mega_laser]);
+        }
     }
 }
 
 void OpenGL::DrawPilots()
 {
-    pilot_shader->Use();
-    pilot_shader->SetUniform("scale", window_scale);
-    pilot_shader->SetUniform("camera_position", temp__game__camera_position);
-    pilot_shader->SetUniform("camera_size", temp__game__camera_size);
-    glBindVertexArray(basic_triangle);
-    for (GameTypes::players_count_t pilot = 0; pilot < *game_p__pilots_count; pilot++)
+    pilot_buffer.Use();
+    pilot_shader.Use();
+    pilot_shader.SetUniform("scale", window_scale);
+    pilot_shader.SetUniform("camera_position", temp__game__camera_position);
+    pilot_shader.SetUniform("camera_size", temp__game__camera_size);
+    for (GameTypes::players_count_t pilot = 0; pilot < GAME_PLAYERS_MAX_COUNT; pilot++)
     {
-        DrawObject(&(*game_p__pilots)[pilot]);
+        if ((*game_p__pilots)[pilot].exist == true)
+        {
+            DrawObject(&(*game_p__pilots)[pilot]);
+        }
     }
 }
 
 void OpenGL::DrawShips()
 {
-    ship_shader->Use();
-    ship_shader->SetUniform("scale", window_scale);
-    ship_shader->SetUniform("camera_position", temp__game__camera_position);
-    ship_shader->SetUniform("camera_size", temp__game__camera_size);
-    glBindVertexArray(basic_triangle);
-    for (GameTypes::players_count_t ship = 0; ship < *game_p__ships_count; ship++)
+    ship_buffer.Use();
+    ship_shader.Use();
+    ship_shader.SetUniform("scale", window_scale);
+    ship_shader.SetUniform("camera_position", temp__game__camera_position);
+    ship_shader.SetUniform("camera_size", temp__game__camera_size);
+    for (GameTypes::players_count_t ship = 0; ship < GAME_PLAYERS_MAX_COUNT; ship++)
     {
-        DrawObject(&(*game_p__ships)[ship]);
+        if ((*game_p__ships)[ship].exist == true && (*game_p__ships)[ship].GetTeamNumber() != SHIPS_SELECT_BUTTONS_NO_TEAM)
+        {
+            DrawObject(&(*game_p__ships)[ship]);
+        }
     }
 }
 
