@@ -85,6 +85,9 @@
     <ClCompile Include="Classes\Map.cpp">
       <Filter>Classes\Файлы ресурсов</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Buffer.cpp">
+      <Filter>Classes\Файлы ресурсов</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Objects\Fragment\Asteroid.glsl">
@@ -206,7 +209,7 @@
     <ClInclude Include="Types\OpenGLRealisationTypes.h">
       <Filter>Types</Filter>
     </ClInclude>
-    <ClInclude Include="Types\ClassesTypes.h">
+    <ClInclude Include="Types\GameEngineTypes.h">
       <Filter>Types</Filter>
     </ClInclude>
     <ClInclude Include="SubClasses\MenuFunctions.h">
@@ -221,7 +224,7 @@
     <ClInclude Include="SubClasses\Game.h">
       <Filter>Classes\Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="Constants\ClassesConstants.h">
+    <ClInclude Include="Constants\GameEngineConstants.h">
       <Filter>Constants</Filter>
     </ClInclude>
     <ClInclude Include="Constants\GameRealisationConstants.h">
@@ -258,6 +261,9 @@
       <Filter>Classes\Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Math.h">
+      <Filter>Classes\Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Buffer.h">
       <Filter>Classes\Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
