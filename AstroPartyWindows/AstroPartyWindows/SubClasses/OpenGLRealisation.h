@@ -173,9 +173,7 @@ public:
 	void DrawObject(Polygon* polygon, bool update_shader = false);
 
 	//The function draw menu's button.
-	void DrawObject(Button* button, bool update_shader = false);
-	//The function draw menu's button.
-	void DrawObject(ControledButton* button, bool update_shader = false);
+	void DrawObject(Button* button, bool button_is_controller = false, bool update_shader = false);
 
 	//The function draw all asteroids on the map.
 	void DrawAsteroids();

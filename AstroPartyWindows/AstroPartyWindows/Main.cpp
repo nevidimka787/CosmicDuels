@@ -133,8 +133,7 @@ void TikUpdate()
             if (!(lock_timer % 100))
             {
                 std::cout << "Frame: " << frame << std::endl 
-                    << "Physic: " << physic  << std::endl 
-                    << main_game->ships[3].GetPosition().x << std::endl << std::endl;
+                    << "Physic: " << physic  << std::endl << std::endl << std::endl;
                 frame = 0;
                 physic = 0;
             }

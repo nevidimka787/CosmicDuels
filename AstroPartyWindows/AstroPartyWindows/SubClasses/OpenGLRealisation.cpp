@@ -46,7 +46,7 @@ void OpenGL::DrawFrame()
 
     if (*game_p__flag_all_entities_initialisate == true)
     {
-        game_p__camera->Focus(*game_p__ships, *game_p__pilots, *game_p__players_count);
+        game_p__camera->Focus(*game_p__ships, *game_p__pilots, GAME_PLAYERS_MAX_COUNT);
         temp__game__camera_position = game_p__camera->GetPosition();
         temp__game__camera_size = game_p__camera->GetSize().x;
 
@@ -204,7 +204,7 @@ void OpenGL::DrawObjectIndicatedMenu(Menu* menu)
         controler_shader.SetUniform("scale", window_scale);
         for (EngineTypes::Menu::buttons_count_t button = 0; button < menu->GetButtonsCount(); button++)
         {
-            DrawObject((ControledButton*)&menu->current_buttons[button]);
+            DrawObject(&menu->current_buttons[button], true);
         }
     }
     else
@@ -431,7 +431,7 @@ void OpenGL::DrawObject(Ship* ship, bool update_shader)
         {
             break;
         }
-        if ((*game_p__ships)[player].GetTeamNumber() == ship->GetPlayerNumber())
+        if ((*game_p__ships)[player].GetTeamNumber() == ship->GetTeamNumber())
         {
             number_of_player_in_team++;
         }
@@ -442,9 +442,9 @@ void OpenGL::DrawObject(Ship* ship, bool update_shader)
     ship_shader.SetUniform("size", ship->radius);
     ship_shader.SetUniform("team", ship->GetTeamNumber());
     ship_shader.SetUniform("player", number_of_player_in_team);
-    std::cout << ship->GetPosition() << std::endl
-        << ship->GetAngle() << std::endl
-        << ship->radius << std::endl;
+    //std::cout << ship->GetPosition() << std::endl
+    //    << ship->GetAngle() << std::endl
+    //    << ship->radius << std::endl;
     ship_buffer.Draw();
 }
 
@@ -481,17 +481,26 @@ void OpenGL::DrawObject(Polygon* polygon, bool update_shader)
 }
 
 
-void OpenGL::DrawObject(Button* button, bool update_shader)
+void OpenGL::DrawObject(Button* button, bool button_is_controller, bool update_shader)
 {
     if (update_shader)
     {
-        button_buffer.Use();
-        button_shader.Use();
-        symbols_texture.Use();
-        button_shader.SetUniform("scale", window_scale);
+        if (button_is_controller)
+        {
+            controler_buffer.Use();
+            controler_shader.Use();
+            controler_shader.SetUniform("scale", window_scale);
+        }
+        else
+        {
+            button_buffer.Use();
+            button_shader.Use();
+            symbols_texture.Use();
+            button_shader.SetUniform("scale", window_scale);
+        }
     }
     Color3F color;
-    if(button->GetStatus(BUTTON_STATUS_ACTIVE))
+    if (button->GetStatus(BUTTON_STATUS_ACTIVE))
     {
         color = Color3F(0.1f, 0.6f, 0.1f);
     }
@@ -519,56 +528,23 @@ void OpenGL::DrawObject(Button* button, bool update_shader)
     {
         color *= 0.6f;
     }
-    button_shader.SetUniform("position", button->GetPosition());
-    button_shader.SetUniform("size", button->GetSize());
-    button_shader.SetUniform("color", &color);
-    button_shader.SetUniform("text", button->GetText(), button->GetTextLength());
-    button_shader.SetUniform("text_length", button->GetTextLength());
-    button_shader.SetUniform("text_size", button->text_size);
-    button_buffer.Draw();
-}
-
-void OpenGL::DrawObject(ControledButton* button, bool update_shader)
-{
-    if (update_shader)
+    if (button_is_controller)
     {
-        controler_buffer.Use();
-        controler_shader.Use();
-        controler_shader.SetUniform("scale", window_scale);
-    }
-    Color3F color;
-    if (((Button*)button)->GetStatus(BUTTON_STATUS_ACTIVE))
-    {
-        color = Color3F(0.1f, 0.6f, 0.1f);
-    }
-    else if (((Button*)button)->GetStatus(BUTTON_STATUS_CUSTOM_RED))
-    {
-        color = Color3F(1.0f, 0.0f, 0.0f);
-    }
-    else if (((Button*)button)->GetStatus(BUTTON_STATUS_CUSTOM_GREEN))
-    {
-        color = Color3F(0.0f, 1.0f, 0.0f);
-    }
-    else if (((Button*)button)->GetStatus(BUTTON_STATUS_CUSTOM_BLUE))
-    {
-        color = Color3F(0.0f, 0.0f, 1.0f);
-    }
-    else if (((Button*)button)->GetStatus(BUTTON_STATUS_CUSTOM_PURPURE))
-    {
-        color = Color3F(1.0f, 0.0f, 1.0f);
+        controler_shader.SetUniform("position", button->GetPosition());
+        controler_shader.SetUniform("size", button->GetSize());
+        controler_shader.SetUniform("color", &color);
+        controler_buffer.Draw();
     }
     else
     {
-        color = Color3F(0.6f, 0.1f, 0.1f);
+        button_shader.SetUniform("position", button->GetPosition());
+        button_shader.SetUniform("size", button->GetSize());
+        button_shader.SetUniform("color", &color);
+        button_shader.SetUniform("text", button->GetText(), button->GetTextLength());
+        button_shader.SetUniform("text_length", button->GetTextLength());
+        button_shader.SetUniform("text_size", button->text_size);
+        button_buffer.Draw();
     }
-    if (((Button*)button)->GetStatus(BUTTON_STATUS_SELECT))
-    {
-        color *= 0.6f;
-    }
-    controler_shader.SetUniform("position", ((Button*)button)->GetPosition());
-    controler_shader.SetUniform("size", ((Button*)button)->GetSize());
-    controler_shader.SetUniform("color", &color);
-    controler_buffer.Draw();
 }
 
 void OpenGL::DrawAsteroids()
@@ -698,7 +674,7 @@ void OpenGL::DrawShips()
     ship_shader.SetUniform("camera_size", temp__game__camera_size);
     for (GameTypes::players_count_t ship = 0; ship < GAME_PLAYERS_MAX_COUNT; ship++)
     {
-        if ((*game_p__ships)[ship].exist == true && (*game_p__ships)[ship].GetTeamNumber() != SHIPS_SELECT_BUTTONS_NO_TEAM)
+        if ((*game_p__ships)[ship].exist == true)
         {
             DrawObject(&(*game_p__ships)[ship]);
         }

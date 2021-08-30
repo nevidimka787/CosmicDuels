@@ -8,7 +8,6 @@
 #include "../Constants/AllConstants.h"
 
 class Button;
-class ControledButton;
 class Menu;
 
 class Button
@@ -58,7 +57,6 @@ public:
 	void SetText(char* text, EngineTypes::Button::text_length_t text_length);
 	void SetText(EngineTypes::Button::text_t* text);
 	void SetText(EngineTypes::Button::text_t* text, EngineTypes::Button::text_length_t text_length);
-	void SetTextSize(EngineTypes::Button::text_size_t text_size);
 	//not change id and statuse
 	void TakeData(Button* button);
 
@@ -77,24 +75,29 @@ protected:
 public:
 	Button* current_buttons;
 	Menu();
+	Menu(const Menu& menu);
 	Menu(
 		Vec2F* position, 
 		Vec2F* size,
 		Button* buttons = nullptr,
 		EngineTypes::Menu::buttons_count_t buttons_count = 0);
 
+	void AddButton(EngineTypes::Menu::buttons_count_t button_number, Button* button);
+	void DeleteButton(EngineTypes::Menu::buttons_count_t button_number);
 	EngineTypes::Menu::buttons_count_t GetButtonsCount();
 	Vec2F GetPosition();
 	Vec2F GetSize();
 	void Move(Vec2F* move_vector);
+	void Recalculate();
 	void Set(Menu* menu);
 	void Set(
 		Vec2F* position,
 		Vec2F* size,
 		Button* buttons = nullptr,
 		EngineTypes::Menu::buttons_count_t buttons_count = 0);
+	void SetDefaultButton(EngineTypes::Menu::buttons_count_t button_number, Button* button);
 	void SetPosition(Vec2F* position);
-	void Recalculate();
+	void UpdateDefaultButtons();
 
 	~Menu();
 };

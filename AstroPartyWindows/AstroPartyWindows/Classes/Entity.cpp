@@ -1428,7 +1428,6 @@ void Ship::operator=(Ship ship)
 
 Ship::~Ship()
 {
-	std::cout << "Delete Ship: " << this << std::endl;
 }
 
 

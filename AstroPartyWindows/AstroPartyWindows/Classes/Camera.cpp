@@ -65,6 +65,10 @@ void Camera::Focus(Ship* ships_array, Pilot* pilots_array, GameTypes::players_co
 	temp_flag = true;
 	for (GameTypes::players_count_t ship = 0; ship < players_count; ship++)
 	{
+		if (ships_array[ship].exist == false)
+		{
+			goto EndOfFirstCycle;
+		}
 		temp_position = ships_array[ship].GetPosition();
 		if (temp_flag)
 		{
@@ -93,9 +97,14 @@ void Camera::Focus(Ship* ships_array, Pilot* pilots_array, GameTypes::players_co
 				temp_limits.max_y = temp_position.y;
 			}
 		}
+	EndOfFirstCycle:;
 	}
 	for (GameTypes::players_count_t pilot = 0; pilot < players_count; pilot++)
 	{
+		if (pilots_array[pilot].exist == false)
+		{
+			goto EndOfSecondCycle;
+		}
 		temp_position = pilots_array[pilot].GetPosition();
 		if (temp_flag)
 		{
@@ -123,6 +132,7 @@ void Camera::Focus(Ship* ships_array, Pilot* pilots_array, GameTypes::players_co
 				temp_limits.max_y = temp_position.y;
 			}
 		}
+	EndOfSecondCycle:;
 	}
 	Limit();
 }

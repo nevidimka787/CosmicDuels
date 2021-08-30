@@ -89,17 +89,6 @@ void Button::Set(Button* button)
 	SetText(button->text, button->text_length);
 }
 
-void Button::Set(EngineTypes::Button::button_id_t id, Vec2F* position, Vec2F* size, const char* text, EngineTypes::Button::text_size_t text_size, EngineTypes::Button::button_status_t status)
-{
-	this->id = id;
-	this->position = *position;
-	this->size = *size;
-	this->status = status;
-	this->text_size = text_size;
-
-	SetText(text);
-}
-
 bool Button::HavePoint(Vec2F* point)
 {
 	if (size.x > 0.0f)
@@ -120,6 +109,17 @@ bool Button::HavePoint(Vec2F* point)
 void Button::Move(Vec2F* move_vector)
 {
 	position += *move_vector;
+}
+
+void Button::Set(EngineTypes::Button::button_id_t id, Vec2F* position, Vec2F* size, const char* text, EngineTypes::Button::text_size_t text_size, EngineTypes::Button::button_status_t status)
+{
+	this->id = id;
+	this->position = *position;
+	this->size = *size;
+	this->status = status;
+	this->text_size = text_size;
+
+	SetText(text);
 }
 
 void Button::SetId(EngineTypes::Button::button_id_t id)
@@ -193,11 +193,6 @@ void Button::SetText(EngineTypes::Button::text_t* text, EngineTypes::Button::tex
 	}
 }
 
-void Button::SetTextSize(EngineTypes::Button::text_size_t text_size)
-{
-	this->text_size = text_size;
-}
-
 void Button::TakeData(Button* button)
 {
 	position = button->position;
@@ -232,6 +227,20 @@ Menu::Menu() :
 {
 }
 
+Menu::Menu(const Menu& menu):
+	default_buttons(new Button[menu.buttons_count]),
+	current_buttons(new Button[menu.buttons_count]),
+	buttons_count(menu.buttons_count),
+	position(menu.position),
+	size(menu.size)
+{
+	for (EngineTypes::Menu::buttons_count_t i = 0; i < buttons_count; i++)
+	{
+		default_buttons[i].Set(&menu.default_buttons[i]);
+	}
+	Recalculate();
+}
+
 Menu::Menu(Vec2F* position, Vec2F* size, Button* buttons, EngineTypes::Menu::buttons_count_t buttons_count) :
 	position(*position),
 	size(*size),
@@ -251,9 +260,55 @@ Menu::Menu(Vec2F* position, Vec2F* size, Button* buttons, EngineTypes::Menu::but
 		for (EngineTypes::Menu::buttons_count_t i = 0; i < buttons_count; i++)
 		{
 			default_buttons[i].Set(&buttons[i]);
-			current_buttons[i].Set(&default_buttons[i]);
 		}
 	}
+	Recalculate();
+}
+
+void Menu::AddButton(EngineTypes::Menu::buttons_count_t button_number, Button* button)
+{
+	Button* new_buttons = new Button[++buttons_count];
+	if (button_number >= buttons_count)
+	{
+		button_number = buttons_count - 1;
+	}
+
+	for (EngineTypes::Menu::buttons_count_t i = 0; i < button_number; i++)
+	{
+		new_buttons[i].Set(&default_buttons[i]);
+	}
+	new_buttons[button_number].Set(button);
+	for (EngineTypes::Menu::buttons_count_t i = button_number + 1; i < buttons_count; i++)
+	{
+		new_buttons[i].Set(&default_buttons[i - 1]);
+	}
+
+	delete[] default_buttons;
+	default_buttons = new_buttons;
+	Recalculate();
+}
+
+void Menu::DeleteButton(EngineTypes::Menu::buttons_count_t button_number)
+{
+	if (button_number >= buttons_count)
+	{
+		return;
+	}
+
+	Button* new_buttons = new Button[--buttons_count];
+
+	for (EngineTypes::Menu::buttons_count_t i = 0; i < button_number; i++)
+	{
+		new_buttons->Set(&default_buttons[i]);
+	}
+	for (EngineTypes::Menu::buttons_count_t i = button_number; i < buttons_count; i++)
+	{
+		new_buttons[i].Set(&default_buttons[i + 1]);
+	}
+
+	delete[] default_buttons;
+	default_buttons = new_buttons;
+	Recalculate();
 }
 
 EngineTypes::Menu::buttons_count_t Menu::GetButtonsCount()
@@ -291,8 +346,8 @@ void Menu::Set(Menu* menu)
 	for (EngineTypes::Menu::buttons_count_t i = 0; i < buttons_count; i++)
 	{
 		default_buttons[i].Set(&menu->default_buttons[i]);
-		current_buttons[i].Set(&menu->current_buttons[i]);
 	}
+	Recalculate();
 }
 
 void Menu::Set(Vec2F* position, Vec2F* size, Button* buttons, EngineTypes::Menu::buttons_count_t buttons_count)
@@ -322,6 +377,15 @@ void Menu::Set(Vec2F* position, Vec2F* size, Button* buttons, EngineTypes::Menu:
 	Recalculate();
 }
 
+void Menu::SetDefaultButton(EngineTypes::Menu::buttons_count_t button_number, Button* button)
+{
+	if (button_number < buttons_count)
+	{
+		default_buttons[button_number].Set(button);
+		Recalculate();
+	}
+}
+
 void Menu::SetPosition(Vec2F* position)
 {
 	this->position = *position;
@@ -337,10 +401,18 @@ void Menu::Recalculate()
 	}
 }
 
+void Menu::UpdateDefaultButtons()
+{
+	for (EngineTypes::Menu::buttons_count_t i = 0; i < buttons_count; i++)
+	{
+		default_buttons[i].SetStatus(current_buttons[i].status, true);
+		default_buttons[i].SetText(current_buttons[i].GetText(), current_buttons[i].GetTextLength());
+		default_buttons[i].text_size = current_buttons[i].text_size;
+	}
+}
+
 Menu::~Menu()
 {
-	if (default_buttons != nullptr)
-	{
-		delete[] default_buttons;
-	}
+	delete[] default_buttons;
+	delete[] current_buttons;
 }

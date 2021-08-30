@@ -302,23 +302,28 @@ void MenuFunctions::ShipsSelectMenuFunction(Vec2F* clk_pos, uint8_t clk_status)
 					case BUTTON_STATUS_INACTIVE:
 						current_button->SetOnlyCustomStatus(BUTTON_STATUS_CUSTOM_RED);
 						SelectShip(id, SHIPS_SELECT_BUTTONS_TEAM_RED);
+						//game_p__ships_select_menu->UpdateDefaultButtons();
 						return;
 					case BUTTON_STATUS_CUSTOM_RED:
 						SelectShip(id, SHIPS_SELECT_BUTTONS_TEAM_GREEN);
 						current_button->SetOnlyCustomStatus(BUTTON_STATUS_CUSTOM_GREEN);
+						//game_p__ships_select_menu->UpdateDefaultButtons();
 						return;
 					case BUTTON_STATUS_CUSTOM_GREEN:
 						SelectShip(id, SHIPS_SELECT_BUTTONS_TEAM_BLUE);
 						current_button->SetOnlyCustomStatus(BUTTON_STATUS_CUSTOM_BLUE);
+						//game_p__ships_select_menu->UpdateDefaultButtons();
 						return;
 					case BUTTON_STATUS_CUSTOM_BLUE:
 						SelectShip(id, SHIPS_SELECT_BUTTONS_TEAM_PURPURE);
 						current_button->SetOnlyCustomStatus(BUTTON_STATUS_CUSTOM_PURPURE);
+						//game_p__ships_select_menu->UpdateDefaultButtons();
 						return;
 					case BUTTON_STATUS_CUSTOM_PURPURE:
 					default:
 						SelectShip(id, SHIPS_SELECT_BUTTONS_NO_TEAM);
 						current_button->SetOnlyCustomStatus(BUTTON_STATUS_INACTIVE);
+						//game_p__ships_select_menu->UpdateDefaultButtons();
 						return;
 					}
 				case BUTTON_ID_START_GAME:

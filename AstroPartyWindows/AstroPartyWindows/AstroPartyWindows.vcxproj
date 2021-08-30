@@ -81,8 +81,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>E:\Documents\GItHub\AstroParty\AstroPartyWindows\ALLIncludes;D:\Documents\GItHub\AstroParty\AstroPartyWindows\ALLIncludes;$(IncludePath)</IncludePath>
-    <LibraryPath>E:\Documents\GItHub\AstroParty\AstroPartyWindows\AllLibs;D:\Documents\GItHub\AstroParty\AstroPartyWindows\AllLibs;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\Documents\GItHub\AstroParty\AstroPartyWindows\ALLIncludes;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\Documents\GItHub\AstroParty\AstroPartyWindows\AllLibs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
