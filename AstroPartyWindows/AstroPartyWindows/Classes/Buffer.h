@@ -6,7 +6,7 @@
 #include "Math.h"
 #include "../Constants/AllConstants.h"
 #include "../Types/AllTypes.h"
-
+ 
 class StaticBuffer
 {
 private:
