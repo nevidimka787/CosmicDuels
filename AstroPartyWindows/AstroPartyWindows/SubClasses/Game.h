@@ -1,11 +1,12 @@
 #pragma once
 
+#include "MenuFunctions.h"
+#include "OpenGLRealisation.h"
+
 #include "../Classes/GameEngine.h"
 
-#include "MenuFunctions.h"
-
-
 class Game;
+class OpenGL;
 
 class Game
 {
@@ -266,6 +267,9 @@ public:
 	Turel* temp__turel_p;
 	//Memory space for temporary pointers.
 	Vec2F* temp__vector_p;
+
+	void* temp__pointer1;
+	void* temp__pointer2;
 	
 
 
@@ -291,20 +295,48 @@ public:
 	
 
 	//The function calculates forces of collisions between entities in the array.
-	void DynamicEntitiesCollisions(DynamicEntity* entities, GameTypes::entities_count_t entities_count);
+	//Use temp_p1 temp_p2
+	template<typename EntityType>
+	void DynamicEntitiesCollisions(
+		EntityType* entities,
+		GameTypes::entities_count_t entities_count);
 	//The function calculates forces of collisions between entities from two arrays.
-	void DynamicEntitiesCollisions(DynamicEntity* entities1, GameTypes::entities_count_t entities1_count, DynamicEntity* entities2, GameTypes::entities_count_t entities2_count);
+	//Use temp_p1 temp_p2
+	template<typename Entity1Type, typename Entity2Type>
+	void DynamicEntitiesCollisions(
+		Entity1Type* entities1,
+		Entity2Type* entities2,
+		GameTypes::entities_count_t entities1_count, 
+		GameTypes::entities_count_t entities2_count);
 	//The function calculates forces of collisions between entities in the array and elements of the map.
-	void DynamicEntitiesCollisions(DynamicEntity* entities, GameTypes::entities_count_t entities_count, Map* map);
+	//Use temp_p1
+	template<typename EntityType>
+	void DynamicEntitiesCollisions(
+		Map* map,
+		EntityType* entities,
+		GameTypes::entities_count_t entities_count);
 	//The function adds the specified force to all entities in the array.
-	void DynamicEntitiesAddForce(DynamicEntity* entities, GameTypes::entities_count_t entities_count, Vec2F* force);
+	//Use temp_p1 temp_p2
+	template<typename EntityType>
+	void DynamicEntitiesAddForce(
+		Vec2F* force,
+		EntityType* entities,
+		GameTypes::entities_count_t entities_count);
 	//The function adds the force of the gravity generator to all entities in the array.
-	void DynamicEntitiesAddForce(DynamicEntity* entities, GameTypes::entities_count_t entities_count, GravGen* grav_gen);
+	//Use temp_p1 temp_p2
+	template<typename EntityType>
+	void DynamicEntitiesAddForce(
+		GravGen* grav_gen,
+		EntityType* entities,
+		GameTypes::entities_count_t entities_count);
 	//The function adds forces of the all gravity generators to all entities in the array.
-	void DynamicEntitiesAddForce(DynamicEntity* entities, GameTypes::entities_count_t entities_count, GravGen* grav_gens, GameTypes::map_elements_count_t grav_gens_count);
-
-
-	void UpdateAll();
+	//Use temp_p1 temp_p2
+	template<typename EntityType>
+	void DynamicEntitiesAddForce(
+		GravGen* grav_gens,
+		GameTypes::map_elements_count_t grav_gens_count,
+		EntityType* entities,
+		GameTypes::entities_count_t entities_count);
 
 	//The function calculates the influence of entities on other entities. Any entity can be destroyed. New entities can be created.
 	void UpdateAsteroids();
@@ -326,9 +358,6 @@ public:
 	void UpdateShips();
 	//The function calculates the influence of entities on other entities. Any entity can be destroyed. New entities can be created.
 	void UpdateTurels();
-
-	//Update the positions of all entities.
-	void TransportAllObjects();
 
 	//Update the position ans velocity of entity.
 	void TransportAsteroids();
@@ -439,5 +468,8 @@ public:
 	uint8_t* menu_p__ships_select_buttons;
 	//menu pointers
 	EngineTypes::Bonus::bonus_t* menu_p__start_bonus;
+
+	//open gl pointers
+	OpenGL* object_p__open_gl_realisation;
 };
 

@@ -87,6 +87,7 @@ public:
 	EngineTypes::Menu::buttons_count_t GetButtonsCount();
 	Vec2F GetPosition();
 	Vec2F GetSize();
+	void HardRecalculate();
 	void Move(Vec2F* move_vector);
 	void Recalculate();
 	void Set(Menu* menu);
@@ -95,7 +96,6 @@ public:
 		Vec2F* size,
 		Button* buttons = nullptr,
 		EngineTypes::Menu::buttons_count_t buttons_count = 0);
-	void SetDefaultButton(EngineTypes::Menu::buttons_count_t button_number, Button* button);
 	void SetPosition(Vec2F* position);
 	void UpdateDefaultButtons();
 

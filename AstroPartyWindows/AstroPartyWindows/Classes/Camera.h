@@ -49,7 +49,7 @@ private:
 	//size.x / size.y
 	float scale;
 	//Size of the view area of the camera.
-	Vec2F view_area_size;
+	float view_area_size_x;
 
 	void Limit();
 public:
@@ -67,7 +67,7 @@ public:
 
 	Mat2F GetLimits();
 	Vec2F GetPosition();
-	Vec2F GetSize();
+	float GetSize();
 	float GetScale();
 	//All ships and pilots will be show in the camera.
 	void Focus(
@@ -89,9 +89,7 @@ public:
 		float size_x = 0.1f, 
 		float size_y = 0.1f);
 	void SetPosition(Vec2F* position = nullptr);
-	void SetScale(
-		float scale = 16.0f / 9.0f,
-		bool x_is_const = false);
+	void SetScale(float scale = 16.0f / 9.0f);
 	void SetSize(float size = 1.0f);
 
 	~Camera();

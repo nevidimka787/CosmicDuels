@@ -13,7 +13,7 @@ Camera::Camera(const Camera& camera) :
 	position(camera.position),
 	resize_velocity_coefficient(camera.resize_velocity_coefficient),
 	scale(camera.scale),
-	view_area_size(camera.view_area_size)
+	view_area_size_x(camera.view_area_size_x)
 {
 }
 
@@ -35,7 +35,7 @@ Camera::Camera(Vec2F* position, float size, float scale, float margin, float mov
 	{
 		this->position = *position;
 	}
-	this->view_area_size.Set(size * scale, size);
+	this->view_area_size_x = size;
 	Limit();
 }
 
@@ -49,9 +49,9 @@ Vec2F Camera::GetPosition()
 	return position;
 }
 
-Vec2F Camera::GetSize()
+float Camera::GetSize()
 {
-	return view_area_size;
+	return view_area_size_x;
 }
 
 float Camera::GetScale()
@@ -78,7 +78,7 @@ void Camera::Focus(Ship* ships_array, Pilot* pilots_array, GameTypes::players_co
 				temp_flag = false;
 			}
 		}
-		else if (ships_array[ship].exist)
+		else
 		{
 			if (temp_position.x < temp_limits.min_x)
 			{
@@ -134,7 +134,19 @@ void Camera::Focus(Ship* ships_array, Pilot* pilots_array, GameTypes::players_co
 		}
 	EndOfSecondCycle:;
 	}
+
 	Limit();
+
+	position.Set((temp_limits.max_x + temp_limits.min_x) / 2.0f, (temp_limits.max_y + temp_limits.min_y) / 2.0f);
+	view_area_size_x = (temp_limits.max_x - temp_limits.min_x) * margin;
+	if (view_area_size_x < low_limits.x)
+	{
+		view_area_size_x = low_limits.x;
+	}
+	if (view_area_size_x / scale < low_limits.y)
+	{
+		view_area_size_x = low_limits.y * scale;
+	}
 }
 
 void Camera::Limit()
@@ -156,27 +168,6 @@ void Camera::Limit()
 	{
 		temp_limits.min_y = hight_limits.min_y * margin;
 	}
-	position.Set((temp_limits.max_x + temp_limits.min_x) / 2.0f, (temp_limits.max_y + temp_limits.min_y) / 2.0f);
-	view_area_size.x = temp_limits.max_x - position.x;
-	view_area_size.y = temp_limits.max_y - position.y;
-	if (view_area_size.x < low_limits.x)
-	{
-		view_area_size.x = low_limits.x;
-		view_area_size.y = low_limits.x / scale;
-	}
-	else
-	{
-		view_area_size.y = view_area_size.x / scale;
-	}
-	if (view_area_size.y < low_limits.y)
-	{
-		view_area_size.x = low_limits.y * scale;
-		view_area_size.y = low_limits.y;
-	}
-	else
-	{
-		view_area_size.x = view_area_size.y * scale;
-	}
 }
 
 void Camera::Set(Camera* camera)
@@ -187,7 +178,7 @@ void Camera::Set(Camera* camera)
 	move_velocity_coefficient = camera->move_velocity_coefficient;
 	position = camera->position;
 	resize_velocity_coefficient = camera->resize_velocity_coefficient;
-	view_area_size = camera->view_area_size;
+	view_area_size_x = camera->view_area_size_x;
 }
 
 void Camera::SetCoefficients(float margin, float move_velocity_coefficient, float resize_velocity_coefficient)
@@ -217,22 +208,14 @@ void Camera::SetPosition(Vec2F* position)
 	this->position.Set(0.0f, 0.0f);
 }
 
-void Camera::SetScale(float scale, bool x_is_const)
+void Camera::SetScale(float scale)
 {
 	this->scale = scale;
-	if (x_is_const)
-	{
-		view_area_size.y = view_area_size.x / scale;
-	}
-	else
-	{
-		view_area_size.x = view_area_size.y * scale;
-	}
 }
 
 void Camera::SetSize(float size)
 {
-	this->view_area_size *= size / this->view_area_size.y;
+	this->view_area_size_x = size;
 }
 
 Camera::~Camera()

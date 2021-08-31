@@ -13,8 +13,9 @@
 #pragma warning(disable : 26451)//All integer operations can be overflow. It is absolutly useless warnintg.
 #pragma warning(disable : 26495)
 
-#define M_PI       3.14159265358979323846   // pi
-#define M_PI_4     0.785398163397448309616  // pi/4
+#define M_PI	3.14159265358979323846	// pi
+#define M_PI_2	1.5707796326794897		// pi/2
+#define M_PI_4  0.785398163397448309616	// pi/4
 
 
 void Game::Update()
@@ -24,64 +25,75 @@ void Game::Update()
 
 	//update
 
-	UpdateAll();
+	UpdateBullets();
+	UpdateShips();
+	UpdateTurels();
+	UpdateBombs();
+	UpdateLazers();
+	UpdateMegaLazers();
+	UpdateKnifes();
 
 	//update
 
 	//collisions
 
-	DynamicEntitiesCollisions((DynamicEntity*)ships, ships_count);
-	DynamicEntitiesCollisions((DynamicEntity*)pilots, pilots_count);
-	DynamicEntitiesCollisions((DynamicEntity*)asteroids, asteroids_count);
+	DynamicEntitiesCollisions(ships, ships_count);
+	DynamicEntitiesCollisions(pilots, pilots_count);
+	DynamicEntitiesCollisions(asteroids, asteroids_count);
 
-	//DynamicEntitiesCollisions((DynamicEntity*)ships, ships_count, (DynamicEntity*)pilots, pilots_count);
-	//DynamicEntitiesCollisions((DynamicEntity*)ships, ships_count, (DynamicEntity*)asteroids, asteroids_count);
-	DynamicEntitiesCollisions((DynamicEntity*)asteroids, asteroids_count, (DynamicEntity*)pilots, pilots_count);
+	DynamicEntitiesCollisions(ships, pilots, ships_count, pilots_count);
+	DynamicEntitiesCollisions(ships,  asteroids, ships_count, asteroids_count);
+	DynamicEntitiesCollisions(asteroids,  pilots, asteroids_count, pilots_count);
 
-	//DynamicEntitiesCollisions((DynamicEntity*)ships, ships_count, &map);
-	//DynamicEntitiesCollisions((DynamicEntity*)pilots, pilots_count, &map);
-	DynamicEntitiesCollisions((DynamicEntity*)asteroids, asteroids_count, &map);
+	DynamicEntitiesCollisions(&map, ships, ships_count);
+	DynamicEntitiesCollisions(&map, pilots, pilots_count);
+	DynamicEntitiesCollisions(&map, asteroids, asteroids_count);
 
-	//DynamicEntitiesAddForce((DynamicEntity*)ships, ships_count, grav_gens, grav_gens_count);
-	//DynamicEntitiesAddForce((DynamicEntity*)pilots, pilots_count, grav_gens, grav_gens_count);
-	DynamicEntitiesAddForce((DynamicEntity*)asteroids, asteroids_count, grav_gens, grav_gens_count);
-	DynamicEntitiesAddForce((DynamicEntity*)bullets, asteroids_count, grav_gens, grav_gens_count);
+	DynamicEntitiesAddForce(grav_gens, grav_gens_count, ships, ships_count);
+	DynamicEntitiesAddForce(grav_gens, grav_gens_count, pilots, pilots_count);
+	DynamicEntitiesAddForce(grav_gens, grav_gens_count, asteroids, asteroids_count);
+	DynamicEntitiesAddForce(grav_gens, grav_gens_count, bullets, asteroids_count);
 	
 	//collisions
 
 	//recalculationtemp__vector.Set(0.0f, 0.0f);
+	float pos = sinf(ships[0].GetAngle()) / 0.8f;
 	temp__vector.Set(0.0f, 0.0f);
 	ships[0].SetVelocity(&temp__vector);
 	ships[1].SetVelocity(&temp__vector);
 	ships[2].SetVelocity(&temp__vector);
 	ships[3].SetVelocity(&temp__vector);
-	temp__vector.Set(-0.3f, 0.3f);
+	temp__vector.Set(pos, pos);
 	ships[0].SetPosition(&temp__vector);
-	temp__vector.Set(0.3f, 0.3f);
+	temp__vector.Set(-pos, pos);
 	ships[1].SetPosition(&temp__vector);
-	temp__vector.Set(0.3f, -0.3f);
+	temp__vector.Set(-pos, -pos);
 	ships[2].SetPosition(&temp__vector);
-	temp__vector.Set(-0.3f, -0.3f);
+	temp__vector.Set(pos, -pos);
 	ships[3].SetPosition(&temp__vector);
 	if (update_start_properties == true)
 	{
-		
-		ships[0].SetAngle(1.0f);
-		ships[0].SetAngularVelocity(0.02f);
-		ships[1].SetAngle(1.0f);
-		ships[1].SetAngularVelocity(0.02f);
-		ships[2].SetAngle(1.0f);
-		ships[2].SetAngularVelocity(0.02f);
-		ships[3].SetAngle(1.0f);
-		ships[3].SetAngularVelocity(0.02f);
+		ships[0].SetAngularVelocity(0.01f);
+		ships[1].SetAngularVelocity(0.01f);
+		ships[2].SetAngularVelocity(0.01f);
+		ships[3].SetAngularVelocity(0.01f);
 		update_start_properties = false;
 	}
 
-	TransportAllObjects();
+	TransportAsteroids();
+	TransportBombs();
+	TransportBonuses();
+	TransportBullets();
+	TransportKnifes();
+	TransportLasers();
+	TransportMegaLasers();
+	TransportPilots();
+	TransportShips();
 	//recalculation
 }
 
-void Game::DynamicEntitiesCollisions(DynamicEntity* entities, GameTypes::entities_count_t entities_count)
+template<typename EntityType>
+void Game::DynamicEntitiesCollisions(EntityType* entities, GameTypes::entities_count_t entities_count)
 {
 	for (GameTypes::entities_count_t first = 0, found_entites_count1 = 0; found_entites_count1 < entities_count; first++)
 	{
@@ -100,7 +112,8 @@ void Game::DynamicEntitiesCollisions(DynamicEntity* entities, GameTypes::entitie
 	}
 }
 
-void Game::DynamicEntitiesCollisions(DynamicEntity* entities1, GameTypes::entities_count_t entities1_count, DynamicEntity* entities2, GameTypes::entities_count_t entities2_count)
+template<typename Entity1Type, typename Entity2Type>
+void Game::DynamicEntitiesCollisions(Entity1Type* entities1, Entity2Type* entities2, GameTypes::entities_count_t entities1_count, GameTypes::entities_count_t entities2_count)
 {
 	for (GameTypes::entities_count_t first = 0, found_entites_count1 = 0; found_entites_count1 < entities1_count; first++)
 	{
@@ -119,19 +132,21 @@ void Game::DynamicEntitiesCollisions(DynamicEntity* entities1, GameTypes::entiti
 	}
 }
 
-void Game::DynamicEntitiesCollisions(DynamicEntity* entities, GameTypes::entities_count_t entities_count, Map* map)
+template<typename EntityType>
+void Game::DynamicEntitiesCollisions(Map* map, EntityType* entities, GameTypes::entities_count_t entities_count)
 {
-	for (GameTypes::entities_count_t first = 0, found_entites_count = 0; found_entites_count < entities_count; first++)
+	for (GameTypes::entities_count_t i = 0, found = 0; found < entities_count; i++)
 	{
-		if (entities[first].exist)
+		if (entities[i].exist)
 		{
-			entities[first].Collision(map);
-			found_entites_count++;
+			entities[i].Collision(map);
+			found++;
 		}
 	}
 }
 
-void Game::DynamicEntitiesAddForce(DynamicEntity* entities, GameTypes::entities_count_t entities_count, Vec2F* force)
+template<typename EntityType>
+void Game::DynamicEntitiesAddForce(Vec2F* force, EntityType* entities, GameTypes::entities_count_t entities_count)
 {
 	for (GameTypes::entities_count_t i = 0, found = 0; found < entities_count; i++)
 	{
@@ -143,7 +158,8 @@ void Game::DynamicEntitiesAddForce(DynamicEntity* entities, GameTypes::entities_
 	}
 }
 
-void Game::DynamicEntitiesAddForce(DynamicEntity* entities, GameTypes::entities_count_t entities_count, GravGen* grav_gen)
+template<typename EntityType>
+void Game::DynamicEntitiesAddForce(GravGen* grav_gen, EntityType* entities, GameTypes::entities_count_t entities_count)
 {
 	Vec2F force;
 	float len2;
@@ -161,7 +177,8 @@ void Game::DynamicEntitiesAddForce(DynamicEntity* entities, GameTypes::entities_
 	}
 }
 
-void Game::DynamicEntitiesAddForce(DynamicEntity* entities, GameTypes::entities_count_t entities_count, GravGen* grav_gens, GameTypes::map_elements_count_t grav_gens_count)
+template<typename EntityType>
+void Game::DynamicEntitiesAddForce(GravGen* grav_gens, GameTypes::map_elements_count_t grav_gens_count, EntityType* entities, GameTypes::entities_count_t entities_count)
 {
 	Vec2F force;
 	float len2;
@@ -847,8 +864,8 @@ void Game::InitLevel()
 
 	camera.SetCoefficients();
 	camera.SetHightLimits();
-	camera.SetLowLimits(0.5f, 0.5f);
-	camera.SetScale();
+	camera.SetLowLimits(0.2f, 0.2f);
+	camera.SetScale(object_p__open_gl_realisation->GetScale());
 
 	Vec2F* temp_positions;
 
@@ -894,19 +911,11 @@ void Game::InitLevel()
 	/* Spawn players */
 
 	float* temp_angles = new float[GAME_PLAYERS_MAX_COUNT];;
-	temp_angles[0] = -(float)M_PI_4;
-	if (players_count > 1)
-	{
-		temp_angles[1] = (float)M_PI - (float)M_PI_4;
-	}
-	if (players_count > 2)
-	{
-		temp_angles[2] = (float)M_PI_4;
-	}
-	if (players_count > 3)
-	{
-		temp_angles[3] = (float)M_PI + (float)M_PI_4;
-	}
+	temp_angles[0] = -(float)M_PI_2 - (float)M_PI_4;
+	temp_angles[1] = -(float)M_PI_4;
+	temp_angles[2] = (float)M_PI_4;
+	temp_angles[3] = (float)M_PI_2 + (float)M_PI_4;
+
 	if (game_rules & GAME_RULE_PLAYERS_SPAWN_DIRECTION_RANDOMIZE)
 	{
 		for (GameTypes::players_count_t i = 0; i < GAME_PLAYERS_MAX_COUNT; i++)
@@ -1032,6 +1041,7 @@ void Game::InitMenus()
 	position.Set(0.0f, 0.0f);
 	size.Set(1.5f, GAME_OPTION_MENU_UP_Y - 1.0f - 15.0f * GAME_OPTION_MENU_BORD);
 	option_menu.Set(&position, &size, buttons, 14);
+	option_menu.HardRecalculate();
 	delete[] buttons;
 
 	//pause menu
@@ -1306,30 +1316,6 @@ void Game::ShipShoot_NoBonus(Ship* ship)
 }
 
 
-
-void Game::UpdateAll()
-{
-	UpdateBullets();
-	UpdateShips();
-	UpdateTurels();
-	UpdateBombs();
-	UpdateLazers();
-	UpdateMegaLazers();
-	UpdateKnifes();
-}
-
-void Game::TransportAllObjects()
-{
-	TransportAsteroids();
-	TransportBombs();
-	TransportBonuses();
-	TransportBullets();
-	TransportKnifes();
-	TransportLasers();
-	TransportMegaLasers();
-	TransportPilots();
-	TransportShips();
-}
 
 void Game::TransportAsteroids()
 {

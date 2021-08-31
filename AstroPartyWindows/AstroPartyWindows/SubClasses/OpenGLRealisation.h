@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../Classes/GameEngine.h"
+#include "MenuFunctions.h"
 
-#include "Game.h"
+#include "../Classes/GameEngine.h"
 
 class OpenGL
 {
@@ -194,6 +194,8 @@ public:
 	//The function draw all turels on the map.
 	void DrawTurels();
 	//hight level functions
+
+	float GetScale();
 
 	//game pointers
 

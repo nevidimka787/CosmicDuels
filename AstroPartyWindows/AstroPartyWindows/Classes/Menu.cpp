@@ -326,6 +326,15 @@ Vec2F Menu::GetSize()
 	return size;
 }
 
+void Menu::HardRecalculate()
+{
+	for (EngineTypes::Menu::buttons_count_t i = 0; i < buttons_count; i++)
+	{
+		current_buttons[i].Set(&default_buttons[i]);
+		current_buttons[i].Move(&position);
+	}
+}
+
 void Menu::Move(Vec2F* move_vector)
 {
 	position += *move_vector;
@@ -375,15 +384,6 @@ void Menu::Set(Vec2F* position, Vec2F* size, Button* buttons, EngineTypes::Menu:
 		}
 	}
 	Recalculate();
-}
-
-void Menu::SetDefaultButton(EngineTypes::Menu::buttons_count_t button_number, Button* button)
-{
-	if (button_number < buttons_count)
-	{
-		default_buttons[button_number].Set(button);
-		Recalculate();
-	}
 }
 
 void Menu::SetPosition(Vec2F* position)

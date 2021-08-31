@@ -9,6 +9,8 @@ Linker::Linker(Game* game_object, MenuFunctions* menu_functions_object, OpenGL* 
 	game_object->menu_p__ships_select_buttons = menu_functions_object->ships_select_buttons;
 	game_object->menu_p__start_bonus = &menu_functions_object->start_bonus;
 
+	game_object->object_p__open_gl_realisation = open_gl_object;
+
 	//game object
 
 	//menu functions object

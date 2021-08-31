@@ -48,7 +48,7 @@ void OpenGL::DrawFrame()
     {
         game_p__camera->Focus(*game_p__ships, *game_p__pilots, GAME_PLAYERS_MAX_COUNT);
         temp__game__camera_position = game_p__camera->GetPosition();
-        temp__game__camera_size = game_p__camera->GetSize().x;
+        temp__game__camera_size = game_p__camera->GetSize();
 
         DrawObjectCurrentMap();
         DrawTurels();
@@ -684,4 +684,9 @@ void OpenGL::DrawShips()
 void OpenGL::DrawTurels()
 {
 
+}
+
+float OpenGL::GetScale()
+{
+    return window_scale;
 }

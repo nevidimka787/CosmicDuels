@@ -23,12 +23,14 @@ namespace GameTypes
 
 	//typedefs
 
-	typedef typename uint8_t players_count_t;
-	typedef typename uint16_t entities_count_t;
-	typedef typename uint8_t map_elements_count_t;
-	typedef typename uint16_t maps_count_t;
-	typedef typename uint32_t game_rules_t;
-	typedef typename uint8_t score_t;
-	typedef typename uint32_t tic_t;
-	typedef typename uint8_t objects_types_count_t;
+	typedef uint8_t players_count_t;
+	typedef uint16_t entities_count_t;
+	typedef uint8_t map_elements_count_t;
+	typedef uint16_t maps_count_t;
+	typedef uint32_t game_rules_t;
+	typedef uint8_t score_t;
+	typedef uint32_t tic_t;
+	typedef uint8_t objects_types_count_t;
+	//Size of element in bytes.
+	typedef uint16_t element_size_t;
 }
