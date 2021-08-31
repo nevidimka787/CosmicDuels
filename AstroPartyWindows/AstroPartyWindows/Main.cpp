@@ -130,10 +130,11 @@ void TikUpdate()
         if (main_game->pause_game == false)
         {
             lock_timer++;
-            if (!(lock_timer % 100))
+            if (!(lock_timer % 10))
             {
-                std::cout << "Frame: " << frame << std::endl 
-                    << "Physic: " << physic  << std::endl << std::endl << std::endl;
+                std::cout << "Frame: " << frame * 10 << std::endl 
+                    << "Physic: " << physic * 10 << std::endl
+                    << "Camera: " << main_game->camera.GetPosition() << std::endl << std::endl;
                 frame = 0;
                 physic = 0;
             }

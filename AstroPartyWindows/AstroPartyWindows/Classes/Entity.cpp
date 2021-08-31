@@ -588,10 +588,15 @@ Vec2F DynamicEntity::GetVelocity()
 void DynamicEntity::Recalculate()
 {
 	angle += angular_velocity;
-	if (angular_velocity > 0.02f)
+	if (angle > M_PI)
 	{
-		int i = 0;
+		angle -= M_PI * 2.0f;
 	}
+	else if (angle < -M_PI)
+	{
+		angle += M_PI * 2.0f;
+	}
+
 
 	velocity += force;
 	velocity *= 1.0f - force_resistance_air_coefficient;

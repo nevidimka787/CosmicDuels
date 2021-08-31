@@ -8,6 +8,11 @@ namespace EngineTypes
 		typedef uint8_t shoots_count_t;
 	}
 
+	namespace Area
+	{
+		typedef uint32_t points_count_t;
+	}
+
 	namespace Bonus
 	{
 		typedef uint16_t bonus_t;

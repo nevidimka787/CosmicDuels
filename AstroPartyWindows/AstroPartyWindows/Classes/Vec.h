@@ -93,6 +93,7 @@ public:
 	Vec2F Rotate(float angle);
 	void RotateThis(float angle);
 	Vec2F Scale(Vec2F* scale);
+	void ScaleThis(Vec2F* scale);
 
 	void Set(Vec2F* vector);
 	void Set(Vec2D* vector);

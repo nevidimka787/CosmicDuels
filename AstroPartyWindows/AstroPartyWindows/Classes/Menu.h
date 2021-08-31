@@ -9,6 +9,30 @@
 
 class Button;
 class Menu;
+class Area;
+
+class Area
+{
+private:
+	Vec2F* points;
+	EngineTypes::Area::points_count_t points_count;
+
+	Vec2F horisontal_vector;
+	Beam temp__beam1;
+	Segment temp__segment1;
+	EngineTypes::Area::points_count_t intersections_count;
+public:
+	Area();
+	Area(const Area& area);
+	Area(Vec2F* points, EngineTypes::Area::points_count_t points_count);
+
+	bool HavePointInside(Vec2F* point);
+	void Set(Area* area);
+	void Set(const Area* area);
+	void Set(Vec2F* points, EngineTypes::Area::points_count_t points_count);
+
+	~Area();
+};
 
 class Button
 {
@@ -16,6 +40,7 @@ class Button
 protected:
 	Vec2F position;
 	Vec2F size;
+	Area area;
 	EngineTypes::Button::text_t* text;
 	EngineTypes::Button::text_length_t text_length;
 	EngineTypes::Button::button_id_t id;
@@ -29,6 +54,7 @@ public:
 		EngineTypes::Button::button_id_t id,
 		Vec2F* position,
 		Vec2F* size,
+		Area* area,
 		const char* text = "",
 		EngineTypes::Button::text_size_t text_size = BUTTON_DEFAULT_TEXT_SIZE);
 
@@ -44,10 +70,12 @@ public:
 	void Set(
 		EngineTypes::Button::button_id_t id, 
 		Vec2F* position, 
-		Vec2F* size, 
+		Vec2F* size,
+		Area* area,
 		const char* text = "",
 		EngineTypes::Button::text_size_t text_size = BUTTON_DEFAULT_TEXT_SIZE,
 		EngineTypes::Button::button_status_t status = BUTTON_STATUS_INACTIVE);
+	void SetArea(Area* area);
 	void SetId(EngineTypes::Button::button_id_t id);
 	void SetOnlyCustomStatus(EngineTypes::Button::button_status_t status_mask);
 	void SetPosition(Vec2F* position);

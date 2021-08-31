@@ -356,6 +356,12 @@ Vec2F Vec2F::Scale(Vec2F* scale)
 	return Vec2F(x * scale->x, y * scale->y);
 }
 
+void Vec2F::ScaleThis(Vec2F* scale)
+{
+	x *= scale->x;
+	y *= scale->y;
+}
+
 void Vec2F::Set(Vec2F* vector)
 {
 	x = vector->x;

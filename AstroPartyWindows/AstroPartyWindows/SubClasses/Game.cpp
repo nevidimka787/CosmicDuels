@@ -67,16 +67,16 @@ void Game::Update()
 	ships[0].SetPosition(&temp__vector);
 	temp__vector.Set(-pos, pos);
 	ships[1].SetPosition(&temp__vector);
-	temp__vector.Set(-pos, -pos);
+	temp__vector.Set(-0.0f, -0.0f);
 	ships[2].SetPosition(&temp__vector);
-	temp__vector.Set(pos, -pos);
+	temp__vector.Set(0.0f, -0.0f);
 	ships[3].SetPosition(&temp__vector);
 	if (update_start_properties == true)
 	{
-		ships[0].SetAngularVelocity(0.01f);
-		ships[1].SetAngularVelocity(0.01f);
-		ships[2].SetAngularVelocity(0.01f);
-		ships[3].SetAngularVelocity(0.01f);
+		ships[0].SetAngularVelocity(0.005f);
+		ships[1].SetAngularVelocity(0.005f);
+		ships[2].SetAngularVelocity(0.005f);
+		ships[3].SetAngularVelocity(0.005f);
 		update_start_properties = false;
 	}
 
@@ -821,7 +821,12 @@ void Game::InitMach()
 	}
 
 	//create buttons
-
+	Vec2F* points = new Vec2F[3];
+	points[0].Set(0.0f, 0.0f);
+	points[1].Set(1.0f, 0.0f);
+	points[2].Set(0.5f, 0.5f);
+	Area area;
+	area.Set(points, 3);
 	Vec2F* positions = new Vec2F[GAME_PLAYERS_MAX_COUNT * 2];
 	positions[0].Set(-1.0f, 1.0f);
 	positions[1].Set(-0.9f, 1.0f);
@@ -839,8 +844,8 @@ void Game::InitMach()
 	{
 		if (teams[player] != SHIPS_SELECT_BUTTONS_NO_TEAM)
 		{
-			buttons[buttons_count].Set(BUTTON_ID_SHIP1_SHOOT, &positions[player * 2], &size, "", 0, BUTTON_STATUS_CUSTOM_RED << (teams[player] - 1));
-			buttons[buttons_count + 1].Set(BUTTON_ID_SHIP1_ROTATE, &positions[player * 2 + 1], &size, "", 0, BUTTON_STATUS_CUSTOM_RED << (teams[player] - 1));
+			buttons[buttons_count].Set(BUTTON_ID_SHIP1_SHOOT, &positions[player * 2], &size, &area, "", 0, BUTTON_STATUS_CUSTOM_RED << (teams[player] - 1));
+			buttons[buttons_count + 1].Set(BUTTON_ID_SHIP1_ROTATE, &positions[player * 2 + 1], &size, &area, "", 0, BUTTON_STATUS_CUSTOM_RED << (teams[player] - 1));
 			buttons_count += 2;
 		}
 	}
@@ -976,17 +981,25 @@ void Game::InitMenus()
 	//arrays
 
 	//main menu
+	Vec2F* points = new Vec2F[4];
+	points[0].Set(0.0f, 0.0f);
+	points[1].Set(0.0f, 1.0f);
+	points[2].Set(1.0f, 1.0f);
+	points[3].Set(1.0f, 0.0f);
+	Area* area = new Area();
+	area->Set(points, 4);
+
 	Button* buttons = new Button[3];
 	Vec2F position;
 	position.Set(-0.5f, 0.95f);
 	Vec2F size;
 	size.Set(1.0f, -0.60f);
-	buttons[0].Set(BUTTON_ID_START_MATCH, &position, &size, "PLAY", 20);
+	buttons[0].Set(BUTTON_ID_START_MATCH, &position, &size, area, "PLAY", 20);
 	position.Set(-0.5f, 0.3f);
 	size.Set(0.475f, -0.25f);
-	buttons[1].Set(BUTTON_ID_GO_TO_OPTINS_MENU, &position, &size, "Options", 6);
+	buttons[1].Set(BUTTON_ID_GO_TO_OPTINS_MENU, &position, &size, area, "Options", 6);
 	position.Set(0.025f, 0.3f);
-	buttons[2].Set(BUTTON_ID_EXIT, &position, &size, "Exit", 6);
+	buttons[2].Set(BUTTON_ID_EXIT, &position, &size, area, "Exit", 6);
 	position.Set(0.0f, 0.0f);
 	size.Set(1.0f, -1.0f);
 	main_menu.Set(&position, &size, buttons, 3);
@@ -999,44 +1012,44 @@ void Game::InitMenus()
 #define GAME_OPTION_MENU_UP_Y	0.9f
 #define GAME_OPTIONS_STAT_X		-0.75f
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 0 * GAME_OPTION_MENU_BORD);
-	buttons[0].Set(BUTTON_ID_SET_RANDOM_SPAWN, &position, &size, "Random spawn", 5);
+	buttons[0].Set(BUTTON_ID_SET_RANDOM_SPAWN, &position, &size, area, "Random spawn", 5);
 	buttons[0].status = (game_rules & GAME_RULE_PLAYERS_SPAWN_POSITION_RANDOMIZE) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_INACTIVE;
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 1 * GAME_OPTION_MENU_BORD);
-	buttons[1].Set(BUTTON_ID_SET_RANDOM_SPAWN_DIRECTION, &position, &size, "Random spawn direction", 5);
+	buttons[1].Set(BUTTON_ID_SET_RANDOM_SPAWN_DIRECTION, &position, &size, area, "Random spawn direction", 5);
 	buttons[1].status = (game_rules & GAME_RULE_PLAYERS_SPAWN_DIRECTION_RANDOMIZE) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_INACTIVE;
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 2 * GAME_OPTION_MENU_BORD);
-	buttons[2].Set(BUTTON_ID_SET_SPAWN_THIS_BONUS, &position, &size, "Spawn this bonus", 5);
+	buttons[2].Set(BUTTON_ID_SET_SPAWN_THIS_BONUS, &position, &size, area, "Spawn this bonus", 5);
 	buttons[2].status = (game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_BONUS) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_INACTIVE;
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 3 * GAME_OPTION_MENU_BORD);
-	buttons[3].Set(BUTTON_ID_SET_SPAWN_THIS_RANDOM_BONUS, &position, &size, "Random start bonus", 5);
+	buttons[3].Set(BUTTON_ID_SET_SPAWN_THIS_RANDOM_BONUS, &position, &size, area, "Random start bonus", 5);
 	buttons[3].status = (game_rules & GAME_RULE_START_BONUS_RANDOMIZE) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_INACTIVE;
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 4 * GAME_OPTION_MENU_BORD);
-	buttons[4].Set(BUTTON_ID_SET_SPAWN_THIS_TRIPLE_BUFF, &position, &size, "Triple bonuses", 5);
+	buttons[4].Set(BUTTON_ID_SET_SPAWN_THIS_TRIPLE_BUFF, &position, &size, area, "Triple bonuses", 5);
 	buttons[4].status = (game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_TRIPLE_BONUS) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_INACTIVE;
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 5 * GAME_OPTION_MENU_BORD);
-	buttons[5].Set(BUTTON_ID_SET_SPAWN_THIS_SHIELD_BAFF, &position, &size, "Spawn whis shield", 5);
+	buttons[5].Set(BUTTON_ID_SET_SPAWN_THIS_SHIELD_BAFF, &position, &size, area, "Spawn whis shield", 5);
 	buttons[5].status = (game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_SHIELD) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_INACTIVE;
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 6 * GAME_OPTION_MENU_BORD);
-	buttons[6].Set(BUTTON_ID_SET_KNIFES_CAN_DESTROY_BULLETS, &position, &size, "Knifes can destroy bullets", 5);
+	buttons[6].Set(BUTTON_ID_SET_KNIFES_CAN_DESTROY_BULLETS, &position, &size, area, "Knifes can destroy bullets", 5);
 	buttons[6].status = (game_rules & GAME_RULE_KNIFES_CAN_DESTROY_BULLETS) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_INACTIVE;
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 7 * GAME_OPTION_MENU_BORD);
-	buttons[7].Set(BUTTON_ID_SET_FRIEDLY_SHEEP_CAN_RESTORE, &position, &size, "Friendly sheep can restore", 5);
+	buttons[7].Set(BUTTON_ID_SET_FRIEDLY_SHEEP_CAN_RESTORE, &position, &size, area, "Friendly sheep can restore", 5);
 	buttons[7].status = (game_rules & GAME_RULE_FRIEDNLY_SHEEP_CAN_RESTORE) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_INACTIVE;
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 8 * GAME_OPTION_MENU_BORD);
-	buttons[8].Set(BUTTON_ID_SET_ACTIVE_FRIENDLY_FIRE, &position, &size, "Frendly fire", 5);
+	buttons[8].Set(BUTTON_ID_SET_ACTIVE_FRIENDLY_FIRE, &position, &size, area, "Frendly fire", 5);
 	buttons[8].status = (game_rules & GAME_RULE_FRENDLY_FIRE) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_INACTIVE;
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 9 * GAME_OPTION_MENU_BORD);
-	buttons[9].Set(BUTTON_ID_SET_PILOT_CAN_RESPAWN, &position, &size, "Pilot can respawn", 5);
+	buttons[9].Set(BUTTON_ID_SET_PILOT_CAN_RESPAWN, &position, &size, area, "Pilot can respawn", 5);
 	buttons[9].status = (game_rules & GAME_RULE_PILOT_CAN_RESPAWN) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_INACTIVE;
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 10 * GAME_OPTION_MENU_BORD);
-	buttons[10].Set(BUTTON_ID_SET_NEED_KILL_PILOT, &position, &size, "Need kill pilot", 5);
+	buttons[10].Set(BUTTON_ID_SET_NEED_KILL_PILOT, &position, &size, area, "Need kill pilot", 5);
 	buttons[10].status = (game_rules & GAME_RULE_NEED_KILL_PILOT) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_INACTIVE;
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 11 * GAME_OPTION_MENU_BORD);
-	buttons[11].Set(BUTTON_ID_GO_TO_SELECT_MAP_MENU, &position, &size, "Map pull menu", 5);
+	buttons[11].Set(BUTTON_ID_GO_TO_SELECT_MAP_MENU, &position, &size, area, "Map pull menu", 5);
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 12 * GAME_OPTION_MENU_BORD);
-	buttons[12].Set(BUTTON_ID_GO_TO_SELECT_OBJECTS_MENU, &position, &size, "Spawning objects menu", 5);
+	buttons[12].Set(BUTTON_ID_GO_TO_SELECT_OBJECTS_MENU, &position, &size, area, "Spawning objects menu", 5);
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 13 * GAME_OPTION_MENU_BORD);
-	buttons[13].Set(BUTTON_ID_SET_ACTIVE_BALANCE, &position, &size, "Auto balance", 5);
+	buttons[13].Set(BUTTON_ID_SET_ACTIVE_BALANCE, &position, &size, area, "Auto balance", 5);
 	buttons[13].status = (game_rules & GAME_RULE_BALANCE_ACTIVE) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_INACTIVE;
 	position.Set(0.0f, 0.0f);
 	size.Set(1.5f, GAME_OPTION_MENU_UP_Y - 1.0f - 15.0f * GAME_OPTION_MENU_BORD);
@@ -1048,9 +1061,9 @@ void Game::InitMenus()
 	buttons = new Button[2];
 	position.Set(-0.4f, 0.825f);
 	size.Set(0.8f, -0.2f);
-	buttons[0].Set(BUTTON_ID_RESUME_MATCH, &position, &size, "Resume", 6);
+	buttons[0].Set(BUTTON_ID_RESUME_MATCH, &position, &size, area, "Resume", 6);
 	position.Set(-0.4f, 0.6f);
-	buttons[1].Set(BUTTON_ID_GO_TO_MAIN_MENU, &position, &size, "Main menu", 6);
+	buttons[1].Set(BUTTON_ID_GO_TO_MAIN_MENU, &position, &size, area, "Main menu", 6);
 	position.Set(0.0f, 0.0f);
 	size.Set(1.0f, -1.0f);
 	pause_menu.Set(&position, &size, buttons, 2);
@@ -1060,16 +1073,16 @@ void Game::InitMenus()
 	buttons = new Button[5];;
 	size.Set(0.475f, -0.25f);
 	position.Set(-0.5f, 0.9f);
-	buttons[0].Set(BUTTON_ID_SELECT_SHIP_1, &position, &size, "Player 1", 6);
+	buttons[0].Set(BUTTON_ID_SELECT_SHIP_1, &position, &size, area, "Player 1", 6);
 	position.Set(0.025f, 0.9f);
-	buttons[1].Set(BUTTON_ID_SELECT_SHIP_2, &position, &size, "Player 2", 6);
+	buttons[1].Set(BUTTON_ID_SELECT_SHIP_2, &position, &size, area, "Player 2", 6);
 	position.Set(0.025f, 0.6f);
-	buttons[2].Set(BUTTON_ID_SELECT_SHIP_3, &position, &size, "Player 3", 6);
+	buttons[2].Set(BUTTON_ID_SELECT_SHIP_3, &position, &size, area, "Player 3", 6);
 	position.Set(-0.5f, 0.6f);
-	buttons[3].Set(BUTTON_ID_SELECT_SHIP_4, &position, &size, "Player 4", 6);
+	buttons[3].Set(BUTTON_ID_SELECT_SHIP_4, &position, &size, area, "Player 4", 6);
 	position.Set(-0.5f, 0.3f);
 	size.Set(1.0f, -0.25f);
-	buttons[4].Set(BUTTON_ID_START_GAME, &position, &size, "Start game", 7);
+	buttons[4].Set(BUTTON_ID_START_GAME, &position, &size, area, "Start game", 7);
 	position.Set(0.0f, 0.0f);
 	size.Set(1.0f, -1.0f);
 	ships_select_menu.Set(&position, &size, buttons, 5);
@@ -1083,7 +1096,7 @@ void Game::InitMenus()
 	for (uint8_t i = 0; i < GAME_MAPS_COUNT; i++)
 	{
 		position.Set(-0.5f + (float)(i % 2) * GAME_MAPPULL_MENU_BORDER, GAME_MAPPULL_MENU_UP_Y - (float)(i / 2) * GAME_MAPPULL_MENU_BORDER);
-		buttons[i].Set(BUTTON_ID_SELECT_MAP + i, &position, &size, "Test", 6, BUTTON_STATUS_ACTIVE);
+		buttons[i].Set(BUTTON_ID_SELECT_MAP + i, &position, &size, area, "Test", 6, BUTTON_STATUS_ACTIVE);
 	}
 	position.Set(0.0f, 0.0f);
 	size.Set(1.0f, GAME_MAPPULL_MENU_BORDER * (float)(((GAME_MAPS_COUNT + 1) / 2) + 1));
@@ -1094,7 +1107,7 @@ void Game::InitMenus()
 	buttons = new Button[1];
 	position.Set(-0.5f, 0.9f);
 	size.Set(0.475f, -0.475f);
-	buttons[0].Set(BUTTON_ID_SELECT_OBJECT_ASTEROID, &position, &size, "Asteroid", 6);
+	buttons[0].Set(BUTTON_ID_SELECT_OBJECT_ASTEROID, &position, &size, area, "Asteroid", 6);
 	position.Set(0.0f, 0.0f);
 	size.Set(0.5f, -0.5f);
 	spawning_objects_select_menu.Set(&position, &size, buttons, 1);
@@ -1106,6 +1119,8 @@ void Game::InitMenus()
 	ships_control_menu.Set(&position, &size);
 
 	current_active_menu = &main_menu;
+
+	delete area;
 }
 
 void Game::NextLevel()

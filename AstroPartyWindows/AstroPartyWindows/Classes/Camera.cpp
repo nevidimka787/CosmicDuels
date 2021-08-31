@@ -147,6 +147,7 @@ void Camera::Focus(Ship* ships_array, Pilot* pilots_array, GameTypes::players_co
 	{
 		view_area_size_x = low_limits.y * scale;
 	}
+	int i = 0;
 }
 
 void Camera::Limit()
