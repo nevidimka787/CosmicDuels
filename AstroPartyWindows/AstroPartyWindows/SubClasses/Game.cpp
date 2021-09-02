@@ -881,13 +881,22 @@ void Game::InitLevel()
 
 	const GameTypes::score_t max_score = GetMaxScore();
 
+	Vec2F new_point1;
+	new_point1.Set(-1.0f, -1.0f);
+	Vec2F new_point2;
+	new_point2.Set(1.0f, 1.0f);
+	Segment new_segment;
+	new_segment.Set(&new_point1, &new_point2, true);
+	Rectangle rectangle;
+	rectangle.Set(&new_segment);
+
 	switch (current_map_id)
 	{
 	case MAP_TEST_MAP:
 	default:
 		/* Create map */
 		
-		map.Set();
+		map.Set(&rectangle, 1);
 		cyrcles_count = 0;
 		polygons_count = 0;
 		rectangles_count = 1;

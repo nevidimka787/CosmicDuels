@@ -423,30 +423,29 @@ bool DynamicEntity::Collision(StaticEntity* entity)
 
 bool DynamicEntity::Collision(Rectangle* rectangle)
 {
-	Vec2F temp1 = rectangle->GetUpRightPoint();
-	Vec2F temp2 = rectangle->GetUpLeftPoint();
+	Vec2F temp1 = rectangle->GetUpLeftPoint();
+	Vec2F temp2 = rectangle->GetUpRightPoint();
 	Segment up_side = Segment(&temp1, &temp2, true);
-	temp1 = rectangle->GetDownRightPoint();
-	temp2 = rectangle->GetDownLeftPoint();
-	Segment down_side = Segment(&temp1, &temp2, true);
 	temp1 = rectangle->GetUpRightPoint();
 	temp2 = rectangle->GetDownRightPoint();
 	Segment right_side = Segment(&temp1, &temp2, true);
-	temp1 = rectangle->GetUpLeftPoint();
+	temp1 = rectangle->GetDownRightPoint();
 	temp2 = rectangle->GetDownLeftPoint();
+	Segment down_side = Segment(&temp1, &temp2, true);
+	temp1 = rectangle->GetDownLeftPoint();
+	temp2 = rectangle->GetUpLeftPoint();
 	Segment left_side = Segment(&temp1, &temp2, true);
 
 	if (up_side.GetDistance(&position) < radius)
 	{
 		if (right_side.GetDistance(&position) < radius)
 		{
-			velocity.x = rectangle->GetVelocity().x;
-			position.x = right_side.point.x + radius;
-			force += Vec2F(force_collision_coeffisient, 0.0f);
+			Vec2F direction = right_side.point - position;
+			velocity -= direction.Project(&velocity);
+			direction.NormalizeThis();
+			position = right_side.point - direction * radius;
 
-			velocity.y = rectangle->GetVelocity().y;
-			position.y = up_side.point.y + radius;
-			force += Vec2F(0.0f, -force_collision_coeffisient);
+			force += direction * -force_collision_coeffisient;
 			return true;
 		}
 		if (left_side.GetDistance(&position) < radius)
