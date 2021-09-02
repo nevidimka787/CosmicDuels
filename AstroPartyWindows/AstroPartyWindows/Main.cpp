@@ -48,6 +48,26 @@ unsigned physic = 0;
 
 int main()
 {
+    Vec2F p1, p2, p3, p4, intersection_point;
+    p1.Set(0.0f, 0.0f);
+    p2.Set(1.0f, 1.0f);
+    p3.Set(1.0f, 0.0f);
+    p4.Set(0.0f, 1.0f);
+    Line l1;
+    Line l2;
+    l1.Set(&p1, &p2, true);
+    l2.Set(&p3, &p4, true);
+    if (l1.Intersection(&l2, &intersection_point))
+    {
+        std::cout << "Intersect: " << intersection_point << std::endl;
+    }
+    else
+    {
+        std::cout << "Not intersect." << std::endl;
+    }
+
+   exit(-1);
+
     main_linker = new Linker(main_game, main_menu_functions, main_draw_functions);
     //game cycle
     while (true)

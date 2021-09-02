@@ -51,7 +51,7 @@ bool Line::Intersection(Line* intersection_line, Vec2F* output_intersection_poin
 	{
 		return false;
 	}
-
+	/*
 	temp_vector1 = intersection_line->point - point;
 	temp_matrix1.Set(&temp_vector1, &vector);
 	temp_matrix2 = temp_matrix1.InverseNotNormalize();
@@ -59,7 +59,17 @@ bool Line::Intersection(Line* intersection_line, Vec2F* output_intersection_poin
 	output_intersection_point->y = output_intersection_point->y / -output_intersection_point->x / temp_matrix1.Determinant();
 	output_intersection_point->x = 0.0;
 	*output_intersection_point = temp_matrix1 * *output_intersection_point + point;
-	
+	*/
+
+	temp_vector1 = intersection_line->point - point;
+	temp_matrix1.Set(&temp_vector1, &vector);
+	temp_matrix2 = temp_matrix1.Inverse();
+	std::cout << "v1: " << temp_matrix2 * vector << std::endl;
+	std::cout << "v2: " << temp_matrix2 * (intersection_line->point - point) << std::endl;
+
+	std::cout << "Error Intersection calculation failed." << std::endl;
+	exit(0);
+
 	return true;
 }
 
@@ -367,14 +377,19 @@ bool Beam::Intersection(Beam* intersection_beam, Vec2F* output_intersection_poin
 
 bool Beam::Intersection(Segment* intersection_segment, Vec2F* output_intersection_point)
 {
+	//Beam		p1, v1
+	//Segment	p2, v2
 	if (vector == intersection_segment->vector || -vector == intersection_segment->vector)
 	{
 		return false;
 	}
-
+	//Set (p2 - p1) vector1.
 	temp_vector1 = intersection_segment->point - point;
+	//Set space matrix abscissa - vector1, ordinata - beam's vector.
 	temp_matrix1.Set(&temp_vector1, &vector);
+	//Inverse matrix.
 	temp_matrix2 = temp_matrix1.InverseNotNormalize();
+	//Multiple inverse matrix on segment's vector.
 	*output_intersection_point = temp_matrix2 * intersection_segment->vector / temp_matrix1.Determinant();
 	if (output_intersection_point->x > -1.0 || output_intersection_point->y < 0.0)
 	{
