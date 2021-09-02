@@ -23,7 +23,7 @@ void main()
 {
     matrix = 
         Rotate(radians(-90.0f)) *
-        Scale(vec2(size * 1.5, size)) * 
+        Scale(vec2(size * 3.0f, size * 2.0f)) * 
         Rotate(angle) * 
         Transport(position) * 
         Transport(-camera_position) *

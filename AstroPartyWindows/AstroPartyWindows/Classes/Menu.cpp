@@ -51,7 +51,7 @@ bool Area::HavePointInside(Vec2F* point)
 	for (EngineTypes::Area::points_count_t segment = 1; segment < points_count; segment++)
 	{
 		temp__segment1.Set(&points[segment - 1], &points[segment], true);
-		if (temp__segment1.IsIntersection(&temp__beam1))
+		if (temp__beam1.IsIntersection(&temp__segment1))
 		{
 			intersections_count++;
 		}
@@ -181,9 +181,56 @@ EngineTypes::Button::text_t* Button::GetText()
 	return text;
 }
 
+char* Button::GetTextC()
+{
+	char* return_text = new char[text_length + 1];
+	for (EngineTypes::Button::text_length_t i = 0; i <= text_length; i++)
+	{
+		return_text[i] = text[i];
+	}
+	return return_text;
+}
+
+EngineTypes::Button::text_t* Button::GetTextU()
+{
+	EngineTypes::Button::text_t* return_text = new EngineTypes::Button::text_t[text_length + 1];
+	for (EngineTypes::Button::text_length_t i = 0; i <= text_length; i++)
+	{
+		return_text[i] = text[i];
+	}
+	return return_text;
+}
+
 uint16_t Button::GetTextLength()
 {
 	return text_length;
+}
+
+bool Button::HavePoint(Vec2F* point)
+{
+	/*
+	if (size.x > 0.0f)
+	{
+		if (size.y > 0.0f)
+		{
+			return point->x >= position.x && point->y >= position.y && point->x <= position.x + size.x && point->y <= position.y + size.y;
+		}
+		return point->x >= position.x && point->y <= position.y && point->x <= position.x + size.x && point->y >= position.y + size.y;
+	}
+	if (size.y > 0.0f)
+	{
+		return point->x <= position.x && point->y >= position.y && point->x >= position.x + size.x && point->y <= position.y + size.y;
+	}
+	return point->x <= position.x && point->y <= position.y && point->x >= position.x + size.x && point->y >= position.y + size.y;
+	*/
+	///*
+	Vec2F current_point = *point - position;
+	Vec2F scale;
+	scale.Set(1.0f / size.x, 1.0f / size.y);
+	current_point.ScaleThis(&scale);
+	//std::cout << "Text: " << GetTextC() << std::endl;
+	return area.HavePointInside(&current_point);
+	//*/
 }
 
 void Button::Move(Vec2F* move_vector)
@@ -202,32 +249,6 @@ void Button::Set(Button* button)
 	text_size = button->text_size;
 
 	SetText(button->text, button->text_length);
-}
-
-bool Button::HavePoint(Vec2F* point)
-{
-	///*
-	if (size.x > 0.0f)
-	{
-		if (size.y > 0.0f)
-		{
-			return point->x >= position.x && point->y >= position.y && point->x <= position.x + size.x && point->y <= position.y + size.y;
-		}
-		return point->x >= position.x && point->y <= position.y && point->x <= position.x + size.x && point->y >= position.y + size.y;
-	}
-	if (size.y > 0.0f)
-	{
-		return point->x <= position.x && point->y >= position.y && point->x >= position.x + size.x && point->y <= position.y + size.y;
-	}
-	return point->x <= position.x && point->y <= position.y && point->x >= position.x + size.x && point->y >= position.y + size.y;
-	//*/
-	/*
-	Vec2F current_point = *point - position;
-	Vec2F scale;
-	scale.Set(1.0f / size.x, 1.0f / size.y);
-	current_point.ScaleThis(&scale);
-	return area.HavePointInside(&current_point);
-	*/
 }
 
 void Button::Set(EngineTypes::Button::button_id_t id, Vec2F* position, Vec2F* size, Area* area, const char* text, EngineTypes::Button::text_size_t text_size, EngineTypes::Button::button_status_t status)
@@ -363,7 +384,7 @@ Menu::Menu(const Menu& menu):
 	{
 		default_buttons[i].Set(&menu.default_buttons[i]);
 	}
-	Recalculate();
+	HardRecalculate();
 }
 
 Menu::Menu(Vec2F* position, Vec2F* size, Button* buttons, EngineTypes::Menu::buttons_count_t buttons_count) :
@@ -387,7 +408,7 @@ Menu::Menu(Vec2F* position, Vec2F* size, Button* buttons, EngineTypes::Menu::but
 			default_buttons[i].Set(&buttons[i]);
 		}
 	}
-	Recalculate();
+	HardRecalculate();
 }
 
 void Menu::AddButton(EngineTypes::Menu::buttons_count_t button_number, Button* button)
@@ -410,7 +431,7 @@ void Menu::AddButton(EngineTypes::Menu::buttons_count_t button_number, Button* b
 
 	delete[] default_buttons;
 	default_buttons = new_buttons;
-	Recalculate();
+	HardRecalculate();
 }
 
 void Menu::DeleteButton(EngineTypes::Menu::buttons_count_t button_number)
@@ -433,7 +454,7 @@ void Menu::DeleteButton(EngineTypes::Menu::buttons_count_t button_number)
 
 	delete[] default_buttons;
 	default_buttons = new_buttons;
-	Recalculate();
+	HardRecalculate();
 }
 
 EngineTypes::Menu::buttons_count_t Menu::GetButtonsCount()
@@ -466,6 +487,15 @@ void Menu::Move(Vec2F* move_vector)
 	Recalculate();
 }
 
+void Menu::Recalculate()
+{
+	for (EngineTypes::Menu::buttons_count_t i = 0; i < buttons_count; i++)
+	{
+		current_buttons[i].TakeData(&default_buttons[i]);
+		current_buttons[i].Move(&position);
+	}
+}
+
 void Menu::Set(Menu* menu)
 {
 	buttons_count = menu->buttons_count;
@@ -481,7 +511,7 @@ void Menu::Set(Menu* menu)
 	{
 		default_buttons[i].Set(&menu->default_buttons[i]);
 	}
-	Recalculate();
+	HardRecalculate();
 }
 
 void Menu::Set(Vec2F* position, Vec2F* size, Button* buttons, EngineTypes::Menu::buttons_count_t buttons_count)
@@ -508,22 +538,13 @@ void Menu::Set(Vec2F* position, Vec2F* size, Button* buttons, EngineTypes::Menu:
 			default_buttons[i].Set(&buttons[i]);
 		}
 	}
-	Recalculate();
+	HardRecalculate();
 }
 
 void Menu::SetPosition(Vec2F* position)
 {
 	this->position = *position;
 	Recalculate();
-}
-
-void Menu::Recalculate()
-{
-	for (EngineTypes::Menu::buttons_count_t i = 0; i < buttons_count; i++)
-	{
-		current_buttons[i].TakeData(&default_buttons[i]);
-		current_buttons[i].Move(&position);
-	}
 }
 
 void Menu::UpdateDefaultButtons()

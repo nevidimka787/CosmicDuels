@@ -7,15 +7,9 @@
 
 #include "../stb_image.h"
 
-#include "Color.h"
 #include "Entity.h"
 #include "Line.h"
-#include "Map.h"
 #include "Mat.h"
-#include "Menu.h"
-#include "Shader.h"
-#include "Texture.h"
-#include "Vec.h"
 
 #include "../Types/AllTypes.h"
 #include "../Constants/AllConstants.h"
@@ -81,13 +75,13 @@ public:
 		float move_velocity_coefficient = CAMERA_DEFAULT_MOVE_VELOCITY,
 		float resize_velocity_coefficient = CAMERA_DEFAULT_RESIZE_VELOCITY);
 	void SetHightLimits(
-		float min_x = -1.0f,
-		float min_y = -1.0f,
-		float max_x = 1.0f,
-		float max_y = 1.0f);
+		float min_x = -GAME_AREA_SIZE,
+		float min_y = -GAME_AREA_SIZE,
+		float max_x = GAME_AREA_SIZE,
+		float max_y = GAME_AREA_SIZE);
 	void SetLowLimits(
-		float size_x = 0.1f, 
-		float size_y = 0.1f);
+		float size_x = GAME_AREA_SIZE / 10.0f,
+		float size_y = GAME_AREA_SIZE / 10.0f);
 	void SetPosition(Vec2F* position = nullptr);
 	void SetScale(float scale = 16.0f / 9.0f);
 	void SetSize(float size = 1.0f);

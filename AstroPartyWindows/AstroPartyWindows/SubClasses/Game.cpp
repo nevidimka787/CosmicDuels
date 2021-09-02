@@ -25,6 +25,8 @@ void Game::Update()
 
 	//update
 
+	UpdateMap();
+
 	UpdateBullets();
 	UpdateShips();
 	UpdateTurels();
@@ -36,7 +38,7 @@ void Game::Update()
 	//update
 
 	//collisions
-
+	/*
 	DynamicEntitiesCollisions(ships, ships_count);
 	DynamicEntitiesCollisions(pilots, pilots_count);
 	DynamicEntitiesCollisions(asteroids, asteroids_count);
@@ -44,20 +46,21 @@ void Game::Update()
 	DynamicEntitiesCollisions(ships, pilots, ships_count, pilots_count);
 	DynamicEntitiesCollisions(ships,  asteroids, ships_count, asteroids_count);
 	DynamicEntitiesCollisions(asteroids,  pilots, asteroids_count, pilots_count);
-
+	*/
 	DynamicEntitiesCollisions(&map, ships, ships_count);
 	DynamicEntitiesCollisions(&map, pilots, pilots_count);
 	DynamicEntitiesCollisions(&map, asteroids, asteroids_count);
-
+	/*
 	DynamicEntitiesAddForce(grav_gens, grav_gens_count, ships, ships_count);
 	DynamicEntitiesAddForce(grav_gens, grav_gens_count, pilots, pilots_count);
 	DynamicEntitiesAddForce(grav_gens, grav_gens_count, asteroids, asteroids_count);
 	DynamicEntitiesAddForce(grav_gens, grav_gens_count, bullets, asteroids_count);
+	*/
 	
 	//collisions
 
 	//recalculationtemp__vector.Set(0.0f, 0.0f);
-	float pos = sinf(ships[0].GetAngle()) / 0.8f;
+	/*float pos = sinf(ships[0].GetAngle()) / 0.8f;
 	temp__vector.Set(0.0f, 0.0f);
 	ships[0].SetVelocity(&temp__vector);
 	ships[1].SetVelocity(&temp__vector);
@@ -71,12 +74,13 @@ void Game::Update()
 	ships[2].SetPosition(&temp__vector);
 	temp__vector.Set(0.0f, -0.0f);
 	ships[3].SetPosition(&temp__vector);
+	*/
 	if (update_start_properties == true)
 	{
-		ships[0].SetAngularVelocity(0.005f);
-		ships[1].SetAngularVelocity(0.005f);
-		ships[2].SetAngularVelocity(0.005f);
-		ships[3].SetAngularVelocity(0.005f);
+		Vec2F vector;
+		vector.Set(0.8f, -0.8f);
+		ships[0].SetPosition(&vector);
+		ships[0].SetAngle(0.5f);
 		update_start_properties = false;
 	}
 
@@ -828,30 +832,31 @@ void Game::InitMach()
 	Area area;
 	area.Set(points, 3);
 	Vec2F* positions = new Vec2F[GAME_PLAYERS_MAX_COUNT * 2];
-	positions[0].Set(-1.0f, 1.0f);
+	positions[0].Set(-1.0f, 0.9f);
 	positions[1].Set(-0.9f, 1.0f);
-	positions[2].Set(0.805f, 1.0f);
-	positions[3].Set(0.905f, 1.0f);
-	positions[4].Set(0.905f, -0.905f);
-	positions[5].Set(0.805f, -0.905f);
-	positions[6].Set(-0.9f, -0.905f);
-	positions[7].Set(-1.0f, -0.905f);
-	Vec2F size;
+	positions[2].Set(0.9f, 1.0f);
+	positions[3].Set(1.0f, 0.9f);
+	positions[4].Set(1.0f, -0.9f);
+	positions[5].Set(0.9f, -1.0f);
+	positions[6].Set(-0.9f, -1.0f);
+	positions[7].Set(-1.0f, -0.9f);
+	Vec2F size1, size2;
 	EngineTypes::Menu::buttons_count_t buttons_count = 0;
-	size.Set(0.095f, -0.095f);
+	size1.Set(0.095f, -0.095f);
+	size2.Set(-0.095f, 0.095f);
 	Button* buttons = new Button[GAME_PLAYERS_MAX_COUNT * 2];
 	for (GameTypes::players_count_t player = 0; player < GAME_PLAYERS_MAX_COUNT; player++)
 	{
 		if (teams[player] != SHIPS_SELECT_BUTTONS_NO_TEAM)
 		{
-			buttons[buttons_count].Set(BUTTON_ID_SHIP1_SHOOT, &positions[player * 2], &size, &area, "", 0, BUTTON_STATUS_CUSTOM_RED << (teams[player] - 1));
-			buttons[buttons_count + 1].Set(BUTTON_ID_SHIP1_ROTATE, &positions[player * 2 + 1], &size, &area, "", 0, BUTTON_STATUS_CUSTOM_RED << (teams[player] - 1));
+			buttons[buttons_count].Set(BUTTON_ID_SHIP1_SHOOT, &positions[player * 2], &size1, &area, "", 0, BUTTON_STATUS_CUSTOM_RED << (teams[player] - 1));
+			buttons[buttons_count + 1].Set(BUTTON_ID_SHIP1_ROTATE, &positions[player * 2 + 1], &size2, &area, "", 0, BUTTON_STATUS_CUSTOM_RED << (teams[player] - 1));
 			buttons_count += 2;
 		}
 	}
 	positions[0].Set(0.0f, 0.0f);
-	size.Set(1.0f, -1.0f);
-	ships_control_menu.Set(&positions[0], &size, buttons, buttons_count);
+	size1.Set(1.0f, -1.0f);
+	ships_control_menu.Set(&positions[0], &size1, buttons, buttons_count);
 	delete[] positions;
 	delete[] buttons;
 
@@ -869,7 +874,7 @@ void Game::InitLevel()
 
 	camera.SetCoefficients();
 	camera.SetHightLimits();
-	camera.SetLowLimits(0.2f, 0.2f);
+	camera.SetLowLimits(0.1f * GAME_AREA_SIZE, 0.1f * GAME_AREA_SIZE);
 	camera.SetScale(object_p__open_gl_realisation->GetScale());
 
 	Vec2F* temp_positions;
@@ -883,6 +888,10 @@ void Game::InitLevel()
 		/* Create map */
 		
 		map.Set();
+		cyrcles_count = 0;
+		polygons_count = 0;
+		rectangles_count = 1;
+		
 
 		/*Spawn entities*/
 		temp_positions = new Vec2F[GAME_PLAYERS_MAX_COUNT];
@@ -1339,7 +1348,7 @@ void Game::TransportAsteroids()
 		temp__asteroid_p = &asteroids[asteroid];
 		if (temp__asteroid_p->exist == true)
 		{
-			temp__asteroid_p->Recalculate();
+			temp__asteroid_p->Update();
 			found_asteroids++;
 		}
 	}
@@ -1378,7 +1387,7 @@ void Game::TransportBullets()
 		temp__bullet_p = &bullets[bullet];
 		if (temp__bullet_p->exist == true)
 		{
-			temp__bullet_p->Recalculate();
+			temp__bullet_p->Update();
 			found_bullets++;
 		}
 	}
@@ -1391,7 +1400,7 @@ void Game::TransportKnifes()
 		temp__knife_p = &knifes[knife];
 		if (temp__knife_p->exist == true)
 		{
-			temp__knife_p->Recalculate();
+			temp__knife_p->Update();
 			found_knifes++;
 		}
 	}
@@ -1430,7 +1439,7 @@ void Game::TransportPilots()
 		temp__pilot_p = &pilots[pilot];
 		if (temp__pilot_p->exist == true)
 		{
-			temp__pilot_p->Recalculate();
+			temp__pilot_p->Update();
 			found_pilots++;
 		}
 	}
@@ -1803,6 +1812,20 @@ void Game::UpdateLazers()
 	}
 }
 
+void Game::UpdateMap()
+{
+	void* element_pointer;
+	for (EngineTypes::Map::elements_array_length_t element = 0, found_elements = 0; found_elements < rectangles_count; element++)
+	{
+		element_pointer = (void*)map.GetRectanglePointer(element);
+		if (((Rectangle*)element_pointer)->exist)
+		{
+			((Rectangle*)element_pointer)->Update();
+			found_elements++;
+		}
+	}
+}
+
 void Game::UpdateMegaLazers()
 {
 	for (GameTypes::entities_count_t mega_laser = 0, found_mega_lasers = 0; found_mega_lasers < mega_lasers_count; mega_laser++)
@@ -1959,7 +1982,7 @@ void Game::UpdateShips()
 			}
 			else
 			{
-				//temp__ship_p->SetAngularVelocity(0.0f);
+				temp__ship_p->SetAngularVelocity(0.0f);
 			}
 		}
 	}

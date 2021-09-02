@@ -295,6 +295,7 @@ void Entity::Set(Vec2F* position, float radius, float angle, bool exist)
 void Entity::SetAngle(float angle)
 {
 	this->angle = angle;
+	UpdateDirection();
 }
 
 void Entity::SetDirection(Vec2F* direction)
@@ -424,99 +425,90 @@ bool DynamicEntity::Collision(Rectangle* rectangle)
 {
 	Vec2F temp1 = rectangle->GetUpRightPoint();
 	Vec2F temp2 = rectangle->GetUpLeftPoint();
-	Segment up_side = Segment(&temp1, &temp1, true);
+	Segment up_side = Segment(&temp1, &temp2, true);
 	temp1 = rectangle->GetDownRightPoint();
 	temp2 = rectangle->GetDownLeftPoint();
-	Segment down_side = Segment(&temp1, &temp1, true);
+	Segment down_side = Segment(&temp1, &temp2, true);
 	temp1 = rectangle->GetUpRightPoint();
 	temp2 = rectangle->GetDownRightPoint();
-	Segment right_side = Segment(&temp1, &temp1, true);
+	Segment right_side = Segment(&temp1, &temp2, true);
 	temp1 = rectangle->GetUpLeftPoint();
 	temp2 = rectangle->GetDownLeftPoint();
-	Segment left_side = Segment(&temp1, &temp1, true);
+	Segment left_side = Segment(&temp1, &temp2, true);
 
 	if (up_side.GetDistance(&position) < radius)
 	{
 		if (right_side.GetDistance(&position) < radius)
 		{
-			Vec2F force_vec = position - rectangle->GetUpRightPoint();
-			velocity += rectangle->GetVelocity() - force_vec.Project(&velocity);
-			force += force_vec * force_collision_coeffisient;
-			if (rectangle->IsUnbreacable() == false)
-			{
-				rectangle->exist = false;
-			}
+			velocity.x = rectangle->GetVelocity().x;
+			position.x = right_side.point.x + radius;
+			force += Vec2F(force_collision_coeffisient, 0.0f);
+
+			velocity.y = rectangle->GetVelocity().y;
+			position.y = up_side.point.y + radius;
+			force += Vec2F(0.0f, -force_collision_coeffisient);
 			return true;
 		}
 		if (left_side.GetDistance(&position) < radius)
 		{
-			Vec2F force_vec = position - rectangle->GetUpLeftPoint();
-			velocity += rectangle->GetVelocity() - force_vec.Project(&velocity);
-			force += force_vec * force_collision_coeffisient;
-			if (rectangle->IsUnbreacable() == false)
-			{
-				rectangle->exist = false;
-			}
+			velocity.x = rectangle->GetVelocity().x;
+			position.x = left_side.point.x - radius;
+			force += Vec2F(-force_collision_coeffisient, 0.0f);
+
+			velocity.y = rectangle->GetVelocity().y;
+			position.y = up_side.point.y + radius;
+			force += Vec2F(0.0f, -force_collision_coeffisient);
 			return true;
 		}
-		velocity += rectangle->GetVelocity() - Vec2F(0.0, 1.0).Project(&velocity);
-		force += Vec2F(0.0, (radius - (position.y - up_side.point.y)) * force_collision_coeffisient);
-		if (rectangle->IsUnbreacable() == false)
-		{
-			rectangle->exist = false;
-		}
+
+		velocity.y = rectangle->GetVelocity().y;
+		position.y = up_side.point.y + radius;
+		force += Vec2F(0.0f, -force_collision_coeffisient);
 		return true;
+
 	}
 	if (down_side.GetDistance(&position) < radius)
 	{
 		if (right_side.GetDistance(&position) < radius)
 		{
-			Vec2F force_vec = position - rectangle->GetDownRightPoint();
-			velocity += rectangle->GetVelocity() - force_vec.Project(&velocity);
-			force += force_vec * force_collision_coeffisient;
-			if (rectangle->IsUnbreacable() == false)
-			{
-				rectangle->exist = false;
-			}
+			velocity.x = rectangle->GetVelocity().x;
+			position.x = right_side.point.x + radius;
+			force += Vec2F(force_collision_coeffisient, 0.0f);
+
+			velocity.y = rectangle->GetVelocity().y;
+			position.y = down_side.point.y - radius;
+			force += Vec2F(0.0f, force_collision_coeffisient);
 			return true;
 		}
 		if (left_side.GetDistance(&position) < radius)
 		{
-			Vec2F force_vec = position - rectangle->GetDownLeftPoint();
-			velocity += rectangle->GetVelocity() - force_vec.Project(&velocity);
-			force += force_vec * force_collision_coeffisient;
-			if (rectangle->IsUnbreacable() == false)
-			{
-				rectangle->exist = false;
-			}
+			velocity.x = rectangle->GetVelocity().x;
+			position.x = left_side.point.x - radius;
+			force += Vec2F(-force_collision_coeffisient, 0.0f);
+
+			velocity.y = rectangle->GetVelocity().y;
+			position.y = down_side.point.y - radius;
+			force += Vec2F(0.0f, force_collision_coeffisient);
 			return true;
 		}
-		velocity += rectangle->GetVelocity() - Vec2F(0.0, 1.0).Project(&velocity);
-		force += Vec2F(0.0, (radius - (up_side.point.y - position.y)) * force_collision_coeffisient);
-		if (rectangle->IsUnbreacable() == false)
-		{
-			rectangle->exist = false;
-		}
+
+		velocity.y = rectangle->GetVelocity().y;
+		position.y = down_side.point.y - radius;
+		force += Vec2F(0.0f, force_collision_coeffisient);
 		return true;
 	}
 	if (right_side.GetDistance(&position) < radius)
 	{
-		velocity += rectangle->GetVelocity() - Vec2F(1.0, 0.0).Project(&velocity);
-		force += Vec2F((radius - (position.x - up_side.point.x)) * force_collision_coeffisient, 0.0);
-		if (rectangle->IsUnbreacable() == false)
-		{
-			rectangle->exist = false;
-		}
+		velocity.x = rectangle->GetVelocity().x;
+		position.x = right_side.point.x + radius;
+		force += Vec2F(force_collision_coeffisient, 0.0f);
 		return true;
 	}
 	if (left_side.GetDistance(&position) < radius)
 	{
-		velocity += rectangle->GetVelocity() - Vec2F(1.0, 0.0).Project(&velocity);
-		force += Vec2F((radius - (up_side.point.x - position.x)) * force_collision_coeffisient, 0.0);
-		if (rectangle->IsUnbreacable() == false)
-		{
-			rectangle->exist = false;
-		}
+		velocity.x = rectangle->GetVelocity().x;
+		position.x = left_side.point.x - radius;
+		force += Vec2F(-force_collision_coeffisient, 0.0f);
 		return true;
 	}
 	return false;
@@ -585,7 +577,7 @@ Vec2F DynamicEntity::GetVelocity()
 	return velocity;
 }
 //The function updates position and velocity of entity and clears forces' data.
-void DynamicEntity::Recalculate()
+void DynamicEntity::Update()
 {
 	angle += angular_velocity;
 	if (angle > M_PI)
@@ -596,6 +588,7 @@ void DynamicEntity::Recalculate()
 	{
 		angle += M_PI * 2.0f;
 	}
+	UpdateDirection();
 
 
 	velocity += force;
@@ -1330,7 +1323,7 @@ Bonus Ship::LoseBonus()
 
 void Ship::Recalculate()
 {
-	DynamicEntity::Recalculate();
+	DynamicEntity::Update();
 	if (unbrakable > 0)
 	{
 		unbrakable--;
@@ -2122,7 +2115,7 @@ bool Bomb::CanRemove()
 
 void Bomb::Recalculate()
 {
-	DynamicEntity::Recalculate();
+	DynamicEntity::Update();
 	if (animation_tic > 0 && (active || boom))
 	{
 		animation_tic--;

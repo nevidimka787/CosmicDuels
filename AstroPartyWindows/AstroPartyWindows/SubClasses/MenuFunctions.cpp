@@ -437,15 +437,21 @@ void MenuFunctions::SpawnObjectsSelectMenuFunction(Vec2F* clk_pos, uint8_t clk_s
 	}
 }
 
-
 void MenuFunctions::ShipsControlMenuFunction(Vec2F* clk_pos, uint8_t clk_status)
 {
-
-}
-
-void Scroll()
-{
-
+	Button* current_button;
+	for (EngineTypes::Menu::buttons_count_t i = 0; i < game_p__ships_control_menu->GetButtonsCount(); i++)
+	{
+		current_button = &game_p__ships_control_menu->current_buttons[i];
+		if (current_button->HavePoint(clk_pos))
+		{
+			current_button->SetStatus(BUTTON_STATUS_SELECT, true);
+		}
+		else
+		{
+			current_button->SetStatus(BUTTON_STATUS_SELECT, false);
+		}
+	}
 }
 
 MenuFunctions::~MenuFunctions()

@@ -49,9 +49,6 @@
     <ClCompile Include="Classes\Menu.cpp">
       <Filter>Classes\Файлы ресурсов</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Vec.cpp">
-      <Filter>Classes\Файлы ресурсов</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Shader.cpp">
       <Filter>Classes\Файлы ресурсов</Filter>
     </ClCompile>
@@ -192,9 +189,6 @@
       <Filter>Classes\Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Menu.h">
-      <Filter>Classes\Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Vec.h">
       <Filter>Classes\Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Shader.h">

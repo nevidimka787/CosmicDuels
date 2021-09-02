@@ -32,6 +32,7 @@ public:
 	Vec2F GetVelocity();
 	bool IsUnbreacable();
 	void Move(Vec2F* move_vector);
+	void Update();
 	void SetPosition(Vec2F* position);
 	void Set(MapElement* map_element);
 	void Set(
@@ -46,7 +47,7 @@ public:
 class Rectangle : public MapElement
 {
 protected:
-	Vec2F point2;//down right point
+	Vec2F point2;//down left point
 public:
 	EngineTypes::Rectangle::sides_t show_sides;
 	EngineTypes::Rectangle::sides_t collision_sides;

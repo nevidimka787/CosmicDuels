@@ -45,6 +45,11 @@ void MapElement::Move(Vec2F* move_vector)
 	position += *move_vector;
 }
 
+void MapElement::Update()
+{
+	last_position = position;
+}
+
 void MapElement::Set(MapElement* map_element)
 {
 	exist = map_element->exist;
@@ -104,48 +109,50 @@ Rectangle::Rectangle(Segment* diagonal, EngineTypes::Rectangle::sides_t show_sid
 
 Vec2F Rectangle::GetUpRightPoint()
 {
-	return Vec2F(point2.x, position.y);
+	return position;
 }
 
 Vec2F Rectangle::GetDownRightPoint()
 {
-	return point2;
+	return Vec2F(position.x, point2.y);
 }
-
 
 Vec2F Rectangle::GetDownLeftPoint()
 {
-	return Vec2F(position.x, point2.y);;
+	return point2;
 }
-
 
 Vec2F Rectangle::GetUpLeftPoint()
 {
-	return position;
+	return Vec2F(point2.x, position.y);
 }
 
 Segment Rectangle::GetUpSide()
 {
-	Vec2F temp = Vec2F(point2.x, position.y);
+	Vec2F temp;
+	temp.Set(point2.x, position.y);
 	return Segment(&position, &temp, true);
 }
 
 Segment Rectangle::GetDownSide()
 {
-	Vec2F temp = Vec2F(position.x, point2.y);
+	Vec2F temp;
+	temp.Set(position.x, point2.y);
 	return Segment(&temp, &point2, true);
 }
 
 Segment Rectangle::GetRightSide()
 {
-	Vec2F temp = Vec2F(point2.x, position.y);
-	return Segment(&temp, &point2, true);
+	Vec2F temp;
+	temp.Set(position.x, point2.y);
+	return Segment(&position, &temp, true);
 }
 
 Segment Rectangle::GetLeftSide()
 {
-	Vec2F temp = Vec2F(position.x, point2.y);
-	return Segment(&position, &temp, true);
+	Vec2F temp;
+	temp.Set(point2.x, position.y);
+	return Segment(&temp, &point2, true);
 }
 
 void Rectangle::Move(Vec2F* move_vector)
@@ -377,9 +384,9 @@ Map::Map(const Map& map) :
 		rectangles_array = new Rectangle[1];
 		rectangles_array_length = 1;
 		Vec2F new_point1;
-		new_point1.Set(1.0f, 1.0f);
+		new_point1.Set(-1.0f, -1.0f);
 		Vec2F new_point2;
-		new_point2.Set(-1.0f, -1.0f);
+		new_point2.Set(1.0f, 1.0f);
 		Segment new_segment;
 		new_segment.Set(&new_point1, &new_point2, true);
 		rectangles_array[0].Set(&new_segment);
@@ -435,9 +442,9 @@ Map::Map(Rectangle* rectangles_array, EngineTypes::Map::elements_array_length_t 
 		this->rectangles_array = new Rectangle[1];
 		this->rectangles_array_length = 1;
 		Vec2F new_point1;
-		new_point1.Set(1.0f, 1.0f);
+		new_point1.Set(-1.0f, -1.0f);
 		Vec2F new_point2;
-		new_point2.Set(-1.0f, -1.0f);
+		new_point2.Set(1.0f, 1.0f);
 		Segment new_segment;
 		new_segment.Set(&new_point1, &new_point2, true);
 		this->rectangles_array[0].Set(&new_segment);
@@ -565,9 +572,9 @@ void Map::Set(Map* map)
 		rectangles_array = new Rectangle[1];
 		rectangles_array_length = 1;
 		Vec2F new_point1;
-		new_point1.Set(1.0f, 1.0f);
+		new_point1.Set(-1.0f, -1.0f);
 		Vec2F new_point2;
-		new_point2.Set(-1.0f, -1.0f);
+		new_point2.Set(1.0f, 1.0f);
 		Segment new_segment;
 		new_segment.Set(&new_point1, &new_point2, true);
 		rectangles_array[0].Set(&new_segment);
@@ -639,9 +646,9 @@ void Map::Set(Rectangle* rectangles_array, EngineTypes::Map::elements_array_leng
 		this->rectangles_array = new Rectangle[1];
 		this->rectangles_array_length = 1;
 		Vec2F new_point1;
-		new_point1.Set(1.0f, 1.0f);
+		new_point1.Set(-1.0f, -1.0f);
 		Vec2F new_point2;
-		new_point2.Set(-1.0f, -1.0f);
+		new_point2.Set(1.0f, 1.0f);
 		Segment new_segment;
 		new_segment.Set(&new_point1, &new_point2, true);
 		this->rectangles_array[0].Set(&new_segment);

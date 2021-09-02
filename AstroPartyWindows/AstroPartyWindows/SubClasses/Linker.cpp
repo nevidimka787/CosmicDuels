@@ -67,6 +67,7 @@ Linker::Linker(Game* game_object, MenuFunctions* menu_functions_object, OpenGL* 
 	open_gl_object->game_p__players_count = &game_object->players_count;
 	open_gl_object->game_p__rectangles = &game_object->rectangles;
 	open_gl_object->game_p__rectangles_count = &game_object->rectangles_count;
+	open_gl_object->game_p__rotate_flags = &game_object->rotate_flags;
 	open_gl_object->game_p__ships = &game_object->ships;
 	open_gl_object->game_p__ships_control_menu = &game_object->ships_control_menu;
 	open_gl_object->game_p__ships_count = &game_object->ships_count;

@@ -17,7 +17,6 @@
 #include "Menu.h"
 #include "Shader.h"
 #include "Texture.h"
-#include "Vec.h"
 
 #include "../Types/AllTypes.h"
 #include "../Constants/AllConstants.h"

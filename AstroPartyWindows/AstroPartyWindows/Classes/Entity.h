@@ -125,7 +125,7 @@ public:
 	bool Collision(Map* map);
 	float GetAngularVelocity();
 	Vec2F GetVelocity();
-	void Recalculate();
+	void Update();
 	void Set(DynamicEntity* dynamic_entity);
 	void Set(
 		Vec2F* position,

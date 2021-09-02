@@ -62,7 +62,12 @@ public:
 	Vec2F GetPosition();
 	Vec2F GetSize();
 	bool GetStatus(EngineTypes::Button::button_status_t status_mask);
+	//Return pointer to memory space this text.
 	EngineTypes::Button::text_t* GetText();
+	//Create a new memory space and return pointer to it.
+	char* GetTextC();
+	//Create a new memory space and return pointer to it.
+	EngineTypes::Button::text_t* GetTextU();
 	EngineTypes::Button::text_length_t GetTextLength();
 	bool HavePoint(Vec2F* point);
 	void Move(Vec2F* move_vector);

@@ -71,6 +71,10 @@ public:
 	GameTypes::entities_count_t particles_count;
 	//Count of map's rectangles on the map.
 	GameTypes::map_elements_count_t rectangles_count;
+	//Count of map's rectangles on the map.
+	GameTypes::map_elements_count_t cyrcles_count;
+	//Count of map's rectangles on the map.
+	GameTypes::map_elements_count_t polygons_count;
 
 	//Bonus in all ships at the start of the game.
 	EngineTypes::Bonus::bonus_t start_bonus;
@@ -350,6 +354,8 @@ public:
 	void UpdateKnifes();
 	//The function calculates the influence of entities on other entities. Any entity can be destroyed. New entities can be created.
 	void UpdateLazers();
+	//The function calculates the influence of entities on other entities. Any entity can be destroyed. New entities can be created.
+	void UpdateMap();
 	//The function calculates the influence of entities on other entities. Any entity can be destroyed. New entities can be created.
 	void UpdateMegaLazers();
 	//The function calculates the influence of entities on other entities. Any entity can be destroyed. New entities can be created.

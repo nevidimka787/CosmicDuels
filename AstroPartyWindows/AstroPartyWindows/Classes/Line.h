@@ -2,7 +2,6 @@
 
 #include <iostream>
 
-#include "Vec.h"
 #include "Mat.h"
 
 #include "../Types/AllTypes.h"
@@ -46,10 +45,12 @@ public:
 		bool second_argument_is_point = false);
 	//use v1
 	//use m1 m2
-	bool Intersection(Line* intersection_line, Vec2F* output_intersection_point);
+	//alwaus true
+	void Intersection(Line* intersection_line, Vec2F* output_intersection_point);
 	//use v1
 	//use m1 m2
-	bool Intersection(LightLine* intersection_line, Vec2F* output_intersection_point);
+	//alwaus true
+	void Intersection(LightLine* intersection_line, Vec2F* output_intersection_point);
 	//use v1
 	//use m1 m2
 	bool Intersection(Beam* intersection_beam, Vec2F* output_intersection_point);
@@ -57,8 +58,6 @@ public:
 	//use m1 m2
 	bool Intersection(Segment* intersection_segment, Vec2F* output_intersection_point);
 
-	//use nothing
-	bool IsIntersection(Line* intersection_line);
 	//use v1
 	//use m1 m2
 	bool IsIntersection(Beam* intersection_beam);

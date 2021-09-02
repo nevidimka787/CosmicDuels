@@ -1,5 +1,7 @@
 #pragma once
 
+#define GAME_AREA_SIZE 10.0f
+
 /*
 Asteroid
 */
@@ -32,13 +34,13 @@ Asteroid
 	//KnockBack force of the pilot.
 #define GAME_KNOCKBACK_FORCE_OF_THE_PILOT	0.001f
 	//KnockBack force of the ship.
-#define GAME_KNOCKBACK_FORCE_OF_THE_SHIP	0.00001f
+#define GAME_KNOCKBACK_FORCE_OF_THE_SHIP	0.0001f
 	//Ship's gravitation force.
 #define GAME_SHIP_GRAVITATION_FORCE			0.001f
 	//Sheep's radius of influence.
 #define GAME_SHIP_INFLUENCE_RADIUS			0.01f
-#define GAME_SHIP_ANGULAR_VELOCITY			0.1f
-#define GAME_PILOT_ANGULAR_VELOCITY			0.1f
+#define GAME_SHIP_ANGULAR_VELOCITY			0.02f
+#define GAME_PILOT_ANGULAR_VELOCITY			0.02f
 
 	//game engine rules
 

@@ -48,26 +48,6 @@ unsigned physic = 0;
 
 int main()
 {
-    Vec2F p1, p2, p3, p4, intersection_point;
-    p1.Set(0.0f, 0.0f);
-    p2.Set(1.0f, 1.0f);
-    p3.Set(1.0f, 0.0f);
-    p4.Set(0.0f, 1.0f);
-    Line l1;
-    Line l2;
-    l1.Set(&p1, &p2, true);
-    l2.Set(&p3, &p4, true);
-    if (l1.Intersection(&l2, &intersection_point))
-    {
-        std::cout << "Intersect: " << intersection_point << std::endl;
-    }
-    else
-    {
-        std::cout << "Not intersect." << std::endl;
-    }
-
-   exit(-1);
-
     main_linker = new Linker(main_game, main_menu_functions, main_draw_functions);
     //game cycle
     while (true)
@@ -150,10 +130,11 @@ void TikUpdate()
         if (main_game->pause_game == false)
         {
             lock_timer++;
-            if (!(lock_timer % 10))
+            if (!(lock_timer % 100))
             {
-                std::cout << "Frame: " << frame * 10 << std::endl 
-                    << "Physic: " << physic * 10 << std::endl
+                std::cout << "Frame: " << frame  << std::endl 
+                    << "Physic: " << physic << std::endl
+                    << "Ship: " << main_game->ships[0].GetDirection() << std::endl
                     << "Camera: " << main_game->camera.GetPosition() << std::endl << std::endl;
                 frame = 0;
                 physic = 0;

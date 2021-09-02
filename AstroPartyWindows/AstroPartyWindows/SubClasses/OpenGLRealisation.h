@@ -17,10 +17,7 @@ protected:
 	Vec2D* cursore_press_position;
 	Vec2D* cursore_release_position;
 public:
-	void (*FramebufferSizeCallbackPointer)(GLFWwindow* window, int width, int height);
 
-	OpenGL(int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share, GLFWframebuffersizefun Function, GLFWwindow** window);
-	
 	//buffers
 
 	StaticBuffer asteroid_buffer;
@@ -41,35 +38,26 @@ public:
 	StaticBuffer button_buffer;
 
 	//buffers
-
+	
 	//data
 
 	Vec2F temp__game__camera_position;
 	float temp__game__camera_size;
 
-	//data 
+	//data
 
-	//start functions
-	
-	GLFWwindow* CreateWindows(int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share, GLFWframebuffersizefun Function);
-	bool CanDrawFrame(GLFWwindow* window);
+	//flags
 
-	void InitOpenGL();
-	void InitGlad();
-	void InitBuffers();
-	void InitShaders();
-	void InitTextures();
+	//This values is set by defaultafter each click on the menu.
+	//Each frame this value will be decrease until it reached zero.
+	//Menu will be updating while the value is greater then zero.
+	uint8_t update_menu;
+	//If this flag is active then value of "update_menu" can be decrease.
+	bool flag_update_menu_can_change;
+	//The flag actives then menu is moving by cursore.
+	bool flag_move_menu;
 
-	//start functions
-
-	//callback functions
-
-	void ProcessInput(GLFWwindow* window);
-	void LimitMenuPosition(Menu* menu);
-	void CallMenuFunction(Menu* menu, Vec2F* clk_pos, uint8_t clk_statuse);
-	void FramebufferSizeCallback(GLFWwindow* window, int width, int height);
-	
-	//callback functions
+	//flags
 
 	//shaders
 
@@ -104,31 +92,30 @@ public:
 	//The shader use for draw control buttons of ships.
 	Shader controler_shader;
 
+	//shaders
+
+	//textures
+
 	//The texture stores symbols and signs that will be drawn on the buttons.
 	Texture2D symbols_texture;
 
-	//This values is set by defaultafter each click on the menu.
-	//Each frame this value will be decrease until it reached zero.
-	//Menu will be updating while the value is greater then zero.
-	uint8_t update_menu;
-	//If this flag is active then value of "update_menu" can be decrease.
-	bool flag_update_menu_can_change;
-	//The flag actives then menu is moving by cursore.
-	bool flag_move_menu;
+	//textures
 
-	//shaders
+	OpenGL(int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share, GLFWframebuffersizefun Function, GLFWwindow** window);
 
-	//hight level funct
+	//Callback functions
+
+	void CallMenuFunction(Menu* menu, Vec2F* clk_pos, uint8_t clk_statuse);
+	void FramebufferSizeCallback(GLFWwindow* window, int width, int height);
+	void LimitMenuPosition(Menu* menu);
+	void ProcessInput(GLFWwindow* window);
+
+	//Callback functions
+
+	//Draw functions
 
 	//The function is main draw function and called every draw cycle.
 	void DrawFrame();
-
-	//The function draw current menu.
-	void DrawObjectCurrentMenu();
-	//The function draww current map.
-	void DrawObjectCurrentMap();
-	//The function draw indicated menu.
-	void DrawObjectIndicatedMenu(Menu* menu);
 
 	//The function draw line.
 	void DrawObject(Line* line, bool update_shader = false);
@@ -175,6 +162,10 @@ public:
 	//The function draw menu's button.
 	void DrawObject(Button* button, bool button_is_controller = false, bool update_shader = false);
 
+	//Draw functions
+
+	//Multydraw functions
+
 	//The function draw all asteroids on the map.
 	void DrawAsteroids();
 	//The function draw all bombs on the map.
@@ -193,9 +184,36 @@ public:
 	void DrawShips();
 	//The function draw all turels on the map.
 	void DrawTurels();
-	//hight level functions
 
+	//The function draww current map.
+	void DrawCurrentMap();
+	//The function draw current menu.
+	void DrawCurrentMenu();
+	//The function draww indicated map.
+	void DrawIndicatedMap(Map* map);
+	//The function draw indicated menu.
+	void DrawIndicatedMenu(Menu* menu);
+
+	//Multydraw functions
+
+	//Get data functions
+
+	bool CanDrawFrame(GLFWwindow* window);
 	float GetScale();
+
+	//Get data functions
+
+	//Initialisations functions
+
+	GLFWwindow* CreateWindows(int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share, GLFWframebuffersizefun Function);
+
+	void InitBuffers();
+	void InitGlad();
+	void InitOpenGL();
+	void InitShaders();
+	void InitTextures();
+
+	//Initialisations functions
 
 	//game pointers
 
@@ -272,6 +290,8 @@ public:
 	Menu* game_p__ships_control_menu;
 
 	Camera* game_p__camera;
+
+	bool** game_p__rotate_flags;
 
 
 	//menu functions pointers
