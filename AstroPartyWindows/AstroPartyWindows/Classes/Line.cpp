@@ -144,6 +144,16 @@ float Line::GetDistance(Vec2F* target)
 	return temp_vector2.GetDistance(target);
 }
 
+float Line::GetDistance(Vec2F* target, Vec2F* nearest_point)
+{
+	temp_vector2;
+	temp_vector2.Set(vector.y, -vector.x);
+	temp_line1.Set(target, &temp_vector2);
+	Intersection(&temp_line1, nearest_point);
+
+	return temp_vector2.GetDistance(target);
+}
+
 float Line::GetDistance(Line* target)
 {
 	if (target->vector == vector || target->vector == -vector)
@@ -391,6 +401,20 @@ float Beam::GetDistance(Vec2F* target)
 		return temp_vector2.GetDistance(target);
 	}
 
+	return point.GetDistance(target);
+}
+
+float Beam::GetDistance(Vec2F* target, Vec2F* nearest_point)
+{
+	temp_vector2 = vector.Perpendicular();
+	temp_line1.Set(target, &temp_vector2);
+	if (Intersection(&temp_line1, &temp_vector2))
+	{
+		*nearest_point = temp_vector2;
+		return temp_vector2.GetDistance(target);
+	}
+
+	*nearest_point = point;
 	return point.GetDistance(target);
 }
 
@@ -692,6 +716,29 @@ float Segment::GetDistance(Vec2F* target)
 		return temp_float2;
 	}
 	
+	return temp_float1;
+}
+
+float Segment::GetDistance(Vec2F* target, Vec2F* nearest_point)
+{
+	temp_vector1 = vector.Perpendicular();
+	temp_line1.Set(target, &temp_vector1);
+	if (Intersection(&temp_line1, &temp_vector2))
+	{
+		*nearest_point = temp_vector2;
+		return temp_vector2.GetDistance(target);
+	}
+
+	temp_float1 = point.GetDistance(target);
+	temp_float2 = (point + vector).GetDistance(target);
+
+	if (temp_float1 > temp_float2)
+	{
+		*nearest_point = point + vector;
+		return temp_float2;
+	}
+
+	*nearest_point = point;
 	return temp_float1;
 }
 

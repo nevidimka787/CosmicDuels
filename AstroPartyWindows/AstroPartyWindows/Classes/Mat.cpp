@@ -333,17 +333,8 @@ void Vec2F::NormalizeThis()
 
 Vec2F Vec2F::Project(Vec2F* projecting_vector)
 {
-	float dot = *this * *projecting_vector;
-	if (dot > 0.0)
-	{
-		return *this * sqrtf(dot / GetLength());
-	}
-	if (dot < 0.0)
-	{
-
-		return *this * -sqrtf(-dot / GetLength());
-	}
-	return Vec2F();
+	Vec2F direction = Normalize();
+	return direction * projecting_vector->GetLength() * (direction * projecting_vector->Normalize());
 }
 
 Vec2F Vec2F::Perpendicular()

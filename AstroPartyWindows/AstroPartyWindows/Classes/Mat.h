@@ -93,7 +93,8 @@ public:
 	float GetLength();
 	Vec2F Normalize();
 	void NormalizeThis();
-	Vec2F Project(Vec2F* projecting_vector);
+	//Return project of "projection_vector" to this vector.
+	Vec2F Project(Vec2F* projection_vector);
 	Vec2F Perpendicular();
 	void PerpendicularThis();
 	Vec2F Rotate(float angle);

@@ -16,10 +16,12 @@ mat3 matrix;
 vec3 _position;
 
 out vec2 v_pos;
+out vec2 size;
 
 void main()
 {
     v_pos = a_pos;
+    size = abs(position - point2);
 
     matrix = 
         Scale(point2 - position) * 

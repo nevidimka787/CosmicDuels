@@ -50,6 +50,7 @@ void OpenGL::FramebufferSizeCallback(GLFWwindow* window, int width, int height)
     window_width = width;
     window_scale = (float)width / (float)height;
     LimitMenuPosition(*game_p__current_active_menu);
+    game_p__camera->SetScale(window_scale);
     glViewport(0, 0, width, height);
 }
 
@@ -77,12 +78,20 @@ void OpenGL::ProcessInput(GLFWwindow* window)
     }
     if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
     {
-        std::cout << "Pause." << std::endl;
+        std::cout << "Debug pause." << std::endl;
         int i = 0;
     }
     if (*game_p__start_game)
     {
-        if (glfwGetKey(window, GLFW_KEY_RIGHT))
+        if (glfwGetKey(window, GLFW_KEY_LEFT))
+        {
+            (*game_p__rotate_flags)[1] = true;
+        }
+        else
+        {
+            (*game_p__rotate_flags)[1] = false;
+        }
+        if (glfwGetKey(window, GLFW_KEY_Z))
         {
             (*game_p__rotate_flags)[0] = true;
         }

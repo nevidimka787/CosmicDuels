@@ -38,7 +38,7 @@ void Game::Update()
 	//update
 
 	//collisions
-	/*
+	
 	DynamicEntitiesCollisions(ships, ships_count);
 	DynamicEntitiesCollisions(pilots, pilots_count);
 	DynamicEntitiesCollisions(asteroids, asteroids_count);
@@ -46,16 +46,16 @@ void Game::Update()
 	DynamicEntitiesCollisions(ships, pilots, ships_count, pilots_count);
 	DynamicEntitiesCollisions(ships,  asteroids, ships_count, asteroids_count);
 	DynamicEntitiesCollisions(asteroids,  pilots, asteroids_count, pilots_count);
-	*/
+	
 	DynamicEntitiesCollisions(&map, ships, ships_count);
 	DynamicEntitiesCollisions(&map, pilots, pilots_count);
 	DynamicEntitiesCollisions(&map, asteroids, asteroids_count);
-	/*
+	
 	DynamicEntitiesAddForce(grav_gens, grav_gens_count, ships, ships_count);
 	DynamicEntitiesAddForce(grav_gens, grav_gens_count, pilots, pilots_count);
 	DynamicEntitiesAddForce(grav_gens, grav_gens_count, asteroids, asteroids_count);
 	DynamicEntitiesAddForce(grav_gens, grav_gens_count, bullets, asteroids_count);
-	*/
+	
 	
 	//collisions
 
@@ -77,10 +77,10 @@ void Game::Update()
 	*/
 	if (update_start_properties == true)
 	{
-		Vec2F vector;
-		vector.Set(0.8f, -0.8f);
-		ships[0].SetPosition(&vector);
-		ships[0].SetAngle(0.5f);
+		//Vec2F vector;
+		//vector.Set(0.8f, -0.8f);
+		//ships[0].SetPosition(&vector);
+		//ships[0].SetAngle(0.5f);
 		update_start_properties = false;
 	}
 
@@ -882,9 +882,9 @@ void Game::InitLevel()
 	const GameTypes::score_t max_score = GetMaxScore();
 
 	Vec2F new_point1;
-	new_point1.Set(-1.0f, -1.0f);
+	new_point1.Set(-2.0f, -2.0f);
 	Vec2F new_point2;
-	new_point2.Set(1.0f, 1.0f);
+	new_point2.Set(2.0f, 2.0f);
 	Segment new_segment;
 	new_segment.Set(&new_point1, &new_point2, true);
 	Rectangle rectangle;
@@ -905,18 +905,9 @@ void Game::InitLevel()
 		/*Spawn entities*/
 		temp_positions = new Vec2F[GAME_PLAYERS_MAX_COUNT];
 		temp_positions[0].Set(-1.9f, 1.9f);
-		if (players_count > 1)
-		{
-			temp_positions[1].Set(1.9f, 1.9f);
-		}
-		if (players_count > 2)
-		{
-			temp_positions[2].Set(1.9f, -1.9f);
-		}
-		if (players_count > 3)
-		{
-			temp_positions[3].Set(-1.9f, -1.9f);
-		}
+		temp_positions[1].Set(1.9f, 1.9f);
+		temp_positions[2].Set(1.9f, -1.9f);
+		temp_positions[3].Set(-1.9f, -1.9f);
 		if (game_rules & GAME_RULE_PLAYERS_SPAWN_POSITION_RANDOMIZE)
 		{
 			for (uint8_t i = 0; i < GAME_RANDOM_ITERATIONS_COUNT; i++)
@@ -1911,10 +1902,10 @@ void Game::UpdateMegaLazers()
 
 void Game::UpdatePilots()
 {
-	for (GameTypes::players_count_t pilot = 0; pilot < players_count; pilot++)
+	for (GameTypes::players_count_t pilot = 0; pilot < GAME_PLAYERS_MAX_COUNT; pilot++)
 	{
 		temp__pilot_p = &pilots[pilot];
-		if (temp__pilot_p->exist == true)
+		if (temp__pilot_p->exist)
 		{
 			if (shoot_flags[pilot] == true)
 			{
@@ -1941,10 +1932,10 @@ void Game::UpdatePilots()
 
 void Game::UpdateShips()
 {
-	for (GameTypes::players_count_t ship = 0; ship < players_count; ship++)
+	for (GameTypes::players_count_t ship = 0; ship < GAME_PLAYERS_MAX_COUNT; ship++)
 	{
 		temp__ship_p = &ships[ship];
-		if (temp__ship_p->exist == true)
+		if (temp__ship_p->exist)
 		{
 			temp__ship_p->AddForceAlongDirection(GAME_KNOCKBACK_FORCE_OF_THE_SHIP);
 			for (GameTypes::entities_count_t pilot = 0; pilot < players_count; pilot++)

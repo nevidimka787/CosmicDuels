@@ -3,10 +3,11 @@
 out vec4 frag_color;
 
 in vec2 v_pos;
+in vec2 size;
 
 void main()
 {
-	if(v_pos.x > 0.01f && v_pos.y > 0.01f && v_pos.x < 0.99f && v_pos.y < 0.99f)
+	if(v_pos.x > 0.02f / size.x && v_pos.y > 0.02f/ size.y && v_pos.x < 1.0f - 0.02f / size.x && v_pos.y < 1.0f - 0.02f / size.y)
 	{
 		discard;
 	}

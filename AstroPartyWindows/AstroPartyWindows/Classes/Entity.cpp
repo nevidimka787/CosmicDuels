@@ -43,7 +43,7 @@ float Entity::GetDistance(Entity* entity)
 
 float Entity::GetDistance(Vec2F* point)
 {
-	return point->GetDistance(&position) - radius, 0.0f;
+	return point->GetDistance(&position) - radius;
 }
 
 float Entity::GetDistance(Line* line)
@@ -63,7 +63,7 @@ float Entity::GetDistance(Segment* segment)
 
 float Entity::GetDistance(DynamicEntity* entity)
 {
-	return entity->GetDistance(&position) - radius, 0.0f;
+	return entity->GetDistance(&position) - radius;
 }
 
 float Entity::GetDistance(StaticEntity* entity)
@@ -400,13 +400,34 @@ void DynamicEntity::AddGravityForce(float gravity_coeffisient, Vec2F* forced_poi
 
 bool DynamicEntity::Collision(DynamicEntity* entity)
 {
-	if (GetDistance(entity) > radius + entity->radius)
+	float distance;
+	if ((distance = GetDistance(entity)) > 0.0f)
 	{
 		return false;
 	}
-	Vec2F line = position - entity->position;
-	velocity -= line.Project(&velocity);
-	entity->velocity -= line.Project(&entity->velocity);
+	Vec2F collision_direction = position - entity->position;
+	Vec2F local_velocity = velocity - entity->velocity;
+	//velocity -= collision_direction.Project(&velocity);
+
+	//entity->velocity -= collision_direction.Project(&entity->velocity);
+
+	if (collision_direction * local_velocity > 0.0f)
+	{
+		velocity = (velocity + entity->velocity) / 2.0f;
+		entity->velocity = velocity;
+
+		position += collision_direction.Normalize() * (-distance);
+		entity->position -= collision_direction.Normalize() * (-distance);
+
+		entity->force += collision_direction * (force_collision_coeffisient / distance * radius / 10.0f);
+		force -= collision_direction * (force_collision_coeffisient / distance * radius / 10.0f);
+	}
+	else
+	{
+		entity->force += collision_direction * (force_collision_coeffisient / distance * radius / 10.0f);
+		force -= collision_direction * (force_collision_coeffisient / distance * radius / 10.0f);
+	}
+
 
 	return true;
 }
@@ -425,6 +446,8 @@ bool DynamicEntity::Collision(Rectangle* rectangle)
 {
 	Vec2F temp1 = rectangle->GetUpLeftPoint();
 	Vec2F temp2 = rectangle->GetUpRightPoint();
+	Vec2F nearest_position1;
+	Vec2F nearest_position2;
 	Segment up_side = Segment(&temp1, &temp2, true);
 	temp1 = rectangle->GetUpRightPoint();
 	temp2 = rectangle->GetDownRightPoint();
@@ -436,78 +459,83 @@ bool DynamicEntity::Collision(Rectangle* rectangle)
 	temp2 = rectangle->GetUpLeftPoint();
 	Segment left_side = Segment(&temp1, &temp2, true);
 
-	if (up_side.GetDistance(&position) < radius)
+
+	Vec2F collision_direction;
+	float distance1;
+	float distance2;
+
+	if ((distance1 = up_side.GetDistance(&position, &nearest_position1)) < radius)
 	{
-		if (right_side.GetDistance(&position) < radius)
+		if ((distance2 = right_side.GetDistance(&position, &nearest_position2)) < radius)
 		{
-			Vec2F direction = right_side.point - position;
-			velocity -= direction.Project(&velocity);
-			direction.NormalizeThis();
-			position = right_side.point - direction * radius;
+			collision_direction = nearest_position2 - position;
+			velocity -= collision_direction.Project(&velocity);
+			force += collision_direction * (-force_collision_coeffisient / distance2 * radius);
 
-			force += direction * -force_collision_coeffisient;
+			collision_direction = nearest_position1 - position;
+			velocity -= collision_direction.Project(&velocity);
+			force += collision_direction * (-force_collision_coeffisient / distance1 * radius);
 			return true;
 		}
-		if (left_side.GetDistance(&position) < radius)
+		if ((distance2 = left_side.GetDistance(&position, &nearest_position2)) < radius)
 		{
-			velocity.x = rectangle->GetVelocity().x;
-			position.x = left_side.point.x - radius;
-			force += Vec2F(-force_collision_coeffisient, 0.0f);
+			collision_direction = nearest_position2 - position;
+			velocity -= collision_direction.Project(&velocity);
+			force += collision_direction * (-force_collision_coeffisient / distance2 * radius);
 
-			velocity.y = rectangle->GetVelocity().y;
-			position.y = up_side.point.y + radius;
-			force += Vec2F(0.0f, -force_collision_coeffisient);
-			return true;
-		}
-
-		velocity.y = rectangle->GetVelocity().y;
-		position.y = up_side.point.y + radius;
-		force += Vec2F(0.0f, -force_collision_coeffisient);
-		return true;
-
-	}
-	if (down_side.GetDistance(&position) < radius)
-	{
-		if (right_side.GetDistance(&position) < radius)
-		{
-			velocity.x = rectangle->GetVelocity().x;
-			position.x = right_side.point.x + radius;
-			force += Vec2F(force_collision_coeffisient, 0.0f);
-
-			velocity.y = rectangle->GetVelocity().y;
-			position.y = down_side.point.y - radius;
-			force += Vec2F(0.0f, force_collision_coeffisient);
-			return true;
-		}
-		if (left_side.GetDistance(&position) < radius)
-		{
-			velocity.x = rectangle->GetVelocity().x;
-			position.x = left_side.point.x - radius;
-			force += Vec2F(-force_collision_coeffisient, 0.0f);
-
-			velocity.y = rectangle->GetVelocity().y;
-			position.y = down_side.point.y - radius;
-			force += Vec2F(0.0f, force_collision_coeffisient);
+			collision_direction = nearest_position1 - position;
+			velocity -= collision_direction.Project(&velocity);
+			force += collision_direction * (-force_collision_coeffisient / distance1 * radius);
 			return true;
 		}
 
-		velocity.y = rectangle->GetVelocity().y;
-		position.y = down_side.point.y - radius;
-		force += Vec2F(0.0f, force_collision_coeffisient);
+		collision_direction = nearest_position1 - position;
+		velocity -= collision_direction.Project(&velocity);
+		force += collision_direction * (-force_collision_coeffisient / distance1 * radius);
 		return true;
 	}
-	if (right_side.GetDistance(&position) < radius)
+	if ((distance1 = down_side.GetDistance(&position, &nearest_position1)) < radius)
 	{
-		velocity.x = rectangle->GetVelocity().x;
-		position.x = right_side.point.x + radius;
-		force += Vec2F(force_collision_coeffisient, 0.0f);
+		if ((distance2 = right_side.GetDistance(&position, &nearest_position2)) < radius)
+		{
+			collision_direction = nearest_position2 - position;
+			velocity -= collision_direction.Project(&velocity);
+			force += collision_direction * (-force_collision_coeffisient / distance2 * radius);
+
+			collision_direction = nearest_position1 - position;
+			velocity -= collision_direction.Project(&velocity);
+			force += collision_direction * (-force_collision_coeffisient / distance1 * radius);
+			return true;
+		}
+		if ((distance2 = left_side.GetDistance(&position, &nearest_position2)) < radius)
+		{
+			collision_direction = nearest_position2 - position;
+			velocity -= collision_direction.Project(&velocity);
+			force += collision_direction * (-force_collision_coeffisient / distance2 * radius);
+
+			collision_direction = nearest_position1 - position;
+			velocity -= collision_direction.Project(&velocity);
+			force += collision_direction * (-force_collision_coeffisient / distance1 * radius);
+			return true;
+		}
+
+		collision_direction = nearest_position1 - position;
+		velocity -= collision_direction.Project(&velocity);
+		force += collision_direction * (-force_collision_coeffisient / distance1 * radius);
 		return true;
 	}
-	if (left_side.GetDistance(&position) < radius)
+	if ((distance2 = right_side.GetDistance(&position, &nearest_position2)) < radius)
 	{
-		velocity.x = rectangle->GetVelocity().x;
-		position.x = left_side.point.x - radius;
-		force += Vec2F(-force_collision_coeffisient, 0.0f);
+		collision_direction = nearest_position2 - position;
+		velocity -= collision_direction.Project(&velocity);
+		force += collision_direction * (-force_collision_coeffisient / distance2 * radius);
+		return true;
+	}
+	if ((distance2 = left_side.GetDistance(&position, &nearest_position2)) < radius)
+	{
+		collision_direction = nearest_position2 - position;
+		velocity -= collision_direction.Project(&velocity);
+		force += collision_direction * (-force_collision_coeffisient / distance2 * radius);
 		return true;
 	}
 	return false;

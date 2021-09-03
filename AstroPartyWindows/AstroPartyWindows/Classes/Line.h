@@ -72,6 +72,10 @@ public:
 	//use v1 v2
 	//use m1 m2
 	//use l1
+	float GetDistance(Vec2F* target, Vec2F* nearest_point);
+	//use v1 v2
+	//use m1 m2
+	//use l1
 	float GetDistance(Line* target);
 	//use v1 v2
 	//use m1 m2
@@ -148,6 +152,10 @@ public:
 	//use m1 m2
 	//use l1
 	float GetDistance(Vec2F* target);
+	//use v1 v2
+	//use m1 m2
+	//use l1
+	float GetDistance(Vec2F* target, Vec2F* nearest_point);
 	//use v1 v2
 	//use m1 m2
 	//use l1
@@ -229,6 +237,10 @@ public:
 	//use v1 v2
 	//use m1 m2
 	float GetDistance(Vec2F* target);
+	//use f1 f2
+	//use v1 v2
+	//use m1 m2
+	float GetDistance(Vec2F* target, Vec2F* nearest_point);
 	//use v1 v2 v3 v4
 	//use m1 m2 m3
 	//use l1

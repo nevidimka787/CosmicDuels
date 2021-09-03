@@ -1,7 +1,5 @@
 #pragma once
 
-#define GAME_AREA_SIZE 10.0f
-
 /*
 Asteroid
 */
