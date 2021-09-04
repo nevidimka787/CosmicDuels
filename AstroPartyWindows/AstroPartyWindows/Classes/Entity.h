@@ -117,8 +117,15 @@ public:
 	/*
 	If objects collide, function will be changing the physical parameters of those objects.
 	*/
+	//use f1
+	//use v1 v2
 	bool Collision(DynamicEntity* entity);
+	//use f1
+	//use v1 v2
 	bool Collision(StaticEntity* entity);
+	//use f1 f2
+	//use v1 v2 v3 v4 v5
+	//use s1 s2 s3 s4
 	bool Collision(Rectangle* rectangle);
 	bool Collision(Cyrcle* cyrcle);
 	bool Collision(Polygon* polygon);
@@ -181,6 +188,7 @@ protected:
 public:
 	EngineTypes::Bonus::bonus_t bonus_type;
 	Bonus();
+	Bonus(bool exist);
 	Bonus(const Bonus& bonus);
 	Bonus(
 		Vec2F* position,

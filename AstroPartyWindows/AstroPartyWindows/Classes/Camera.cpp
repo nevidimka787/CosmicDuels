@@ -180,21 +180,21 @@ void Camera::Focus(Ship* ships_array, Pilot* pilots_array, GameTypes::players_co
 	position.Set((temp_limits.max_x + temp_limits.min_x) / 2.0f, (temp_limits.max_y + temp_limits.min_y) / 2.0f);
 	view_area_size_x *= margin;
 
-	if (position.x > GAME_AREA_SIZE)
+	if (position.x > GAME_ENGINE_AREA_SIZE)
 	{
-		position.x = GAME_AREA_SIZE;
+		position.x = GAME_ENGINE_AREA_SIZE;
 	}
-	else if (position.x < -GAME_AREA_SIZE)
+	else if (position.x < -GAME_ENGINE_AREA_SIZE)
 	{
-		position.x = -GAME_AREA_SIZE;
+		position.x = -GAME_ENGINE_AREA_SIZE;
 	}
-	if (position.y > GAME_AREA_SIZE)
+	if (position.y > GAME_ENGINE_AREA_SIZE)
 	{
-		position.y = GAME_AREA_SIZE;
+		position.y = GAME_ENGINE_AREA_SIZE;
 	}
-	else if (position.y < -GAME_AREA_SIZE)
+	else if (position.y < -GAME_ENGINE_AREA_SIZE)
 	{
-		position.y = -GAME_AREA_SIZE;
+		position.y = -GAME_ENGINE_AREA_SIZE;
 	}
 
 	int i = 0;

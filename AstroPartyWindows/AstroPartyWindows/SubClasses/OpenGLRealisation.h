@@ -292,6 +292,7 @@ public:
 	Camera* game_p__camera;
 
 	bool** game_p__rotate_flags;
+	bool** game_p__shoot_flags;
 
 
 	//menu functions pointers

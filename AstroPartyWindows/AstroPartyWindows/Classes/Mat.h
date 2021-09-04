@@ -32,8 +32,20 @@ public:
 	void operator*=(Mat2D matrix);
 	Vec2D operator/(double value);
 	void operator/=(double value);
+	//vectors are parallel
+	bool operator||(Vec2D vector);
+	bool operator==(double value);
 	bool operator==(Vec2D vector);
+	bool operator!=(double value);
 	bool operator!=(Vec2D vector);
+	bool operator>(double value);
+	bool operator>(Vec2D vector);
+	bool operator>=(double value);
+	bool operator>=(Vec2D vector);
+	bool operator<(double value);
+	bool operator<(Vec2D vector);
+	bool operator<=(double value);
+	bool operator<=(Vec2D vector);
 
 	operator Vec2F();
 
@@ -83,8 +95,20 @@ public:
 	void operator*=(Mat2F matrix);
 	Vec2F operator/(float value);
 	void operator/=(float value);
+	//vectors are parallel
+	bool operator||(Vec2F vector);
+	bool operator==(float value);
 	bool operator==(Vec2F vector);
+	bool operator!=(float value);
 	bool operator!=(Vec2F vector);
+	bool operator>(float value);
+	bool operator>(Vec2F vector);
+	bool operator>=(float value);
+	bool operator>=(Vec2F vector);
+	bool operator<(float value);
+	bool operator<(Vec2F vector);
+	bool operator<=(float value);
+	bool operator<=(Vec2F vector);
 
 	operator Vec2D();
 

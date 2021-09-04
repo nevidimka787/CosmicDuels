@@ -29,6 +29,8 @@ public:
 
 	GameTypes::maps_count_t selected_maps_id_array_length;
 
+	float area_size = GAME_ENGINE_AREA_SIZE;
+
 	//Controle is inversing
 	bool rotation_inverse;
 	//Buttons positions in inveres.
@@ -95,7 +97,7 @@ public:
 	bool* burnout_flags;
 	//true - The sheep can shoot one time.
 	//false - The sheep can't shoot.
-	bool* sheeps_can_shoot_flags;
+	GameTypes::tic_t* ships_can_shoot_flags;
 	//This array contains flags for maps that will be used in the current match.
 	bool* map_pull_array;
 	//This array contains maps' ids that will be used in the current match.
@@ -241,7 +243,6 @@ public:
 	Turel temp__turel;
 	//Memory space for temporary values.
 	Vec2F temp__vector;
-	bool update_start_properties = false;
 
 	//Memory space for temporary pointers.
 	Asteroid* temp__asteroid_p;
@@ -389,47 +390,60 @@ public:
 
 		
 	//The function destroys the entity with the aggressive entity.
-	void DestroyEntity(AggressiveEntity* destried_entity, Asteroid* asteroid);
+	template <typename AggressiveEntityType>
+	void DestroyEntityByAggressiveEntity(AggressiveEntityType* destried_entity, Asteroid* asteroid);
 	//The function destroys the entity with the aggressive entity.
-	void DestroyEntity(AggressiveEntity* destried_entity, Bonus* bonus);
+	template <typename AggressiveEntityType>
+	void DestroyEntityByAggressiveEntity(AggressiveEntityType* destried_entity, Bonus* bonus);
 	//The function destroys the entity with the aggressive entity.
-	void DestroyEntity(AggressiveEntity* destried_entity, Bullet* bulet);
+	template <typename AggressiveEntityType>
+	void DestroyEntityByAggressiveEntity(AggressiveEntityType* destried_entity, Bullet* bulet);
 	//The function destroys the entity with the aggressive entity.
-	void DestroyEntity(AggressiveEntity* destried_entity, Knife* knife);
+	template <typename AggressiveEntityType>
+	void DestroyEntityByAggressiveEntity(AggressiveEntityType* destried_entity, Knife* knife);
 	//The function destroys the entity with the aggressive entity.
-	void DestroyEntity(AggressiveEntity* destried_entity, Pilot* pilot);
+	template <typename AggressiveEntityType>
+	void DestroyEntityByAggressiveEntity(AggressiveEntityType* destried_entity, Pilot* pilot);
 	//The function destroys the entity with the aggressive entity.
-	void DestroyEntity(AggressiveEntity* destried_entity, Ship* ship);
+	template <typename AggressiveEntityType>
+	void DestroyEntityByAggressiveEntity(AggressiveEntityType* destried_entity, Ship* ship);
 	//The function destroys the entity with the killer entity.
-	void DestroyEntity(KillerEntity* destried_entity, Asteroid* asteroid);
+	template <typename KillerEntityType>
+	void DestroyEntityByKillerEntity(KillerEntityType* destried_entity, Asteroid* asteroid);
 	//The function destroys the entity with the killer entity.
-	void DestroyEntity(KillerEntity* destried_entity, Bonus* bonus);
+	template <typename KillerEntityType>
+	void DestroyEntityByKillerEntity(KillerEntityType* destried_entity, Bonus* bonus);
 	//The function destroys the entity with the killer entity.
-	void DestroyEntity(KillerEntity* destried_entity, Bullet* bulet);
+	template <typename KillerEntityType>
+	void DestroyEntityByKillerEntity(KillerEntityType* destried_entity, Bullet* bulet);
 	//The function destroys the entity with the killer entity.
-	void DestroyEntity(KillerEntity* destried_entity, Knife* fnife);
+	template <typename KillerEntityType>
+	void DestroyEntityByKillerEntity(KillerEntityType* destried_entity, Knife* fnife);
 	//The function destroys the entity with the killer entity.
-	void DestroyEntity(KillerEntity* destried_entity, Pilot* pilot);
+	template <typename KillerEntityType>
+	void DestroyEntityByKillerEntity(KillerEntityType* destried_entity, Pilot* pilot);
 	//The function destroys the entity with the killer entity.
-	void DestroyEntity(KillerEntity* destried_entity, Ship* sheep);
+	template <typename KillerEntityType>
+	void DestroyEntityByKillerEntity(KillerEntityType* destried_entity, Ship* sheep);
 	//The function destroys the entity with the killer entity.
-	void DestroyEntity(KillerEntity* destried_entity, Turel* turel);
+	template <typename KillerEntityType>
+	void DestroyEntityByKillerEntity(KillerEntityType* destried_entity, Turel* turel);
 	//The function destroys the entity with the laser.
-	void DestroyEntity(Laser* destried_entity, Asteroid* asteroid);
+	void DestroyEntityByAggressiveEntity(Laser* destried_entity, Asteroid* asteroid);
 	//The function destroys the entity with the laser.
-	void DestroyEntity(Laser* destried_entity, Bonus* bonus);
+	void DestroyEntityByAggressiveEntity(Laser* destried_entity, Bonus* bonus);
 	//The function destroys the entity with the laser.
-	void DestroyEntity(Laser* destried_entity, Bullet* bullet);
+	void DestroyEntityByAggressiveEntity(Laser* destried_entity, Bullet* bullet);
 	//The function destroys the entity with the laser.
-	void DestroyEntity(Laser* destried_entity, Knife* knife);
+	void DestroyEntityByAggressiveEntity(Laser* destried_entity, Knife* knife);
 	//The function destroys the entity with the laser.
-	void DestroyEntity(Laser* destried_entity, Pilot* pilot);
+	void DestroyEntityByAggressiveEntity(Laser* destried_entity, Pilot* pilot);
 	//The function destroys the entity with the laser.
-	void DestroyEntity(Laser* destried_entity, Ship* sheep);
+	void DestroyEntityByAggressiveEntity(Laser* destried_entity, Ship* sheep);
 	//The function destroys the entity with the laser.
-	void DestroyEntity(Laser* destried_entity, Turel* turel);
+	void DestroyEntityByAggressiveEntity(Laser* destried_entity, Turel* turel);
 	//The function destroys the pilot with the ship.
-	void DestroyEntity(Ship* destried_entity, Pilot* pilot);
+	void DestroyEntityByAggressiveEntity(Ship* destried_entity, Pilot* pilot);
 		
 
 	
@@ -456,7 +470,9 @@ public:
 	void ShipShoot_Loop(Ship* ship);
 	void ShipShoot_Laser(Ship* ship);
 	void ShipShoot_NoBonus(Ship* ship);
-	
+
+	void IncrementScore(GameTypes::players_count_t team_number);
+	void DecrementScore(GameTypes::players_count_t team_number);
 
 	//Function call every game tic.
 	void Update();

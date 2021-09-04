@@ -5,6 +5,9 @@ Asteroid
 */
 #define GAME_OBJECT_TYPES_COUNT	1
 
+//tics to next shoot
+#define GAME_DELLAY_BETWEEN_SHOOTS	30
+
 #define GAME_ANTY_GRAVS_MAX_COUNT	2
 //The maximum possible count of players on the map.
 #define GAME_PLAYERS_MAX_COUNT		4

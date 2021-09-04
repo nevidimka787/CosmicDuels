@@ -56,33 +56,9 @@ void Game::Update()
 	DynamicEntitiesAddForce(grav_gens, grav_gens_count, asteroids, asteroids_count);
 	DynamicEntitiesAddForce(grav_gens, grav_gens_count, bullets, asteroids_count);
 	
-	
 	//collisions
 
-	//recalculationtemp__vector.Set(0.0f, 0.0f);
-	/*float pos = sinf(ships[0].GetAngle()) / 0.8f;
-	temp__vector.Set(0.0f, 0.0f);
-	ships[0].SetVelocity(&temp__vector);
-	ships[1].SetVelocity(&temp__vector);
-	ships[2].SetVelocity(&temp__vector);
-	ships[3].SetVelocity(&temp__vector);
-	temp__vector.Set(pos, pos);
-	ships[0].SetPosition(&temp__vector);
-	temp__vector.Set(-pos, pos);
-	ships[1].SetPosition(&temp__vector);
-	temp__vector.Set(-0.0f, -0.0f);
-	ships[2].SetPosition(&temp__vector);
-	temp__vector.Set(0.0f, -0.0f);
-	ships[3].SetPosition(&temp__vector);
-	*/
-	if (update_start_properties == true)
-	{
-		//Vec2F vector;
-		//vector.Set(0.8f, -0.8f);
-		//ships[0].SetPosition(&vector);
-		//ships[0].SetAngle(0.5f);
-		update_start_properties = false;
-	}
+	//recalculation
 
 	TransportAsteroids();
 	TransportBombs();
@@ -391,7 +367,8 @@ void Game::RemoveParticle(DynamicEntity* deleting_particle)
 
 
 
-void Game::DestroyEntity(AggressiveEntity* destried_entity, Asteroid* asteroid)
+template <typename AggressiveEntityType>
+void Game::DestroyEntityByAggressiveEntity(AggressiveEntityType* destried_entity, Asteroid* asteroid)
 {
 	if (destried_entity->exist == false || asteroid->exist == false)
 	{
@@ -400,7 +377,8 @@ void Game::DestroyEntity(AggressiveEntity* destried_entity, Asteroid* asteroid)
 	Game::RemoveEntity(asteroid);
 }
 
-void Game::DestroyEntity(AggressiveEntity* destried_entity, Bonus* bonus)
+template <typename AggressiveEntityType>
+void Game::DestroyEntityByAggressiveEntity(AggressiveEntityType* destried_entity, Bonus* bonus)
 {
 	if (destried_entity->exist == false || bonus->exist == false)
 	{
@@ -409,7 +387,8 @@ void Game::DestroyEntity(AggressiveEntity* destried_entity, Bonus* bonus)
 	Game::RemoveEntity(bonus);
 }
 
-void Game::DestroyEntity(AggressiveEntity* destried_entity, Bullet* bullet)
+template <typename AggressiveEntityType>
+void Game::DestroyEntityByAggressiveEntity(AggressiveEntityType* destried_entity, Bullet* bullet)
 {
 	if (destried_entity->exist == false || bullet->exist == false)
 	{
@@ -418,7 +397,8 @@ void Game::DestroyEntity(AggressiveEntity* destried_entity, Bullet* bullet)
 	Game::RemoveEntity(bullet);
 }
 
-void Game::DestroyEntity(AggressiveEntity* destried_entity, Knife* knife)
+template <typename AggressiveEntityType>
+void Game::DestroyEntityByAggressiveEntity(AggressiveEntityType* destried_entity, Knife* knife)
 {
 	if (destried_entity->exist == false || knife->exist == false)
 	{
@@ -427,7 +407,8 @@ void Game::DestroyEntity(AggressiveEntity* destried_entity, Knife* knife)
 	Game::RemoveEntity(knife);
 }
 
-void Game::DestroyEntity(AggressiveEntity* destried_entity, Pilot* pilot)
+template <typename AggressiveEntityType>
+void Game::DestroyEntityByAggressiveEntity(AggressiveEntityType* destried_entity, Pilot* pilot)
 {
 	if (destried_entity->exist == false || pilot->exist == false)
 	{
@@ -445,7 +426,8 @@ void Game::DestroyEntity(AggressiveEntity* destried_entity, Pilot* pilot)
 	pilots_count--;
 }
 
-void Game::DestroyEntity(AggressiveEntity* destried_entity, Ship* ship)
+template <typename AggressiveEntityType>
+void Game::DestroyEntityByAggressiveEntity(AggressiveEntityType* destried_entity, Ship* ship)
 {
 	if (destried_entity->exist == false || ship->exist == false)
 	{
@@ -465,7 +447,8 @@ void Game::DestroyEntity(AggressiveEntity* destried_entity, Ship* ship)
 
 
 
-void Game::DestroyEntity(KillerEntity* destried_entity, Asteroid* asteroid)
+template <typename KillerEntityType>
+void Game::DestroyEntityByKillerEntity(KillerEntityType* destried_entity, Asteroid* asteroid)
 {
 	if (destried_entity->exist == false || asteroid->exist == false)
 	{
@@ -473,7 +456,8 @@ void Game::DestroyEntity(KillerEntity* destried_entity, Asteroid* asteroid)
 	}
 }
 
-void Game::DestroyEntity(KillerEntity* destried_entity, Bonus* bonus)
+template <typename KillerEntityType>
+void Game::DestroyEntityByKillerEntity(KillerEntityType* destried_entity, Bonus* bonus)
 {
 	if (destried_entity->exist == false || bonus->exist == false)
 	{
@@ -482,7 +466,8 @@ void Game::DestroyEntity(KillerEntity* destried_entity, Bonus* bonus)
 	Game::RemoveEntity(bonus);
 }
 
-void Game::DestroyEntity(KillerEntity* destried_entity, Bullet* bullet)
+template <typename KillerEntityType>
+void Game::DestroyEntityByKillerEntity(KillerEntityType* destried_entity, Bullet* bullet)
 {
 	if (destried_entity->exist == false || bullet->exist == false)
 	{
@@ -491,7 +476,8 @@ void Game::DestroyEntity(KillerEntity* destried_entity, Bullet* bullet)
 	Game::RemoveEntity(bullet);
 }
 
-void Game::DestroyEntity(KillerEntity* destried_entity, Knife* knife)
+template <typename KillerEntityType>
+void Game::DestroyEntityByKillerEntity(KillerEntityType* destried_entity, Knife* knife)
 {
 	if (destried_entity->exist == false || knife->exist == false)
 	{
@@ -500,7 +486,8 @@ void Game::DestroyEntity(KillerEntity* destried_entity, Knife* knife)
 	Game::RemoveEntity(knife);
 }
 
-void Game::DestroyEntity(KillerEntity* destried_entity, Pilot* pilot)
+template <typename KillerEntityType>
+void Game::DestroyEntityByKillerEntity(KillerEntityType* destried_entity, Pilot* pilot)
 {
 	if (destried_entity->exist == false || pilot->exist == false)
 	{
@@ -508,20 +495,23 @@ void Game::DestroyEntity(KillerEntity* destried_entity, Pilot* pilot)
 	}
 	if (game_rules & GAME_RULE_NEED_KILL_PILOT)
 	{
-		if (destried_entity->GetPlayerMasterTeamNumber() == pilot->GetTeamNumber())
+		if (destried_entity->KillerEntity::GetPlayerMasterTeamNumber() == pilot->GetTeamNumber())
 		{
-			scores[pilot->GetTeamNumber()]--;
+			DecrementScore(pilot->GetTeamNumber());
+			std::cout << "Pilot auto kill by team: " << (int)pilot->GetTeamNumber() << std::endl;
 		}
 		else
 		{
-			scores[destried_entity->GetPlayerMasterTeamNumber()]++;
+			IncrementScore(destried_entity->KillerEntity::GetPlayerMasterTeamNumber());
+			std::cout << "Pilot from team: " << (int)pilot->GetTeamNumber() << " kill by team: " << (int)destried_entity->KillerEntity::GetPlayerMasterTeamNumber() << std::endl;
 		}
 	}
 	pilot->exist = false;
 	pilots_count--;
 }
 
-void Game::DestroyEntity(KillerEntity* destried_entity, Ship* sheep)
+template <typename KillerEntityType>
+void Game::DestroyEntityByKillerEntity(KillerEntityType* destried_entity, Ship* sheep)
 {
 	if (destried_entity->exist == false || sheep->exist == false)
 	{
@@ -529,13 +519,13 @@ void Game::DestroyEntity(KillerEntity* destried_entity, Ship* sheep)
 	}
 	if (!(game_rules & GAME_RULE_NEED_KILL_PILOT))
 	{
-		if (destried_entity->GetPlayerMasterTeamNumber() == sheep->GetTeamNumber())
+		if (destried_entity->KillerEntity::GetPlayerMasterTeamNumber() == sheep->GetTeamNumber())
 		{
-			scores[sheep->GetTeamNumber()]--;
+			DecrementScore(sheep->GetTeamNumber());
 		}
 		else
 		{
-			scores[destried_entity->GetPlayerMasterTeamNumber()]++;
+			IncrementScore(destried_entity->KillerEntity::GetPlayerMasterTeamNumber());
 		}
 	}
 	for (GameTypes::entities_count_t knife = 0, found_knifes = 0; found_knifes < knifes_count; knife++)
@@ -564,7 +554,8 @@ void Game::DestroyEntity(KillerEntity* destried_entity, Ship* sheep)
 	ships_count--;
 }
 
-void Game::DestroyEntity(KillerEntity* destried_entity, Turel* turel)
+template <typename KillerEntityType>
+void Game::DestroyEntityByKillerEntity(KillerEntityType* destried_entity, Turel* turel)
 {
 	if (destried_entity->exist == false || turel->exist == false)
 	{
@@ -575,7 +566,7 @@ void Game::DestroyEntity(KillerEntity* destried_entity, Turel* turel)
 
 
 
-void Game::DestroyEntity(Laser* destried_entity, Asteroid* asteroid)
+void Game::DestroyEntityByAggressiveEntity(Laser* destried_entity, Asteroid* asteroid)
 {
 	if (destried_entity->exist == false || asteroid->exist == false)
 	{
@@ -584,7 +575,7 @@ void Game::DestroyEntity(Laser* destried_entity, Asteroid* asteroid)
 	Game::RemoveEntity(asteroid);
 }
 
-void Game::DestroyEntity(Laser* destried_entity, Bonus* bonus)
+void Game::DestroyEntityByAggressiveEntity(Laser* destried_entity, Bonus* bonus)
 {
 	if (destried_entity->exist == false || bonus->exist == false)
 	{
@@ -593,7 +584,7 @@ void Game::DestroyEntity(Laser* destried_entity, Bonus* bonus)
 	Game::RemoveEntity(bonus);
 }
 
-void Game::DestroyEntity(Laser* destried_entity, Bullet* bullet)
+void Game::DestroyEntityByAggressiveEntity(Laser* destried_entity, Bullet* bullet)
 {
 	if (destried_entity->exist == false || bullet->exist == false)
 	{
@@ -602,7 +593,7 @@ void Game::DestroyEntity(Laser* destried_entity, Bullet* bullet)
 	Game::RemoveEntity(bullet);
 }
 
-void Game::DestroyEntity(Laser* destried_entity, Knife* knife)
+void Game::DestroyEntityByAggressiveEntity(Laser* destried_entity, Knife* knife)
 {
 	if (destried_entity->exist == false || knife->exist == false)
 	{
@@ -611,7 +602,7 @@ void Game::DestroyEntity(Laser* destried_entity, Knife* knife)
 	Game::RemoveEntity(knife);
 }
 
-void Game::DestroyEntity(Laser* destried_entity, Pilot* pilot)
+void Game::DestroyEntityByAggressiveEntity(Laser* destried_entity, Pilot* pilot)
 {
 	if (destried_entity->exist == false || pilot->exist == false)
 	{
@@ -621,18 +612,18 @@ void Game::DestroyEntity(Laser* destried_entity, Pilot* pilot)
 	{
 		if (destried_entity->GetPlayerMasterTeamNumber() == pilot->GetTeamNumber())
 		{
-			scores[pilot->GetTeamNumber()]--;
+			DecrementScore(pilot->GetTeamNumber());
 		}
 		else
 		{
-			scores[destried_entity->GetPlayerMasterTeamNumber()]++;
+			IncrementScore(destried_entity->GetPlayerMasterTeamNumber());
 		}
 	}
 	pilot->exist = false;
 	pilots_count--;
 }
 
-void Game::DestroyEntity(Laser* destried_entity, Ship* sheep)
+void Game::DestroyEntityByAggressiveEntity(Laser* destried_entity, Ship* sheep)
 {
 	if (destried_entity->exist == false || sheep->exist == false)
 	{
@@ -642,11 +633,11 @@ void Game::DestroyEntity(Laser* destried_entity, Ship* sheep)
 	{
 		if (destried_entity->GetPlayerMasterTeamNumber() == sheep->GetTeamNumber())
 		{
-			scores[sheep->GetTeamNumber()]--;
+			DecrementScore(sheep->GetTeamNumber());
 		}
 		else
 		{
-			scores[destried_entity->GetPlayerMasterTeamNumber()]++;
+			IncrementScore(destried_entity->GetPlayerMasterTeamNumber());
 		}
 	}
 	for (GameTypes::entities_count_t knife = 0, found_knifes = 0; found_knifes < knifes_count; knife++)
@@ -675,7 +666,7 @@ void Game::DestroyEntity(Laser* destried_entity, Ship* sheep)
 	ships_count--;
 }
 
-void Game::DestroyEntity(Laser* destried_entity, Turel* turel)
+void Game::DestroyEntityByAggressiveEntity(Laser* destried_entity, Turel* turel)
 {
 	if (destried_entity->exist == false || turel->exist == false)
 	{
@@ -686,7 +677,7 @@ void Game::DestroyEntity(Laser* destried_entity, Turel* turel)
 
 
 
-void Game::DestroyEntity(Ship* destried_entity, Pilot* pilot)
+void Game::DestroyEntityByAggressiveEntity(Ship* destried_entity, Pilot* pilot)
 {
 	if (destried_entity->exist == false || pilot->exist == false)
 	{
@@ -696,11 +687,11 @@ void Game::DestroyEntity(Ship* destried_entity, Pilot* pilot)
 	{
 		if (destried_entity->GetTeamNumber() == pilot->GetTeamNumber())
 		{
-			scores[pilot->GetTeamNumber()]--;
+			DecrementScore(pilot->GetTeamNumber());
 		}
 		else
 		{
-			scores[destried_entity->GetTeamNumber()]++;
+			IncrementScore(destried_entity->GetTeamNumber());
 		}
 	}
 	pilot->exist = false;
@@ -783,7 +774,13 @@ void Game::InitMach()
 
 	shoot_flags = new bool[players_count];
 	rotate_flags = new bool[players_count];
-	scores = new GameTypes::players_count_t[players_count];
+	ships_can_shoot_flags = new GameTypes::tic_t[GAME_PLAYERS_MAX_COUNT];
+	scores = new GameTypes::score_t[GAME_PLAYERS_MAX_COUNT];
+	for (GameTypes::players_count_t player = 0; player < GAME_PLAYERS_MAX_COUNT; player++)
+	{
+		ships_can_shoot_flags[player] = SHIP_UNBRAKABLE_PERIOD;
+		scores[player] = 0;
+	}
 
 
 	start_bonus = game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_SHIELD ? BUFF_SHIELD : 0x0000;
@@ -870,14 +867,13 @@ void Game::InitLevel()
 
 	global_timer = 0;
 	current_tic = 0;
-	update_start_properties = true;
 
 	camera.SetCoefficients();
 	camera.SetHightLimits();
-	camera.SetLowLimits(0.1f * GAME_AREA_SIZE, 0.1f * GAME_AREA_SIZE);
+	camera.SetLowLimits(0.1f * GAME_ENGINE_AREA_SIZE, 0.1f * GAME_ENGINE_AREA_SIZE);
 	camera.SetScale(object_p__open_gl_realisation->GetScale());
 
-	Vec2F* temp_positions;
+	Vec2F temp_positions[GAME_PLAYERS_MAX_COUNT];
 
 	const GameTypes::score_t max_score = GetMaxScore();
 
@@ -903,21 +899,10 @@ void Game::InitLevel()
 		
 
 		/*Spawn entities*/
-		temp_positions = new Vec2F[GAME_PLAYERS_MAX_COUNT];
 		temp_positions[0].Set(-1.9f, 1.9f);
 		temp_positions[1].Set(1.9f, 1.9f);
 		temp_positions[2].Set(1.9f, -1.9f);
 		temp_positions[3].Set(-1.9f, -1.9f);
-		if (game_rules & GAME_RULE_PLAYERS_SPAWN_POSITION_RANDOMIZE)
-		{
-			for (uint8_t i = 0; i < GAME_RANDOM_ITERATIONS_COUNT; i++)
-			{
-				GameTypes::players_count_t temp1 = rand() % players_count;
-				Vec2F temp2 = temp_positions[temp1];
-				temp_positions[temp1] = temp_positions[i];
-				temp_positions[i] = temp2;
-			}
-		}
 
 		break;
 	}
@@ -937,6 +922,18 @@ void Game::InitLevel()
 			temp_angles[i] += (float)rand() / (float)RAND_MAX;
 		}
 	}
+
+	if (game_rules & GAME_RULE_PLAYERS_SPAWN_POSITION_RANDOMIZE)
+	{
+		for (GameTypes::players_count_t i = 0; i < GAME_PLAYERS_MAX_COUNT; i++)
+		{
+			GameTypes::players_count_t temp1 = rand() % players_count;
+			Vec2F temp2 = temp_positions[temp1];
+			temp_positions[temp1] = temp_positions[i];
+			temp_positions[i] = temp2;
+		}
+	}
+
 	if (game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_BONUS)
 	{
 		Vec2F zero_velocity;
@@ -976,7 +973,7 @@ void Game::InitLevel()
 		}
 	}
 	delete[] temp_angles;
-	delete[] temp_positions;
+	//delete[] temp_positions;
 
 	current_active_menu = &ships_control_menu;
 
@@ -1175,7 +1172,15 @@ void Game::EndMatch()
 
 void Game::ShipShoot(Ship* ship)
 {
+	if (ships_can_shoot_flags[ship->GetPlayerNumber()] > 0)
+	{
+		return;
+	}
+
 	//Magicka and Magicka 2 are the best games I've seen.
+
+	ships_can_shoot_flags[ship->GetPlayerNumber()] = GAME_DELLAY_BETWEEN_SHOOTS;
+
 	if (ship->SpendBonus(BONUS_LASER))
 	{
 		if (ship->SpendBonus(BONUS_LOOP))
@@ -1257,57 +1262,57 @@ void Game::ShipShoot(Ship* ship)
 
 void Game::ShipShoot_LaserLoopBombKnife(Ship* ship)
 {
-
+	ShipShoot_NoBonus(ship);
 }
 
 void Game::ShipShoot_LaserLoopBomb(Ship* ship)
 {
-
+	ShipShoot_NoBonus(ship);
 }
 
 void Game::ShipShoot_LaserLoopKnife(Ship* ship)
 {
-
+	ShipShoot_NoBonus(ship);
 }
 
 void Game::ShipShoot_LaserBombKnife(Ship* ship)
 {
-
+	ShipShoot_NoBonus(ship);
 }
 
 void Game::ShipShoot_LoopBombKnife(Ship* ship)
 {
-
+	ShipShoot_NoBonus(ship);
 }
 
 void Game::ShipShoot_LaserLoop(Ship* ship)
 {
-
+	ShipShoot_NoBonus(ship);
 }
 
 void Game::ShipShoot_LaserBomb(Ship* ship)
 {
-
+	ShipShoot_NoBonus(ship);
 }
 
 void Game::ShipShoot_LoopBomb(Ship* ship)
 {
-
+	ShipShoot_NoBonus(ship);
 }
 
 void Game::ShipShoot_LaserKnife(Ship* ship)
 {
-
+	ShipShoot_NoBonus(ship);
 }
 
 void Game::ShipShoot_LoopKnife(Ship* ship)
 {
-
+	ShipShoot_NoBonus(ship);
 }
 
 void Game::ShipShoot_BombKnife(Ship* ship)
 {
-
+	ShipShoot_NoBonus(ship);
 }
 
 void Game::ShipShoot_Knife(Ship* ship)
@@ -1341,6 +1346,18 @@ void Game::ShipShoot_NoBonus(Ship* ship)
 
 
 
+void Game::IncrementScore(GameTypes::players_count_t team_number)
+{
+	scores[team_number - 1]++;
+}
+
+void Game::DecrementScore(GameTypes::players_count_t team_number)
+{
+	scores[team_number - 1]--;
+}
+
+
+
 void Game::TransportAsteroids()
 {
 	for (GameTypes::entities_count_t asteroid = 0, found_asteroids = 0; found_asteroids < asteroids_count; asteroid++)
@@ -1369,13 +1386,13 @@ void Game::TransportBombs()
 
 void Game::TransportBonuses()
 {
-	for (GameTypes::entities_count_t mega_laser = 0, found_mega_lasers = 0; found_mega_lasers < bonuses_count; mega_laser++)
+	for (GameTypes::entities_count_t bonus = 0, found_bonuses = 0; found_bonuses < bonuses_count; bonus++)
 	{
-		temp__mega_lazer_p = &mega_lasers[mega_laser];
-		if (temp__mega_lazer_p->exist == true)
+		temp__bonus_p = &bonuses[bonus];
+		if (temp__bonus_p->exist == true)
 		{
-			temp__mega_lazer_p->Recalculate();
-			found_mega_lasers++;
+			temp__bonus_p->Update();
+			found_bonuses++;
 		}
 	}
 }
@@ -1478,7 +1495,7 @@ void Game::UpdateBombs()
 					if (temp__ship_p->exist == true && temp__ship_p->IsCollision(temp__bomb_p))
 					{
 
-						DestroyEntity(temp__bomb_p, temp__ship_p);
+						DestroyEntityByKillerEntity(temp__bomb_p, temp__ship_p);
 					}
 				}
 				for (GameTypes::players_count_t pilot = 0; pilot < players_count; pilot++)
@@ -1486,7 +1503,7 @@ void Game::UpdateBombs()
 					temp__pilot_p = &pilots[pilot];
 					if (temp__pilot_p->exist == true && temp__pilot_p->IsCollision(temp__bomb_p))
 					{
-						DestroyEntity(temp__bomb_p, temp__pilot_p);
+						DestroyEntityByKillerEntity(temp__bomb_p, temp__pilot_p);
 					}
 				}
 				for (GameTypes::entities_count_t asteroid = 0, found_asteroids = 0; found_asteroids < asteroids_count; asteroid++)
@@ -1496,7 +1513,7 @@ void Game::UpdateBombs()
 					{
 						if (temp__asteroid_p->IsCollision(temp__bomb_p))
 						{
-							DestroyEntity(temp__bomb_p, temp__asteroid_p);
+							DestroyEntityByKillerEntity(temp__bomb_p, temp__asteroid_p);
 						}
 						else
 						{
@@ -1511,7 +1528,7 @@ void Game::UpdateBombs()
 					{
 						if (temp__bonus_p->IsCollision(temp__bomb_p))
 						{
-							DestroyEntity(temp__bomb_p, temp__bonus_p);
+							DestroyEntityByKillerEntity(temp__bomb_p, temp__bonus_p);
 						}
 						else
 						{
@@ -1526,7 +1543,7 @@ void Game::UpdateBombs()
 					{
 						if (temp__bullet_p->Entity::IsCollision(temp__bomb_p))
 						{
-							DestroyEntity(temp__bomb_p, temp__bullet_p);
+							DestroyEntityByKillerEntity(temp__bomb_p, temp__bullet_p);
 						}
 						else
 						{
@@ -1541,7 +1558,7 @@ void Game::UpdateBombs()
 					{
 						if (temp__knife_p->IsCollision(temp__bomb_p))
 						{
-							DestroyEntity(temp__bomb_p, temp__knife_p);
+							DestroyEntityByKillerEntity(temp__bomb_p, temp__knife_p);
 						}
 						else
 						{
@@ -1556,7 +1573,7 @@ void Game::UpdateBombs()
 					{
 						if (temp__turel_p->IsCollision(temp__bomb_p))
 						{
-							DestroyEntity(temp__bomb_p, temp__turel_p);
+							DestroyEntityByKillerEntity(temp__bomb_p, temp__turel_p);
 						}
 						found_turels++;
 					}
@@ -1588,12 +1605,13 @@ void Game::UpdateBullets()
 		temp__bullet_p = &bullets[bullet];
 		if (temp__bullet_p->exist == true)
 		{
-			if (temp__bullet_p->IsCollision(&map))
+			temp__vector = temp__bullet_p->GetPosition();
+			if (temp__bullet_p->IsCollision(&map) || temp__vector > area_size || temp__vector < - area_size)
 			{
 				RemoveEntity(temp__bullet_p);
 				goto end_of_cycle;
 			}
-			for (GameTypes::players_count_t ship = 0; ship < players_count; ship++)
+			for (GameTypes::players_count_t ship = 0; ship < GAME_PLAYERS_MAX_COUNT; ship++)
 			{
 				temp__ship_p = &ships[ship];
 				if (temp__ship_p->exist == true && temp__ship_p->IsCollision(temp__bullet_p))
@@ -1604,18 +1622,18 @@ void Game::UpdateBullets()
 					}
 					else
 					{
-						DestroyEntity(temp__bullet_p, temp__ship_p);
+						DestroyEntityByKillerEntity(temp__bullet_p, temp__ship_p);
 					}
 					RemoveEntity(temp__bullet_p);
 					goto end_of_cycle;
 				}
 			}
-			for (GameTypes::players_count_t pilot = 0; pilot < players_count; pilot++)
+			for (GameTypes::players_count_t pilot = 0; pilot < GAME_PLAYERS_MAX_COUNT; pilot++)
 			{
 				temp__pilot_p = &pilots[pilot];
 				if (temp__pilot_p->exist == true && temp__pilot_p->IsCollision(temp__bullet_p))
 				{
-					DestroyEntity(temp__bullet_p, temp__pilot_p);
+					DestroyEntityByKillerEntity(temp__bullet_p, temp__pilot_p);
 					if (game_rules & GAME_RULE_NEED_KILL_PILOT)
 					{
 						RemoveEntity(temp__bullet_p);
@@ -1630,7 +1648,7 @@ void Game::UpdateBullets()
 				{
 					if (temp__asteroid_p->IsCollision(temp__bullet_p))
 					{
-						DestroyEntity(temp__bullet_p, temp__asteroid_p);
+						DestroyEntityByKillerEntity(temp__bullet_p, temp__asteroid_p);
 						RemoveEntity(temp__bullet_p);
 						goto end_of_cycle;
 					}
@@ -1646,7 +1664,7 @@ void Game::UpdateBullets()
 					{
 						if (temp__knife_p->IsCollision(temp__bullet_p))
 						{
-							DestroyEntity(temp__bullet_p, temp__knife_p);
+							DestroyEntityByKillerEntity(temp__bullet_p, temp__knife_p);
 							RemoveEntity(temp__bullet_p);
 							goto end_of_cycle;
 						}
@@ -1687,7 +1705,7 @@ void Game::UpdateKnifes()
 				temp__ship_p = &ships[ship];
 				if (temp__ship_p->exist == true && temp__ship_p->GetPlayerNumber() != temp__knife_p->GetPlayerMasterNumber() && temp__ship_p->IsCollision(temp__knife_p))
 				{
-					DestroyEntity(temp__knife_p, temp__ship_p);
+					DestroyEntityByKillerEntity(temp__knife_p, temp__ship_p);
 					RemoveEntity(temp__knife_p);
 					goto end_of_cycle;
 				}
@@ -1697,7 +1715,7 @@ void Game::UpdateKnifes()
 				temp__pilot_p = &pilots[pilot];
 				if (temp__pilot_p->exist == true && temp__pilot_p->IsCollision(temp__knife_p))
 				{
-					DestroyEntity(temp__knife_p, temp__pilot_p);
+					DestroyEntityByKillerEntity(temp__knife_p, temp__pilot_p);
 				}
 			}
 			for (GameTypes::entities_count_t asteroid = 0, found_asteroids = 0; found_asteroids < asteroids_count; asteroid++)
@@ -1707,7 +1725,7 @@ void Game::UpdateKnifes()
 				{
 					if (temp__asteroid_p->IsCollision(temp__knife_p))
 					{
-						DestroyEntity(temp__knife_p, temp__asteroid_p);
+						DestroyEntityByKillerEntity(temp__knife_p, temp__asteroid_p);
 						if (temp__knife_p->LoseHealth() == false)
 						{
 							RemoveEntity(temp__knife_p);
@@ -1736,7 +1754,7 @@ void Game::UpdateLazers()
 				temp__ship_p = &ships[ship];
 				if (temp__ship_p->exist == true && temp__ship_p->IsCollision(&temp__beam))
 				{
-					DestroyEntity(temp__lazer_p, temp__ship_p);
+					DestroyEntityByAggressiveEntity(temp__lazer_p, temp__ship_p);
 				}
 			}
 			for (GameTypes::players_count_t pilot = 0; pilot < players_count; pilot++)
@@ -1744,7 +1762,7 @@ void Game::UpdateLazers()
 				temp__pilot_p = &pilots[pilot];
 				if (temp__pilot_p->exist == true && temp__pilot_p->IsCollision(&temp__beam))
 				{
-					DestroyEntity(temp__lazer_p, temp__pilot_p);
+					DestroyEntityByAggressiveEntity(temp__lazer_p, temp__pilot_p);
 				}
 			}
 			for (GameTypes::entities_count_t asteroid = 0, found_asteroids = 0; found_asteroids < asteroids_count; asteroid++)
@@ -1754,7 +1772,7 @@ void Game::UpdateLazers()
 				{
 					if (temp__asteroid_p->IsCollision(&temp__beam))
 					{
-						DestroyEntity(temp__lazer_p, temp__asteroid_p);
+						DestroyEntityByAggressiveEntity(temp__lazer_p, temp__asteroid_p);
 					}
 					else
 					{
@@ -1769,7 +1787,7 @@ void Game::UpdateLazers()
 				{
 					if (temp__asteroid_p->IsCollision(&temp__beam))
 					{
-						DestroyEntity(temp__lazer_p, temp__asteroid_p);
+						DestroyEntityByAggressiveEntity(temp__lazer_p, temp__asteroid_p);
 					}
 					else
 					{
@@ -1784,7 +1802,7 @@ void Game::UpdateLazers()
 				{
 					if (temp__bullet_p->Entity::IsCollision(&temp__beam))
 					{
-						DestroyEntity(temp__lazer_p, temp__bullet_p);
+						DestroyEntityByAggressiveEntity(temp__lazer_p, temp__bullet_p);
 					}
 					else
 					{
@@ -1799,7 +1817,7 @@ void Game::UpdateLazers()
 				{
 					if (temp__bullet_p->Entity::IsCollision(&temp__beam))
 					{
-						DestroyEntity(temp__lazer_p, temp__bullet_p);
+						DestroyEntityByAggressiveEntity(temp__lazer_p, temp__bullet_p);
 					}
 					else
 					{
@@ -1839,7 +1857,7 @@ void Game::UpdateMegaLazers()
 				temp__ship_p = &ships[ship];
 				if (temp__ship_p->exist == true && temp__ship_p->IsCollision(&temp__segment))
 				{
-					DestroyEntity(temp__mega_lazer_p, temp__ship_p);
+					DestroyEntityByAggressiveEntity(temp__mega_lazer_p, temp__ship_p);
 				}
 			}
 			for (GameTypes::players_count_t pilot = 0; pilot < players_count; pilot++)
@@ -1847,7 +1865,7 @@ void Game::UpdateMegaLazers()
 				temp__pilot_p = &pilots[pilot];
 				if (temp__pilot_p->exist == true && temp__pilot_p->IsCollision(&temp__segment))
 				{
-					DestroyEntity(temp__mega_lazer_p, temp__pilot_p);
+					DestroyEntityByAggressiveEntity(temp__mega_lazer_p, temp__pilot_p);
 				}
 			}
 			for (GameTypes::entities_count_t asteroid = 0, found_asteroids = 0; found_asteroids < asteroids_count; asteroid++)
@@ -1857,7 +1875,7 @@ void Game::UpdateMegaLazers()
 				{
 					if (temp__asteroid_p->IsCollision(&temp__segment))
 					{
-						DestroyEntity(temp__mega_lazer_p, temp__asteroid_p);
+						DestroyEntityByAggressiveEntity(temp__mega_lazer_p, temp__asteroid_p);
 					}
 					else
 					{
@@ -1872,7 +1890,7 @@ void Game::UpdateMegaLazers()
 				{
 					if (temp__asteroid_p->IsCollision(&temp__segment))
 					{
-						DestroyEntity(temp__mega_lazer_p, temp__asteroid_p);
+						DestroyEntityByAggressiveEntity(temp__mega_lazer_p, temp__asteroid_p);
 					}
 					else
 					{
@@ -1887,7 +1905,7 @@ void Game::UpdateMegaLazers()
 				{
 					if (temp__bullet_p->Entity::IsCollision(&temp__segment))
 					{
-						DestroyEntity(temp__mega_lazer_p, temp__bullet_p);
+						DestroyEntityByKillerEntity(temp__mega_lazer_p, temp__bullet_p);
 					}
 					else
 					{
@@ -1949,7 +1967,7 @@ void Game::UpdateShips()
 					}
 					else
 					{
-						DestroyEntity(temp__ship_p, temp__pilot_p);
+						DestroyEntityByAggressiveEntity(temp__ship_p, temp__pilot_p);
 					}
 				}
 			}
@@ -1965,7 +1983,11 @@ void Game::UpdateShips()
 					found_bonuses++;
 				}
 			}
-			if (shoot_flags[ship] == true && sheeps_can_shoot_flags[ship] == true)
+			if (ships_can_shoot_flags[ship] > 0)
+			{
+				ships_can_shoot_flags[ship]--;
+			}
+			if (shoot_flags[ship] == true && ships_can_shoot_flags[ship] == 0)
 			{
 				ShipShoot(temp__ship_p);
 			}

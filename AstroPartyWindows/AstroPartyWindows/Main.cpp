@@ -57,10 +57,6 @@ int main()
         {
             main_draw_functions->DrawFrame();
         }
-        
-        //Frame();
-        
-        //std::cout << main_game->start_game << std::endl;
 
         if (main_game->start_game == true)
         {
@@ -86,7 +82,6 @@ int main()
                     physic_calculation_mtx.unlock();
                     glfwSwapBuffers(window);
                     glfwPollEvents();
-                    //std::cout << main_game->ships[0].GetAngle() << std::endl;
                     glfwSwapInterval(1);
                     frame++;
                 }
@@ -133,9 +128,14 @@ void TikUpdate()
             if (!(lock_timer % 100))
             {
                 std::cout << "Frame: " << frame  << std::endl 
-                    << "Physic: " << physic << std::endl
-                    << "Ship: " << main_game->ships[0].GetDirection() << std::endl
-                    << "Camera: " << main_game->camera.GetPosition() << std::endl << std::endl;
+                    << "Physic: " << physic << std::endl << std::endl;
+                std::cout << "Ships life: " << main_game->pilots_count << std::endl
+                    << "Pilots life: " << main_game->ships_count << std::endl << std::endl;
+                for (GameTypes::players_count_t team = 0; team < GAME_PLAYERS_MAX_COUNT; team++)
+                {
+                    std::cout << "Team: " << (int)team << " Score: " << (int)main_game->scores[team] << std::endl;
+                }
+                std::cout << std::endl << std::endl << std::endl;
                 frame = 0;
                 physic = 0;
             }

@@ -55,5 +55,5 @@ void main()
 		break;
 	}
 
-	frag_color = vec4(color, 1.0f);
+	frag_color = vec4(color / 4.0f + 0.5f, 1.0f);
 }

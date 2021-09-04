@@ -83,7 +83,23 @@ void OpenGL::ProcessInput(GLFWwindow* window)
     }
     if (*game_p__start_game)
     {
-        if (glfwGetKey(window, GLFW_KEY_LEFT))
+        if (glfwGetKey(window, SHIP_0_ROTATE_BUTTON))
+        {
+            (*game_p__rotate_flags)[0] = true;
+        }
+        else
+        {
+            (*game_p__rotate_flags)[0] = false;
+        }
+        if (glfwGetKey(window, SHIP_0_SHOOT_BUTTON))
+        {
+            (*game_p__shoot_flags)[0] = true;
+        }
+        else
+        {
+            (*game_p__shoot_flags)[0] = false;
+        }
+        if (glfwGetKey(window, SHIP_1_ROTATE_BUTTON))
         {
             (*game_p__rotate_flags)[1] = true;
         }
@@ -91,13 +107,45 @@ void OpenGL::ProcessInput(GLFWwindow* window)
         {
             (*game_p__rotate_flags)[1] = false;
         }
-        if (glfwGetKey(window, GLFW_KEY_Z))
+        if (glfwGetKey(window, SHIP_1_SHOOT_BUTTON))
         {
-            (*game_p__rotate_flags)[0] = true;
+            (*game_p__shoot_flags)[1] = true;
         }
         else
         {
-            (*game_p__rotate_flags)[0] = false;
+            (*game_p__shoot_flags)[1] = false;
+        }
+        if (glfwGetKey(window, SHIP_2_ROTATE_BUTTON))
+        {
+            (*game_p__rotate_flags)[2] = true;
+        }
+        else
+        {
+            (*game_p__rotate_flags)[2] = false;
+        }
+        if (glfwGetKey(window, SHIP_2_SHOOT_BUTTON))
+        {
+            (*game_p__shoot_flags)[2] = true;
+        }
+        else
+        {
+            (*game_p__shoot_flags)[2] = false;
+        }
+        if (glfwGetKey(window, SHIP_3_ROTATE_BUTTON))
+        {
+            (*game_p__rotate_flags)[3] = true;
+        }
+        else
+        {
+            (*game_p__rotate_flags)[3] = false;
+        }
+        if (glfwGetKey(window, SHIP_3_SHOOT_BUTTON))
+        {
+            (*game_p__shoot_flags)[3] = true;
+        }
+        else
+        {
+            (*game_p__shoot_flags)[3] = false;
         }
     }
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -196,12 +244,14 @@ void OpenGL::InitBuffers()
 {
     Vec2F points[VERTEX_ARRAY_LENGTH];
 
-    points[0].Set(0.0f, 0.5f);
-    points[1].Set(sqrt(3.0f) / 4.0f, -0.25f);
-    points[2].Set(-points[1].x, -0.25f);
+    points[0].Set(1.0f, 1.0f);
+    points[1].Set(-1.0f, 1.0f);
+    points[2].Set(1.0f, -1.0f);
+    points[3].Set(-1.0f, -1.0f);
+    points[4].Set(-1.0f, 1.0f);
+    points[5].Set(1.0f, -1.0f);
 
-    pilot_buffer.Initialisate(points, 3);
-    ship_buffer.Initialisate(points, 3);
+    bullet_buffer.Initialisate(points, 6);
 
     points[0].Set(1.0f, 1.0f);
     points[1].Set(0.0f, 1.0f);
@@ -210,8 +260,8 @@ void OpenGL::InitBuffers()
     points[4].Set(0.0f, 1.0f);
     points[5].Set(1.0f, 0.0f);
 
-    button_buffer.Initialisate(points, 6);
     rectangle_buffer.Initialisate(points, 6);
+    button_buffer.Initialisate(points, 6);
  
     points[0].Set(-1.0f, 0.0f);
     points[1].Set(0.0f, 1.0f);
@@ -222,7 +272,12 @@ void OpenGL::InitBuffers()
 
     controler_buffer.Initialisate(points, 6);
 
-    //right åriangle
+    points[0].Set(0.0f, 0.5f);
+    points[1].Set(sqrt(3.0f) / 4.0f, -0.25f);
+    points[2].Set(-points[1].x, -0.25f);
+
+    pilot_buffer.Initialisate(points, 3);
+    ship_buffer.Initialisate(points, 3);
 }
 
 void OpenGL::InitGlad()
@@ -281,17 +336,44 @@ void OpenGL::DrawFrame()
         temp__game__camera_size = game_p__camera->GetSize();
 
         DrawCurrentMap();
-        DrawTurels();
+        if (*game_p__turels_count > 0)
+        {
+            DrawTurels();
+        }
 
-        DrawAsteroids();
-        DrawBombs();
-        DrawBonuses();
-        DrawBullets();
-        DrawKnifes();
-        DrawMegaLasers();
+        if (*game_p__asteroids_count > 0)
+        {
+            DrawAsteroids();
+        }
+        if (*game_p__bombs_count > 0)
+        {
+            DrawBombs();
+        }
+        if (*game_p__bonuses_count > 0)
+        {
+            DrawBonuses();
+        }
+        if (*game_p__bullets_count > 0)
+        {
+            DrawBullets();
+        }
+        if (*game_p__knifes_count > 0)
+        {
+            DrawKnifes();
+        }
+        if (*game_p__mega_lasers_count > 0)
+        {
+            DrawMegaLasers();
+        }
 
-        DrawPilots();
-        DrawShips();
+        if (*game_p__pilots_count > 0)
+        {
+            DrawPilots();
+        }
+        if (*game_p__ships_count > 0)
+        {
+            DrawShips();
+        }
     }
 
     DrawCurrentMenu();
@@ -344,7 +426,17 @@ void OpenGL::DrawObject(Bonus* bonus, bool update_shader)
 
 void OpenGL::DrawObject(Bullet* bullet, bool update_shader)
 {
-
+    if (update_shader)
+    {
+        bullet_buffer.Use();
+        bullet_shader.Use();
+        bullet_shader.SetUniform("scale", window_scale);
+        bullet_shader.SetUniform("camera_position", temp__game__camera_position);
+        bullet_shader.SetUniform("camera_size", temp__game__camera_size);
+    }
+    bullet_shader.SetUniform("position", bullet->GetPosition());
+    bullet_shader.SetUniform("size", bullet->radius);
+    bullet_buffer.Draw();
 }
 
 void OpenGL::DrawObject(Knife* knife, bool update_shader)
@@ -646,7 +738,7 @@ void OpenGL::DrawShips()
 
 void OpenGL::DrawTurels()
 {
-
+    int i = 0;
 }
 
 
@@ -725,7 +817,7 @@ void OpenGL::DrawIndicatedMenu(Menu* menu)
         controler_shader.SetUniform("scale", window_scale);
         for (EngineTypes::Menu::buttons_count_t button = 0; button < menu->GetButtonsCount(); button++)
         {
-            DrawObject(&menu->current_buttons[button], true);
+        //    DrawObject(&menu->current_buttons[button], true);
         }
     }
     else

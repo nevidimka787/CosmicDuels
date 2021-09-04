@@ -1,5 +1,7 @@
 #include "Mat.h"
 
+#pragma warning(disable : 26451)
+
 Vec2D::Vec2D() :
 	x(0.0),
 	y(0.0)
@@ -18,22 +20,22 @@ Vec2D::Vec2D(double x, double y) : x(x), y(y)
 
 Vec2D Vec2D::operator+(Vec2D vector)
 {
-	return Vec2D(this->x + vector.x, this->y + vector.y);
+	return Vec2D(x + vector.x, y + vector.y);
 }
 
 Vec2D Vec2D::operator-(Vec2D vector)
 {
-	return Vec2D(this->x - vector.x, this->y - vector.y);
+	return Vec2D(x - vector.x, y - vector.y);
 }
 
 Vec2D Vec2D::operator-()
 {
-	return Vec2D(-this->x, -this->y);
+	return Vec2D(-x, -y);
 }
 
 Vec2D Vec2D::operator*(double value)
 {
-	return Vec2D(this->x * value, this->y * value);
+	return Vec2D(x * value, y * value);
 }
 
 double Vec2D::operator*(Vec2D vector)
@@ -48,7 +50,7 @@ Vec2D Vec2D::operator*(Mat2D matrix)
 
 Vec2D Vec2D::operator/(double value)
 {
-	return Vec2D(this->x / value, this->y / value);
+	return Vec2D(x / value, y / value);
 }
 
 void Vec2D::operator+=(Vec2D vector)
@@ -82,14 +84,72 @@ void Vec2D::operator/=(double value)
 	y /= value;
 }
 
+bool Vec2D::operator||(Vec2D vector)
+{
+	return x == 0.0 && vector.x == 0.0 ||
+		y == 0.0 && vector.y == 0.0 ||
+		x / y == vector.x / vector.y ||
+		y / x == vector.y / vector.x;
+}
+
+bool Vec2D::operator==(double value)
+{
+	return (x == value && y == value);
+}
+
 bool Vec2D::operator==(Vec2D vector)
 {
-	return (this->x == vector.x && this->y == vector.y);
+	return (x == vector.x && y == vector.y);
+}
+
+bool Vec2D::operator!=(double value)
+{
+	return (x != value || y != value);
 }
 
 bool Vec2D::operator!=(Vec2D vector)
 {
-	return (this->x != vector.x && this->y != vector.y);
+	return (x != vector.x || y != vector.y);
+}
+
+bool Vec2D::operator>(double value)
+{
+	return (x > value && y > value);
+}
+
+bool Vec2D::operator>(Vec2D vector)
+{
+	return (x > vector.x && y > vector.y);
+}
+
+bool Vec2D::operator>=(double value)
+{
+	return (x >= value && y >= value);
+}
+
+bool Vec2D::operator>=(Vec2D vector)
+{
+	return (x >= vector.x && y >= vector.y);
+}
+
+bool Vec2D::operator<(double value)
+{
+	return (x < value && y < value);
+}
+
+bool Vec2D::operator<(Vec2D vector)
+{
+	return (x < vector.x && y < vector.y);
+}
+
+bool Vec2D::operator<=(double value)
+{
+	return (x <= value && y <= value);
+}
+
+bool Vec2D::operator<=(Vec2D vector)
+{
+	return (x <= vector.x && y <= vector.y);
 }
 
 Vec2D::operator Vec2F()
@@ -226,22 +286,22 @@ Vec2F::Vec2F(float x, float y) :
 
 Vec2F Vec2F::operator+(Vec2F vector)
 {
-	return Vec2F(this->x + vector.x, this->y + vector.y);
+	return Vec2F(x + vector.x, y + vector.y);
 }
 
 Vec2F Vec2F::operator-(Vec2F vector)
 {
-	return Vec2F(this->x - vector.x, this->y - vector.y);
+	return Vec2F(x - vector.x, y - vector.y);
 }
 
 Vec2F Vec2F::operator-()
 {
-	return Vec2F(-this->x, -this->y);
+	return Vec2F(-x, -y);
 }
 
 Vec2F Vec2F::operator*(float mult)
 {
-	return Vec2F(this->x * mult, this->y * mult);
+	return Vec2F(x * mult, y * mult);
 }
 
 float Vec2F::operator*(Vec2F vector)
@@ -257,7 +317,7 @@ Vec2F Vec2F::operator*(Mat2F matrix)
 Vec2F Vec2F::operator/(float value)
 {
 
-	return Vec2F(this->x / value, this->y / value);
+	return Vec2F(x / value, y / value);
 }
 
 void Vec2F::operator+=(Vec2F vector)
@@ -291,14 +351,72 @@ void Vec2F::operator/=(float value)
 	y /= value;
 }
 
+bool Vec2F::operator||(Vec2F vector)
+{
+	return x == 0.0 && vector.x == 0.0 ||
+		y == 0.0 && vector.y == 0.0 ||
+		x / y == vector.x / vector.y ||
+		y / x == vector.y / vector.x;
+}
+
+bool Vec2F::operator==(float value)
+{
+	return x == value && y == value;
+}
+
 bool Vec2F::operator==(Vec2F vector)
 {
 	return x == vector.x && y == vector.y;
 }
 
+bool Vec2F::operator!=(float value)
+{
+	return (x != value || y != value);
+}
+
 bool Vec2F::operator!=(Vec2F vector)
 {
-	return (this->x != vector.x && this->y != vector.y);
+	return (x != vector.x || y != vector.y);
+}
+
+bool Vec2F::operator>(float value)
+{
+	return (x > value && y > value);
+}
+
+bool Vec2F::operator>(Vec2F vector)
+{
+	return (x > vector.x && y > vector.y);
+}
+
+bool Vec2F::operator>=(float value)
+{
+	return (x >= value && y >= value);
+}
+
+bool Vec2F::operator>=(Vec2F vector)
+{
+	return (x >= vector.x && y >= vector.y);
+}
+
+bool Vec2F::operator<(float value)
+{
+	return (x < value && y < value);
+}
+
+bool Vec2F::operator<(Vec2F vector)
+{
+	return (x < vector.x && y < vector.y);
+}
+
+bool Vec2F::operator<=(float value)
+{
+	return (x <= value && y <= value);
+}
+
+bool Vec2F::operator<=(Vec2F vector)
+{
+	return (x <= vector.x && y <= vector.y);
 }
 
 Vec2F::operator Vec2D()
