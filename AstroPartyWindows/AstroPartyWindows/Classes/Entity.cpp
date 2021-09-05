@@ -279,6 +279,7 @@ void Entity::Set(Entity* entity)
 	angle = entity->angle;
 	direction = entity->direction;
 	exist = entity->exist;
+	model_matrix = entity->model_matrix;
 	position = entity->position;
 	radius = entity->radius;
 }
@@ -311,6 +312,7 @@ void Entity::SetPosition(Vec2F* position)
 void Entity::Move(Vec2F* delta)
 {
 	position += *delta;
+	model_matrix.TransportThis(delta);
 }
 
 void Entity::UpdateAngle()
@@ -321,6 +323,13 @@ void Entity::UpdateAngle()
 void Entity::UpdateDirection()
 {
 	direction = Vec2F(1.0f, 0.0f).Rotate(angle);
+}
+
+void Entity::UpdateMatrix()
+{
+	model_matrix.SetByAngle(angle);
+	model_matrix.TransportThis(position);
+	model_matrix.Scale(Vec2F(4.5f, 3.0f));
 }
 
 void Entity::operator=(Entity entity)
@@ -380,15 +389,6 @@ void DynamicEntity::AddAngularVelocity(float angular_velocity)
 	this->angular_velocity += angular_velocity;
 }
 
-void DynamicEntity::AddGravityForce(float gravity_coeffisient, Entity* forced_entity)
-{
-	Vec2F grav_vec = (forced_entity->GetPosition() - position).Normalize();
-	float* x_temp_coeff = &grav_vec.x;
-	float* y = &grav_vec.y;
-	*x_temp_coeff = gravity_coeffisient / (*x_temp_coeff * *x_temp_coeff + *y * *y);
-	force += grav_vec * *x_temp_coeff;
-}
-
 void DynamicEntity::AddGravityForce(float gravity_coeffisient, Vec2F* forced_point)
 {
 	Vec2F grav_vec = (*forced_point - position).Normalize();
@@ -396,6 +396,15 @@ void DynamicEntity::AddGravityForce(float gravity_coeffisient, Vec2F* forced_poi
 	float* y = &grav_vec.y;
 	*x_temp_coeff = gravity_coeffisient / (*x_temp_coeff * *x_temp_coeff + *y * *y);
 	force += grav_vec * *x_temp_coeff;
+}
+
+void DynamicEntity::AddGravityForce(float gravity_coeffisient, Vec2F forced_point)
+{
+	float distance = (forced_point - position).GetLength();
+	Vec2F grav_vec = (forced_point - position).Normalize();
+	grav_vec *= gravity_coeffisient / distance / distance;
+	std::cout << "Grav vec len: " << grav_vec.GetLength() << std::endl;
+	force += grav_vec;// * *x_temp_coeff;
 }
 
 bool DynamicEntity::Collision(DynamicEntity* entity)
@@ -599,6 +608,129 @@ Vec2F DynamicEntity::GetVelocity()
 {
 	return velocity;
 }
+
+Segment DynamicEntity::GetTreck()
+{
+	return Segment(&position, &velocity);
+}
+
+bool DynamicEntity::IsCollision(Vec2F* point)
+{
+	return Segment(position, velocity).GetDistance(point) < radius;
+}
+
+bool DynamicEntity::IsCollision(Line* line)
+{
+	return Segment(position, velocity).GetDistance(line) < radius;
+}
+
+bool DynamicEntity::IsCollision(Beam* beam)
+{
+	return Segment(position, velocity).GetDistance(beam) < radius;
+}
+
+bool DynamicEntity::IsCollision(Segment* segment)
+{
+	return Segment(position, velocity).GetDistance(segment) < radius;
+}
+
+bool DynamicEntity::IsCollision(DynamicEntity* entity)
+{
+	return Segment(position, velocity).GetDistance(entity->GetPosition()) < radius + entity->radius;
+}
+
+bool DynamicEntity::IsCollision(StaticEntity* entity)
+{
+	return Segment(position, velocity).GetDistance(entity->GetPosition()) < radius + entity->radius;
+}
+
+bool DynamicEntity::IsCollision(Rectangle* rectangle)
+{
+	Segment side = rectangle->GetUpSide();
+	if (Segment(position, velocity).GetDistance(&side) < radius)
+	{
+		std::cout << "Distance to up side: " << Segment(position, velocity).GetDistance(&side) << std::endl;
+		return true;
+	}
+	side = rectangle->GetLeftSide();
+	if (Segment(position, velocity).GetDistance(&side) < radius)
+	{	
+		std::cout << "Distance to left side: " << Segment(position, velocity).GetDistance(&side) << std::endl;
+		return true;
+	}
+	side = rectangle->GetDownSide();
+	if (Segment(position, velocity).GetDistance(&side) < radius)
+	{
+		std::cout << "Distance to down side: " << Segment(position, velocity).GetDistance(&side) << std::endl;
+		return true;
+	}
+	side = rectangle->GetRightSide();
+	if (Segment(position, velocity).GetDistance(&side) < radius)
+	{
+		std::cout << "Distance to lrighteft side: " << Segment(position, velocity).GetDistance(&side) << std::endl;
+		return true;
+	}
+	return false;
+}
+
+bool DynamicEntity::IsCollision(Cyrcle* cyrcle)
+{
+	return Segment(position, velocity).GetDistance(cyrcle->GetPosition()) < radius + cyrcle->GetRadius();
+}
+
+bool DynamicEntity::IsCollision(Polygon* polygon)
+{
+	return false;
+}
+
+bool DynamicEntity::IsCollision(Map* map)
+{
+	void* element;
+	if (map->cyrcles_array_length > 0)
+	{
+		for (EngineTypes::Map::elements_array_length_t cyrcle = 0, found_cyrcle = 0; found_cyrcle < map->cyrcles_array_length; cyrcle++)
+		{
+			if (((Cyrcle*)(element = (void*)map->GetCyrclePointer(cyrcle)))->exist)
+			{
+				if (IsCollision((Cyrcle*)element))
+				{
+					return true;
+				}
+				found_cyrcle++;
+			}
+		}
+	}
+	if (map->polygons_array_length > 0)
+	{
+		for (EngineTypes::Map::elements_array_length_t polygon = 0, found_polygon = 0; found_polygon < map->polygons_array_length; polygon++)
+		{
+			if (((Polygon*)(element = (void*)map->GetPolygonPointer(polygon)))->exist)
+			{
+				if (IsCollision((Polygon*)element))
+				{
+					return true;
+				}
+				found_polygon++;
+			}
+		}
+	}
+	if (map->rectangles_array_length > 0)
+	{
+		for (EngineTypes::Map::elements_array_length_t rectangle = 0, found_rectangle = 0; found_rectangle < map->rectangles_array_length; rectangle++)
+		{
+			if (((Rectangle*)(element = (void*)map->GetRectanglePointer(rectangle)))->exist)
+			{
+				if (IsCollision((Rectangle*)element))
+				{
+					return true;
+				}
+				found_rectangle++;
+			}
+		}
+	}
+	return false;
+}
+
 //The function updates position and velocity of entity and clears forces' data.
 void DynamicEntity::Update()
 {
@@ -1117,24 +1249,52 @@ ControledEntity::ControledEntity() :
 	shoot_input_value_pointer(nullptr),
 	player_team_number(0)
 {
+	heat_box_vertexes_array_length = 3;
+	heat_box_vertexes_array = new Vec2F[heat_box_vertexes_array_length];
+	heat_box_vertexes_array[0].Set(radius, 0.0f);
+	heat_box_vertexes_array[1].Set(-0.25f, sqrt(3.0f) / 4.0f);
+	heat_box_vertexes_array[2].Set(-0.25f, sqrt(3.0f) / -4.0f);
 }
 
 ControledEntity::ControledEntity(const ControledEntity& controled_entity) :
 	DynamicEntity(controled_entity),
+	heat_box_vertexes_array(new Vec2F[controled_entity.heat_box_vertexes_array_length]),
+	heat_box_vertexes_array_length(controled_entity.heat_box_vertexes_array_length),
 	player_number(controled_entity.player_number),
 	player_team_number(controled_entity.player_team_number),
 	rotate_input_value_pointer(controled_entity.rotate_input_value_pointer),
 	shoot_input_value_pointer(controled_entity.shoot_input_value_pointer)
 {
+	for (EngineTypes::ControledEntity::heat_box_vertexes_count_t vertex = 0; vertex < heat_box_vertexes_array_length; vertex++)
+	{
+		heat_box_vertexes_array[vertex] = controled_entity.heat_box_vertexes_array[vertex];
+	}
 }
 
-ControledEntity::ControledEntity(Vec2F* position, Vec2F* velocity, float radius, GameTypes::players_count_t player_number, GameTypes::players_count_t player_team_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, bool exist) :
+ControledEntity::ControledEntity(Vec2F* position, Vec2F* velocity, float radius, GameTypes::players_count_t player_number, GameTypes::players_count_t player_team_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* heat_box_vertexes_array, EngineTypes::ControledEntity::heat_box_vertexes_count_t heat_box_vertexes_array_length, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, bool exist) :
 	DynamicEntity(position, velocity, radius, angle, angular_velocity, force_collision_coeffisient, force_resistance_air_coefficient, exist),
 	player_number(player_number),
 	player_team_number(player_team_number),
 	rotate_input_value_pointer(rotate_input_value_pointer),
 	shoot_input_value_pointer(shoot_input_value_pointer)
 {
+	if (heat_box_vertexes_array_length < 3 || heat_box_vertexes_array == nullptr)
+	{
+		this->heat_box_vertexes_array_length = 3;
+		this->heat_box_vertexes_array = new Vec2F[3];
+		this->heat_box_vertexes_array[0].Set(radius, 0.0f);
+		this->heat_box_vertexes_array[1].Set(-0.25f, sqrt(3.0f) / 4.0f);
+		this->heat_box_vertexes_array[2].Set(-0.25f, sqrt(3.0f) / -4.0f);
+		return;
+	}
+
+	this->heat_box_vertexes_array_length = heat_box_vertexes_array_length;
+	this->heat_box_vertexes_array = new Vec2F[heat_box_vertexes_array_length];
+
+	for (EngineTypes::ControledEntity::heat_box_vertexes_count_t vertex = 0; vertex < heat_box_vertexes_array_length; vertex++)
+	{
+		this->heat_box_vertexes_array[vertex] = heat_box_vertexes_array[vertex];
+	}
 }
 
 GameTypes::players_count_t ControledEntity::GetPlayerNumber()
@@ -1157,6 +1317,119 @@ bool ControledEntity::GetShootInputValue()
 	return *(bool*)shoot_input_value_pointer;
 }
 
+bool ControledEntity::HeatBoxIsCollision(Bullet* bullet)
+{
+	//Frame of reference set to this entity.
+	Segment segment = Segment(bullet->GetPosition(), bullet->GetVelocity() - velocity);
+	//controled entity side
+	Segment ce_side;
+	Vec2F 
+		point1 = heat_box_vertexes_array[heat_box_vertexes_array_length - 1] * model_matrix,
+		point2 = heat_box_vertexes_array[0] * model_matrix;
+	ce_side.Set(point1, point2);
+	if (segment.GetDistance(&ce_side) < bullet->radius + radius)
+	{
+		return true;
+	}
+	for (EngineTypes::ControledEntity::heat_box_vertexes_count_t vertex = 1; vertex < heat_box_vertexes_array_length; vertex++)
+	{
+		point1 = point2;
+		point2 = heat_box_vertexes_array[vertex] * model_matrix;
+		ce_side.Set(point1, point2);
+		if (segment.GetDistance(&ce_side) < bullet->radius + radius)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+bool ControledEntity::HeatBoxIsCollision(Knife* knife)
+{
+	//Frame of reference set to this entity.
+	Segment segment = knife->GetSegment();
+	//controled entity side
+	Segment ce_side;
+	Vec2F
+		point1 = heat_box_vertexes_array[heat_box_vertexes_array_length - 1] * model_matrix,
+		point2 = heat_box_vertexes_array[0] * model_matrix;
+
+	ce_side.Set(point1, point2);
+	if (segment.GetDistance(&ce_side) < radius)
+	{
+		return true;
+	}
+	for (EngineTypes::ControledEntity::heat_box_vertexes_count_t vertex = 1; vertex < heat_box_vertexes_array_length; vertex++)
+	{
+		point1 = point2;
+		point2 = heat_box_vertexes_array[vertex] * model_matrix;
+		ce_side.Set(point1, point2);
+		if (segment.GetDistance(&ce_side) < radius)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+bool ControledEntity::HeatBoxIsCollision(Laser* laser)
+{
+
+	//Frame of reference set to this entity.
+	Beam beam = laser->GetBeam();
+	//controled entity side
+	Segment ce_side;
+	Vec2F
+		point1 = heat_box_vertexes_array[heat_box_vertexes_array_length - 1] * model_matrix,
+		point2 = heat_box_vertexes_array[0] * model_matrix;
+
+	ce_side.Set(point1, point2);
+	if (beam.GetDistance(&ce_side) < radius)
+	{
+		return true;
+	}
+	for (EngineTypes::ControledEntity::heat_box_vertexes_count_t vertex = 1; vertex < heat_box_vertexes_array_length; vertex++)
+	{
+		point1 = point2;
+		point2 = heat_box_vertexes_array[vertex] * model_matrix;
+		ce_side.Set(point1, point2);
+		if (beam.GetDistance(&ce_side) < radius)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+bool ControledEntity::HeatBoxIsCollision(MegaLaser* mega_laser)
+{
+	//Frame of reference set to this entity.
+	Segment segment = mega_laser->GetSegment();
+	//controled entity side
+	Segment ce_side;
+	Vec2F
+		point1 = heat_box_vertexes_array[heat_box_vertexes_array_length - 1] * model_matrix,
+		point2 = heat_box_vertexes_array[0] * model_matrix;
+
+	ce_side.Set(point1, point2);
+	if (segment.GetDistance(&ce_side) < radius)
+	{
+		return true;
+	}
+	for (EngineTypes::ControledEntity::heat_box_vertexes_count_t vertex = 1; vertex < heat_box_vertexes_array_length; vertex++)
+	{
+		point1 = point2;
+		point2 = heat_box_vertexes_array[vertex] * model_matrix;
+		ce_side.Set(point1, point2);
+		if (segment.GetDistance(&ce_side) < radius)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+
 void ControledEntity::Set(ControledEntity* controled_entity)
 {
 	angle = controled_entity->angle;
@@ -1165,6 +1438,7 @@ void ControledEntity::Set(ControledEntity* controled_entity)
 	exist = controled_entity->exist;
 	force_collision_coeffisient = controled_entity->force_collision_coeffisient;
 	force_resistance_air_coefficient = controled_entity->force_resistance_air_coefficient;
+	heat_box_vertexes_array_length = controled_entity->heat_box_vertexes_array_length;
 	player_number = controled_entity->player_number;
 	player_team_number = controled_entity->player_team_number;
 	position = controled_entity->position;
@@ -1172,9 +1446,16 @@ void ControledEntity::Set(ControledEntity* controled_entity)
 	rotate_input_value_pointer = controled_entity->rotate_input_value_pointer;
 	shoot_input_value_pointer = controled_entity->shoot_input_value_pointer;
 	velocity = controled_entity->velocity;
+
+	delete[] heat_box_vertexes_array;
+	heat_box_vertexes_array = new Vec2F[heat_box_vertexes_array_length];
+	for (EngineTypes::ControledEntity::heat_box_vertexes_count_t vertex = 0; vertex < heat_box_vertexes_array_length; vertex++)
+	{
+		heat_box_vertexes_array[vertex] = controled_entity->heat_box_vertexes_array[vertex];
+	}
 }
 
-void ControledEntity::Set(Vec2F* position, Vec2F* velocity, float radius, GameTypes::players_count_t player_number, GameTypes::players_count_t player_team_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, bool exist)
+void ControledEntity::Set(Vec2F* position, Vec2F* velocity, float radius, GameTypes::players_count_t player_number, GameTypes::players_count_t player_team_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* heat_box_vertexes_array, EngineTypes::ControledEntity::heat_box_vertexes_count_t heat_box_vertexes_array_length, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, bool exist)
 {
 	this->angle = angle;
 	this->angular_velocity = angular_velocity;
@@ -1182,6 +1463,7 @@ void ControledEntity::Set(Vec2F* position, Vec2F* velocity, float radius, GameTy
 	this->exist = exist;
 	this->force_collision_coeffisient = force_collision_coeffisient;
 	this->force_resistance_air_coefficient = force_resistance_air_coefficient;
+	this->heat_box_vertexes_array_length = heat_box_vertexes_array_length;
 	this->player_number = player_number;
 	this->player_team_number = player_team_number;
 	this->position = *position;
@@ -1189,6 +1471,13 @@ void ControledEntity::Set(Vec2F* position, Vec2F* velocity, float radius, GameTy
 	this->rotate_input_value_pointer = rotate_input_value_pointer;
 	this->shoot_input_value_pointer = shoot_input_value_pointer;
 	this->velocity = *velocity;
+
+	delete[] this->heat_box_vertexes_array;
+	this->heat_box_vertexes_array = new Vec2F[heat_box_vertexes_array_length];
+	for (EngineTypes::ControledEntity::heat_box_vertexes_count_t vertex = 0; vertex < heat_box_vertexes_array_length; vertex++)
+	{
+		this->heat_box_vertexes_array[vertex] = heat_box_vertexes_array[vertex];
+	}
 }
 
 void ControledEntity::operator=(ControledEntity controled_entity)
@@ -1200,6 +1489,7 @@ void ControledEntity::operator=(ControledEntity controled_entity)
 	force = controled_entity.force;
 	force_collision_coeffisient = controled_entity.force_collision_coeffisient;
 	force_resistance_air_coefficient = controled_entity.force_resistance_air_coefficient;
+	heat_box_vertexes_array_length = controled_entity.heat_box_vertexes_array_length;
 	player_number = controled_entity.player_number;
 	player_team_number = controled_entity.player_team_number;
 	position = controled_entity.position;
@@ -1207,11 +1497,18 @@ void ControledEntity::operator=(ControledEntity controled_entity)
 	rotate_input_value_pointer = controled_entity.rotate_input_value_pointer;
 	shoot_input_value_pointer = controled_entity.shoot_input_value_pointer;
 	velocity = controled_entity.velocity;
+
+	delete[] heat_box_vertexes_array;
+	heat_box_vertexes_array = new Vec2F[heat_box_vertexes_array_length];
+	for (EngineTypes::ControledEntity::heat_box_vertexes_count_t vertex = 0; vertex < heat_box_vertexes_array_length; vertex++)
+	{
+		heat_box_vertexes_array[vertex] = controled_entity.heat_box_vertexes_array[vertex];
+	}
 }
 
 ControledEntity::~ControledEntity()
 {
-
+	delete[] heat_box_vertexes_array;
 }
 
 
@@ -1232,8 +1529,8 @@ Ship::Ship(const Ship& ship) :
 {
 }
 
-Ship::Ship(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t player_number, GameTypes::players_count_t player_team_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, float angle, EngineTypes::Bonus::bonus_t buffs_bonuses, EngineTypes::Bonus::bonus_t active_baffs, GameTypes::tic_t unbrakable, float angular_velocity, float radius, float force_collision_coeffisient, float force_resistance_air_coefficient, bool exist) :
-	ControledEntity(position, velocity, radius, player_number, player_team_number, rotate_input_value_pointer, shoot_input_value_pointer, angle, angular_velocity, force_collision_coeffisient, force_resistance_air_coefficient, exist),
+Ship::Ship(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t player_number, GameTypes::players_count_t player_team_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* heat_box_vertexes_array, EngineTypes::ControledEntity::heat_box_vertexes_count_t heat_box_vertexes_array_length, float angle, EngineTypes::Bonus::bonus_t buffs_bonuses, EngineTypes::Bonus::bonus_t active_baffs, GameTypes::tic_t unbrakable, float angular_velocity, float radius, float force_collision_coeffisient, float force_resistance_air_coefficient, bool exist) :
+	ControledEntity(position, velocity, radius, player_number, player_team_number, rotate_input_value_pointer, shoot_input_value_pointer, heat_box_vertexes_array, heat_box_vertexes_array_length, angle, angular_velocity, force_collision_coeffisient, force_resistance_air_coefficient, exist),
 	buffs_bonuses(buffs_bonuses),
 	active_baffs(active_baffs),
 	unbrakable(unbrakable)
@@ -1253,7 +1550,7 @@ void Ship::BreakShield()
 
 Bullet Ship::CreateBullet()
 {
-	Vec2F temp_position = direction * radius + position;
+	Vec2F temp_position = direction * (radius + BULLET_DEFAULT_RADIUS) + position;
 	Vec2F temp_velocity = direction * BULLET_DEFAULT_VELOCITY + velocity;
 	AddForceAlongDirection(-SHIP_SHOOT_FORCE);
 	return Bullet(&temp_position, &temp_velocity, player_number, player_team_number);
@@ -1326,7 +1623,7 @@ Knife Ship::CreateKnife(uint8_t knife_number)
 Pilot Ship::Destroy()
 {
 	Vec2F pilot_new_velocity = velocity * 2.0f;
-	return Pilot(&position, &pilot_new_velocity, player_number, player_team_number, rotate_input_value_pointer, shoot_input_value_pointer, angle);
+	return Pilot(&position, &pilot_new_velocity, player_number, player_team_number, rotate_input_value_pointer, shoot_input_value_pointer, nullptr, 0, angle);
 }
 
 EngineTypes::Bonus::bonus_t Ship::GetActiveBaffs()
@@ -1372,6 +1669,7 @@ void Ship::Set(Ship* ship)
 	exist = ship->exist;
 	force_collision_coeffisient = ship->force_collision_coeffisient;
 	force_resistance_air_coefficient = ship->force_resistance_air_coefficient;
+	heat_box_vertexes_array_length = ship->heat_box_vertexes_array_length;
 	player_number = ship->player_number;
 	player_team_number = ship->player_team_number;
 	position = ship->position;
@@ -1380,9 +1678,16 @@ void Ship::Set(Ship* ship)
 	shoot_input_value_pointer = ship->shoot_input_value_pointer;
 	unbrakable = ship->unbrakable;
 	velocity = ship->velocity;
+
+	delete[] heat_box_vertexes_array;
+	heat_box_vertexes_array = new Vec2F[heat_box_vertexes_array_length];
+	for (EngineTypes::ControledEntity::heat_box_vertexes_count_t vertex = 0; vertex < heat_box_vertexes_array_length; vertex++)
+	{
+		heat_box_vertexes_array[vertex] = ship->heat_box_vertexes_array[vertex];
+	}
 }
 
-void Ship::Set(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t player_number, GameTypes::players_count_t player_team_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, float angle, EngineTypes::Bonus::bonus_t buffs_bonuses, EngineTypes::Bonus::bonus_t active_baffs, GameTypes::tic_t unbrakable, float angular_velocity, float radius, float force_collision_coeffisient, float force_resistance_air_coefficient, bool exist)
+void Ship::Set(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t player_number, GameTypes::players_count_t player_team_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* heat_box_vertexes_array, EngineTypes::ControledEntity::heat_box_vertexes_count_t heat_box_vertexes_array_length, float angle, EngineTypes::Bonus::bonus_t buffs_bonuses, EngineTypes::Bonus::bonus_t active_baffs, GameTypes::tic_t unbrakable, float angular_velocity, float radius, float force_collision_coeffisient, float force_resistance_air_coefficient, bool exist)
 {
 	this->active_baffs = active_baffs;
 	this->angle = angle;
@@ -1392,6 +1697,7 @@ void Ship::Set(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t play
 	this->exist = exist;
 	this->force_collision_coeffisient = force_collision_coeffisient;
 	this->force_resistance_air_coefficient = force_resistance_air_coefficient;
+	this->heat_box_vertexes_array_length = heat_box_vertexes_array_length;
 	this->player_number = player_number;
 	this->player_team_number = player_team_number;
 	this->position = *position;
@@ -1400,6 +1706,13 @@ void Ship::Set(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t play
 	this->shoot_input_value_pointer = shoot_input_value_pointer;
 	this->unbrakable = unbrakable;
 	this->velocity = *velocity;
+
+	delete[] this->heat_box_vertexes_array;
+	this->heat_box_vertexes_array = new Vec2F[heat_box_vertexes_array_length];
+	for (EngineTypes::ControledEntity::heat_box_vertexes_count_t vertex = 0; vertex < heat_box_vertexes_array_length; vertex++)
+	{
+		this->heat_box_vertexes_array[vertex] = heat_box_vertexes_array[vertex];
+	}
 }
 
 bool Ship::SpendBonus(EngineTypes::Bonus::bonus_t bonus)
@@ -1446,6 +1759,7 @@ void Ship::operator=(Ship ship)
 	force = ship.force;
 	force_collision_coeffisient = ship.force_collision_coeffisient;
 	force_resistance_air_coefficient = ship.force_resistance_air_coefficient;
+	heat_box_vertexes_array_length = ship.heat_box_vertexes_array_length;
 	player_number = ship.player_number;
 	player_team_number = ship.player_team_number;
 	position = ship.position;
@@ -1454,6 +1768,13 @@ void Ship::operator=(Ship ship)
 	shoot_input_value_pointer = ship.shoot_input_value_pointer;
 	unbrakable = ship.unbrakable;
 	velocity = ship.velocity;
+
+	delete[] heat_box_vertexes_array;
+	heat_box_vertexes_array = new Vec2F[heat_box_vertexes_array_length];
+	for (EngineTypes::ControledEntity::heat_box_vertexes_count_t vertex = 0; vertex < heat_box_vertexes_array_length; vertex++)
+	{
+		heat_box_vertexes_array[vertex] = ship.heat_box_vertexes_array[vertex];
+	}
 }
 
 Ship::~Ship()
@@ -1471,45 +1792,61 @@ Pilot::Pilot(const Pilot& pilot) :
 {
 }
 
-Pilot::Pilot(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t player_number, GameTypes::players_count_t player_team_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, float angle, EngineTypes::Bonus::bonus_t buffs_bonuses, EngineTypes::Bonus::bonus_t active_baffs, GameTypes::tic_t unbrakable, float angular_velocity, float radius, float force_collision_coeffisient, float force_resistance_air_coefficient, bool exist) :
-	ControledEntity(position, velocity, radius, player_number, player_team_number, rotate_input_value_pointer, shoot_input_value_pointer, angle, angular_velocity, force_collision_coeffisient, force_resistance_air_coefficient, exist)
+Pilot::Pilot(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t player_number, GameTypes::players_count_t player_team_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* heat_box_vertexes_array, EngineTypes::ControledEntity::heat_box_vertexes_count_t heat_box_vertexes_array_length, float angle, EngineTypes::Bonus::bonus_t buffs_bonuses, EngineTypes::Bonus::bonus_t active_baffs, GameTypes::tic_t unbrakable, float angular_velocity, float radius, float force_collision_coeffisient, float force_resistance_air_coefficient, bool exist) :
+	ControledEntity(position, velocity, radius, player_number, player_team_number, rotate_input_value_pointer, shoot_input_value_pointer, heat_box_vertexes_array, heat_box_vertexes_array_length, angle, angular_velocity, force_collision_coeffisient, force_resistance_air_coefficient, exist)
 {
 }
 
 Ship Pilot::Respawn()
 {
 	Vec2F temp = Vec2F();
-	return Ship(&position, &velocity, player_number, player_team_number, rotate_input_value_pointer, shoot_input_value_pointer, angle);
+	return Ship(&position, &velocity, player_number, player_team_number, rotate_input_value_pointer, shoot_input_value_pointer, nullptr, 0, angle);
 }
 
-void Pilot::Set(Pilot* entity)
+void Pilot::Set(Pilot* pilot)
 {
-	angle = entity->angle;
-	angular_velocity = entity->angular_velocity;
-	direction = entity->direction;
-	exist = entity->exist;
-	player_number = entity->player_number;
-	player_team_number = entity->player_team_number;
-	position = entity->position;
-	rotate_input_value_pointer = entity->rotate_input_value_pointer;
-	shoot_input_value_pointer = entity->shoot_input_value_pointer;
-	velocity = entity->velocity;
+	angle = pilot->angle;
+	angular_velocity = pilot->angular_velocity;
+	direction = pilot->direction;
+	exist = pilot->exist;
+	heat_box_vertexes_array_length = pilot->heat_box_vertexes_array_length;
+	player_number = pilot->player_number;
+	player_team_number = pilot->player_team_number;
+	position = pilot->position;
+	rotate_input_value_pointer = pilot->rotate_input_value_pointer;
+	shoot_input_value_pointer = pilot->shoot_input_value_pointer;
+	velocity = pilot->velocity;
+
+	delete[] heat_box_vertexes_array;
+	heat_box_vertexes_array = new Vec2F[heat_box_vertexes_array_length];
+	for (EngineTypes::ControledEntity::heat_box_vertexes_count_t vertex = 0; vertex < heat_box_vertexes_array_length; vertex++)
+	{
+		heat_box_vertexes_array[vertex] = pilot->heat_box_vertexes_array[vertex];
+	}
 }
 
-void Pilot::operator=(Pilot entity)
+void Pilot::operator=(Pilot pilot)
 {
-	angle = entity.angle;
-	angular_velocity = entity.angular_velocity;
-	direction = entity.direction;
-	exist = entity.exist;
-	force = entity.force;
-	player_number = entity.player_number;
-	player_team_number = entity.player_team_number;
-	position = entity.position;
-	radius = entity.radius;
-	rotate_input_value_pointer = entity.rotate_input_value_pointer;
-	shoot_input_value_pointer = entity.shoot_input_value_pointer;
-	velocity = entity.velocity;
+	angle = pilot.angle;
+	angular_velocity = pilot.angular_velocity;
+	direction = pilot.direction;
+	exist = pilot.exist;
+	force = pilot.force;
+	heat_box_vertexes_array_length = pilot.heat_box_vertexes_array_length;
+	player_number = pilot.player_number;
+	player_team_number = pilot.player_team_number;
+	position = pilot.position;
+	radius = pilot.radius;
+	rotate_input_value_pointer = pilot.rotate_input_value_pointer;
+	shoot_input_value_pointer = pilot.shoot_input_value_pointer;
+	velocity = pilot.velocity;
+
+	delete[] heat_box_vertexes_array;
+	heat_box_vertexes_array = new Vec2F[heat_box_vertexes_array_length];
+	for (EngineTypes::ControledEntity::heat_box_vertexes_count_t vertex = 0; vertex < heat_box_vertexes_array_length; vertex++)
+	{
+		heat_box_vertexes_array[vertex] = pilot.heat_box_vertexes_array[vertex];
+	}
 }
 
 Pilot::~Pilot()
@@ -1926,23 +2263,6 @@ Bullet::Bullet(const Bullet& bullet) :
 Bullet::Bullet(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t player_master_number, GameTypes::players_count_t player_master_team_number, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, float radius, bool exist) :
 	KillerEntity(position, velocity, radius, player_master_number, player_master_team_number, angle, angular_velocity, force_collision_coeffisient, force_resistance_air_coefficient, exist)
 {
-}
-
-bool Bullet::IsCollision(Map* map)
-{
-	for (EngineTypes::Map::elements_array_length_t i = 0; i < map->rectangles_array_length; i++)
-	{
-		return Entity::IsCollision(map->GetRectanglePointer(i));
-	}
-	for (EngineTypes::Map::elements_array_length_t i = 0; i < map->cyrcles_array_length; i++)
-	{
-		return Entity::IsCollision(map->GetCyrclePointer(i));
-	}
-	for (EngineTypes::Map::elements_array_length_t i = 0; i < map->polygons_array_length; i++)
-	{
-		return Entity::IsCollision(map->GetPolygonPointer(i));
-	}
-	return false;
 }
 
 void Bullet::Set(Bullet* bullet)

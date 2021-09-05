@@ -251,6 +251,7 @@ void OpenGL::InitBuffers()
     points[4].Set(-1.0f, 1.0f);
     points[5].Set(1.0f, -1.0f);
 
+    bonus_buffer.Initialisate(points, 6);
     bullet_buffer.Initialisate(points, 6);
 
     points[0].Set(1.0f, 1.0f);
@@ -260,8 +261,8 @@ void OpenGL::InitBuffers()
     points[4].Set(0.0f, 1.0f);
     points[5].Set(1.0f, 0.0f);
 
-    rectangle_buffer.Initialisate(points, 6);
     button_buffer.Initialisate(points, 6);
+    rectangle_buffer.Initialisate(points, 6);
  
     points[0].Set(-1.0f, 0.0f);
     points[1].Set(0.0f, 1.0f);
@@ -270,7 +271,17 @@ void OpenGL::InitBuffers()
     points[4].Set(0.0f, -1.0f);
     points[5].Set(0.0f, 1.0f);
 
+    asteroid_buffer.Initialisate(points, 6);
     controler_buffer.Initialisate(points, 6);
+
+    points[0].Set(1.0f, 0.02f);
+    points[1].Set(0.0f, 0.02f);
+    points[2].Set(1.0f,-0.02f);
+    points[3].Set(0.0f,-0.02f);
+    points[4].Set(0.0f, 0.02f);
+    points[5].Set(1.0f,-0.02f);
+
+    mega_laser_buffer.Initialisate(points, 6);
 
     points[0].Set(0.0f, 0.5f);
     points[1].Set(sqrt(3.0f) / 4.0f, -0.25f);
@@ -331,7 +342,6 @@ void OpenGL::DrawFrame()
 
     if (*game_p__flag_all_entities_initialisate == true)
     {
-        game_p__camera->Focus(*game_p__ships, *game_p__pilots, GAME_PLAYERS_MAX_COUNT);
         temp__game__camera_position = game_p__camera->GetPosition();
         temp__game__camera_size = game_p__camera->GetSize();
 
@@ -341,10 +351,6 @@ void OpenGL::DrawFrame()
             DrawTurels();
         }
 
-        if (*game_p__asteroids_count > 0)
-        {
-            DrawAsteroids();
-        }
         if (*game_p__bombs_count > 0)
         {
             DrawBombs();
@@ -364,6 +370,10 @@ void OpenGL::DrawFrame()
         if (*game_p__mega_lasers_count > 0)
         {
             DrawMegaLasers();
+        }
+        if (*game_p__asteroids_count > 0)
+        {
+            DrawAsteroids();
         }
 
         if (*game_p__pilots_count > 0)
@@ -411,7 +421,17 @@ void OpenGL::DrawObject(DynamicEntity* dynamic_entity, bool update_shader)
 
 void OpenGL::DrawObject(Asteroid* asteroid, bool update_shader)
 {
-
+    if (update_shader)
+    {
+        asteroid_buffer.Use();
+        asteroid_shader.Use();
+        asteroid_shader.SetUniform("scale", window_scale);
+        asteroid_shader.SetUniform("camera_position", temp__game__camera_position);
+        asteroid_shader.SetUniform("camera_size", temp__game__camera_size);
+    }
+    asteroid_shader.SetUniform("position", asteroid->GetPosition());
+    asteroid_shader.SetUniform("size", 0.05f);
+    asteroid_buffer.Draw();
 }
 
 void OpenGL::DrawObject(Bomb* mine, bool update_shader)
@@ -421,7 +441,17 @@ void OpenGL::DrawObject(Bomb* mine, bool update_shader)
 
 void OpenGL::DrawObject(Bonus* bonus, bool update_shader)
 {
-
+    if (update_shader)
+    {
+        bonus_buffer.Use();
+        bonus_shader.Use();
+        bonus_shader.SetUniform("scale", window_scale);
+        bonus_shader.SetUniform("camera_position", temp__game__camera_position);
+        bonus_shader.SetUniform("camera_size", temp__game__camera_size);
+    }
+    bonus_shader.SetUniform("position", bonus->GetPosition());
+    bonus_shader.SetUniform("size", bonus->radius);
+    bonus_buffer.Draw();
 }
 
 void OpenGL::DrawObject(Bullet* bullet, bool update_shader)
@@ -446,7 +476,18 @@ void OpenGL::DrawObject(Knife* knife, bool update_shader)
 
 void OpenGL::DrawObject(MegaLaser* mega_laser, bool update_shader)
 {
-
+    if (update_shader)
+    {
+        mega_laser_buffer.Use();
+        mega_laser_shader.Use();
+        mega_laser_shader.SetUniform("scale", window_scale);
+        mega_laser_shader.SetUniform("camera_position", temp__game__camera_position);
+        mega_laser_shader.SetUniform("camera_size", temp__game__camera_size);
+    }
+    mega_laser_shader.SetUniform("angle", mega_laser->GetDirection().GetAbsoluteAngle());
+    mega_laser_shader.SetUniform("position", mega_laser->GetPosition());
+    mega_laser_shader.SetUniform("vector", mega_laser->GetDirection());
+    mega_laser_buffer.Draw();
 }
 
 void OpenGL::DrawObject(Pilot* pilot, bool update_shader)

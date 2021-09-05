@@ -351,6 +351,8 @@ public:
 	void UpdateBonuses();
 	//The function calculates the influence of entities on other entities. Any entity can be destroyed. New entities can be created.
 	void UpdateBullets();
+	//The function calculates the new camera's position and size.
+	void UpdateCamera();
 	//The function calculates the influence of entities on other entities. Any entity can be destroyed. New entities can be created.
 	void UpdateKnifes();
 	//The function calculates the influence of entities on other entities. Any entity can be destroyed. New entities can be created.

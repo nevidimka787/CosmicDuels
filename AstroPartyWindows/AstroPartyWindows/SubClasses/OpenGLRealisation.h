@@ -57,6 +57,9 @@ public:
 	//The flag actives then menu is moving by cursore.
 	bool flag_move_menu;
 
+	int clear_frame;
+#define CLEAR_FRAME_PERIOD	30;
+
 	//flags
 
 	//shaders

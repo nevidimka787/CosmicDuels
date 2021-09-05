@@ -129,8 +129,7 @@ void TikUpdate()
             {
                 std::cout << "Frame: " << frame  << std::endl 
                     << "Physic: " << physic << std::endl << std::endl;
-                std::cout << "Ships life: " << main_game->pilots_count << std::endl
-                    << "Pilots life: " << main_game->ships_count << std::endl << std::endl;
+                std::cout << "Bonuses exist: " << main_game->bonuses_count << std::endl;
                 for (GameTypes::players_count_t team = 0; team < GAME_PLAYERS_MAX_COUNT; team++)
                 {
                     std::cout << "Team: " << (int)team << " Score: " << (int)main_game->scores[team] << std::endl;

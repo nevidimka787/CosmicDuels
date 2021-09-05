@@ -43,6 +43,7 @@ private:
 	//size.x / size.y
 	float scale;
 	//Size of the view area of the camera.
+	float new_view_area_size_x;
 	float view_area_size_x;
 
 	void Limit();

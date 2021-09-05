@@ -13,7 +13,7 @@ Camera::Camera(const Camera& camera) :
 	position(camera.position),
 	resize_velocity_coefficient(camera.resize_velocity_coefficient),
 	scale(camera.scale),
-	view_area_size_x(camera.view_area_size_x)
+	new_view_area_size_x(camera.new_view_area_size_x)
 {
 }
 
@@ -35,6 +35,7 @@ Camera::Camera(Vec2F* position, float size, float scale, float margin, float mov
 	{
 		this->position = *position;
 	}
+	this->new_view_area_size_x = size;
 	this->view_area_size_x = size;
 	Limit();
 }
@@ -66,7 +67,7 @@ void Camera::Focus(Ship* ships_array, Pilot* pilots_array, GameTypes::players_co
 
 	float max = 0.0f;
 
-	view_area_size_x = 0.0f;
+	new_view_area_size_x = 0.0f;
 	for (GameTypes::players_count_t ship1 = 0; ship1 < players_count - 1; ship1++)
 	{
 		if (ships_array[ship1].exist == true)
@@ -76,9 +77,9 @@ void Camera::Focus(Ship* ships_array, Pilot* pilots_array, GameTypes::players_co
 				if (ships_array[ship2].exist == true)
 				{
 					max = ships_array[ship1].GetDistance(&ships_array[ship2]) + ships_array[ship1].radius * 2.0f + ships_array[ship2].radius * 2.0f;
-					if (max > view_area_size_x)
+					if (max > new_view_area_size_x)
 					{
-						view_area_size_x = max;
+						new_view_area_size_x = max;
 					}
 				}
 			}
@@ -93,9 +94,9 @@ void Camera::Focus(Ship* ships_array, Pilot* pilots_array, GameTypes::players_co
 				if (pilots_array[pilot2].exist == true)
 				{
 					max = pilots_array[pilot1].GetDistance(&pilots_array[pilot2]) + pilots_array[pilot1].radius * 2.0f + pilots_array[pilot2].radius * 2.0f;
-					if (max > view_area_size_x)
+					if (max > new_view_area_size_x)
 					{
-						view_area_size_x = max;
+						new_view_area_size_x = max;
 					}
 				}
 			}
@@ -110,9 +111,9 @@ void Camera::Focus(Ship* ships_array, Pilot* pilots_array, GameTypes::players_co
 				if (pilots_array[pilot].exist == true)
 				{
 					max = ships_array[ship].GetDistance(&pilots_array[pilot]) + ships_array[ship].radius * 2.0f + pilots_array[pilot].radius * 2.0f;
-					if (max > view_area_size_x)
+					if (max > new_view_area_size_x)
 					{
-						view_area_size_x = max;
+						new_view_area_size_x = max;
 					}
 					temp_position = pilots_array[pilot].GetPosition();
 					if (temp_flag)
@@ -177,8 +178,14 @@ void Camera::Focus(Ship* ships_array, Pilot* pilots_array, GameTypes::players_co
 
 	Limit();
 
-	position.Set((temp_limits.max_x + temp_limits.min_x) / 2.0f, (temp_limits.max_y + temp_limits.min_y) / 2.0f);
-	view_area_size_x *= margin;
+	position.Set(
+		(position.x + (temp_limits.max_x + temp_limits.min_x) / 2.0f * move_velocity_coefficient) / (1.0f + move_velocity_coefficient),
+		(position.y + (temp_limits.max_y + temp_limits.min_y) / 2.0f * move_velocity_coefficient) / (1.0f + move_velocity_coefficient));
+//	position.Set(
+//		(temp_limits.max_x + temp_limits.min_x) / 2.0f,
+//		(temp_limits.max_y + temp_limits.min_y) / 2.0f);
+	new_view_area_size_x *= margin;
+	view_area_size_x = (view_area_size_x + new_view_area_size_x * resize_velocity_coefficient) / (1.0f + resize_velocity_coefficient);
 
 	if (position.x > GAME_ENGINE_AREA_SIZE)
 	{
@@ -218,9 +225,9 @@ void Camera::Limit()
 	{
 		temp_limits.min_y = hight_limits.min_y * margin;
 	}
-	if (view_area_size_x < low_limits.y)
+	if (new_view_area_size_x < low_limits.y)
 	{
-		view_area_size_x = low_limits.y;
+		new_view_area_size_x = low_limits.y;
 	}
 }
 
@@ -232,7 +239,7 @@ void Camera::Set(Camera* camera)
 	move_velocity_coefficient = camera->move_velocity_coefficient;
 	position = camera->position;
 	resize_velocity_coefficient = camera->resize_velocity_coefficient;
-	view_area_size_x = camera->view_area_size_x;
+	new_view_area_size_x = camera->new_view_area_size_x;
 }
 
 void Camera::SetCoefficients(float margin, float move_velocity_coefficient, float resize_velocity_coefficient)
@@ -269,6 +276,7 @@ void Camera::SetScale(float scale)
 
 void Camera::SetSize(float size)
 {
+	this->new_view_area_size_x = size;
 	this->view_area_size_x = size;
 }
 

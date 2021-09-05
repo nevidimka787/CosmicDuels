@@ -28,12 +28,13 @@ class Pilot;
 class Entity
 {
 protected:
-	float angle;
 	Vec2F position;
 	Vec2F direction;
+	float angle;
+	Mat3x2F model_matrix;
 public:
-	bool exist;
 	float radius;
+	bool exist;
 	Entity();
 	Entity(const Entity& entity);
 	Entity(
@@ -80,6 +81,8 @@ public:
 	bool IsCollision(Map* map);
 	void UpdateAngle();
 	void UpdateDirection();
+	//need manual call
+	void UpdateMatrix();
 	void Move(Vec2F* delta);
 
 	void operator=(Entity entity);
@@ -112,8 +115,8 @@ public:
 	void AddForce(Vec2F* force);
 	void AddForceAlongDirection(float force);
 	void AddAngularVelocity(float angulat_velocity);
-	void AddGravityForce(float gravity_coeffisient, Entity* forced_entity);
 	void AddGravityForce(float gravity_coeffisient, Vec2F* forced_point);
+	void AddGravityForce(float gravity_coeffisient, Vec2F forced_point);
 	/*
 	If objects collide, function will be changing the physical parameters of those objects.
 	*/
@@ -132,7 +135,17 @@ public:
 	bool Collision(Map* map);
 	float GetAngularVelocity();
 	Vec2F GetVelocity();
-	void Update();
+	Segment GetTreck();
+	bool IsCollision(Vec2F* point);
+	bool IsCollision(Line* line);
+	bool IsCollision(Beam* beam);
+	bool IsCollision(Segment* segment);
+	bool IsCollision(DynamicEntity* entity);
+	bool IsCollision(StaticEntity* entity);
+	bool IsCollision(Rectangle* rectangle);
+	bool IsCollision(Cyrcle* cyrcle);
+	bool IsCollision(Polygon* polygon);
+	bool IsCollision(Map* map);
 	void Set(DynamicEntity* dynamic_entity);
 	void Set(
 		Vec2F* position,
@@ -148,6 +161,7 @@ public:
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT);
 	void SetVelocity(Vec2F* velocity);
+	void Update();
 
 	void operator=(DynamicEntity dynamic_entity);
 
@@ -181,6 +195,16 @@ public:
 	~StaticEntity();
 };
 
+class Particle : public DynamicEntity
+{
+public:
+	GameTypes::tic_t life_time;
+
+	Particle();
+
+	~Particle();
+};
+
 class Bonus : public DynamicEntity
 {
 
@@ -198,7 +222,7 @@ public:
 		float angular_velocity = 0.0f,
 		float radius = BONUS_DEFAULT_RADIUS,
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
-		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
+		float force_resistance_air_coefficient = BONUS_DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
 		bool exist = true);
 
 	/*
@@ -313,6 +337,8 @@ public:
 class ControledEntity : public DynamicEntity
 {
 protected:
+	Vec2F* heat_box_vertexes_array;
+	EngineTypes::ControledEntity::heat_box_vertexes_count_t heat_box_vertexes_array_length;
 	GameTypes::players_count_t player_number;
 	GameTypes::players_count_t player_team_number;
 	void* rotate_input_value_pointer;
@@ -328,6 +354,8 @@ public:
 		GameTypes::players_count_t player_team_number,
 		void* rotate_input_value_pointer,
 		void* shoot_input_value_pointer,
+		Vec2F* heat_box_vertexes = nullptr,
+		EngineTypes::ControledEntity::heat_box_vertexes_count_t heat_box_vertexes_count = 0,
 		float angle = 0.0f,
 		float angular_velocity = 0.0f,
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
@@ -338,6 +366,10 @@ public:
 	GameTypes::players_count_t GetTeamNumber();
 	bool GetRotateInputValue();
 	bool GetShootInputValue();
+	bool HeatBoxIsCollision(Bullet* bullet);
+	bool HeatBoxIsCollision(Knife* knife);
+	bool HeatBoxIsCollision(Laser* laser);
+	bool HeatBoxIsCollision(MegaLaser* mega_laser);
 	void Set(ControledEntity* entity);
 	void Set(
 		Vec2F* position,
@@ -347,6 +379,8 @@ public:
 		GameTypes::players_count_t player_team_number,
 		void* rotate_input_value_pointer,
 		void* shoot_input_value_pointer,
+		Vec2F* heat_box_vertexes = nullptr,
+		EngineTypes::ControledEntity::heat_box_vertexes_count_t heat_box_vertexes_count = 0,
 		float angle = 0.0f,
 		float angular_velocity = 0.0f,
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
@@ -374,6 +408,8 @@ public:
 		GameTypes::players_count_t player_team_number,
 		void* rotate_input_value_pointer,
 		void* shoot_input_value_pointer,
+		Vec2F* heat_box_vertexes = nullptr,
+		EngineTypes::ControledEntity::heat_box_vertexes_count_t heat_box_vertexes_count = 0,
 		float angle = 0.0f,
 		EngineTypes::Bonus::bonus_t buffs_bonuses = BONUS_NO_BONUS,
 		EngineTypes::Bonus::bonus_t active_baffs = BONUS_NO_BONUS,
@@ -414,6 +450,8 @@ public:
 		GameTypes::players_count_t player_team_number,
 		void* rotate_input_value_pointer,
 		void* shoot_input_value_pointer,
+		Vec2F* heat_box_vertexes = nullptr,
+		EngineTypes::ControledEntity::heat_box_vertexes_count_t heat_box_vertexes_count = 0,
 		float angle = 0.0f,
 		EngineTypes::Bonus::bonus_t buffs_bonuses = BONUS_NO_BONUS,
 		EngineTypes::Bonus::bonus_t active_baffs = BONUS_NO_BONUS,
@@ -443,6 +481,8 @@ public:
 		GameTypes::players_count_t player_team_number,
 		void* rotate_input_value_pointer,
 		void* shoot_input_value_pointer,
+		Vec2F* heat_box_vertexes = nullptr,
+		EngineTypes::ControledEntity::heat_box_vertexes_count_t heat_box_vertexes_count = 0,
 		float angle = 0.0f,
 		EngineTypes::Bonus::bonus_t buffs_bonuses = BONUS_NO_BONUS,
 		EngineTypes::Bonus::bonus_t active_baffs = BONUS_NO_BONUS,
@@ -645,7 +685,6 @@ public:
 		float force_resistance_air_coefficient = BULLET_DEFAULT_RESISTANCE_AIR_COEFFICIENT,
 		float radius = BULLET_DEFAULT_RADIUS,
 		bool exist = true);
-	bool IsCollision(Map* map);
 	void Set(Bullet* bullet);
 	void Set(
 		Vec2F* position,

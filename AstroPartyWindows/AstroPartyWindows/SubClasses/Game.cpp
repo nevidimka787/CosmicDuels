@@ -22,7 +22,6 @@ void Game::Update()
 {
 	global_timer++;
 	current_tic = global_timer;
-
 	//update
 
 	UpdateMap();
@@ -34,6 +33,8 @@ void Game::Update()
 	UpdateLazers();
 	UpdateMegaLazers();
 	UpdateKnifes();
+
+	UpdateCamera();
 
 	//update
 
@@ -57,6 +58,30 @@ void Game::Update()
 	DynamicEntitiesAddForce(grav_gens, grav_gens_count, bullets, asteroids_count);
 	
 	//collisions
+
+	Segment segmen;
+	segmen.Set(Vec2F(-0.5f, 0.0f), Vec2F(0.0f, 1.0f).Rotate((global_timer % 400 + 100) / 200.0f * M_PI));
+	mega_lasers[0].Set(&segmen);
+	segmen.Set(Vec2F(0.0f, -0.5f), Vec2F(0.0f, 1.0f).Rotate((global_timer % 400) / 200.0f * M_PI));
+	mega_lasers[1].Set(&segmen);
+	mega_lasers_count = 2;
+	Vec2F point;
+	point.Set(-1.0f, -1.0f);
+	ships[0].SetPosition(&point);
+	point.Set(1.0f, 1.0f);
+	ships[1].SetPosition(&point);
+	if (mega_lasers[0].GetSegment().Intersection(&segmen, &point))
+	{
+		asteroids[0].SetPosition(&point);
+		asteroids[0].exist = true;
+		asteroids_count = 1;
+	}
+	else
+	{
+		asteroids[0].exist = false;
+		asteroids_count = 0;
+	}
+
 
 	//recalculation
 
@@ -771,6 +796,8 @@ void Game::InitMach()
 	asteroids_count = 0;
 	bonuses = new Bonus[GAME_BONUSES_MAX_COUNT];
 	bonuses_count = 0;
+	mega_lasers = new MegaLaser[GAME_MEGA_LASERS_MAX_COUNT];
+	mega_lasers_count = 0;
 
 	shoot_flags = new bool[players_count];
 	rotate_flags = new bool[players_count];
@@ -941,11 +968,11 @@ void Game::InitLevel()
 		{
 			if (game_rules & GAME_RULE_BALANCE_ACTIVE && scores[i] <= max_score - GAME_BALANCE_ACTIVATE_DIFFERENCE_SCORES)
 			{
-				ships[i].Set(&temp_positions[i], &zero_velocity, i, teams[i], (void*)&rotate_flags[i], (void*)&shoot_flags[i], temp_angles[i], start_bonus, BUFF_SHIELD);
+				ships[i].Set(&temp_positions[i], &zero_velocity, i, teams[i], (void*)&rotate_flags[i], (void*)&shoot_flags[i], nullptr, 0, temp_angles[i], start_bonus, BUFF_SHIELD);
 			}
 			else
 			{
-				ships[i].Set(&temp_positions[i], &zero_velocity, i, teams[i], (void*)&rotate_flags[i], (void*)&shoot_flags[i], temp_angles[i], start_bonus);
+				ships[i].Set(&temp_positions[i], &zero_velocity, i, teams[i], (void*)&rotate_flags[i], (void*)&shoot_flags[i], nullptr, 0, temp_angles[i], start_bonus);
 			}
 			if (ships[i].GetTeamNumber() == 0)
 			{
@@ -960,11 +987,11 @@ void Game::InitLevel()
 		{
 			if (game_rules & GAME_RULE_BALANCE_ACTIVE && scores[i] <= max_score - GAME_BALANCE_ACTIVATE_DIFFERENCE_SCORES)
 			{
-				ships[i].Set(&temp_positions[i], &zero_velocity, i, teams[i], (void*)&rotate_flags[i], (void*)&shoot_flags[i], temp_angles[i], BUFF_SHIELD, BUFF_SHIELD);
+				ships[i].Set(&temp_positions[i], &zero_velocity, i, teams[i], (void*)&rotate_flags[i], (void*)&shoot_flags[i], nullptr, 0, temp_angles[i], BUFF_SHIELD, BUFF_SHIELD);
 			}
 			else
 			{
-				ships[i].Set(&temp_positions[i], &zero_velocity, i, teams[i], (void*)&rotate_flags[i], (void*)&shoot_flags[i], temp_angles[i], BUFF_SHIELD);
+				ships[i].Set(&temp_positions[i], &zero_velocity, i, teams[i], (void*)&rotate_flags[i], (void*)&shoot_flags[i], nullptr, 0, temp_angles[i], BUFF_SHIELD);
 			}
 			if (ships[i].GetTeamNumber() == 0)
 			{
@@ -1693,6 +1720,11 @@ void Game::UpdateBullets()
 	}
 }
 
+void Game::UpdateCamera()
+{
+	camera.Focus(ships, pilots, GAME_PLAYERS_MAX_COUNT);
+}
+
 void Game::UpdateKnifes()
 {
 	for (GameTypes::entities_count_t knife = 0, found_knifes = 0; found_knifes < knifes_count; knife++)
@@ -1782,12 +1814,12 @@ void Game::UpdateLazers()
 			}
 			for (GameTypes::entities_count_t bonus = 0, found_bonuses = 0; found_bonuses < bonuses_count; bonus++)
 			{
-				temp__asteroid_p = &asteroids[bonus];
+				temp__bonus_p = &asteroids[bonus];
 				if (temp__bonus_p->exist == true)
 				{
-					if (temp__asteroid_p->IsCollision(&temp__beam))
+					if (temp__bonus_p->IsCollision(&temp__beam))
 					{
-						DestroyEntityByAggressiveEntity(temp__lazer_p, temp__asteroid_p);
+						DestroyEntityByAggressiveEntity(temp__lazer_p, temp__bonus_p);
 					}
 					else
 					{
@@ -1871,7 +1903,7 @@ void Game::UpdateMegaLazers()
 			for (GameTypes::entities_count_t asteroid = 0, found_asteroids = 0; found_asteroids < asteroids_count; asteroid++)
 			{
 				temp__asteroid_p = &asteroids[asteroid];
-				if (temp__bonus_p->exist == true)
+				if (temp__asteroid_p->exist == true)
 				{
 					if (temp__asteroid_p->IsCollision(&temp__segment))
 					{
@@ -1885,12 +1917,12 @@ void Game::UpdateMegaLazers()
 			}
 			for (GameTypes::entities_count_t bonus = 0, found_bonuses = 0; found_bonuses < bonuses_count; bonus++)
 			{
-				temp__asteroid_p = &asteroids[bonus];
+				temp__bonus_p = &asteroids[bonus];
 				if (temp__bonus_p->exist == true)
 				{
-					if (temp__asteroid_p->IsCollision(&temp__segment))
+					if (temp__bonus_p->IsCollision(&temp__segment))
 					{
-						DestroyEntityByAggressiveEntity(temp__mega_lazer_p, temp__asteroid_p);
+						DestroyEntityByAggressiveEntity(temp__mega_lazer_p, temp__bonus_p);
 					}
 					else
 					{
@@ -1901,7 +1933,7 @@ void Game::UpdateMegaLazers()
 			for (GameTypes::entities_count_t bullet = 0, found_bullets = 0; found_bullets < bullets_count; bullet++)
 			{
 				temp__bullet_p = &bullets[bullet];
-				if (temp__bonus_p->exist == true)
+				if (temp__bullet_p->exist == true)
 				{
 					if (temp__bullet_p->Entity::IsCollision(&temp__segment))
 					{
@@ -1955,6 +1987,7 @@ void Game::UpdateShips()
 		temp__ship_p = &ships[ship];
 		if (temp__ship_p->exist)
 		{
+			temp__ship_p->UpdateMatrix();
 			temp__ship_p->AddForceAlongDirection(GAME_KNOCKBACK_FORCE_OF_THE_SHIP);
 			for (GameTypes::entities_count_t pilot = 0; pilot < players_count; pilot++)
 			{
@@ -1976,9 +2009,14 @@ void Game::UpdateShips()
 				temp__bonus_p = &bonuses[bonus];
 				if (temp__bonus_p->exist == true)
 				{
-					if (temp__bonus_p->GetDistance(temp__ship_p) < GAME_SHIP_INFLUENCE_RADIUS)
+					if (temp__bonus_p->GetDistance(temp__ship_p) < temp__ship_p->radius * GAME_SHIP_INFLUENCE_RADIUS_COEFFISIENT)
 					{
-						temp__bonus_p->AddGravityForce(GAME_SHIP_GRAVITATION_FORCE, temp__ship_p);
+						if (temp__bonus_p->GetDistance(temp__ship_p) < 0.0f)
+						{
+							temp__ship_p->TakeBonus(temp__bonus_p);
+							RemoveEntity(temp__bonus_p);
+						}
+						temp__bonus_p->AddGravityForce(GAME_SHIP_GRAVITATION_FORCE, temp__ship_p->GetPosition());
 					}
 					found_bonuses++;
 				}

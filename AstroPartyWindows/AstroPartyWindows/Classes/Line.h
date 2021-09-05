@@ -40,6 +40,10 @@ public:
 	Line();
 	Line(const Line& line);
 	Line(
+		Vec2F point,
+		Vec2F point_vector,
+		bool second_argument_is_point = false);
+	Line(
 		Vec2F* point, 
 		Vec2F* point_vector, 
 		bool second_argument_is_point = false);
@@ -68,7 +72,15 @@ public:
 	//use v1 v2
 	//use m1 m2
 	//use l1
+	float GetDistance(Vec2F target);
+	//use v1 v2
+	//use m1 m2
+	//use l1
 	float GetDistance(Vec2F* target);
+	//use v1 v2
+	//use m1 m2
+	//use l1
+	float GetDistance(Vec2F target, Vec2F* nearest_point);
 	//use v1 v2
 	//use m1 m2
 	//use l1
@@ -87,6 +99,10 @@ public:
 	float GetDistance(Segment* target);
 
 	void Set(Line* line);
+	void Set(
+		Vec2F point,
+		Vec2F point_vector,
+		bool second_argument_is_point = false);
 	void Set(
 		Vec2F* point,
 		Vec2F* point_vector,
@@ -121,6 +137,10 @@ public:
 	Beam();
 	Beam(const Beam& beam);
 	Beam(
+		Vec2F point,
+		Vec2F point_vector,
+		bool second_argument_is_point = false);
+	Beam(
 		Vec2F* point,
 		Vec2F* point_vector,
 		bool second_argument_is_point = false);
@@ -151,7 +171,15 @@ public:
 	//use v1 v2
 	//use m1 m2
 	//use l1
+	float GetDistance(Vec2F target);
+	//use v1 v2
+	//use m1 m2
+	//use l1
 	float GetDistance(Vec2F* target);
+	//use v1 v2
+	//use m1 m2
+	//use l1
+	float GetDistance(Vec2F target, Vec2F* nearest_point);
 	//use v1 v2
 	//use m1 m2
 	//use l1
@@ -173,6 +201,10 @@ public:
 	float GetDistance(Segment* target);
 	
 	void Set(Beam* beam);
+	void Set(
+		Vec2F point,
+		Vec2F point_vector,
+		bool second_argument_is_point = false);
 	void Set(
 		Vec2F* point,
 		Vec2F* point_vector,
@@ -206,6 +238,10 @@ public:
 	Segment();
 	Segment(const Segment& segment);
 	Segment(
+		Vec2F point,
+		Vec2F point_vector,
+		bool second_argument_is_point = false);
+	Segment(
 		Vec2F* point,
 		Vec2F* point_vector,
 		bool second_argument_is_point = false);
@@ -236,7 +272,15 @@ public:
 	//use f1 f2
 	//use v1 v2
 	//use m1 m2
+	float GetDistance(Vec2F target);
+	//use f1 f2
+	//use v1 v2
+	//use m1 m2
 	float GetDistance(Vec2F* target);
+	//use f1 f2
+	//use v1 v2
+	//use m1 m2
+	float GetDistance(Vec2F target, Vec2F* nearest_point);
 	//use f1 f2
 	//use v1 v2
 	//use m1 m2
@@ -261,6 +305,10 @@ public:
 	void Set(
 		Vec2F* point,
 		Vec2F* point_vector,
+		bool second_argument_is_point = false);
+	void Set(
+		Vec2F point,
+		Vec2F point_vector,
 		bool second_argument_is_point = false);
 
 	void operator=(Line line);

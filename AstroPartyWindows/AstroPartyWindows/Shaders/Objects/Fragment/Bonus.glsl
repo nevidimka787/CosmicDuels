@@ -1,8 +1,17 @@
 #version 330 core
 
-out vec4 frag_color;
+out vec4 fragment_color;
+
+in vec2 pixel_position;
+
+float radius;
 
 void main()
 {
-	frag_color = vec4(vec3(0.5f), 1.0f);
+	if((radius = length(pixel_position)) > 1.0f)
+	{
+		discard;
+	}
+
+	fragment_color = vec4(0.0f, 1.0f, 1.0f - radius, 1.0f); 
 }

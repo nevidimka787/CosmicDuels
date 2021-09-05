@@ -56,4 +56,9 @@ namespace EngineTypes
 	{
 		typedef uint8_t sides_t;
 	}
+
+	namespace ControledEntity
+	{
+		typedef uint16_t heat_box_vertexes_count_t;
+	}
 }

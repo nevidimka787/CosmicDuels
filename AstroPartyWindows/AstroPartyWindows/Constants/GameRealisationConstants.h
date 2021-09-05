@@ -37,11 +37,11 @@ Asteroid
 	//KnockBack force of the ship.
 #define GAME_KNOCKBACK_FORCE_OF_THE_SHIP	0.0001f
 	//Ship's gravitation force.
-#define GAME_SHIP_GRAVITATION_FORCE			0.001f
+#define GAME_SHIP_GRAVITATION_FORCE			0.0001f
 	//Sheep's radius of influence.
-#define GAME_SHIP_INFLUENCE_RADIUS			0.01f
-#define GAME_SHIP_ANGULAR_VELOCITY			0.02f
-#define GAME_PILOT_ANGULAR_VELOCITY			0.02f
+#define GAME_SHIP_INFLUENCE_RADIUS_COEFFISIENT	5.0f
+#define GAME_SHIP_ANGULAR_VELOCITY				0.02f
+#define GAME_PILOT_ANGULAR_VELOCITY				0.02f
 
 	//game engine rules
 
