@@ -2090,7 +2090,7 @@ MegaLaser::MegaLaser(Segment* segment, GameTypes::tic_t attack_dellay, GameTypes
 
 Segment MegaLaser::GetSegment()
 {
-	return Segment(&position, &direction);
+	return Segment(position, direction * radius);
 }
 
 void MegaLaser::Rotate(float angle)
@@ -2117,10 +2117,10 @@ void MegaLaser::Set(MegaLaser* mega_laser)
 void MegaLaser::Set(Segment* segment, GameTypes::tic_t attack_dellay, GameTypes::tic_t attack_period, GameTypes::tic_t inactive_period, EngineTypes::AgressiveEntity::shoots_count_t shoots_count, bool active, bool exist)
 {
 	this->active = active;
-	this->angle = segment->vector.GetAbsoluteAngle();
 	this->attack_dellay = attack_dellay;
 	this->attack_period = attack_period;
-	UpdateDirection();
+	this->direction = segment->vector.Normalize();
+	UpdateAngle();
 	this->exist = exist;
 	this->inactive_period = inactive_period;
 	this->position = segment->point;

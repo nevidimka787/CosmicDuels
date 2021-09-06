@@ -59,18 +59,21 @@ void Game::Update()
 	
 	//collisions
 
-	Segment segmen;
-	segmen.Set(Vec2F(-0.5f, 0.0f), Vec2F(0.0f, 1.0f).Rotate((global_timer % 400 + 100) / 200.0f * M_PI));
-	mega_lasers[0].Set(&segmen);
-	segmen.Set(Vec2F(0.0f, -0.5f), Vec2F(0.0f, 1.0f).Rotate((global_timer % 400) / 200.0f * M_PI));
-	mega_lasers[1].Set(&segmen);
+	Segment segment1;
+	Segment segment2;
+	segment1.Set(Vec2F(1.0f, 0.0f), Vec2F(0.0f, 1.0f), true);
+	mega_lasers[0].Set(&segment1);
+	segment2.Set(Vec2F(0.0f, 0.0f), Vec2F(0.0f, 1.0f).Rotate((global_timer % 400) / 200.0f * M_PI));
+	mega_lasers[1].Set(&segment2);
 	mega_lasers_count = 2;
 	Vec2F point;
 	point.Set(-1.0f, -1.0f);
 	ships[0].SetPosition(&point);
 	point.Set(1.0f, 1.0f);
 	ships[1].SetPosition(&point);
-	if (mega_lasers[0].GetSegment().Intersection(&segmen, &point))
+	segment1 = mega_lasers[0].GetSegment();
+	segment2 = mega_lasers[1].GetSegment();
+	if (segment1.Intersection(&segment2, &point))
 	{
 		asteroids[0].SetPosition(&point);
 		asteroids[0].exist = true;

@@ -127,6 +127,7 @@ public:
 	Vec2F Project(Vec2F* projection_vector);
 	Vec2F Perpendicular();
 	void PerpendicularThis();
+	//Clockwise is positive.
 	Vec2F Rotate(float angle);
 	void RotateThis(float angle);
 	Vec2F Scale(Vec2F* scale);
