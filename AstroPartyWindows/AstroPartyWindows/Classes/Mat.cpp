@@ -737,6 +737,14 @@ void Mat2D::Set(double a11, double a12, double a21, double a22)
 	this->a22 = a22;
 }
 
+void Mat2D::Set(Vec2D abscissa, Vec2D ordinata)
+{
+	a11 = abscissa.x;
+	a12 = abscissa.y;
+	a21 = ordinata.x;
+	a22 = ordinata.y;
+}
+
 void Mat2D::Set(Vec2D* abscissa, Vec2D* ordinata)
 {
 	a11 = abscissa->x;
@@ -907,6 +915,14 @@ void Mat2F::Set(float a11, float a12, float a21, float a22)
 	this->a12 = a12;
 	this->a21 = a21;
 	this->a22 = a22;
+}
+
+void Mat2F::Set(Vec2F abscissa, Vec2F ordinata)
+{
+	a11 = abscissa.x;
+	a21 = abscissa.y;
+	a12 = ordinata.x;
+	a22 = ordinata.y;
 }
 
 void Mat2F::Set(Vec2F* abscissa, Vec2F* ordinata)

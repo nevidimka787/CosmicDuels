@@ -183,6 +183,7 @@ public:
 
 	void Set(double value);
 	void Set(double a11, double a12, double a21, double a22);
+	void Set(Vec2D abscisse, Vec2D ardinate);
 	void Set(Vec2D* abscisse, Vec2D* ardinate);
 
 	void operator=(Mat2D matrix);
@@ -226,6 +227,7 @@ public:
 
 	void Set(float value);
 	void Set(float a11, float a12, float a21, float a22);
+	void Set(Vec2F abscisse, Vec2F ardinate);
 	void Set(Vec2F* abscisse, Vec2F* ardinate);
 
 	void operator=(Mat2F matrix);

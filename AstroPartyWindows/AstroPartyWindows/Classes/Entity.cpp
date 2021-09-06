@@ -667,8 +667,12 @@ bool DynamicEntity::IsCollision(Rectangle* rectangle)
 	side = rectangle->GetRightSide();
 	if (Segment(position, velocity).GetDistance(&side) < radius)
 	{
-		std::cout << "Distance to lrighteft side: " << Segment(position, velocity).GetDistance(&side) << std::endl;
+		std::cout << "Distance to right side: " << Segment(position, velocity).GetDistance(&side) << std::endl;
 		return true;
+	}
+	else
+	{
+		std::cout << "Distance to right side: " << Segment(position, velocity).GetDistance(&side) << std::endl;
 	}
 	return false;
 }
@@ -745,10 +749,22 @@ void DynamicEntity::Update()
 	}
 	UpdateDirection();
 
-
+	bool not_nan = true;
+	if (velocity.x != velocity.x)
+	{
+		int i = 0;
+	}
+	if (force.x != force.x)
+	{
+		int i = 0;
+	}
 	velocity += force;
 	velocity *= 1.0f - force_resistance_air_coefficient;
 	force.Set(0.0f, 0.0f);
+	if (not_nan && velocity.x != velocity.x)
+	{
+		int i = 0;
+	}
 	Move(&velocity);
 }
 
@@ -2090,7 +2106,7 @@ MegaLaser::MegaLaser(Segment* segment, GameTypes::tic_t attack_dellay, GameTypes
 
 Segment MegaLaser::GetSegment()
 {
-	return Segment(position, direction * radius);
+	return Segment(position, direction);
 }
 
 void MegaLaser::Rotate(float angle)

@@ -134,6 +134,7 @@ void TikUpdate()
                 {
                     std::cout << "Team: " << (int)team << " Score: " << (int)main_game->scores[team] << std::endl;
                 }
+                std::cout << "Bullets on the map: " << main_game->bullets_count << std::endl;
                 std::cout << std::endl << std::endl << std::endl;
                 frame = 0;
                 physic = 0;

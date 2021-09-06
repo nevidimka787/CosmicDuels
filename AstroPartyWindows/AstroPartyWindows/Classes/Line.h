@@ -28,6 +28,8 @@ class Line
 {
 private:
 public:
+	float temp_float1;
+	float temp_float2;
 	Vec2F temp_vector1;
 	Vec2F temp_vector2;
 	Mat2F temp_matrix1;
@@ -54,7 +56,7 @@ public:
 	//use v1
 	//use m1 m2
 	//alwaus true
-	void Intersection(LightLine* intersection_line, Vec2F* output_intersection_point);
+	bool Intersection(LightLine* intersection_line, Vec2F* output_intersection_point, uint8_t intersection_type);
 	//use v1
 	//use m1 m2
 	bool Intersection(Beam* intersection_beam, Vec2F* output_intersection_point);
@@ -122,7 +124,6 @@ class Beam
 {
 private:
 public:
-	bool temp_bool1;
 	float temp_float1;
 	float temp_float2;
 	Vec2F temp_vector1;
@@ -150,7 +151,7 @@ public:
 	bool Intersection(Line* intersection_line, Vec2F* output_intersection_point);
 	//use v1
 	//use m1 m2
-	bool Intersection(LightLine* intersection_line, Vec2F* output_intersection_point);
+	bool Intersection(LightLine* intersection_line, Vec2F* output_intersection_point, uint8_t intersection_type);
 	//use v1
 	//use m1 m2
 	bool Intersection(Beam* intersection_beam, Vec2F* output_intersection_point);
@@ -188,8 +189,7 @@ public:
 	//use m1 m2
 	//use l1
 	float GetDistance(Line* target);
-	//use b1
-	//use f1 f2 f3
+	//use f1 f2
 	//use v1 v2
 	//use m1 m2
 	//use l1
@@ -223,7 +223,6 @@ public:
 class Segment
 {
 public:
-	bool temp_bool1;
 	float temp_float1;
 	float temp_float2;
 	Vec2F temp_vector1;
@@ -251,7 +250,7 @@ public:
 	bool Intersection(Line* intersection_line, Vec2F* output_intersection_point);
 	//use v1
 	//use m1 m2
-	bool Intersection(LightLine* intersection_line, Vec2F* output_intersection_point);
+	bool Intersection(LightLine* intersection_line, Vec2F* output_intersection_point, uint8_t intersection_type);
 	//use v1
 	//use m1 m2
 	bool Intersection(Beam* intersection_beam, Vec2F* output_intersection_point);
@@ -295,7 +294,7 @@ public:
 	//use m1 m2
 	float GetDistance(Beam* target);
 	//use f1 f2 f3 f4
-	//use v1 v2 v3
+	//use v1 v2
 	//use m1 m2
 	float GetDistance(Segment* target);
 
