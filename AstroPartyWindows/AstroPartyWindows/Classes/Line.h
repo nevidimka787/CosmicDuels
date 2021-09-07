@@ -19,6 +19,7 @@ public:
 	LightLine();
 	LightLine(const LightLine& line);
 
+	void Set(Vec2F point, Vec2F vector);
 	void Set(Vec2F* point, Vec2F* vector);
 
 	~LightLine();
@@ -95,8 +96,9 @@ public:
 	//use m1 m2
 	//use l1
 	float GetDistance(Beam* target);
-	//use v1 v2 v3
-	//use m1 m2 m3
+	//use f1 f2
+	//use v1 v2
+	//use m1 m2
 	//use l1
 	float GetDistance(Segment* target);
 
@@ -185,19 +187,18 @@ public:
 	//use m1 m2
 	//use l1
 	float GetDistance(Vec2F* target, Vec2F* nearest_point);
-	//use v1 v2
-	//use m1 m2
-	//use l1
+	//use v3 v4
+	//use m3 m4
+	//use l2
 	float GetDistance(Line* target);
 	//use f1 f2
-	//use v1 v2
-	//use m1 m2
+	//use v1 v2 v3
+	//use m1 m2 m3 m4
 	//use l1
 	float GetDistance(Beam* target);
-	//use b1
 	//use f1 f2
-	//use v1 v2 v3 v4
-	//use m1 m2
+	//use v1 v2 v3
+	//use m1 m2 m3 m4
 	float GetDistance(Segment* target);
 	
 	void Set(Beam* beam);
@@ -284,18 +285,17 @@ public:
 	//use v1 v2
 	//use m1 m2
 	float GetDistance(Vec2F* target, Vec2F* nearest_point);
-	//use v1 v2 v3 v4
-	//use m1 m2 m3
-	//use l1
+	//use v3 v4
+	//use m3 m4
+	//use l2
 	float GetDistance(Line* target);
-	//use b1
 	//use f1 f2
-	//use v1 v2 v3 v4
-	//use m1 m2
+	//use v1 v2 v3
+	//use m1 m2 m3 m4
 	float GetDistance(Beam* target);
-	//use f1 f2 f3 f4
-	//use v1 v2
-	//use m1 m2
+	//use f1 f2
+	//use v1 v2 v3
+	//use m1 m2 m3 m4
 	float GetDistance(Segment* target);
 
 	Vec2F GetSecondPoint();

@@ -125,7 +125,7 @@ void TikUpdate()
         if (main_game->pause_game == false)
         {
             lock_timer++;
-            if (!(lock_timer % 100))
+            if (!(lock_timer % 100) && false)
             {
                 std::cout << "Frame: " << frame  << std::endl 
                     << "Physic: " << physic << std::endl << std::endl;

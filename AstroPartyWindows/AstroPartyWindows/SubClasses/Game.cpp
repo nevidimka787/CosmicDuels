@@ -247,6 +247,8 @@ void Game::AddEntity(Bullet new_bullet)
 			if (bullets[bullet].exist == false)
 			{
 				bullets[bullet] = new_bullet;
+				bullets[bullet].exist = true;
+				std::cout << "Add bullet id: " << bullet << std::endl;
 				bullets_count++;
 				return;
 			}
@@ -320,50 +322,75 @@ void Game::AddEntity(DynamicEntity new_particle)
 
 void Game::RemoveEntity(Asteroid* deleting_asteroid)
 {
-	deleting_asteroid->exist = false;
-	Game::asteroids_count--;
+	if (deleting_asteroid->exist)
+	{
+		deleting_asteroid->exist = false;
+		Game::asteroids_count--;
+	}
 }
 
 void Game::RemoveEntity(Bonus* deleting_bonus)
 {
-	deleting_bonus->exist = false;
-	Game::bonuses_count--;
+	if (deleting_bonus->exist)
+	{
+		deleting_bonus->exist = false;
+		Game::bonuses_count--;
+	}
 }
 
 void Game::RemoveEntity(Bullet* deleting_bullet)
 {
-	deleting_bullet->exist = false;
-	Game::bullets_count--;
+	if (deleting_bullet->exist)
+	{
+		deleting_bullet->exist = false;
+		std::cout << "Remove bullet: " << (unsigned long)(deleting_bullet - bullets) << std::endl;
+		Game::bullets_count--;
+	}
 }
 
 void Game::RemoveEntity(Knife* deleting_knife)
 {
-	deleting_knife->exist = false;
-	Game::knifes_count--;
+	if (deleting_knife->exist)
+	{
+		deleting_knife->exist = false;
+		Game::knifes_count--;
+	}
 }
 
 void Game::RemoveEntity(Bomb* deleting_mine)
 {
-	deleting_mine->exist = false;
-	Game::bombs_count--;
+	if (deleting_mine->exist)
+	{
+		deleting_mine->exist = false;
+		Game::bombs_count--;
+	}
 }
 
-void Game::RemoveEntity(Laser* deleting_lazer)
+void Game::RemoveEntity(Laser * deleting_lazer)
 {
-	deleting_lazer->exist = false;
-	Game::lasers_count--;
+	if (deleting_lazer->exist)
+	{
+		deleting_lazer->exist = false;
+		Game::lasers_count--;
+	}
 }
 
-void Game::RemoveEntity(Turel* deleting_turel)
+void Game::RemoveEntity(Turel * deleting_turel)
 {
-	deleting_turel->exist = false;
-	Game::turels_count--;
+	if (deleting_turel->exist)
+	{
+		deleting_turel->exist = false;
+		Game::turels_count--;
+	}
 }
 
-void Game::RemoveParticle(DynamicEntity* deleting_particle)
+void Game::RemoveParticle(DynamicEntity * deleting_particle)
 {
-	deleting_particle->exist = false;
-	Game::particles_count--;
+	if (deleting_particle->exist)
+	{
+		deleting_particle->exist = false;
+		Game::particles_count--;
+	}
 }
 
 
@@ -751,11 +778,10 @@ void Game::InitMach()
 		}
 	}
 
-	ships_count = players_count;
-	pilots_count = 0;
-
 	ships = new Ship[GAME_PLAYERS_MAX_COUNT];
+	ships_count = players_count;
 	pilots = new Pilot[GAME_PLAYERS_MAX_COUNT];
+	pilots_count = 0;
 
 	knifes = new Knife[players_count * 2];
 	knifes_count = 0;
@@ -1405,7 +1431,7 @@ void Game::TransportBullets()
 	for (GameTypes::entities_count_t bullet = 0, found_bullets = 0; found_bullets < bullets_count; bullet++)
 	{
 		temp__bullet_p = &bullets[bullet];
-		if (temp__bullet_p->exist == true)
+		if (temp__bullet_p->exist)
 		{
 			temp__bullet_p->Update();
 			found_bullets++;
@@ -1606,10 +1632,10 @@ void Game::UpdateBullets()
 	for (GameTypes::entities_count_t bullet = 0, found_bullets = 0; found_bullets < bullets_count; bullet++)
 	{
 		temp__bullet_p = &bullets[bullet];
-		if (temp__bullet_p->exist == true)
+		if (bullets[bullet].exist)
 		{
 			temp__vector = temp__bullet_p->GetPosition();
-			if (temp__bullet_p->IsCollision(&map) || temp__vector > area_size || temp__vector < - area_size)
+			if (temp__bullet_p->IsCollision(&map) || temp__vector > area_size || temp__vector < -area_size)
 			{
 				RemoveEntity(temp__bullet_p);
 				goto end_of_cycle;
@@ -1617,7 +1643,7 @@ void Game::UpdateBullets()
 			for (GameTypes::players_count_t ship = 0; ship < GAME_PLAYERS_MAX_COUNT; ship++)
 			{
 				temp__ship_p = &ships[ship];
-				if (temp__ship_p->exist == true && temp__ship_p->IsCollision(temp__bullet_p))
+				if (temp__ship_p->exist && temp__ship_p->IsCollision(temp__bullet_p))
 				{
 					if (temp__ship_p->GetActiveBaffs() & BUFF_SHIELD)
 					{
@@ -1689,13 +1715,11 @@ void Game::UpdateBullets()
 					found_bombs++;
 				}
 			}
+			found_bullets++;
 		}
-
-		found_bullets++;
 	end_of_cycle:;
 	}
 }
-
 void Game::UpdateCamera()
 {
 	camera.Focus(ships, pilots, GAME_PLAYERS_MAX_COUNT);

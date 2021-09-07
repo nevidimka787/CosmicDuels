@@ -9,7 +9,6 @@ Entity::Entity() :
 	exist(false),
 	radius(0.0)
 {
-	exist = false;
 }
 
 Entity::Entity(Vec2F* position, float radius, float angle, bool exist) :
@@ -649,30 +648,22 @@ bool DynamicEntity::IsCollision(Rectangle* rectangle)
 	Segment side = rectangle->GetUpSide();
 	if (Segment(position, velocity).GetDistance(&side) < radius)
 	{
-		std::cout << "Distance to up side: " << Segment(position, velocity).GetDistance(&side) << std::endl;
 		return true;
 	}
 	side = rectangle->GetLeftSide();
 	if (Segment(position, velocity).GetDistance(&side) < radius)
 	{	
-		std::cout << "Distance to left side: " << Segment(position, velocity).GetDistance(&side) << std::endl;
 		return true;
 	}
 	side = rectangle->GetDownSide();
 	if (Segment(position, velocity).GetDistance(&side) < radius)
 	{
-		std::cout << "Distance to down side: " << Segment(position, velocity).GetDistance(&side) << std::endl;
 		return true;
 	}
 	side = rectangle->GetRightSide();
 	if (Segment(position, velocity).GetDistance(&side) < radius)
 	{
-		std::cout << "Distance to right side: " << Segment(position, velocity).GetDistance(&side) << std::endl;
 		return true;
-	}
-	else
-	{
-		std::cout << "Distance to right side: " << Segment(position, velocity).GetDistance(&side) << std::endl;
 	}
 	return false;
 }
