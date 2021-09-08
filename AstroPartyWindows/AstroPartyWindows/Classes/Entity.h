@@ -44,6 +44,7 @@ public:
 		bool exist = true);
 
 	float GetAngle();
+	Vec2F GetDirection();
 	/*
 	Getting the distance between two closest points of objects.
 	*/
@@ -57,8 +58,8 @@ public:
 	float GetDistance(Rectangle* rectangle);
 	float GetDistance(Cyrcle* cyrcle);
 	float GetDistance(Polygon* polygon);
+	float GetFrameSize(Entity* entity, float scale);
 	Vec2F GetPosition();
-	Vec2F GetDirection();
 	void Rotate(float angle);
 	void Set(Entity* entity);
 	void Set(
@@ -370,6 +371,7 @@ public:
 	bool HeatBoxIsCollision(Knife* knife);
 	bool HeatBoxIsCollision(Laser* laser);
 	bool HeatBoxIsCollision(MegaLaser* mega_laser);
+	bool SameTeams(ControledEntity* second_entity);
 	void Set(ControledEntity* entity);
 	void Set(
 		Vec2F* position,

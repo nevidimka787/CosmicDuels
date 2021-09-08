@@ -220,7 +220,8 @@ public:
 
 	//game pointers
 
-	bool* game_p__start_game;
+	bool* game_p__play_match;
+	bool* game_p__play_round;
 	bool* game_p__flag_all_entities_initialisate;
 
 	//Count of gravity generators on the map.

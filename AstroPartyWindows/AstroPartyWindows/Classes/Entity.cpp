@@ -143,6 +143,11 @@ Vec2F Entity::GetDirection()
 	return direction;
 }
 
+float Entity::GetFrameSize(Entity* entity, float scale)
+{
+	return fmaxf(fabs((entity->position - position).x), fabs((entity->position - position).y * scale)) + radius + entity->radius;
+}
+
 Vec2F Entity::GetPosition()
 {
 	return position;
@@ -402,7 +407,6 @@ void DynamicEntity::AddGravityForce(float gravity_coeffisient, Vec2F forced_poin
 	float distance = (forced_point - position).GetLength();
 	Vec2F grav_vec = (forced_point - position).Normalize();
 	grav_vec *= gravity_coeffisient / distance / distance;
-	std::cout << "Grav vec len: " << grav_vec.GetLength() << std::endl;
 	force += grav_vec;// * *x_temp_coeff;
 }
 
@@ -1436,6 +1440,10 @@ bool ControledEntity::HeatBoxIsCollision(MegaLaser* mega_laser)
 	return false;
 }
 
+bool ControledEntity::SameTeams(ControledEntity* second_entity)
+{
+	return player_team_number == second_entity->player_team_number;
+}
 
 void ControledEntity::Set(ControledEntity* controled_entity)
 {
@@ -1720,6 +1728,8 @@ void Ship::Set(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t play
 	{
 		this->heat_box_vertexes_array[vertex] = heat_box_vertexes_array[vertex];
 	}
+
+	std::cout << "Ship::Set:: Ship: " << (unsigned)player_number << " in team: " << (unsigned)player_team_number << std::endl;
 }
 
 bool Ship::SpendBonus(EngineTypes::Bonus::bonus_t bonus)

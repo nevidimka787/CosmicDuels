@@ -25,6 +25,7 @@ namespace GameTypes
 
 	typedef uint8_t players_count_t;
 	typedef uint16_t entities_count_t;
+	typedef uint8_t entities_types_count_t;
 	typedef uint8_t map_elements_count_t;
 	typedef uint16_t maps_count_t;
 	typedef uint32_t game_rules_t;

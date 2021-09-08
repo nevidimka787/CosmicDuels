@@ -16,18 +16,20 @@ Linker::Linker(Game* game_object, MenuFunctions* menu_functions_object, OpenGL* 
 	//menu functions object
 
 	menu_functions_object->game_p__current_active_menu = &game_object->current_active_menu;
+	menu_functions_object->game_p__flag_end_match = &game_object->flag_end_match;
 	menu_functions_object->game_p__game_rules = &game_object->game_rules;
 	menu_functions_object->game_p__main_menu = &game_object->main_menu;
 	menu_functions_object->game_p__map_pull_array = &game_object->map_pull_array;
 	menu_functions_object->game_p__map_pull_select_menu = &game_object->map_pull_select_menu;
 	menu_functions_object->game_p__object_pull_array = &game_object->object_pull_array;
 	menu_functions_object->game_p__option_menu = &game_object->option_menu;
-	menu_functions_object->game_p__pause_game = &game_object->pause_game;
+	menu_functions_object->game_p__pause_round = &game_object->pause_round;
 	menu_functions_object->game_p__pause_menu = &game_object->pause_menu;
 	menu_functions_object->game_p__ships_control_menu = &game_object->ships_control_menu;
 	menu_functions_object->game_p__ships_select_menu = &game_object->ships_select_menu;
 	menu_functions_object->game_p__spawning_objects_select_menu = &game_object->spawning_objects_select_menu;
-	menu_functions_object->game_p__start_game = &game_object->start_game;
+	menu_functions_object->game_p__play_match = &game_object->play_match;
+	menu_functions_object->game_p__play_round = &game_object->play_round;
 	menu_functions_object->game_p__teams = &game_object->teams;
 
 	//menu functions object
@@ -73,7 +75,8 @@ Linker::Linker(Game* game_object, MenuFunctions* menu_functions_object, OpenGL* 
 	open_gl_object->game_p__ships_count = &game_object->ships_count;
 	open_gl_object->game_p__ships_select_menu = &game_object->ships_select_menu;
 	open_gl_object->game_p__shoot_flags = &game_object->shoot_flags;
-	open_gl_object->game_p__start_game = &game_object->start_game;
+	open_gl_object->game_p__play_match = &game_object->play_match;
+	open_gl_object->game_p__play_round = &game_object->play_round;
 	open_gl_object->game_p__spawning_objects_select_menu = &game_object->spawning_objects_select_menu;
 	open_gl_object->game_p__turels = &game_object->turels;
 	open_gl_object->game_p__turels_count = &game_object->turels_count;

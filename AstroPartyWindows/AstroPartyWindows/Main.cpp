@@ -58,10 +58,10 @@ int main()
             main_draw_functions->DrawFrame();
         }
 
-        if (main_game->start_game == true)
+        if (main_game->play_match == true)
         {
-            main_game->InitMach();
-            while (main_game->start_game == true)
+            main_game->InitMatch();
+            while (main_game->play_match == true)
             {
                 std::thread timer_thread(TikUpdate);
                 while (tik_update_thread_flag == false || physic_thread_flag == false)
@@ -86,6 +86,7 @@ int main()
                     frame++;
                 }
                 timer_thread.join();
+                main_draw_functions->update_menu = OPEN_GL_REALISATION_FRAMES_AFTER_CALLBAC_COUNT;
             }
         }
         glfwSwapBuffers(window);
@@ -110,31 +111,32 @@ void TikUpdate()
 {
     global_time_point = std::chrono::system_clock::now();
     init_mtx.lock();
+    //std::cout << "Thread TikUpdate start init.";
     init |= TIK_UPDATE_INIT;
     tik_update_thread_flag = true;
     std::chrono::system_clock::time_point local_time_point = global_time_point;
+    //std::cout << "Thread TikUpdate end init.";
     init_mtx.unlock();
 
     unsigned lock_timer = 0;
-
+    main_game->play_round = true;
     std::thread physics_calculation(PhysicsCalculation);
 
-    while (main_game->start_game == true)
+    while (main_game->play_round == true)
     {
         timer_mtx.lock();
-        if (main_game->pause_game == false)
+        if (main_game->pause_round == false)
         {
             lock_timer++;
-            if (!(lock_timer % 100) && false)
+            if (!(lock_timer % 100))
             {
                 std::cout << "Frame: " << frame  << std::endl 
                     << "Physic: " << physic << std::endl << std::endl;
-                std::cout << "Bonuses exist: " << main_game->bonuses_count << std::endl;
                 for (GameTypes::players_count_t team = 0; team < GAME_PLAYERS_MAX_COUNT; team++)
                 {
                     std::cout << "Team: " << (int)team << " Score: " << (int)main_game->scores[team] << std::endl;
                 }
-                std::cout << "Bullets on the map: " << main_game->bullets_count << std::endl;
+                std::cout << "Rounds remaining: " << (int)main_game->end_match_score << std::endl;
                 std::cout << std::endl << std::endl << std::endl;
                 frame = 0;
                 physic = 0;
@@ -146,6 +148,7 @@ void TikUpdate()
         std::this_thread::sleep_until(local_time_point);
     }
     physics_calculation.join();
+
     tik_update_thread_flag = false;
 }
 
@@ -159,21 +162,24 @@ void PhysicsCalculation()
         init_mtx.lock();
     }
     physic_calculation_mtx.lock();
+    //std::cout << "Thread PhysicsCalculation start init." << std::endl;
     //start initialisate all entities and variables
 
         main_game->InitLevel();
 
     //start initialisate all entities and variables
+    //std::cout << "Thread PhysicsCalculation end init." << std::endl;
     physic_calculation_mtx.unlock();
     init |= PHYSICS_CALCULATION_INIT;
+    //std::cout << "Threads init." << std::endl;
     physic_thread_flag = true;
     init_mtx.unlock();
 
     std::chrono::system_clock::time_point local_time_point = global_time_point;
 
-    while (main_game->start_game == true)
+    while (main_game->play_round == true)
     {
-        if (main_game->pause_game == false)
+        if (main_game->pause_round == false)
         {
             physic_calculation_mtx.lock();
             //start physics calculation
@@ -187,13 +193,9 @@ void PhysicsCalculation()
         local_time_point += std::chrono::milliseconds(10);
         std::this_thread::sleep_until(local_time_point);
     }
+
+    //std::cout << "Thread PhysicsCalculation exit." << std::endl;
     physic_thread_flag = false;
-
-    physic_calculation_mtx.lock();
-
-    main_game->NextLevel();
-
-    physic_calculation_mtx.unlock();
 }
 
 

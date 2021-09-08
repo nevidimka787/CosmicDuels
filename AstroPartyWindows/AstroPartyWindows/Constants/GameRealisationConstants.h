@@ -1,5 +1,15 @@
 #pragma once
 
+#define GAME_END_MATCH_DELLAY 100
+
+/*
+asteroids, bombs, bonuses, bullets,
+knifes, lasers, particles, ships,
+pilots, players, gravity generators,
+turels, mega lasers
+*/
+#define GAME_ENTITIES_TYPES_COUNT 13
+
 /*
 Asteroid
 */
@@ -8,7 +18,7 @@ Asteroid
 //tics to next shoot
 #define GAME_DELLAY_BETWEEN_SHOOTS	30
 
-#define GAME_ANTY_GRAVS_MAX_COUNT	2
+#define GAME_GRAV_GENS_MAX_COUNT	2
 //The maximum possible count of players on the map.
 #define GAME_PLAYERS_MAX_COUNT		4
 	//The maximum possible count of knifes on the map.
@@ -33,7 +43,7 @@ Asteroid
 #define GAME_RECTANGLES_MAX_COUNT	128
 
 	//KnockBack force of the pilot.
-#define GAME_KNOCKBACK_FORCE_OF_THE_PILOT	0.001f
+#define GAME_KNOCKBACK_FORCE_OF_THE_PILOT	0.00003f
 	//KnockBack force of the ship.
 #define GAME_KNOCKBACK_FORCE_OF_THE_SHIP	0.0001f
 	//Ship's gravitation force.
@@ -48,7 +58,8 @@ Asteroid
 	//map pull
 
 	//This map is first map on every match.
-#define MAP_TEST_MAP 0x00
+#define MAP_TEST_MAP			0x00
+#define MAP_SQUARE_ON_CENTER	0x01
 
 	//map pull
 
@@ -71,7 +82,7 @@ Asteroid
 #define GAME_RULE_ASTEROIDS_IS_SPAWNING				(1 << 12)
 #define GAME_RULE_BONUSES_IS_SPAWNING				(1 << 13)
 #define GAME_RULE_BALANCE_ACTIVE					(1 << 14)
-#define GAME_RULE_KNIFES_CAN_DESTROY_BULLETS			(1 << 15)
+#define GAME_RULE_KNIFES_CAN_DESTROY_BULLETS		(1 << 15)
 
 #define GAME_RULE_DEFAULT_GAME_RULES (GAME_RULE_PLAYERS_SPAWN_THIS_BONUS | GAME_RULE_START_BONUS_RANDOMIZE | GAME_RULE_NEED_KILL_PILOT | GAME_RULE_ASTEROIDS_IS_SPAWNING | GAME_RULE_BONUSES_IS_SPAWNING)
 
@@ -80,7 +91,7 @@ Asteroid
 	//match rules
 
 #define GAME_RANDOM_ITERATIONS_COUNT			8
-#define GAME_MAPS_COUNT							1
+#define GAME_MAPS_COUNT							2
 #define GAME_OBJECTS_COUNT						1
 #define GAME_BALANCE_ACTIVATE_DIFFERENCE_SCORES	3
 
@@ -153,5 +164,6 @@ Asteroid
 
 #define BUTTON_ID_SELECT_MAP	200
 #define BUTTON_ID_SELECT_MAP_0	(BUTTON_ID_SELECT_MAP + MAP_TEST_MAP)
+#define BUTTON_ID_SELECT_MAP_1	(BUTTON_ID_SELECT_MAP + MAP_SQUARE_ON_CENTER)
 
 	//select map pull menu

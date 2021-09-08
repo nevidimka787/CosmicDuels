@@ -41,6 +41,10 @@ void OpenGL::CallMenuFunction(Menu* menu, Vec2F* clk_pos, uint8_t clk_status)
     {
         object_p__menu_functions->MapPullSelectMenuFunction(clk_pos, clk_status);
     }
+    else if (menu == game_p__pause_menu)
+    {
+        object_p__menu_functions->PauseMenuFunction(clk_pos, clk_status);
+    }
 }
 
 void OpenGL::FramebufferSizeCallback(GLFWwindow* window, int width, int height)
@@ -81,7 +85,7 @@ void OpenGL::ProcessInput(GLFWwindow* window)
         std::cout << "Debug pause." << std::endl;
         int i = 0;
     }
-    if (*game_p__start_game)
+    if (*game_p__play_round)
     {
         if (glfwGetKey(window, SHIP_0_ROTATE_BUTTON))
         {

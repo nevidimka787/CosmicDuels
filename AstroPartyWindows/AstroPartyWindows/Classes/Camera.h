@@ -26,19 +26,11 @@ private:
 	Vec2F temp_position;
 
 
+	//Position of the camera.
+	Vec2F position;
 	//Maximun and ninimun coordinates that can be show in the camera.
 	Mat2F hight_limits;
 	Vec2F low_limits;
-	//How mach space after limits camera can show.
-	float margin;
-	//0 - not move
-	//1 - momental move
-	float move_velocity_coefficient;
-	//Position of the camera.
-	Vec2F position;
-	//0 - not resize
-	//1 - momental resize
-	float resize_velocity_coefficient;
 	//Scale of the camera.
 	//size.x / size.y
 	float scale;
@@ -48,6 +40,14 @@ private:
 
 	void Limit();
 public:
+	//How mach space after limits camera can show.
+	float margin;
+	//0 - not move
+	//1 - momental move
+	float move_velocity_coefficient;
+	//0 - not resize
+	//1 - momental resize
+	float resize_velocity_coefficient;
 
 	Camera(const Camera& camera);
 	Camera(

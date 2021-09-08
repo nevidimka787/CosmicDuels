@@ -17,15 +17,20 @@ public:
 	//Global tic value. Not use by functions.
 	GameTypes::tic_t global_timer;
 	//Global tic value for use in functions.
-	GameTypes::tic_t current_tic;
+	GameTypes::tic_t end_match_tik;
 
 	//Game status true = The game is on. false = The game stops.
-	bool start_game;
+	bool play_round;
+	//Game status true = The game start next raund.
+	bool play_match;
 	//Game status true = The game is paused. false = The game is on.
-	bool pause_game;
+	bool pause_round;
 	//Index of array is ship's player number. Values of array are numbers of teams by every ship.
 	//Array changed in Game::Init::Menus.
 	GameTypes::entities_count_t* teams;
+	//Index is team number
+	//Value is count of exist players in team
+	GameTypes::players_count_t* players_in_team;
 
 	GameTypes::maps_count_t selected_maps_id_array_length;
 
@@ -37,6 +42,10 @@ public:
 	bool buttons_inverse;
 	//This flag will be active after the completion of the MatchInit function and inactive after the end of the match.
 	bool flag_all_entities_initialisate;
+	//Function CheckEndMatch is active.
+	bool flag_update_end_match;
+	//If true match will finish.
+	bool flag_end_match;
 
 	//Current scores of players.
 	GameTypes::score_t* scores;
@@ -44,6 +53,11 @@ public:
 	GameTypes::score_t* last_match_scores;
 	//Id of the current map of the level.
 	GameTypes::maps_count_t current_map_id;
+	//After each round value decrements.
+	//Final round have number 1.
+	//If after the final of round the winer not defined value not decrements.
+	//If value is 0, the match ends.
+	GameTypes::score_t end_match_score;
 
 	//Count of gravity generators on the map.
 	GameTypes::map_elements_count_t grav_gens_count;
@@ -287,7 +301,7 @@ public:
 	void InitGame();
 	//The function runs when the mach starts.
 	//The functions nitialisates all arrays this maps.
-	void InitMach();
+	void InitMatch();
 	//The function runs when the level initialisates.
 	//The function generates the map and spawning players.
 	void InitLevel();
@@ -297,6 +311,26 @@ public:
 
 	void NextLevel();
 	void EndMatch();
+
+	//Team's numbers start from 1.
+	void DecrementPlayersCountInTeam(GameTypes::players_count_t team_number);
+	//Team's numbers start from 1.
+	void IncrementPlayersCountInTeam(GameTypes::players_count_t team_number);
+	void CheckEndMatch();
+
+	//Memory functions
+
+	//Get space from memory for arrays.
+	//Update values that was linking with arrays.
+	void MemoryLock();
+	//Set pbjects in arrays default.
+	//Update values that was linking with arrays.
+	void MemorySetDefault();
+	//Delete arrays.
+	//Update values that was linking with arrays.
+	void MemoryFree();
+
+	//Memory functions
 	
 
 	//The function calculates forces of collisions between entities in the array.

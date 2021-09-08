@@ -28,12 +28,12 @@ void::MenuFunctions::Back()
 	}
 	else if (*game_p__current_active_menu == game_p__ships_control_menu)
 	{
-		*game_p__pause_game = true;
+		*game_p__pause_round = true;
 		OpenPauseMenu();
 	}
 	else if (*game_p__current_active_menu == game_p__pause_menu)
 	{
-		*game_p__pause_game = false;
+		*game_p__pause_round = false;
 		*game_p__current_active_menu = game_p__ships_control_menu;
 	}
 }
@@ -89,21 +89,32 @@ void MenuFunctions::OpenSheepsControlMenu()
 
 
 
-void MenuFunctions::StartGame()
+void MenuFunctions::StartMatch()
 {
-	*game_p__start_game = true;
+	*game_p__play_match = true;
 }
 
-void MenuFunctions::PauseGame()
+void MenuFunctions::PauseRaund()
 {
-	*game_p__pause_game = true;
+	*game_p__pause_round = true;
 	OpenPauseMenu();
 }
 
-void MenuFunctions::ResumeGame()
+void MenuFunctions::ResumeRaund()
 {
-	*game_p__pause_game = false;
+	*game_p__pause_round = false;
 	OpenSheepsControlMenu();
+}
+
+void MenuFunctions::EndRound()
+{
+	*game_p__play_round = false;
+}
+
+void MenuFunctions::EndMatch()
+{
+	*game_p__pause_round = false;
+	*game_p__flag_end_match = true;
 }
 
 void MenuFunctions::SelectShip(GameTypes::players_count_t sheep_number, GameTypes::players_count_t team_number)
@@ -246,21 +257,43 @@ void MenuFunctions::OptionMenuFunction(Vec2F* clk_pos, uint8_t clk_status)
 
 void MenuFunctions::PauseMenuFunction(Vec2F* clk_pos, uint8_t clk_status)
 {
+	Button* current_button;
 	for (EngineTypes::Menu::buttons_count_t i = 0; i < game_p__pause_menu->GetButtonsCount(); i++)
 	{
+		current_button = &game_p__pause_menu->current_buttons[i];
+		if (clk_status == OPEN_GL_REALISATION_BUTTON_LOST)
+		{
+			current_button->SetStatus(BUTTON_STATUS_SELECT, false);
+			goto CycleEnd;
+		}
 		if (game_p__pause_menu->current_buttons[i].HavePoint(clk_pos))
 		{
-			switch (game_p__pause_menu->current_buttons[i].GetId())
+			switch (clk_status)
 			{
-			case BUTTON_ID_GO_TO_MAIN_MENU:
-				OpenMainMenu();
+			case GLFW_PRESS:
+				last_select_button_index = i;
+				current_button->SetStatus(BUTTON_STATUS_SELECT, true);
 				return;
-			case BUTTON_ID_RESUME_MATCH:
-			default:
-				ResumeGame();
-				return;
+			case GLFW_RELEASE:
+				if (last_select_button_index != i)
+				{
+					game_p__pause_menu->current_buttons[i].SetStatus(BUTTON_STATUS_SELECT, false);
+					return;
+				}
+				current_button->SetStatus(BUTTON_STATUS_SELECT, false);
+				switch (game_p__pause_menu->current_buttons[i].GetId())
+				{
+				case BUTTON_ID_GO_TO_MAIN_MENU:
+					EndMatch();
+					return;
+				case BUTTON_ID_RESUME_MATCH:
+				default:
+					ResumeRaund();
+					return;
+				}
 			}
 		}
+	CycleEnd:;
 	}
 }
 
@@ -332,7 +365,7 @@ void MenuFunctions::ShipsSelectMenuFunction(Vec2F* clk_pos, uint8_t clk_status)
 						if  ((*game_p__teams)[i] != SHIPS_SELECT_BUTTONS_NO_TEAM)
 						{
 							//std::cout << (*game_p__teams)[i] << std::endl;
-							StartGame();
+							StartMatch();
 							return;
 						}
 					}

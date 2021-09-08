@@ -23,9 +23,11 @@ public:
 	void OpenSpawnObjectsSelectMenu();
 	void OpenSheepsControlMenu();
 
-	void StartGame();
-	void PauseGame();
-	void ResumeGame();
+	void StartMatch();
+	void PauseRaund();
+	void ResumeRaund();
+	void EndRound();
+	void EndMatch();
 	void SelectShip(GameTypes::players_count_t sheep_number, GameTypes::players_count_t team_number);
 	void Exit();
 	bool ChangeOption(GameTypes::game_rules_t option_number);
@@ -42,8 +44,10 @@ public:
 
 	//game pointers
 
-	bool* game_p__start_game;
-	bool* game_p__pause_game;
+	bool* game_p__play_round;
+	bool* game_p__play_match;
+	bool* game_p__pause_round;
+	bool* game_p__flag_end_match;
 
 	bool** game_p__map_pull_array;
 	bool** game_p__object_pull_array;
