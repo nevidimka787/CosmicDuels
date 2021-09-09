@@ -137,6 +137,8 @@ void TikUpdate()
                     std::cout << "Team: " << (int)team << " Score: " << (int)main_game->scores[team] << std::endl;
                 }
                 std::cout << "Rounds remaining: " << (int)main_game->end_match_score << std::endl;
+                std::cout << "Matrix: " << std::endl 
+                    << main_game->ships[0].GetModelMatrix() << std::endl;
                 std::cout << std::endl << std::endl << std::endl;
                 frame = 0;
                 physic = 0;

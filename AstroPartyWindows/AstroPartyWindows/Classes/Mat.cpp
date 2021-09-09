@@ -577,13 +577,13 @@ Vec2F::~Vec2F()
 
 std::ostream& operator<<(std::ostream& stream, Vec2F vector)
 {
-	stream << "X: " << vector.x << ' ' << "Y: " << vector.y;
+	stream << "X: " << vector.x << " Y: " << vector.y;
 	return stream;
 }
 
 std::ostream& operator<<(std::ostream& stream, Vec2D vector)
 {
-	stream << "X: " << vector.x << ' ' << "Y: " << vector.y;
+	stream << "X: " << vector.x << " Y: " << vector.y;
 	return stream;
 }
 
@@ -943,6 +943,16 @@ void Mat2F::operator=(Mat2F matrix)
 
 Mat2F::~Mat2F()
 {
+}
+
+std::ostream& operator<<(std::ostream& stream, Mat2D matrix)
+{
+	return stream << "a11: " << matrix.a11 << " a12: " << matrix.a12 << " a21: " << matrix.a21 << " a22: " << matrix.a22;
+}
+
+std::ostream& operator<<(std::ostream& stream, Mat2F matrix)
+{
+	return stream << "a11: " << matrix.a11 << " a12: " << matrix.a12 << " a21: " << matrix.a21 << " a22: " << matrix.a22;
 }
 
 
@@ -1601,4 +1611,16 @@ void Mat3x2F::operator=(Mat3x2F matrix)
 
 Mat3x2F::~Mat3x2F()
 {
+}
+
+std::ostream& operator<<(std::ostream& stream, Mat3x2D matrix)
+{
+	return stream << "a11: " << matrix.a11 << " a12: " << matrix.a12 << " a13: " << matrix.a13 << std::endl
+		<< "a21: " << matrix.a21 << " a22: " << matrix.a22 << " a23: " << matrix.a23 << std::endl;
+}
+
+std::ostream& operator<<(std::ostream& stream, Mat3x2F matrix)
+{
+	return stream << "a11: " << matrix.a11 << " a12: " << matrix.a12 << " a13: " << matrix.a13 << std::endl
+		<< "a21: " << matrix.a21 << " a22: " << matrix.a22 << " a23: " << matrix.a23 << std::endl;
 }

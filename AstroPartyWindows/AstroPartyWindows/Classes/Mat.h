@@ -235,7 +235,8 @@ public:
 	~Mat2F();
 };
 
-
+std::ostream& operator<<(std::ostream& stream, Mat2D vector);
+std::ostream& operator<<(std::ostream& stream, Mat2F vector);
 
 class Mat3x2D
 {
@@ -351,3 +352,6 @@ public:
 
 	~Mat3x2F();
 };
+
+std::ostream& operator<<(std::ostream& stream, Mat3x2D vector);
+std::ostream& operator<<(std::ostream& stream, Mat3x2F vector);

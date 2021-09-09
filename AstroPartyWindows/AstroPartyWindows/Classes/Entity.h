@@ -59,6 +59,7 @@ public:
 	float GetDistance(Cyrcle* cyrcle);
 	float GetDistance(Polygon* polygon);
 	float GetFrameSize(Entity* entity, float scale);
+	Mat3x2F GetModelMatrix();
 	Vec2F GetPosition();
 	void Rotate(float angle);
 	void Set(Entity* entity);
@@ -367,10 +368,14 @@ public:
 	GameTypes::players_count_t GetTeamNumber();
 	bool GetRotateInputValue();
 	bool GetShootInputValue();
-	bool HeatBoxIsCollision(Bullet* bullet);
-	bool HeatBoxIsCollision(Knife* knife);
-	bool HeatBoxIsCollision(Laser* laser);
-	bool HeatBoxIsCollision(MegaLaser* mega_laser);
+	//Check collision this heat box.
+	bool IsCollision(Bullet* bullet);
+	//Check collision this heat box.
+	bool IsCollision(Knife* knife);
+	//Check collision this heat box.
+	bool IsCollision(Laser* laser);
+	//Check collision this heat box.
+	bool IsCollision(MegaLaser* mega_laser);
 	bool SameTeams(ControledEntity* second_entity);
 	void Set(ControledEntity* entity);
 	void Set(
@@ -439,7 +444,7 @@ public:
 	EngineTypes::Bonus::bonus_t GetActiveBaffs();
 	bool HaveBonus(EngineTypes::Bonus::bonus_t bonus);
 	Bonus LoseBonus();
-	void Recalculate();
+	void Update();
 	//If ship have bonus, the function reduces the amount of this bonus and return true.
 	bool SpendBonus(EngineTypes::Bonus::bonus_t bonus);
 	//The function reduces the amount of this bonus.

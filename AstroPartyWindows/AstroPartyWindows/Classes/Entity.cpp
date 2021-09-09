@@ -148,6 +148,11 @@ float Entity::GetFrameSize(Entity* entity, float scale)
 	return fmaxf(fabs((entity->position - position).x), fabs((entity->position - position).y * scale)) + radius + entity->radius;
 }
 
+Mat3x2F Entity::GetModelMatrix()
+{
+	return model_matrix;
+}
+
 Vec2F Entity::GetPosition()
 {
 	return position;
@@ -331,9 +336,9 @@ void Entity::UpdateDirection()
 
 void Entity::UpdateMatrix()
 {
-	model_matrix.SetByAngle(angle);
-	model_matrix.TransportThis(position);
-	model_matrix.Scale(Vec2F(4.5f, 3.0f));
+	model_matrix.SetByPosition(position);
+	model_matrix.ScaleThis(Vec2F(4.5f, 3.0f) * radius);
+	model_matrix.RotateThis(angle);
 }
 
 void Entity::operator=(Entity entity)
@@ -1261,7 +1266,7 @@ ControledEntity::ControledEntity() :
 	player_team_number(0)
 {
 	heat_box_vertexes_array_length = 3;
-	heat_box_vertexes_array = new Vec2F[heat_box_vertexes_array_length];
+	heat_box_vertexes_array = new Vec2F[3];
 	heat_box_vertexes_array[0].Set(radius, 0.0f);
 	heat_box_vertexes_array[1].Set(-0.25f, sqrt(3.0f) / 4.0f);
 	heat_box_vertexes_array[2].Set(-0.25f, sqrt(3.0f) / -4.0f);
@@ -1328,17 +1333,18 @@ bool ControledEntity::GetShootInputValue()
 	return *(bool*)shoot_input_value_pointer;
 }
 
-bool ControledEntity::HeatBoxIsCollision(Bullet* bullet)
+bool ControledEntity::IsCollision(Bullet* bullet)
 {
 	//Frame of reference set to this entity.
-	Segment segment = Segment(bullet->GetPosition(), bullet->GetVelocity() - velocity);
+	Segment segment = bullet->GetTreck();
+	segment.vector -= velocity;
 	//controled entity side
 	Segment ce_side;
 	Vec2F 
 		point1 = heat_box_vertexes_array[heat_box_vertexes_array_length - 1] * model_matrix,
 		point2 = heat_box_vertexes_array[0] * model_matrix;
 	ce_side.Set(point1, point2);
-	if (segment.GetDistance(&ce_side) < bullet->radius + radius)
+	if (segment.GetDistance(&ce_side) < bullet->radius)
 	{
 		return true;
 	}
@@ -1347,7 +1353,7 @@ bool ControledEntity::HeatBoxIsCollision(Bullet* bullet)
 		point1 = point2;
 		point2 = heat_box_vertexes_array[vertex] * model_matrix;
 		ce_side.Set(point1, point2);
-		if (segment.GetDistance(&ce_side) < bullet->radius + radius)
+		if (segment.GetDistance(&ce_side) < bullet->radius)
 		{
 			return true;
 		}
@@ -1355,7 +1361,7 @@ bool ControledEntity::HeatBoxIsCollision(Bullet* bullet)
 	return false;
 }
 
-bool ControledEntity::HeatBoxIsCollision(Knife* knife)
+bool ControledEntity::IsCollision(Knife* knife)
 {
 	//Frame of reference set to this entity.
 	Segment segment = knife->GetSegment();
@@ -1383,7 +1389,7 @@ bool ControledEntity::HeatBoxIsCollision(Knife* knife)
 	return false;
 }
 
-bool ControledEntity::HeatBoxIsCollision(Laser* laser)
+bool ControledEntity::IsCollision(Laser* laser)
 {
 
 	//Frame of reference set to this entity.
@@ -1412,7 +1418,7 @@ bool ControledEntity::HeatBoxIsCollision(Laser* laser)
 	return false;
 }
 
-bool ControledEntity::HeatBoxIsCollision(MegaLaser* mega_laser)
+bool ControledEntity::IsCollision(MegaLaser* mega_laser)
 {
 	//Frame of reference set to this entity.
 	Segment segment = mega_laser->GetSegment();
@@ -1665,7 +1671,7 @@ Bonus Ship::LoseBonus()
 	return Bonus(&position, &velocity, buffs_bonuses);
 }
 
-void Ship::Recalculate()
+void Ship::Update()
 {
 	DynamicEntity::Update();
 	if (unbrakable > 0)
@@ -1723,10 +1729,21 @@ void Ship::Set(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t play
 	this->velocity = *velocity;
 
 	delete[] this->heat_box_vertexes_array;
-	this->heat_box_vertexes_array = new Vec2F[heat_box_vertexes_array_length];
-	for (EngineTypes::ControledEntity::heat_box_vertexes_count_t vertex = 0; vertex < heat_box_vertexes_array_length; vertex++)
+	if (heat_box_vertexes_array_length < 3 || heat_box_vertexes_array == nullptr)
 	{
-		this->heat_box_vertexes_array[vertex] = heat_box_vertexes_array[vertex];
+		this->heat_box_vertexes_array_length = 3;
+		this->heat_box_vertexes_array = new Vec2F[3];
+		this->heat_box_vertexes_array[0].Set(radius, 0.0f);
+		this->heat_box_vertexes_array[1].Set(-0.25f, sqrt(3.0f) / 4.0f);
+		this->heat_box_vertexes_array[2].Set(-0.25f, sqrt(3.0f) / -4.0f);
+	}
+	else
+	{
+		this->heat_box_vertexes_array = new Vec2F[heat_box_vertexes_array_length];
+		for (EngineTypes::ControledEntity::heat_box_vertexes_count_t vertex = 0; vertex < heat_box_vertexes_array_length; vertex++)
+		{
+			this->heat_box_vertexes_array[vertex] = heat_box_vertexes_array[vertex];
+		}
 	}
 
 	std::cout << "Ship::Set:: Ship: " << (unsigned)player_number << " in team: " << (unsigned)player_team_number << std::endl;
