@@ -15,6 +15,7 @@ public:
 
 	void Back();
 
+	void OpenBonusPullSelectMenu();
 	void OpenOptionsMenu();
 	void OpenMainMenu();
 	void OpenPauseMenu();
@@ -32,6 +33,7 @@ public:
 	void Exit();
 	bool ChangeOption(GameTypes::game_rules_t option_number);
 
+	void BonusPullSelectMenuFunction(Vec2F* clk_pos, uint8_t clk_status);
 	void MainMenuFunction(Vec2F* clk_pos, uint8_t clk_status);
 	void OptionMenuFunction(Vec2F* clk_pos, uint8_t clk_status);
 	void PauseMenuFunction(Vec2F* clk_pos, uint8_t clk_status);
@@ -49,6 +51,7 @@ public:
 	bool* game_p__pause_round;
 	bool* game_p__flag_end_match;
 
+	bool** game_p__bonus_pull_array;
 	bool** game_p__map_pull_array;
 	bool** game_p__object_pull_array;
 
@@ -57,6 +60,7 @@ public:
 	 
 	Menu** game_p__current_active_menu;
 
+	Menu* game_p__bonus_pull_select_menu;
 	Menu* game_p__option_menu;
 	Menu* game_p__main_menu;
 	Menu* game_p__pause_menu;

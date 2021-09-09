@@ -284,14 +284,15 @@ public:
 	MegaLaser** game_p__mega_lasers;
 
 	Menu** game_p__current_active_menu;
-	
-	Menu* game_p__option_menu;
+
+	Menu* game_p__bonus_pull_menu;
 	Menu* game_p__main_menu;
+	Menu* game_p__map_pull_select_menu;
+	Menu* game_p__option_menu;
 	Menu* game_p__pause_menu;
 	Menu* game_p__ships_select_menu;
-	Menu* game_p__map_pull_select_menu;
-	Menu* game_p__spawning_objects_select_menu;
 	Menu* game_p__ships_control_menu;
+	Menu* game_p__spawning_objects_select_menu;
 
 	Camera* game_p__camera;
 

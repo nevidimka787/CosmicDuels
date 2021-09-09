@@ -40,6 +40,11 @@ float Entity::GetDistance(Entity* entity)
 	return entity->position.GetDistance(&position) - entity->radius - radius, 0.0f;
 }
 
+float Entity::GetDistance(Vec2F point)
+{
+	return point.GetDistance(&position) - radius;
+}
+
 float Entity::GetDistance(Vec2F* point)
 {
 	return point->GetDistance(&position) - radius;
@@ -180,13 +185,12 @@ bool Entity::IsCollision(Segment* segment)
 
 bool Entity::IsCollision(DynamicEntity* dynamic_entity)
 {
-	return GetDistance(&dynamic_entity->position) <= 0.0;
+	return GetDistance(&dynamic_entity->position) <= dynamic_entity->radius;
 }
 
 bool Entity::IsCollision(StaticEntity* static_entity)
 {
-	Vec2F temp = static_entity->GetPosition();
-	return GetDistance(&temp) <= 0.0;
+	return GetDistance(static_entity->GetPosition()) <= static_entity->radius;
 }
 
 bool Entity::IsCollision(Rectangle* rectangle)
@@ -612,9 +616,9 @@ float DynamicEntity::GetAngularVelocity()
 	return angular_velocity;
 }
 
-Vec2F DynamicEntity::GetVelocity()
+Segment DynamicEntity::GetLastTreck()
 {
-	return velocity;
+	return Segment(position - velocity, position, true);
 }
 
 Segment DynamicEntity::GetTreck()
@@ -622,55 +626,60 @@ Segment DynamicEntity::GetTreck()
 	return Segment(&position, &velocity);
 }
 
+Vec2F DynamicEntity::GetVelocity()
+{
+	return velocity;
+}
+
 bool DynamicEntity::IsCollision(Vec2F* point)
 {
-	return Segment(position, velocity).GetDistance(point) < radius;
+	return Segment(position, -velocity).GetDistance(point) < radius;
 }
 
 bool DynamicEntity::IsCollision(Line* line)
 {
-	return Segment(position, velocity).GetDistance(line) < radius;
+	return Segment(position, -velocity).GetDistance(line) < radius;
 }
 
 bool DynamicEntity::IsCollision(Beam* beam)
 {
-	return Segment(position, velocity).GetDistance(beam) < radius;
+	return Segment(position, -velocity).GetDistance(beam) < radius;
 }
 
 bool DynamicEntity::IsCollision(Segment* segment)
 {
-	return Segment(position, velocity).GetDistance(segment) < radius;
+	return Segment(position, -velocity).GetDistance(segment) < radius;
 }
 
 bool DynamicEntity::IsCollision(DynamicEntity* entity)
 {
-	return Segment(position, velocity).GetDistance(entity->GetPosition()) < radius + entity->radius;
+	return Segment(position, -velocity).GetDistance(entity->GetPosition()) < radius + entity->radius;
 }
 
 bool DynamicEntity::IsCollision(StaticEntity* entity)
 {
-	return Segment(position, velocity).GetDistance(entity->GetPosition()) < radius + entity->radius;
+	return Segment(position, -velocity).GetDistance(entity->GetPosition()) < radius + entity->radius;
 }
 
 bool DynamicEntity::IsCollision(Rectangle* rectangle)
 {
 	Segment side = rectangle->GetUpSide();
-	if (Segment(position, velocity).GetDistance(&side) < radius)
+	if (Segment(position, -velocity).GetDistance(&side) < radius)
 	{
 		return true;
 	}
 	side = rectangle->GetLeftSide();
-	if (Segment(position, velocity).GetDistance(&side) < radius)
+	if (Segment(position, -velocity).GetDistance(&side) < radius)
 	{	
 		return true;
 	}
 	side = rectangle->GetDownSide();
-	if (Segment(position, velocity).GetDistance(&side) < radius)
+	if (Segment(position, -velocity).GetDistance(&side) < radius)
 	{
 		return true;
 	}
 	side = rectangle->GetRightSide();
-	if (Segment(position, velocity).GetDistance(&side) < radius)
+	if (Segment(position, -velocity).GetDistance(&side) < radius)
 	{
 		return true;
 	}
@@ -679,7 +688,7 @@ bool DynamicEntity::IsCollision(Rectangle* rectangle)
 
 bool DynamicEntity::IsCollision(Cyrcle* cyrcle)
 {
-	return Segment(position, velocity).GetDistance(cyrcle->GetPosition()) < radius + cyrcle->GetRadius();
+	return Segment(position, -velocity).GetDistance(cyrcle->GetPosition()) < radius + cyrcle->GetRadius();
 }
 
 bool DynamicEntity::IsCollision(Polygon* polygon)
@@ -1196,6 +1205,11 @@ KillerEntity::KillerEntity(Vec2F* position, Vec2F* velocity, float radius, GameT
 {
 }
 
+bool KillerEntity::CreatedBy(ControledEntity* controled_entity)
+{
+	return player_master_number == controled_entity->GetPlayerNumber();
+}
+
 GameTypes::players_count_t KillerEntity::GetPlayerMasterNumber()
 {
 	return player_master_number;
@@ -1267,7 +1281,7 @@ ControledEntity::ControledEntity() :
 {
 	heat_box_vertexes_array_length = 3;
 	heat_box_vertexes_array = new Vec2F[3];
-	heat_box_vertexes_array[0].Set(radius, 0.0f);
+	heat_box_vertexes_array[0].Set(0.5f, 0.0f);
 	heat_box_vertexes_array[1].Set(-0.25f, sqrt(3.0f) / 4.0f);
 	heat_box_vertexes_array[2].Set(-0.25f, sqrt(3.0f) / -4.0f);
 }
@@ -1298,7 +1312,7 @@ ControledEntity::ControledEntity(Vec2F* position, Vec2F* velocity, float radius,
 	{
 		this->heat_box_vertexes_array_length = 3;
 		this->heat_box_vertexes_array = new Vec2F[3];
-		this->heat_box_vertexes_array[0].Set(radius, 0.0f);
+		this->heat_box_vertexes_array[0].Set(0.5f, 0.0f);
 		this->heat_box_vertexes_array[1].Set(-0.25f, sqrt(3.0f) / 4.0f);
 		this->heat_box_vertexes_array[2].Set(-0.25f, sqrt(3.0f) / -4.0f);
 		return;
@@ -1336,14 +1350,14 @@ bool ControledEntity::GetShootInputValue()
 bool ControledEntity::IsCollision(Bullet* bullet)
 {
 	//Frame of reference set to this entity.
-	Segment segment = bullet->GetTreck();
+	Segment segment = bullet->GetLastTreck();
 	segment.vector -= velocity;
 	//controled entity side
 	Segment ce_side;
 	Vec2F 
 		point1 = heat_box_vertexes_array[heat_box_vertexes_array_length - 1] * model_matrix,
 		point2 = heat_box_vertexes_array[0] * model_matrix;
-	ce_side.Set(point1, point2);
+	ce_side.Set(point1, point2, true);
 	if (segment.GetDistance(&ce_side) < bullet->radius)
 	{
 		return true;
@@ -1352,7 +1366,7 @@ bool ControledEntity::IsCollision(Bullet* bullet)
 	{
 		point1 = point2;
 		point2 = heat_box_vertexes_array[vertex] * model_matrix;
-		ce_side.Set(point1, point2);
+		ce_side.Set(point1, point2, true);
 		if (segment.GetDistance(&ce_side) < bullet->radius)
 		{
 			return true;
@@ -1400,7 +1414,7 @@ bool ControledEntity::IsCollision(Laser* laser)
 		point1 = heat_box_vertexes_array[heat_box_vertexes_array_length - 1] * model_matrix,
 		point2 = heat_box_vertexes_array[0] * model_matrix;
 
-	ce_side.Set(point1, point2);
+	ce_side.Set(point1, point2, true);
 	if (beam.GetDistance(&ce_side) < radius)
 	{
 		return true;
@@ -1409,7 +1423,7 @@ bool ControledEntity::IsCollision(Laser* laser)
 	{
 		point1 = point2;
 		point2 = heat_box_vertexes_array[vertex] * model_matrix;
-		ce_side.Set(point1, point2);
+		ce_side.Set(point1, point2, true);
 		if (beam.GetDistance(&ce_side) < radius)
 		{
 			return true;
@@ -1428,7 +1442,7 @@ bool ControledEntity::IsCollision(MegaLaser* mega_laser)
 		point1 = heat_box_vertexes_array[heat_box_vertexes_array_length - 1] * model_matrix,
 		point2 = heat_box_vertexes_array[0] * model_matrix;
 
-	ce_side.Set(point1, point2);
+	ce_side.Set(point1, point2, true);
 	if (segment.GetDistance(&ce_side) < radius)
 	{
 		return true;
@@ -1437,7 +1451,7 @@ bool ControledEntity::IsCollision(MegaLaser* mega_laser)
 	{
 		point1 = point2;
 		point2 = heat_box_vertexes_array[vertex] * model_matrix;
-		ce_side.Set(point1, point2);
+		ce_side.Set(point1, point2, true);
 		if (segment.GetDistance(&ce_side) < radius)
 		{
 			return true;
@@ -1571,10 +1585,10 @@ void Ship::BreakShield()
 
 Bullet Ship::CreateBullet()
 {
-	Vec2F temp_position = direction * (radius + BULLET_DEFAULT_RADIUS) + position;
-	Vec2F temp_velocity = direction * BULLET_DEFAULT_VELOCITY + velocity;
+	Vec2F bullet_position = Vec2F(0.5f, 0.0f) * model_matrix;
+	Vec2F bullet_velosity = direction * BULLET_DEFAULT_VELOCITY + velocity;
 	AddForceAlongDirection(-SHIP_SHOOT_FORCE);
-	return Bullet(&temp_position, &temp_velocity, player_number, player_team_number);
+	return Bullet(&bullet_position, &bullet_velosity, player_number, player_team_number);
 }
 
 Bullet Ship::CreateTriple(uint8_t bullet_number)
@@ -1600,10 +1614,10 @@ Bullet Ship::CreateTriple(uint8_t bullet_number)
 
 Bullet Ship::CreateLoop(GameTypes::entities_count_t bullet_number)
 {
-	Vec2F new_dir = direction.Rotate(2.0f * (float)M_PI / BULLETS_IN_LOOP * bullet_number);
-	Vec2F temp = position + new_dir * radius;
-	new_dir = new_dir * BULLET_DEFAULT_VELOCITY + velocity;
-	return Bullet(&temp, &new_dir, player_number, player_team_number);
+	Vec2F bullet_vector = direction.Rotate(2.0f * (float)M_PI / BULLETS_IN_LOOP * ((float)bullet_number + 0.5f));
+	Vec2F bullet_velocity = bullet_vector * BULLET_DEFAULT_VELOCITY + velocity;
+	Vec2F bullet_position = position + bullet_vector * radius * 2.0f;
+	return Bullet(&bullet_position, &bullet_velocity, player_number, player_team_number);
 }
 
 Bomb Ship::CreateBomb()
@@ -1654,16 +1668,7 @@ EngineTypes::Bonus::bonus_t Ship::GetActiveBaffs()
 
 bool Ship::HaveBonus(EngineTypes::Bonus::bonus_t bonus)
 {
-	EngineTypes::Bonus::bonus_t temp;
-	for (EngineTypes::Bonus::bonus_t i = 0; i < BONUS_BONUSES_COUNT; i++)
-	{
-		temp = 0x11 * (i << 1);
-		if ((bonus & temp) && !(buffs_bonuses & temp))
-		{
-			return false;
-		}
-	}
-	return true;
+	return buffs_bonuses & (bonus * 3);
 }
 
 Bonus Ship::LoseBonus()
@@ -1733,7 +1738,7 @@ void Ship::Set(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t play
 	{
 		this->heat_box_vertexes_array_length = 3;
 		this->heat_box_vertexes_array = new Vec2F[3];
-		this->heat_box_vertexes_array[0].Set(radius, 0.0f);
+		this->heat_box_vertexes_array[0].Set(0.5f, 0.0f);
 		this->heat_box_vertexes_array[1].Set(-0.25f, sqrt(3.0f) / 4.0f);
 		this->heat_box_vertexes_array[2].Set(-0.25f, sqrt(3.0f) / -4.0f);
 	}
@@ -2234,15 +2239,6 @@ GameTypes::players_count_t Laser::GetPlayerMasterTeamNumber()
 	return player_master_team_number;
 }
 
-void Laser::Recalculate()
-{
-	StaticEntity::Recalculate();
-	if (shoot_time > 0)
-	{
-		shoot_time--;
-	}
-}
-
 void Laser::Set(Laser* laser)
 {
 	angle = laser->angle;
@@ -2266,6 +2262,15 @@ void Laser::Set(Beam* beam, GameTypes::players_count_t player_master_number, Gam
 	shoot_time = shoot_time;
 }
 
+void Laser::Update()
+{
+	StaticEntity::Recalculate();
+	if (shoot_time > 0)
+	{
+		shoot_time--;
+	}
+}
+
 void Laser::operator=(Laser laser)
 {
 	angle = laser.angle;
@@ -2285,17 +2290,20 @@ Laser::~Laser()
 
 
 Bullet::Bullet() :
-	KillerEntity()
+	KillerEntity(),
+	is_collision_master(true)
 {
 }
 
 Bullet::Bullet(const Bullet& bullet) :
-	KillerEntity(bullet)
+	KillerEntity(bullet),
+	is_collision_master(true)
 {
 }
 
-Bullet::Bullet(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t player_master_number, GameTypes::players_count_t player_master_team_number, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, float radius, bool exist) :
-	KillerEntity(position, velocity, radius, player_master_number, player_master_team_number, angle, angular_velocity, force_collision_coeffisient, force_resistance_air_coefficient, exist)
+Bullet::Bullet(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t player_master_number, GameTypes::players_count_t player_master_team_number, bool is_collision_master, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, float radius, bool exist) :
+	KillerEntity(position, velocity, radius, player_master_number, player_master_team_number, angle, angular_velocity, force_collision_coeffisient, force_resistance_air_coefficient, exist),
+	is_collision_master(true)
 {
 }
 
@@ -2307,6 +2315,7 @@ void Bullet::Set(Bullet* bullet)
 	exist = bullet->exist;
 	force_collision_coeffisient = bullet->force_collision_coeffisient;
 	force_resistance_air_coefficient = bullet->force_resistance_air_coefficient;
+	is_collision_master = bullet->is_collision_master;
 	player_master_number = bullet->player_master_number;
 	player_master_team_number = bullet->player_master_team_number;
 	position = bullet->position;
@@ -2314,7 +2323,7 @@ void Bullet::Set(Bullet* bullet)
 	velocity = bullet->velocity;
 }
 
-void Bullet::Set(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t player_master_number, GameTypes::players_count_t player_master_team_number, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, float radius, bool exist)
+void Bullet::Set(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t player_master_number, GameTypes::players_count_t player_master_team_number, bool is_collision_master, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, float radius, bool exist)
 {
 	this->angle = angle;
 	this->angular_velocity = angular_velocity;
@@ -2322,11 +2331,21 @@ void Bullet::Set(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t pl
 	this->exist = exist;
 	this->force_collision_coeffisient = force_collision_coeffisient;
 	this->force_resistance_air_coefficient = force_resistance_air_coefficient;
+	this->is_collision_master = is_collision_master;
 	this->player_master_number = player_master_number;
 	this->player_master_team_number = player_master_team_number;
 	this->position = *position;
 	this->radius = radius;
 	this->velocity = *velocity;
+}
+
+void Bullet::Update()
+{
+	DynamicEntity::Update();
+	if (velocity.GetLength() < BULLET_MIN_VELOCITY)
+	{
+		velocity = velocity.Normalize() * BULLET_MIN_VELOCITY;
+	}
 }
 
 void Bullet::operator=(Bullet bullet)
@@ -2338,6 +2357,7 @@ void Bullet::operator=(Bullet bullet)
 	force = bullet.force;
 	force_collision_coeffisient = bullet.force_collision_coeffisient;
 	force_resistance_air_coefficient = bullet.force_resistance_air_coefficient;
+	is_collision_master = bullet.is_collision_master;
 	player_master_number = bullet.player_master_number;
 	player_master_team_number = bullet.player_master_team_number;
 	position = bullet.position;

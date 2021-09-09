@@ -137,8 +137,14 @@ void TikUpdate()
                     std::cout << "Team: " << (int)team << " Score: " << (int)main_game->scores[team] << std::endl;
                 }
                 std::cout << "Rounds remaining: " << (int)main_game->end_match_score << std::endl;
-                std::cout << "Matrix: " << std::endl 
-                    << main_game->ships[0].GetModelMatrix() << std::endl;
+                for (GameTypes::players_count_t player = 0; player < GAME_PLAYERS_MAX_COUNT; player++)
+                {
+                    std::cout << "Player " << (unsigned)player << " bonuses: "
+                        << (int)main_game->ships[player].HaveBonus(BONUS_KNIFE) << ' '
+                        << (int)main_game->ships[player].HaveBonus(BONUS_BOMB) << ' '
+                        << (int)main_game->ships[player].HaveBonus(BONUS_LASER) << ' '
+                        << (int)main_game->ships[player].HaveBonus(BONUS_LOOP) << std::endl;
+                }
                 std::cout << std::endl << std::endl << std::endl;
                 frame = 0;
                 physic = 0;

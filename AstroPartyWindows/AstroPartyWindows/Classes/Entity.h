@@ -49,6 +49,7 @@ public:
 	Getting the distance between two closest points of objects.
 	*/
 	float GetDistance(Entity* entity);
+	float GetDistance(Vec2F point);
 	float GetDistance(Vec2F* point);
 	float GetDistance(Line* line);
 	float GetDistance(Beam* beam);
@@ -136,8 +137,9 @@ public:
 	bool Collision(Polygon* polygon);
 	bool Collision(Map* map);
 	float GetAngularVelocity();
-	Vec2F GetVelocity();
+	Segment GetLastTreck();
 	Segment GetTreck();
+	Vec2F GetVelocity();
 	bool IsCollision(Vec2F* point);
 	bool IsCollision(Line* line);
 	bool IsCollision(Beam* beam);
@@ -303,6 +305,7 @@ protected:
 	GameTypes::players_count_t player_master_number;
 	GameTypes::players_count_t player_master_team_number;
 public:
+
 	KillerEntity();
 	KillerEntity(const KillerEntity& killer_entity);
 	KillerEntity(
@@ -316,6 +319,7 @@ public:
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
 		bool exist = true);
+	bool CreatedBy(ControledEntity* controled_entity);
 	GameTypes::players_count_t GetPlayerMasterNumber();
 	GameTypes::players_count_t GetPlayerMasterTeamNumber();
 	void Set(KillerEntity* killer_entity);
@@ -661,7 +665,6 @@ public:
 	Beam GetBeam();
 	GameTypes::players_count_t GetPlayerMasterNumber();
 	GameTypes::players_count_t GetPlayerMasterTeamNumber();
-	void Recalculate();
 	void Set(Laser* laser);
 	void Set(
 		Beam* beam,
@@ -669,6 +672,7 @@ public:
 		GameTypes::players_count_t player_master_team_number,
 		GameTypes::tic_t shoot_time = LASER_DEFAULT_SHOOT_TIME,
 		bool exist = true);
+	void Update();
 
 	void operator=(Laser laser);
 
@@ -679,6 +683,7 @@ class Bullet : public KillerEntity
 {
 protected:
 public:
+	bool is_collision_master;
 	Bullet();
 	Bullet(const Bullet& bullet);
 	Bullet(
@@ -686,6 +691,7 @@ public:
 		Vec2F* velocity,
 		GameTypes::players_count_t player_master_number,
 		GameTypes::players_count_t player_master_team_number,
+		bool is_collision_master = true,
 		float angle = 0.0f,
 		float angular_velocity = 0.0f,
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
@@ -698,12 +704,14 @@ public:
 		Vec2F* velocity,
 		GameTypes::players_count_t player_master_number,
 		GameTypes::players_count_t player_master_team_number,
+		bool is_collision_master = true,
 		float angle = 0.0f,
 		float angular_velocity = 0.0f,
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		float force_resistance_air_coefficient = BULLET_DEFAULT_RESISTANCE_AIR_COEFFICIENT,
 		float radius = BULLET_DEFAULT_RADIUS,
 		bool exist = true);
+	void Update();
 
 	void operator=(Bullet bullet);
 

@@ -22,7 +22,9 @@ void::MenuFunctions::Back()
 	{
 		OpenMainMenu();
 	}
-	else if (*game_p__current_active_menu == game_p__map_pull_select_menu || *game_p__current_active_menu == game_p__spawning_objects_select_menu)
+	else if (*game_p__current_active_menu == game_p__map_pull_select_menu ||
+		*game_p__current_active_menu == game_p__spawning_objects_select_menu ||
+		*game_p__current_active_menu == game_p__bonus_pull_select_menu)
 	{
 		OpenOptionsMenu();
 	}
@@ -38,52 +40,59 @@ void::MenuFunctions::Back()
 	}
 }
 
+void MenuFunctions::OpenBonusPullSelectMenu()
+{
+	*game_p__current_active_menu = game_p__bonus_pull_select_menu;
+	Vec2F position;
+	(*game_p__current_active_menu)->SetPosition(&position);
+}
+
 void MenuFunctions::OpenOptionsMenu()
 {
 	*game_p__current_active_menu = game_p__option_menu;
-	Vec2F position = Vec2F();
+	Vec2F position;
 	(*game_p__current_active_menu)->SetPosition(&position);
 }
 
 void MenuFunctions::OpenMainMenu()
 {
 	*game_p__current_active_menu = game_p__main_menu;
-	Vec2F position = Vec2F();
+	Vec2F position;
 	(*game_p__current_active_menu)->SetPosition(&position);
 }
 
 void MenuFunctions::OpenPauseMenu()
 {
 	*game_p__current_active_menu = game_p__pause_menu;
-	Vec2F position = Vec2F();
+	Vec2F position;
 	(*game_p__current_active_menu)->SetPosition(&position);
 }
 
 void MenuFunctions::OpenSheepsSelectMenu()
 {
 	*game_p__current_active_menu = game_p__ships_select_menu;
-	Vec2F position = Vec2F();
+	Vec2F position;
 	(*game_p__current_active_menu)->SetPosition(&position);
 }
 
 void MenuFunctions::OpenMapPullSelectMenu()
 {
 	*game_p__current_active_menu = game_p__map_pull_select_menu;
-	Vec2F position = Vec2F();
+	Vec2F position;
 	(*game_p__current_active_menu)->SetPosition(&position);
 }
 
 void MenuFunctions::OpenSpawnObjectsSelectMenu()
 {
 	*game_p__current_active_menu = game_p__spawning_objects_select_menu;
-	Vec2F position = Vec2F();
+	Vec2F position;
 	(*game_p__current_active_menu)->SetPosition(&position);
 }
 
 void MenuFunctions::OpenSheepsControlMenu()
 {
 	*game_p__current_active_menu = game_p__ships_control_menu;
-	Vec2F position = Vec2F();
+	Vec2F position;
 	(*game_p__current_active_menu)->SetPosition(&position);
 }
 
@@ -138,6 +147,51 @@ bool MenuFunctions::ChangeOption(GameTypes::game_rules_t option_id)
 	}
 	*game_p__game_rules |= option_id;
 	return true;
+}
+
+void MenuFunctions::BonusPullSelectMenuFunction(Vec2F* clk_pos, uint8_t clk_status)
+{
+	Button* current_button;
+	for (EngineTypes::Menu::buttons_count_t i = 0; i < game_p__bonus_pull_select_menu->GetButtonsCount(); i++)
+	{
+		current_button = &game_p__bonus_pull_select_menu->current_buttons[i];
+		if (clk_status == OPEN_GL_REALISATION_BUTTON_LOST)
+		{
+			current_button->SetStatus(BUTTON_STATUS_SELECT, false);
+			goto CycleEnd;
+		}
+		if (game_p__bonus_pull_select_menu->current_buttons[i].HavePoint(clk_pos))
+		{
+			switch (clk_status)
+			{
+			case GLFW_PRESS:
+				last_select_button_index = i;
+				current_button->SetStatus(BUTTON_STATUS_SELECT, true);
+				return;
+			case GLFW_RELEASE:
+				current_button->SetStatus(BUTTON_STATUS_SELECT, false);
+				if (last_select_button_index != i)
+				{
+					return;
+				}
+				EngineTypes::Button::button_id_t id = game_p__bonus_pull_select_menu->current_buttons[i].GetId() - BUTTON_ID_SELECT_BONUS;
+				if (id < GAME_BONUSES_COUNT)
+				{
+					if ((*game_p__bonus_pull_array)[id])
+					{
+						(*game_p__bonus_pull_array)[id] = false;
+					}
+					else
+					{
+						(*game_p__bonus_pull_array)[id] = true;
+					}
+					current_button->SetStatus(BUTTON_STATUS_ACTIVE, (*game_p__bonus_pull_array)[id]);
+					return;
+				}
+			}
+		}
+	CycleEnd:;
+	}
 }
 
 void MenuFunctions::MainMenuFunction(Vec2F* clk_pos, uint8_t clk_status)
@@ -242,6 +296,9 @@ void MenuFunctions::OptionMenuFunction(Vec2F* clk_pos, uint8_t clk_status)
 					return;
 				case BUTTON_ID_GO_TO_SELECT_MAP_MENU:
 					OpenMapPullSelectMenu();
+					return;
+				case BUTTON_ID_GO_TO_SELECT_BONUSES_MENU:
+					OpenBonusPullSelectMenu();
 					return;
 				case BUTTON_ID_GO_TO_SELECT_OBJECTS_MENU:
 					OpenSpawnObjectsSelectMenu();

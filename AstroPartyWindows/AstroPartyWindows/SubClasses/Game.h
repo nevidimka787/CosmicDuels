@@ -118,6 +118,8 @@ public:
 	GameTypes::maps_count_t* selected_maps_id_array;
 	//This array contains objects that will be spawned in the current match.
 	bool* object_pull_array;
+	//This array contains bonuses that will be spawned in the current match.
+	bool* bonus_pull_array;
 
 	//game lists
 
@@ -171,6 +173,7 @@ public:
 	Menu pause_menu;
 
 	Menu ships_select_menu;
+	Menu bonus_pull_select_menu;
 	Menu map_pull_select_menu;
 	Menu spawning_objects_select_menu;
 

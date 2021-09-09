@@ -21,13 +21,25 @@ OpenGL::OpenGL(int width, int height, const char* title, GLFWmonitor* monitor, G
 
 void OpenGL::CallMenuFunction(Menu* menu, Vec2F* clk_pos, uint8_t clk_status)
 {
-    if (menu == game_p__main_menu)
+    if (menu == game_p__bonus_pull_menu)
+    {
+        object_p__menu_functions->BonusPullSelectMenuFunction(clk_pos, clk_status);
+    }
+    else if (menu == game_p__main_menu)
     {
         object_p__menu_functions->MainMenuFunction(clk_pos, clk_status);
+    }
+    else if (menu == game_p__map_pull_select_menu)
+    {
+        object_p__menu_functions->MapPullSelectMenuFunction(clk_pos, clk_status);
     }
     else if (menu == game_p__option_menu)
     {
         object_p__menu_functions->OptionMenuFunction(clk_pos, clk_status);
+    }
+    else if (menu == game_p__pause_menu)
+    {
+        object_p__menu_functions->PauseMenuFunction(clk_pos, clk_status);
     }
     else if (menu == game_p__spawning_objects_select_menu)
     {
@@ -36,14 +48,6 @@ void OpenGL::CallMenuFunction(Menu* menu, Vec2F* clk_pos, uint8_t clk_status)
     else if (menu == game_p__ships_select_menu)
     {
         object_p__menu_functions->ShipsSelectMenuFunction(clk_pos, clk_status);
-    }
-    else if (menu == game_p__map_pull_select_menu)
-    {
-        object_p__menu_functions->MapPullSelectMenuFunction(clk_pos, clk_status);
-    }
-    else if (menu == game_p__pause_menu)
-    {
-        object_p__menu_functions->PauseMenuFunction(clk_pos, clk_status);
     }
 }
 
