@@ -25,6 +25,7 @@ public:
 	StaticBuffer bonus_buffer;
 	StaticBuffer bullet_buffer;
 	StaticBuffer knife_buffer;
+	StaticBuffer laser_buffer;
 	StaticBuffer mega_laser_buffer;
 	StaticBuffer pilot_buffer;
 	StaticBuffer ship_buffer;
@@ -74,6 +75,8 @@ public:
 	Shader bullet_shader;
 	//The shader use for draw knifes.
 	Shader knife_shader;
+	//The shader use for draw lasers.
+	Shader laser_shader;
 	//The shader use for draw mega lasers.
 	Shader mega_laser_shader;
 	//The shader use for draw pilots.
@@ -144,6 +147,8 @@ public:
 	void DrawObject(Bullet* bullet, bool update_shader = false);
 	//The function draw knife.
 	void DrawObject(Knife* knife, bool update_shader = false);
+	//The function draw laser.
+	void DrawObject(Laser* mega_laser, bool update_shader = false);
 	//The function draw mega laser.
 	void DrawObject(MegaLaser* mega_laser, bool update_shader = false);
 	//The function draw pilot.
@@ -179,6 +184,8 @@ public:
 	void DrawBullets();
 	//The function draw all knifes on the map.
 	void DrawKnifes();
+	//The function draw all lasers on the map.
+	void DrawLasers();
 	//The function draw all mega lasers on the map.
 	void DrawMegaLasers();
 	//The function draw all pilots on the map.

@@ -4,56 +4,55 @@ out vec4 frag_color;
 
 uniform int player;
 uniform int team;
+uniform float life;
 
 vec3 color;
 
-#define RED		0
-#define GREEN	1
-#define BLUE	2
-#define PURPURE	3
+#define RED		1
+#define GREEN	2
+#define BLUE	3
+#define PURPURE	4
+
+#define PLAUER_COLOR	0.3f
+#define TEAM_COLOR		0.7f
 
 void main()
 {
 	switch(team)
 	{
 	case RED:
-		color = vec3(1.0f, 0.0f, 0.0f);
+		color = vec3(TEAM_COLOR, 0.0f, 0.0f);
 		break;
 	case GREEN:
-		color = vec3(0.0f, 1.0f, 0.0f);
+		color = vec3(0.0f, TEAM_COLOR, 0.0f);
 		break;
 	case BLUE:
-		color = vec3(0.0f, 0.0f, 1.0f);
+		color = vec3(0.0f, 0.0f, TEAM_COLOR);
 		break;
 	case PURPURE:
-		color = vec3(1.0f, 0.0f, 1.0f);
+		color = vec3(TEAM_COLOR, 0.0f, TEAM_COLOR);
 		break;
 	default:
 		color = vec3(0.0f, 0.0f, 0.0f);
 		break;
 	}
-
 	switch (player)
 	{
 	case 0:
-		color *= 0.9f;
-		color += vec3(0.05f);
+		color += vec3(PLAUER_COLOR, 0.0f, 0.0f);
 		break;
 	case 1:
-		color *= 0.85f;
-		color += vec3(0.1f);
+		color += vec3(0.0f, PLAUER_COLOR, 0.0f);
 		break;
 	case 2:
-		color *= 0.8f;
-		color += vec3(0.15f);
+		color += vec3(0.0f, 0.0f, PLAUER_COLOR);
 		break;
 	case 3:
-		color *= 0.75f;
-		color += vec3(0.2f);
+		color += vec3(PLAUER_COLOR, 0.0f, PLAUER_COLOR);
 		break;
 	default:
+		color = vec3(1.0f);
 		break;
 	}
-
-	frag_color = vec4(color / 4.0f + 0.5f, 1.0f);
+	frag_color = vec4(color * (1.0f - life) + 0.5f * life, 1.0f);
 }

@@ -140,6 +140,9 @@ void TikUpdate()
                 for (GameTypes::players_count_t player = 0; player < GAME_PLAYERS_MAX_COUNT; player++)
                 {
                     std::cout << "Player " << (unsigned)player << " bonuses: "
+                        << (int)main_game->ships[player].HaveBonus(GAME_REVERSE) << ' '
+                        << (int)main_game->ships[player].HaveBonus(BUFF_SHIELD) << ' '
+                        << (int)main_game->ships[player].HaveBonus(BUFF_TRIPLE) << "  "
                         << (int)main_game->ships[player].HaveBonus(BONUS_KNIFE) << ' '
                         << (int)main_game->ships[player].HaveBonus(BONUS_BOMB) << ' '
                         << (int)main_game->ships[player].HaveBonus(BONUS_LASER) << ' '

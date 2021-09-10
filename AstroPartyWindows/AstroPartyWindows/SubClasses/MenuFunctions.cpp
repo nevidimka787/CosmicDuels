@@ -285,9 +285,6 @@ void MenuFunctions::OptionMenuFunction(Vec2F* clk_pos, uint8_t clk_status)
 				case BUTTON_ID_SET_ACTIVE_FRIENDLY_FIRE:
 					current_button->SetStatus(BUTTON_STATUS_ACTIVE, ChangeOption(GAME_RULE_FRENDLY_FIRE));
 					return;
-				case BUTTON_ID_SET_PILOT_CAN_RESPAWN:
-					current_button->SetStatus(BUTTON_STATUS_ACTIVE, ChangeOption(GAME_RULE_PILOT_CAN_RESPAWN));
-					return;
 				case BUTTON_ID_SET_NEED_KILL_PILOT:
 					current_button->SetStatus(BUTTON_STATUS_ACTIVE, ChangeOption(GAME_RULE_NEED_KILL_PILOT));
 					return;

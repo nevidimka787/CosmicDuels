@@ -274,7 +274,7 @@ public:
 	//Memory space for temporary pointers.
 	Knife* temp__knife_p;
 	//Memory space for temporary pointers.
-	Laser* temp__lazer_p;
+	Laser* temp__laser_p;
 	//Memory space for temporary pointers.
 	MegaLaser* temp__mega_lazer_p;
 	//Memory space for temporary pointers.

@@ -373,6 +373,8 @@ public:
 	bool GetRotateInputValue();
 	bool GetShootInputValue();
 	//Check collision this heat box.
+	bool IsCollision(Beam* beam);
+	//Check collision this heat box.
 	bool IsCollision(Bullet* bullet);
 	//Check collision this heat box.
 	bool IsCollision(Knife* knife);
@@ -380,6 +382,8 @@ public:
 	bool IsCollision(Laser* laser);
 	//Check collision this heat box.
 	bool IsCollision(MegaLaser* mega_laser);
+	//Check collision this heat box.
+	bool IsCollision(Segment* segment);
 	bool SameTeams(ControledEntity* second_entity);
 	void Set(ControledEntity* entity);
 	void Set(
@@ -482,6 +486,7 @@ public:
 class Pilot : public ControledEntity
 {
 protected:
+	GameTypes::tic_t respawn_timer;
 public:
 	Pilot();
 	Pilot(const Pilot& pilot);
@@ -492,6 +497,7 @@ public:
 		GameTypes::players_count_t player_team_number,
 		void* rotate_input_value_pointer,
 		void* shoot_input_value_pointer,
+		GameTypes::tic_t respawn_timer = PILOT_DEFAULT_RESPAWN_TIMER,
 		Vec2F* heat_box_vertexes = nullptr,
 		EngineTypes::ControledEntity::heat_box_vertexes_count_t heat_box_vertexes_count = 0,
 		float angle = 0.0f,
@@ -504,7 +510,10 @@ public:
 		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
 		bool exist = true);
 
+	GameTypes::tic_t GetRespawnDellay();
+	bool CanRespawn();
 	Ship Respawn();
+	void Update();
 	void Set(Pilot* entity);
 
 	void operator=(Pilot entity);
@@ -661,8 +670,11 @@ public:
 		GameTypes::players_count_t player_master_team_number,
 		GameTypes::tic_t shoot_time = LASER_DEFAULT_SHOOT_TIME,
 		bool exist = true);
-	bool CanShoot(GameTypes::tic_t current_tic);
+
+	bool CanShoot();
+	bool CreatedBy(ControledEntity* controled_entity);
 	Beam GetBeam();
+	GameTypes::tic_t GetLifeTime();
 	GameTypes::players_count_t GetPlayerMasterNumber();
 	GameTypes::players_count_t GetPlayerMasterTeamNumber();
 	void Set(Laser* laser);
@@ -781,10 +793,11 @@ public:
 
 	void Activate();
 	void Boom();
+	GameTypes::tic_t GetAnimationTic();
 	bool IsActive();
 	bool IsBoom();
 	bool CanRemove();
-	void Recalculate();
+	void Update();
 	void Set(Bomb* bomb);
 	void Set(
 		Vec2F* position,

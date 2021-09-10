@@ -259,6 +259,7 @@ void OpenGL::InitBuffers()
     points[4].Set(-1.0f, 1.0f);
     points[5].Set(1.0f, -1.0f);
 
+    bomb_buffer.Initialisate(points, 6);
     bonus_buffer.Initialisate(points, 6);
     bullet_buffer.Initialisate(points, 6);
 
@@ -289,6 +290,8 @@ void OpenGL::InitBuffers()
     points[4].Set(0.0f, 0.02f);
     points[5].Set(1.0f,-0.02f);
 
+    knife_buffer.Initialisate(points, 6);
+    laser_buffer.Initialisate(points, 6);
     mega_laser_buffer.Initialisate(points, 6);
 
     points[0].Set(0.0f, 0.5f);
@@ -323,6 +326,7 @@ void OpenGL::InitShaders()
     bonus_shader.Initialisate("Shaders/Objects/Vertex/Bonus.glsl", "Shaders/Objects/Fragment/Bonus.glsl");
     bullet_shader.Initialisate("Shaders/Objects/Vertex/Bullet.glsl", "Shaders/Objects/Fragment/Bullet.glsl");
     knife_shader.Initialisate("Shaders/Objects/Vertex/Knife.glsl", "Shaders/Objects/Fragment/Knife.glsl");
+    laser_shader.Initialisate("Shaders/Objects/Vertex/Laser.glsl", "Shaders/Objects/Fragment/Laser.glsl");
     mega_laser_shader.Initialisate("Shaders/Objects/Vertex/MegaLaser.glsl", "Shaders/Objects/Fragment/MegaLaser.glsl");
     pilot_shader.Initialisate("Shaders/Objects/Vertex/Pilot.glsl", "Shaders/Objects/Fragment/Pilot.glsl");
     ship_shader.Initialisate("Shaders/Objects/Vertex/Ship.glsl", "Shaders/Objects/Fragment/Ship.glsl");
@@ -374,6 +378,10 @@ void OpenGL::DrawFrame()
         if (*game_p__knifes_count > 0)
         {
             DrawKnifes();
+        }
+        if (*game_p__lasers_count > 0)
+        {
+            DrawLasers();
         }
         if (*game_p__mega_lasers_count > 0)
         {
@@ -442,9 +450,21 @@ void OpenGL::DrawObject(Asteroid* asteroid, bool update_shader)
     asteroid_buffer.Draw();
 }
 
-void OpenGL::DrawObject(Bomb* mine, bool update_shader)
+void OpenGL::DrawObject(Bomb* bomb, bool update_shader)
 {
-
+    if (update_shader)
+    {
+        bomb_buffer.Use();
+        bomb_shader.Use();
+        bomb_shader.SetUniform("scale", window_scale);
+        bomb_shader.SetUniform("camera_position", temp__game__camera_position);
+        bomb_shader.SetUniform("camera_size", temp__game__camera_size);
+    }
+    bomb_shader.SetUniform("position", bomb->GetPosition());
+    bomb_shader.SetUniform("angle", bomb->GetAngle());
+    bomb_shader.SetUniform("size", bomb->radius);
+    bomb_shader.SetUniform("animation", (float)bomb->GetAnimationTic() / (float)BOMB_BOOM_TIME);
+    bomb_buffer.Draw();
 }
 
 void OpenGL::DrawObject(Bonus* bonus, bool update_shader)
@@ -479,7 +499,35 @@ void OpenGL::DrawObject(Bullet* bullet, bool update_shader)
 
 void OpenGL::DrawObject(Knife* knife, bool update_shader)
 {
+    if (update_shader)
+    {
+        knife_buffer.Use();
+        knife_shader.Use();
+        knife_shader.SetUniform("scale", window_scale);
+        knife_shader.SetUniform("camera_position", temp__game__camera_position);
+        knife_shader.SetUniform("camera_size", temp__game__camera_size);
+    }
+    knife_shader.SetUniform("position", knife->GetPosition());
+    knife_shader.SetUniform("vector", knife->GetDirection());
+    knife_shader.SetUniform("angle", knife->GetDirection().GetAbsoluteAngle());
+    knife_buffer.Draw();
+}
 
+void OpenGL::DrawObject(Laser* mega_laser, bool update_shader)
+{
+    if (update_shader)
+    {
+        laser_buffer.Use();
+        laser_shader.Use();
+        laser_shader.SetUniform("scale", window_scale);
+        laser_shader.SetUniform("camera_position", temp__game__camera_position);
+        laser_shader.SetUniform("camera_size", temp__game__camera_size);
+    }
+    laser_shader.SetUniform("angle", mega_laser->GetDirection().GetAbsoluteAngle());
+    laser_shader.SetUniform("position", mega_laser->GetPosition());
+    laser_shader.SetUniform("vector", mega_laser->GetDirection());
+    laser_shader.SetUniform("life", (float)mega_laser->GetLifeTime() / (float)LASER_DEFAULT_SHOOT_TIME);
+    laser_buffer.Draw();
 }
 
 void OpenGL::DrawObject(MegaLaser* mega_laser, bool update_shader)
@@ -508,9 +556,25 @@ void OpenGL::DrawObject(Pilot* pilot, bool update_shader)
         pilot_shader.SetUniform("camera_position", temp__game__camera_position);
         pilot_shader.SetUniform("camera_size", temp__game__camera_size);
     }
+    GameTypes::players_count_t number_of_player_in_team = 0;
+    for (GameTypes::players_count_t player = 0; player < GAME_PLAYERS_MAX_COUNT; player++)
+    {
+        if ((*game_p__ships)[player].GetPlayerNumber() == pilot->GetPlayerNumber())
+        {
+            break;
+        }
+        if ((*game_p__ships)[player].GetTeamNumber() == pilot->GetTeamNumber())
+        {
+            number_of_player_in_team++;
+        }
+    }
+
     pilot_shader.SetUniform("position", pilot->GetPosition());
     pilot_shader.SetUniform("angle", pilot->GetAngle());
     pilot_shader.SetUniform("size", pilot->radius);
+    pilot_shader.SetUniform("team", pilot->GetTeamNumber());
+    ship_shader.SetUniform("player", number_of_player_in_team);
+    pilot_shader.SetUniform("life", (float)pilot->GetRespawnDellay() / (float)PILOT_DEFAULT_RESPAWN_TIMER);
     pilot_buffer.Draw();
 }
 
@@ -732,6 +796,23 @@ void OpenGL::DrawKnifes()
         {
             found_knifes++;
             DrawObject(&(*game_p__knifes)[knife]);
+        }
+    }
+}
+
+void OpenGL::DrawLasers()
+{
+    laser_buffer.Use();
+    laser_shader.Use();
+    laser_shader.SetUniform("scale", window_scale);
+    laser_shader.SetUniform("camera_position", temp__game__camera_position);
+    laser_shader.SetUniform("camera_size", temp__game__camera_size);
+    for (GameTypes::entities_count_t laser = 0, found_lasers = 0; found_lasers < *game_p__lasers_count; laser++)
+    {
+        if ((*game_p__lasers)[laser].exist == true)
+        {
+            found_lasers++;
+            DrawObject(&(*game_p__lasers)[laser]);
         }
     }
 }

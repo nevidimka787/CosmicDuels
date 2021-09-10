@@ -165,17 +165,17 @@ Vec2F Entity::GetPosition()
 
 bool Entity::IsCollision(Vec2F* point)
 {
-	return GetDistance(point) <= 0.0;
+	return GetDistance(point) <= 0.0f;
 }
 
 bool Entity::IsCollision(Line* line)
 {
-	return line->GetDistance(&position) <= 0.0;
+	return line->GetDistance(&position) <= radius;
 }
 
 bool Entity::IsCollision(Beam* beam)
 {
-	return beam->GetDistance(&position) <= 0.0;
+	return beam->GetDistance(&position) <= radius;
 }
 
 bool Entity::IsCollision(Segment* segment)
@@ -929,22 +929,18 @@ Bonus::Bonus(Vec2F* position, Vec2F* velocity, EngineTypes::Bonus::bonus_t bonus
 Bonus Bonus::Division()
 {
 	EngineTypes::Bonus::bonus_t temp_bonus;
-	bool last = false;
-	for (uint8_t i = 0; i < 6; i++)
+	for (uint8_t i = 0; i < BONUS_BONUSES_COUNT; i++)
 	{
-		temp_bonus = 0x11 << (i << 1);
+		temp_bonus = 0x11 << (i * 2);
 		if (bonus_type & temp_bonus)
 		{
-			if (last)
+			temp_bonus &= bonus_type;
+			bonus_type &= BUFF_BONUS_ALL - temp_bonus;
+			if (bonus_type & (1 << (BONUS_BONUSES_COUNT * 2)) - 1)
 			{
-				temp_bonus = bonus_type & temp_bonus;
-				bonus_type &= BUFF_BONUS_ALL - temp_bonus;
 				return Bonus(&this->position, &this->velocity, temp_bonus);
 			}
-			else
-			{
-				last = true;
-			}
+			return Bonus(false);
 		}
 	}
 	return Bonus(false);
@@ -1347,6 +1343,32 @@ bool ControledEntity::GetShootInputValue()
 	return *(bool*)shoot_input_value_pointer;
 }
 
+bool ControledEntity::IsCollision(Beam* beam)
+{
+	//controled entity side
+	Segment ce_side;
+	Vec2F
+		point1 = heat_box_vertexes_array[heat_box_vertexes_array_length - 1] * model_matrix,
+		point2 = heat_box_vertexes_array[0] * model_matrix;
+
+	ce_side.Set(point1, point2, true);
+	if (beam->GetDistance(&ce_side) < radius)
+	{
+		return true;
+	}
+	for (EngineTypes::ControledEntity::heat_box_vertexes_count_t vertex = 1; vertex < heat_box_vertexes_array_length; vertex++)
+	{
+		point1 = point2;
+		point2 = heat_box_vertexes_array[vertex] * model_matrix;
+		ce_side.Set(point1, point2, true);
+		if (beam->GetDistance(&ce_side) < radius)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
 bool ControledEntity::IsCollision(Bullet* bullet)
 {
 	//Frame of reference set to this entity.
@@ -1405,7 +1427,6 @@ bool ControledEntity::IsCollision(Knife* knife)
 
 bool ControledEntity::IsCollision(Laser* laser)
 {
-
 	//Frame of reference set to this entity.
 	Beam beam = laser->GetBeam();
 	//controled entity side
@@ -1453,6 +1474,32 @@ bool ControledEntity::IsCollision(MegaLaser* mega_laser)
 		point2 = heat_box_vertexes_array[vertex] * model_matrix;
 		ce_side.Set(point1, point2, true);
 		if (segment.GetDistance(&ce_side) < radius)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+bool ControledEntity::IsCollision(Segment* segment)
+{
+	//controled entity side
+	Segment ce_side;
+	Vec2F
+		point1 = heat_box_vertexes_array[heat_box_vertexes_array_length - 1] * model_matrix,
+		point2 = heat_box_vertexes_array[0] * model_matrix;
+
+	ce_side.Set(point1, point2, true);
+	if (segment->GetDistance(&ce_side) < radius)
+	{
+		return true;
+	}
+	for (EngineTypes::ControledEntity::heat_box_vertexes_count_t vertex = 1; vertex < heat_box_vertexes_array_length; vertex++)
+	{
+		point1 = point2;
+		point2 = heat_box_vertexes_array[vertex] * model_matrix;
+		ce_side.Set(point1, point2, true);
+		if (segment->GetDistance(&ce_side) < radius)
 		{
 			return true;
 		}
@@ -1622,33 +1669,27 @@ Bullet Ship::CreateLoop(GameTypes::entities_count_t bullet_number)
 
 Bomb Ship::CreateBomb()
 {
-	Vec2F temp = Vec2F();
-	return Bomb(&position, &temp, player_number, player_team_number);
+	Vec2F zero_vector;
+	return Bomb(&position, &zero_vector, player_number, player_team_number);
 }
 
 Laser Ship::CreateLaser()
 {
-	Vec2F new_laser_position = position + direction * radius;
-	Beam new_laser_beam = Beam(&new_laser_position, &direction, false);
-	return Laser(&new_laser_beam, player_number, player_team_number);
+	Beam laser_beam = Beam(Vec2F(0.5f, 0.0f) * model_matrix, direction);
+	AddForceAlongDirection(-SHIP_SHOOT_FORCE * 4.0f);
+	return Laser(&laser_beam, player_number, player_team_number);
 }
 
 Knife Ship::CreateKnife(uint8_t knife_number)
 {
-	Vec2F new_knife_point1;
-	Vec2F new_knife_point2;
 	Segment new_knife_segment;
 	switch (knife_number)
 	{
 	case 0:
-		new_knife_point1 = position - direction + direction.Perpendicular();
-		new_knife_point2 = direction * 2.0 + new_knife_point1;
-		new_knife_segment = Segment(&new_knife_point1, &new_knife_point2, true);
+		new_knife_segment = Segment(Vec2F(1.0f, 1.0f) * model_matrix, Vec2F(0.0f, 1.0f) * model_matrix);
 		return Knife(&new_knife_segment, &velocity, player_number, player_team_number);
 	case 1:
-		new_knife_point1 = position - direction - direction.Perpendicular();
-		new_knife_point2 = direction * 2.0f;
-		new_knife_segment = Segment(&new_knife_point1, &new_knife_point2, true);
+		new_knife_segment = Segment(Vec2F(1.0f, -1.0f) * model_matrix, Vec2F(0.0f, 1.0f) * model_matrix);
 		return Knife(&new_knife_segment, &velocity, player_number, player_team_number);
 	default:
 		return Knife();
@@ -1658,7 +1699,7 @@ Knife Ship::CreateKnife(uint8_t knife_number)
 Pilot Ship::Destroy()
 {
 	Vec2F pilot_new_velocity = velocity * 2.0f;
-	return Pilot(&position, &pilot_new_velocity, player_number, player_team_number, rotate_input_value_pointer, shoot_input_value_pointer, nullptr, 0, angle);
+	return Pilot(&position, &pilot_new_velocity, player_number, player_team_number, rotate_input_value_pointer, shoot_input_value_pointer, PILOT_DEFAULT_RESPAWN_TIMER, nullptr, 0, angle);
 }
 
 EngineTypes::Bonus::bonus_t Ship::GetActiveBaffs()
@@ -1827,13 +1868,25 @@ Pilot::Pilot()
 }
 
 Pilot::Pilot(const Pilot& pilot) :
-	ControledEntity(pilot)
+	ControledEntity(pilot),
+	respawn_timer(pilot.respawn_timer)
 {
 }
 
-Pilot::Pilot(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t player_number, GameTypes::players_count_t player_team_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* heat_box_vertexes_array, EngineTypes::ControledEntity::heat_box_vertexes_count_t heat_box_vertexes_array_length, float angle, EngineTypes::Bonus::bonus_t buffs_bonuses, EngineTypes::Bonus::bonus_t active_baffs, GameTypes::tic_t unbrakable, float angular_velocity, float radius, float force_collision_coeffisient, float force_resistance_air_coefficient, bool exist) :
-	ControledEntity(position, velocity, radius, player_number, player_team_number, rotate_input_value_pointer, shoot_input_value_pointer, heat_box_vertexes_array, heat_box_vertexes_array_length, angle, angular_velocity, force_collision_coeffisient, force_resistance_air_coefficient, exist)
+Pilot::Pilot(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t player_number, GameTypes::players_count_t player_team_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, GameTypes::tic_t respawn_timer,  Vec2F* heat_box_vertexes_array, EngineTypes::ControledEntity::heat_box_vertexes_count_t heat_box_vertexes_array_length, float angle, EngineTypes::Bonus::bonus_t buffs_bonuses, EngineTypes::Bonus::bonus_t active_baffs, GameTypes::tic_t unbrakable, float angular_velocity, float radius, float force_collision_coeffisient, float force_resistance_air_coefficient, bool exist) :
+	ControledEntity(position, velocity, radius, player_number, player_team_number, rotate_input_value_pointer, shoot_input_value_pointer, heat_box_vertexes_array, heat_box_vertexes_array_length, angle, angular_velocity, force_collision_coeffisient, force_resistance_air_coefficient, exist),
+	respawn_timer(respawn_timer)
 {
+}
+
+bool Pilot::CanRespawn()
+{
+	return respawn_timer == 0;
+}
+
+GameTypes::tic_t Pilot::GetRespawnDellay()
+{
+	return respawn_timer;
 }
 
 Ship Pilot::Respawn()
@@ -1852,6 +1905,7 @@ void Pilot::Set(Pilot* pilot)
 	player_number = pilot->player_number;
 	player_team_number = pilot->player_team_number;
 	position = pilot->position;
+	respawn_timer = pilot->respawn_timer;
 	rotate_input_value_pointer = pilot->rotate_input_value_pointer;
 	shoot_input_value_pointer = pilot->shoot_input_value_pointer;
 	velocity = pilot->velocity;
@@ -1861,6 +1915,15 @@ void Pilot::Set(Pilot* pilot)
 	for (EngineTypes::ControledEntity::heat_box_vertexes_count_t vertex = 0; vertex < heat_box_vertexes_array_length; vertex++)
 	{
 		heat_box_vertexes_array[vertex] = pilot->heat_box_vertexes_array[vertex];
+	}
+}
+
+void Pilot::Update()
+{
+	DynamicEntity::Update();
+	if (respawn_timer > 0)
+	{
+		respawn_timer--;
 	}
 }
 
@@ -1876,6 +1939,7 @@ void Pilot::operator=(Pilot pilot)
 	player_team_number = pilot.player_team_number;
 	position = pilot.position;
 	radius = pilot.radius;
+	respawn_timer = pilot.respawn_timer;
 	rotate_input_value_pointer = pilot.rotate_input_value_pointer;
 	shoot_input_value_pointer = pilot.shoot_input_value_pointer;
 	velocity = pilot.velocity;
@@ -2219,14 +2283,24 @@ Laser::Laser(Beam* beam, GameTypes::players_count_t player_master_number, GameTy
 {
 }
 
-bool Laser::CanShoot(GameTypes::tic_t current_tic)
+bool Laser::CanShoot()
 {
 	return shoot_time > 0;
+}
+
+bool Laser::CreatedBy(ControledEntity* controled_entity)
+{
+	return player_master_number == controled_entity->GetPlayerNumber();
 }
 
 Beam Laser::GetBeam()
 {
 	return Beam(&position, &direction, false);
+}
+
+GameTypes::tic_t Laser::GetLifeTime()
+{
+	return shoot_time;
 }
 
 GameTypes::players_count_t Laser::GetPlayerMasterNumber()
@@ -2499,7 +2573,13 @@ void Bomb::Boom()
 {
 	animation_tic = BOMB_BOOM_TIME;
 	active = false;
+	radius = BOMB_BOOM_RADIUS;
 	boom = true;
+}
+
+GameTypes::tic_t Bomb::GetAnimationTic()
+{
+	return animation_tic;
 }
 
 bool Bomb::IsActive()
@@ -2515,21 +2595,6 @@ bool Bomb::IsBoom()
 bool Bomb::CanRemove()
 {
 	return animation_tic == 0 && boom;
-}
-
-void Bomb::Recalculate()
-{
-	DynamicEntity::Update();
-	if (animation_tic > 0 && (active || boom))
-	{
-		animation_tic--;
-		return;
-	}
-	if (animation_tic == 0 && !boom)
-	{
-		Boom();
-		return;
-	}
 }
 
 void Bomb::Set(Bomb* bomb)
@@ -2566,6 +2631,21 @@ void Bomb::Set(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t paye
 	this->position = *position;
 	this->radius = radius;
 	this->velocity = *velocity;
+}
+
+void Bomb::Update()
+{
+	DynamicEntity::Update();
+	if (animation_tic > 0 && (active || boom))
+	{
+		animation_tic--;
+		return;
+	}
+	if (animation_tic == 0 && !boom)
+	{
+		Boom();
+		return;
+	}
 }
 
 void Bomb::operator=(Bomb bomb)
