@@ -13,6 +13,11 @@ namespace EngineTypes
 		typedef uint32_t points_count_t;
 	}
 
+	namespace Asteroid
+	{
+		typedef uint8_t size_t;
+	}
+
 	namespace Bonus
 	{
 		typedef uint16_t bonus_t;

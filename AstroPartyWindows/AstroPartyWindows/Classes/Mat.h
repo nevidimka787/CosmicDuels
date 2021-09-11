@@ -265,6 +265,8 @@ public:
 	bool operator==(Mat3x2D vector);
 
 	operator Mat3x2F();
+	operator Mat2D();
+	operator Mat2F();
 
 	double Determinant();
 	Mat3x2D Rotate(double angle);
@@ -323,6 +325,8 @@ public:
 	bool operator==(Mat3x2F vector);
 
 	operator Mat3x2D();
+	operator Mat2D();
+	operator Mat2F();
 
 	float Determinant();
 	Mat3x2F Rotate(double angle);

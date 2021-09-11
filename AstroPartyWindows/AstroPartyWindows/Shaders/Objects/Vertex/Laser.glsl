@@ -3,9 +3,7 @@ layout (location = 0) in vec2 aPos;
 
 uniform float scale;
 
-uniform vec2 position;
-uniform vec2 vector;
-uniform float angle;
+uniform vec4 beam;
 
 uniform vec2 camera_position;
 uniform float camera_size;
@@ -13,6 +11,7 @@ uniform float camera_size;
 mat3 Rotate(float _angel);
 mat3 Transport(vec2 _vector);
 mat3 Scale(vec2 _vector);
+mat3 SetByBeam(vec4 _beam);
 float GetAngle(vec2 _vector);
 
 mat3 matrix;
@@ -22,8 +21,7 @@ void main()
 {
     matrix = 
         Scale(vec2(length(100.0f), 1.0f)) * 
-        Rotate(-angle) * 
-        Transport(position) * 
+        SetByBeam(beam) * 
         Transport(-camera_position) *
         Scale(vec2(1.0f / camera_size)) *
         Scale(vec2(1.0f, scale));
@@ -54,4 +52,14 @@ mat3 Rotate(float _angle)
         cos(_angle),   -sin(_angle),    0.0f,
         sin(_angle),    cos(_angle),    0.0f,
         0.0f,           0.0f,           1.0f);
+}
+
+mat3 SetByBeam(vec4 _beam)
+{
+float l = length(_beam.zw);
+    return mat3(
+        _beam.z / l,   -_beam.w / l,    _beam.x,
+        _beam.w / l,    _beam.z / l,    _beam.y,
+        0.0f,           0.0f,           1.0f
+    );
 }

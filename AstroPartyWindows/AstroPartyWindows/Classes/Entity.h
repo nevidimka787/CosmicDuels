@@ -44,7 +44,7 @@ public:
 		bool exist = true);
 
 	float GetAngle();
-	Vec2F GetDirection();
+	Vec2F GetDirectionNotNormalize();
 	/*
 	Getting the distance between two closest points of objects.
 	*/
@@ -61,17 +61,9 @@ public:
 	float GetDistance(Polygon* polygon);
 	float GetFrameSize(Entity* entity, float scale);
 	Mat3x2F GetModelMatrix();
+	Vec2F GetDirection();
 	Vec2F GetPosition();
-	void Rotate(float angle);
-	void Set(Entity* entity);
-	void Set(
-		Vec2F* position,
-		float radius,
-		float angle = 0.0f,
-		bool exist = true);
-	void SetAngle(float angle);
-	void SetDirection(Vec2F* direction);
-	void SetPosition(Vec2F* position);
+	bool IsCollision(Vec2F point);
 	bool IsCollision(Vec2F* point);
 	bool IsCollision(Line* line);
 	bool IsCollision(Beam* beam);
@@ -82,10 +74,25 @@ public:
 	bool IsCollision(Cyrcle* cyrcle);
 	bool IsCollision(Polygon* polygon);
 	bool IsCollision(Map* map);
+	void Rotate(float angle);
+	void Set(Entity* entity);
+	void Set(
+		Vec2F* position,
+		float radius,
+		float angle = 0.0f,
+		bool exist = true);
+	void SetAngle(float angle);
+	void SetDirection(Vec2F direction);
+	void SetDirection(Vec2F* direction);
+	void SetDirectionNotNormalize(Vec2F direction);
+	void SetDirectionNotNormalize(Vec2F* direction);
+	void SetPosition(Vec2F position);
+	void SetPosition(Vec2F* position);
 	void UpdateAngle();
 	void UpdateDirection();
 	//need manual call
 	void UpdateMatrix();
+	void Move(Vec2F delta);
 	void Move(Vec2F* delta);
 
 	void operator=(Entity entity);
@@ -186,13 +193,13 @@ public:
 		bool exist = true);
 
 	Vec2F GetVelocity();
-	void Recalculate();
 	void Set(StaticEntity* static_entity);
 	void Set(
 		Vec2F* position,
 		float radius,
 		float angle = 0.0f,
 		bool exist = true);
+	void Update();
 
 	void operator=(StaticEntity static_entity);
 
@@ -260,7 +267,7 @@ public:
 class Asteroid : public Bonus
 {
 protected:
-	uint8_t size;
+	EngineTypes::Asteroid::size_t size;
 public:
 	Asteroid();
 	Asteroid(const Asteroid& asteroid);
@@ -268,7 +275,7 @@ public:
 		Vec2F* position,
 		Vec2F* velocity,
 		EngineTypes::Bonus::bonus_t bonus_type,
-		uint8_t size = ASTEROID_DEFAULT_SIZE,
+		EngineTypes::Asteroid::size_t size = ASTEROID_DEFAULT_SIZE,
 		float angle = 0.0f,
 		float angular_velocity = 0.0f,
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
@@ -280,14 +287,14 @@ public:
 	*Remember to remove main asteroid.
 	*/
 	Asteroid Division();
-	uint8_t GetSize();
-	uint16_t GetBuffBonus();
+	EngineTypes::Asteroid::size_t GetSize();
+	EngineTypes::Bonus::bonus_t GetBuffBonus();
 	void Set(Asteroid* entity);
 	void Set(
 		Vec2F* position,
 		Vec2F* velocity,
 		EngineTypes::Bonus::bonus_t bonus_type,
-		uint8_t size = ASTEROID_DEFAULT_SIZE,
+		EngineTypes::Asteroid::size_t size = ASTEROID_DEFAULT_SIZE,
 		float angle = 0.0f,
 		float angular_velocity = 0.0f,
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
@@ -320,6 +327,7 @@ public:
 		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
 		bool exist = true);
 	bool CreatedBy(ControledEntity* controled_entity);
+	bool CreatedByTeam(ControledEntity* controled_entity);
 	GameTypes::players_count_t GetPlayerMasterNumber();
 	GameTypes::players_count_t GetPlayerMasterTeamNumber();
 	void Set(KillerEntity* killer_entity);
@@ -367,7 +375,7 @@ public:
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
 		bool exist = true);
-
+	Mat3x2F* GetModelMatrixPointer();
 	GameTypes::players_count_t GetPlayerNumber();
 	GameTypes::players_count_t GetTeamNumber();
 	bool GetRotateInputValue();
@@ -521,6 +529,68 @@ public:
 	~Pilot();
 };
 
+class SupportEntity : public StaticEntity
+{
+protected:
+	ControledEntity* host_p;
+	Mat3x2F* host_matrix_p;
+	GameTypes::players_count_t host_number;
+	GameTypes::players_count_t host_team;
+	Vec2F local_position;
+	Vec2F local_direction;
+	float local_angle;
+
+public:
+	SupportEntity();
+	SupportEntity(const SupportEntity& support_entity);
+	SupportEntity(
+		ControledEntity* host,
+		Vec2F* position,
+		float radius = 0.0f,
+		float angle = 0.0f,
+		bool exist = true);
+	bool CreatedBy(ControledEntity* potencial_host);
+	bool CreatedByTeam(ControledEntity* potencial_host);
+	//return local angle
+	float GetAngle();
+	//return local direction
+	Vec2F GetDirection();
+	//return local direction
+	Vec2F GetNormalizeDirection();
+	GameTypes::players_count_t GetPlayerMasterNumber();
+	GameTypes::players_count_t GetPlayerMasterTeamNumber();
+	//return local position
+	Vec2F GetPosition();
+	void Set(SupportEntity* support_entity);
+	void Set(
+		ControledEntity* host,
+		Vec2F position,
+		float radius = 0.0f,
+		float angle = 0.0f,
+		bool exist = true);
+	//set local angle
+	void SetAngle(float angle);
+	//set local direction
+	void SetDirection(Vec2F direction);
+	//set local direction
+	void SetDirection(Vec2F* direction);
+	void SetHost(ControledEntity* host);
+	//set local direction
+	void SetNotNormalizeDirection(Vec2F direction);
+	//set local direction
+	void SetNotNormalizeDirection(Vec2F* direction);
+	//set local position
+	void SetPosition(Vec2F position);
+	//set local position
+	void SetPosition(Vec2F* position);
+	void Update();
+	void UpdateDirection();
+
+	void operator=(SupportEntity support_entity);
+
+	~SupportEntity();
+};
+
 //Killer entity with out host.
 class AggressiveEntity : public StaticEntity
 {
@@ -563,6 +633,32 @@ public:
 	~AggressiveEntity();
 };
 
+class GravGen : public StaticEntity
+{
+public:
+	float gravity;
+
+	GravGen();
+	GravGen(const GravGen& grav_gen);
+	GravGen(
+		Vec2F* position,
+		float gravity = GRAVITY_GENERATOR_DEFAULT_GRAVITY,
+		float radius = GRAVITY_GENERATOR_DEFAULT_RADIUS,
+		float angle = 0.0f,
+		bool exist = true);
+	void Set(GravGen* grav_gen);
+	void Set(
+		Vec2F* position,
+		float gravity = GRAVITY_GENERATOR_DEFAULT_GRAVITY,
+		float radius = GRAVITY_GENERATOR_DEFAULT_RADIUS,
+		float angle = 0.0f,
+		bool exist = true);
+
+	void operator=(GravGen grav_gen);
+
+	~GravGen();
+};
+
 class Turel : public AggressiveEntity
 {
 public:
@@ -593,32 +689,6 @@ public:
 	void operator=(Turel entity);
 
 	~Turel();
-};
-
-class GravGen : public StaticEntity
-{
-public:
-	float gravity;
-
-	GravGen();
-	GravGen(const GravGen& grav_gen);
-	GravGen(
-		Vec2F* position,
-		float gravity = GRAVITY_GENERATOR_DEFAULT_GRAVITY,
-		float radius = GRAVITY_GENERATOR_DEFAULT_RADIUS,
-		float angle = 0.0f,
-		bool exist = true);
-	void Set(GravGen* grav_gen);
-	void Set(
-		Vec2F* position,
-		float gravity = GRAVITY_GENERATOR_DEFAULT_GRAVITY,
-		float radius = GRAVITY_GENERATOR_DEFAULT_RADIUS,
-		float angle = 0.0f,
-		bool exist = true);
-
-	void operator=(GravGen grav_gen);
-
-	~GravGen();
 };
 
 class MegaLaser : public AggressiveEntity
@@ -653,118 +723,6 @@ public:
 	void operator=(MegaLaser entity);
 
 	~MegaLaser();
-};
-
-class Laser : public StaticEntity
-{
-protected:
-	GameTypes::players_count_t player_master_number;
-	GameTypes::players_count_t player_master_team_number;
-	GameTypes::tic_t shoot_time;
-public:
-	Laser();
-	Laser(const Laser& laser);
-	Laser(
-		Beam* beam,
-		GameTypes::players_count_t player_master_number,
-		GameTypes::players_count_t player_master_team_number,
-		GameTypes::tic_t shoot_time = LASER_DEFAULT_SHOOT_TIME,
-		bool exist = true);
-
-	bool CanShoot();
-	bool CreatedBy(ControledEntity* controled_entity);
-	Beam GetBeam();
-	GameTypes::tic_t GetLifeTime();
-	GameTypes::players_count_t GetPlayerMasterNumber();
-	GameTypes::players_count_t GetPlayerMasterTeamNumber();
-	void Set(Laser* laser);
-	void Set(
-		Beam* beam,
-		GameTypes::players_count_t player_master_number,
-		GameTypes::players_count_t player_master_team_number,
-		GameTypes::tic_t shoot_time = LASER_DEFAULT_SHOOT_TIME,
-		bool exist = true);
-	void Update();
-
-	void operator=(Laser laser);
-
-	~Laser();
-};
-
-class Bullet : public KillerEntity
-{
-protected:
-public:
-	bool is_collision_master;
-	Bullet();
-	Bullet(const Bullet& bullet);
-	Bullet(
-		Vec2F* position,
-		Vec2F* velocity,
-		GameTypes::players_count_t player_master_number,
-		GameTypes::players_count_t player_master_team_number,
-		bool is_collision_master = true,
-		float angle = 0.0f,
-		float angular_velocity = 0.0f,
-		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
-		float force_resistance_air_coefficient = BULLET_DEFAULT_RESISTANCE_AIR_COEFFICIENT,
-		float radius = BULLET_DEFAULT_RADIUS,
-		bool exist = true);
-	void Set(Bullet* bullet);
-	void Set(
-		Vec2F* position,
-		Vec2F* velocity,
-		GameTypes::players_count_t player_master_number,
-		GameTypes::players_count_t player_master_team_number,
-		bool is_collision_master = true,
-		float angle = 0.0f,
-		float angular_velocity = 0.0f,
-		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
-		float force_resistance_air_coefficient = BULLET_DEFAULT_RESISTANCE_AIR_COEFFICIENT,
-		float radius = BULLET_DEFAULT_RADIUS,
-		bool exist = true);
-	void Update();
-
-	void operator=(Bullet bullet);
-
-	~Bullet();
-};
-
-class Knife : public KillerEntity
-{
-protected:
-	EngineTypes::Knife::knife_health_t health;
-public:
-	Knife();
-	Knife(const Knife& knife);
-	Knife(
-		Segment* segment,
-		Vec2F* velocity,
-		GameTypes::players_count_t player_master_number,
-		GameTypes::players_count_t player_master_team_number,
-		EngineTypes::Knife::knife_health_t health = KNIFE_DEFAULT_HEALTH,
-		float angular_velocity = 0.0f,
-		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
-		float force_resistance_air_coefficient = KNIFE_DEFAULT_RESISTANSE_AIR_COEFFICIENT,
-		bool exist = true);
-	Segment GetSegment();
-	void Set(Knife* knife);
-	void Set(
-		Segment* segment,
-		Vec2F* velocity,
-		GameTypes::players_count_t player_master_number,
-		GameTypes::players_count_t player_master_team_number,
-		EngineTypes::Knife::knife_health_t health = KNIFE_DEFAULT_HEALTH,
-		float angular_velocity = 0.0f,
-		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
-		float force_resistance_air_coefficient = KNIFE_DEFAULT_RESISTANSE_AIR_COEFFICIENT,
-		bool exist = true);
-	//The function will return false when health is zero.
-	bool LoseHealth();
-
-	void operator=(Knife knife);
-
-	~Knife();
 };
 
 class Bomb : public KillerEntity
@@ -817,4 +775,102 @@ public:
 	void operator=(Bomb bomb);
 
 	~Bomb();
+};
+
+class Bullet : public KillerEntity
+{
+protected:
+public:
+	bool is_collision_master;
+	Bullet();
+	Bullet(const Bullet& bullet);
+	Bullet(
+		Vec2F* position,
+		Vec2F* velocity,
+		GameTypes::players_count_t player_master_number,
+		GameTypes::players_count_t player_master_team_number,
+		bool is_collision_master = true,
+		float angle = 0.0f,
+		float angular_velocity = 0.0f,
+		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_resistance_air_coefficient = BULLET_DEFAULT_RESISTANCE_AIR_COEFFICIENT,
+		float radius = BULLET_DEFAULT_RADIUS,
+		bool exist = true);
+	void Set(Bullet* bullet);
+	void Set(
+		Vec2F* position,
+		Vec2F* velocity,
+		GameTypes::players_count_t player_master_number,
+		GameTypes::players_count_t player_master_team_number,
+		bool is_collision_master = true,
+		float angle = 0.0f,
+		float angular_velocity = 0.0f,
+		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_resistance_air_coefficient = BULLET_DEFAULT_RESISTANCE_AIR_COEFFICIENT,
+		float radius = BULLET_DEFAULT_RADIUS,
+		bool exist = true);
+	void Update();
+
+	void operator=(Bullet bullet);
+
+	~Bullet();
+};
+
+class Knife : public SupportEntity
+{
+protected:
+	EngineTypes::Knife::knife_health_t health;
+public:
+	Knife();
+	Knife(const Knife& knife);
+	Knife(
+		ControledEntity* host,
+		Segment* local_segment,
+		EngineTypes::Knife::knife_health_t health = KNIFE_DEFAULT_HEALTH,
+		bool exist = true);
+	Segment GetSegment();
+	void Set(Knife* knife);
+	void Set(
+		ControledEntity* host,
+		Segment* local_segment,
+		EngineTypes::Knife::knife_health_t health = KNIFE_DEFAULT_HEALTH,
+		bool exist = true);
+	//The function will return false when health is zero.
+	bool LoseHealth();
+
+	void operator=(Knife knife);
+
+	~Knife();
+};
+
+class Laser : public SupportEntity
+{
+protected:
+	GameTypes::tic_t shoot_time;
+public:
+	Laser();
+	Laser(const Laser& laser);
+	Laser(
+		ControledEntity* host,
+		Beam* local_beam,
+		GameTypes::tic_t shoot_time = LASER_DEFAULT_SHOOT_TIME,
+		bool exist = true);
+
+	bool CanShoot();
+	bool CreatedBy(ControledEntity* controled_entity);
+	Beam GetBeam();
+	GameTypes::tic_t GetLifeTime();
+	GameTypes::players_count_t GetPlayerMasterNumber();
+	GameTypes::players_count_t GetPlayerMasterTeamNumber();
+	void Set(Laser* laser);
+	void Set(
+		ControledEntity* host,
+		Beam* local_beam,
+		GameTypes::tic_t shoot_time = LASER_DEFAULT_SHOOT_TIME,
+		bool exist = true);
+	void Update();
+
+	void operator=(Laser laser);
+
+	~Laser();
 };

@@ -507,13 +507,13 @@ void OpenGL::DrawObject(Knife* knife, bool update_shader)
         knife_shader.SetUniform("camera_position", temp__game__camera_position);
         knife_shader.SetUniform("camera_size", temp__game__camera_size);
     }
-    knife_shader.SetUniform("position", knife->GetPosition());
-    knife_shader.SetUniform("vector", knife->GetDirection());
-    knife_shader.SetUniform("angle", knife->GetDirection().GetAbsoluteAngle());
+    knife_shader.SetUniform("position", knife->StaticEntity::GetPosition());
+    knife_shader.SetUniform("vector", knife->StaticEntity::GetDirectionNotNormalize());
+    knife_shader.SetUniform("angle", knife->StaticEntity::GetDirectionNotNormalize().GetAbsoluteAngle());
     knife_buffer.Draw();
 }
 
-void OpenGL::DrawObject(Laser* mega_laser, bool update_shader)
+void OpenGL::DrawObject(Laser* laser, bool update_shader)
 {
     if (update_shader)
     {
@@ -523,10 +523,8 @@ void OpenGL::DrawObject(Laser* mega_laser, bool update_shader)
         laser_shader.SetUniform("camera_position", temp__game__camera_position);
         laser_shader.SetUniform("camera_size", temp__game__camera_size);
     }
-    laser_shader.SetUniform("angle", mega_laser->GetDirection().GetAbsoluteAngle());
-    laser_shader.SetUniform("position", mega_laser->GetPosition());
-    laser_shader.SetUniform("vector", mega_laser->GetDirection());
-    laser_shader.SetUniform("life", (float)mega_laser->GetLifeTime() / (float)LASER_DEFAULT_SHOOT_TIME);
+    laser_shader.SetUniform("beam", laser->GetBeam());
+    laser_shader.SetUniform("life", (float)laser->GetLifeTime() / (float)LASER_DEFAULT_SHOOT_TIME);
     laser_buffer.Draw();
 }
 
@@ -540,9 +538,9 @@ void OpenGL::DrawObject(MegaLaser* mega_laser, bool update_shader)
         mega_laser_shader.SetUniform("camera_position", temp__game__camera_position);
         mega_laser_shader.SetUniform("camera_size", temp__game__camera_size);
     }
-    mega_laser_shader.SetUniform("angle", mega_laser->GetDirection().GetAbsoluteAngle());
+    mega_laser_shader.SetUniform("angle", mega_laser->GetDirectionNotNormalize().GetAbsoluteAngle());
     mega_laser_shader.SetUniform("position", mega_laser->GetPosition());
-    mega_laser_shader.SetUniform("vector", mega_laser->GetDirection());
+    mega_laser_shader.SetUniform("vector", mega_laser->GetDirectionNotNormalize());
     mega_laser_buffer.Draw();
 }
 

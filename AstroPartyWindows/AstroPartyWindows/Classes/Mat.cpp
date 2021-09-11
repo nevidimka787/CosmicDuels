@@ -1171,8 +1171,22 @@ void Mat3x2D::TransportThis(Vec2D* vector)
 Mat3x2D::operator Mat3x2F()
 {
 	return Mat3x2F(
-		(double)a11, (double)a12, (double)a13,
-		(double)a21, (double)a22, (double)a23);
+		(float)a11, (float)a12, (float)a13,
+		(float)a21, (float)a22, (float)a23);
+}
+
+Mat3x2D::operator Mat2D()
+{
+	return Mat2D(
+		a11, a12,
+		a21, a22);
+}
+
+Mat3x2D::operator Mat2F()
+{
+	return Mat2D(
+		(float)a11, (float)a12,
+		(float)a21, (float)a22);
 }
 
 void Mat3x2D::Set(double value)
@@ -1502,6 +1516,20 @@ Mat3x2F::operator Mat3x2D()
 	return Mat3x2D(
 		(double)a11, (double)a12, (double)a13,
 		(double)a21, (double)a22, (double)a23);
+}
+
+Mat3x2F::operator Mat2D()
+{
+	return Mat2D(
+		(double)a11, (double)a12,
+		(double)a21, (double)a22);
+}
+
+Mat3x2F::operator Mat2F()
+{
+	return Mat2D(
+		a11, a12,
+		a21, a22);
 }
 
 void Mat3x2F::Set(float value)

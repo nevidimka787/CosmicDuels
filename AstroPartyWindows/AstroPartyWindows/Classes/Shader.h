@@ -29,9 +29,15 @@ public:
     void SetUniform(const std::string& name, EngineTypes::Button::text_t* text, uint16_t text_length) const;
     void SetUniform(const std::string& name, int value) const;
     void SetUniform(const std::string& name, float value) const;
+    void SetUniform(const std::string& name, Beam beam) const;
+    void SetUniform(const std::string& name, Beam* beam) const;
     void SetUniform(const std::string& name, Color3F color) const;
     void SetUniform(const std::string& name, Color3F* color) const;
+    void SetUniform(const std::string& name, Line line) const;
+    void SetUniform(const std::string& name, Line* line) const;
     void SetUniform(const std::string& name, Vec2F vector) const;
     void SetUniform(const std::string& name, Vec2F* vector) const;
+    void SetUniform(const std::string& name, Segment segment) const;
+    void SetUniform(const std::string& name, Segment* segment) const;
     ~Shader();
 };

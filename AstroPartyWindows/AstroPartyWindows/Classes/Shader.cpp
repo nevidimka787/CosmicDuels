@@ -143,8 +143,17 @@ void Shader::SetUniform(const std::string& name, int value) const
 }
 void Shader::SetUniform(const std::string& name, float value) const
 {
-	int i = glGetUniformLocation(id, name.c_str());
     glUniform1f(glGetUniformLocation(id, name.c_str()), value);
+}
+
+void Shader::SetUniform(const std::string& name, Beam beam) const
+{
+	glUniform4f(glGetUniformLocation(id, name.c_str()), beam.point.x, beam.point.y, beam.vector.x, beam.vector.y);
+}
+
+void Shader::SetUniform(const std::string& name, Beam* beam) const
+{
+	glUniform4f(glGetUniformLocation(id, name.c_str()), beam->point.x, beam->point.y, beam->vector.x, beam->vector.y);
 }
 
 void Shader::SetUniform(const std::string& name, Color3F color) const
@@ -157,6 +166,16 @@ void Shader::SetUniform(const std::string& name, Color3F* color) const
     glUniform3f(glGetUniformLocation(id, name.c_str()), color->red, color->green, color->blue);
 }
 
+void Shader::SetUniform(const std::string& name, Line line) const
+{
+	glUniform4f(glGetUniformLocation(id, name.c_str()), line.point.x, line.point.y, line.vector.x, line.vector.y);
+}
+
+void Shader::SetUniform(const std::string& name, Line* line) const
+{
+	glUniform4f(glGetUniformLocation(id, name.c_str()), line->point.x, line->point.y, line->vector.x, line->vector.y);
+}
+
 void Shader::SetUniform(const std::string& name, Vec2F vector) const
 {
     glUniform2f(glGetUniformLocation(id, name.c_str()), vector.x, vector.y);
@@ -165,6 +184,16 @@ void Shader::SetUniform(const std::string& name, Vec2F vector) const
 void Shader::SetUniform(const std::string& name, Vec2F* vector) const
 {
     glUniform2f(glGetUniformLocation(id, name.c_str()), vector->x, vector->y);
+}
+
+void Shader::SetUniform(const std::string& name, Segment segment) const
+{
+	glUniform4f(glGetUniformLocation(id, name.c_str()), segment.point.x, segment.point.y, segment.vector.x, segment.vector.y);
+}
+
+void Shader::SetUniform(const std::string& name, Segment* segment) const
+{
+	glUniform4f(glGetUniformLocation(id, name.c_str()), segment->point.x, segment->point.y, segment->vector.x, segment->vector.y);
 }
 
 Shader::~Shader()

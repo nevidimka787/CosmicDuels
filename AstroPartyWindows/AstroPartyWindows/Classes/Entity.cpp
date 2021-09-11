@@ -143,7 +143,7 @@ float Entity::GetDistance(Polygon* polygon)
 	return 0.0;
 }
 
-Vec2F Entity::GetDirection()
+Vec2F Entity::GetDirectionNotNormalize()
 {
 	return direction;
 }
@@ -158,9 +158,19 @@ Mat3x2F Entity::GetModelMatrix()
 	return model_matrix;
 }
 
+Vec2F Entity::GetDirection()
+{
+	return direction.Normalize();
+}
+
 Vec2F Entity::GetPosition()
 {
 	return position;
+}
+
+bool Entity::IsCollision(Vec2F point)
+{
+	return GetDistance(point) <= 0.0f;
 }
 
 bool Entity::IsCollision(Vec2F* point)
@@ -312,14 +322,46 @@ void Entity::SetAngle(float angle)
 	UpdateDirection();
 }
 
+void Entity::SetDirection(Vec2F direction)
+{
+	this->direction = direction.Normalize();
+}
+
 void Entity::SetDirection(Vec2F* direction)
 {
 	this->direction = direction->Normalize();
 }
 
+void Entity::SetDirectionNotNormalize(Vec2F direction)
+{
+	if (direction.x != 0 || direction.y != 0)
+	{
+		this->direction = direction;
+	}
+}
+
+void Entity::SetDirectionNotNormalize(Vec2F* direction)
+{
+	if (direction->x != 0 || direction->y != 0)
+	{
+		this->direction = *direction;
+	}
+}
+
+void Entity::SetPosition(Vec2F position)
+{
+	this->position = position;
+}
+
 void Entity::SetPosition(Vec2F* position)
 {
 	this->position.Set(position);
+}
+
+void Entity::Move(Vec2F delta)
+{
+	position += delta;
+	model_matrix.TransportThis(delta);
 }
 
 void Entity::Move(Vec2F* delta)
@@ -861,11 +903,6 @@ Vec2F StaticEntity::GetVelocity()
 	return position - last_position;
 }
 
-void StaticEntity::Recalculate()
-{
-	last_position = position;
-}
-
 void StaticEntity::Set(StaticEntity* static_entity)
 {
 	angle = static_entity->angle;
@@ -883,6 +920,11 @@ void StaticEntity::Set(Vec2F* position, float radius, float angle, bool exist)
 	this->exist = exist;
 	this->position = *position;
 	this->radius = radius;
+}
+
+void StaticEntity::Update()
+{
+	last_position = position;
 }
 
 void StaticEntity::operator=(StaticEntity static_entity)
@@ -1099,20 +1141,33 @@ Asteroid Asteroid::Division()
 	{
 		return Asteroid();
 	}
-	Vec2F temp_position = position + Vec2F(((float)rand() - (float)RAND_MAX / 2.0f) / ((float)RAND_MAX * 10.0f), ((float)rand() - (float)RAND_MAX / 2.0f) / ((float)RAND_MAX * 10.0f));
-	Asteroid temp_asteroid = Asteroid(&temp_position, &velocity, bonus_type, size - 1);
 
-	EngineTypes::Bonus::bonus_t temp;
-	for (uint8_t i = 0; i < BONUS_BUFFS_COUNT + BONUS_BONUSES_COUNT; i++)
+	EngineTypes::Bonus::bonus_t return_bonus = BONUS_NO_BONUS;
+	EngineTypes::Bonus::bonus_t temp_bonus;
+	for (uint8_t i = 0; i < BONUS_BONUSES_COUNT; i++)
 	{
-		temp = 0x11 << (i << 1);
-		if (bonus_type & temp)
+		temp_bonus = 0x11 << (i * 2);
+		if (bonus_type & temp_bonus)
 		{
-			break;
+			temp_bonus &= bonus_type;
+			bonus_type &= BUFF_BONUS_ALL - temp_bonus;
+			if (bonus_type & (1 << (BONUS_BONUSES_COUNT * 2)) - 1)
+			{
+				return_bonus = temp_bonus;
+				goto end_of_cycle;
+			}
+			goto end_of_cycle;
 		}
 	}
-	temp_asteroid.bonus_type = temp;
-	return temp_asteroid;
+end_of_cycle:;
+	if (return_bonus == BONUS_NO_BONUS)
+	{
+		return_bonus = bonus_type & BONUS_BONUS;
+	}
+
+	Vec2F temp_position = position + Vec2F(((float)rand() - (float)RAND_MAX / 2.0f) / ((float)RAND_MAX * 10.0f), ((float)rand() - (float)RAND_MAX / 2.0f) / ((float)RAND_MAX * 10.0f));
+	
+	return Asteroid(&temp_position, &velocity, return_bonus, size - 1);
 }
 
 uint8_t Asteroid::GetSize()
@@ -1204,6 +1259,11 @@ KillerEntity::KillerEntity(Vec2F* position, Vec2F* velocity, float radius, GameT
 bool KillerEntity::CreatedBy(ControledEntity* controled_entity)
 {
 	return player_master_number == controled_entity->GetPlayerNumber();
+}
+
+bool KillerEntity::CreatedByTeam(ControledEntity* controled_entity)
+{
+	return player_master_team_number == controled_entity->GetTeamNumber();
 }
 
 GameTypes::players_count_t KillerEntity::GetPlayerMasterNumber()
@@ -1321,6 +1381,11 @@ ControledEntity::ControledEntity(Vec2F* position, Vec2F* velocity, float radius,
 	{
 		this->heat_box_vertexes_array[vertex] = heat_box_vertexes_array[vertex];
 	}
+}
+
+Mat3x2F* ControledEntity::GetModelMatrixPointer()
+{
+	return &model_matrix;
 }
 
 GameTypes::players_count_t ControledEntity::GetPlayerNumber()
@@ -1675,9 +1740,9 @@ Bomb Ship::CreateBomb()
 
 Laser Ship::CreateLaser()
 {
-	Beam laser_beam = Beam(Vec2F(0.5f, 0.0f) * model_matrix, direction);
+	Beam laser_beam = Beam(Vec2F(0.5f, 0.0f), Vec2F(1.0f, 0.0f));
 	AddForceAlongDirection(-SHIP_SHOOT_FORCE * 4.0f);
-	return Laser(&laser_beam, player_number, player_team_number);
+	return Laser(this, &laser_beam);
 }
 
 Knife Ship::CreateKnife(uint8_t knife_number)
@@ -1686,11 +1751,11 @@ Knife Ship::CreateKnife(uint8_t knife_number)
 	switch (knife_number)
 	{
 	case 0:
-		new_knife_segment = Segment(Vec2F(1.0f, 1.0f) * model_matrix, Vec2F(0.0f, 1.0f) * model_matrix);
-		return Knife(&new_knife_segment, &velocity, player_number, player_team_number);
+		new_knife_segment = Segment(Vec2F(1.0f, 1.0f), Vec2F(0.0f, 1.0f));
+		return Knife(this, &new_knife_segment);
 	case 1:
-		new_knife_segment = Segment(Vec2F(1.0f, -1.0f) * model_matrix, Vec2F(0.0f, 1.0f) * model_matrix);
-		return Knife(&new_knife_segment, &velocity, player_number, player_team_number);
+		new_knife_segment = Segment(Vec2F(1.0f, -1.0f), Vec2F(0.0f, 1.0f));
+		return Knife(this, &new_knife_segment);
 	default:
 		return Knife();
 	}
@@ -1863,7 +1928,9 @@ Ship::~Ship()
 
 
 
-Pilot::Pilot()
+Pilot::Pilot():
+	ControledEntity(),
+	respawn_timer(0)
 {
 }
 
@@ -1955,6 +2022,195 @@ void Pilot::operator=(Pilot pilot)
 Pilot::~Pilot()
 {
 
+}
+
+
+SupportEntity::SupportEntity() :
+	host_p(nullptr),
+	host_matrix_p(nullptr),
+	local_angle(0),
+	host_number(0),
+	host_team(0)
+{
+}
+
+SupportEntity::SupportEntity(const SupportEntity& support_entity) :
+	StaticEntity(support_entity),
+	host_p(support_entity.host_p),
+	host_matrix_p(support_entity.host_matrix_p),
+	host_number(support_entity.host_number),
+	host_team(support_entity.host_team),
+	local_angle(support_entity.local_angle),
+	local_direction(support_entity.local_direction),
+	local_position(support_entity.local_position)
+{
+}
+
+SupportEntity::SupportEntity(ControledEntity* host, Vec2F* position, float radius, float angle, bool exist) :
+	StaticEntity(position, radius, angle + host->GetAngle(), exist),
+	host_p(host),
+	host_matrix_p(host->GetModelMatrixPointer()),
+	host_number(host->GetPlayerNumber()),
+	host_team(host->GetTeamNumber()),
+	local_angle(angle),
+	local_direction(Vec2F(1.0f, 0.0f).Rotate(angle)),
+	local_position(*position)
+{
+	this->position *= *host_matrix_p;
+}
+
+bool SupportEntity::CreatedBy(ControledEntity* potential_host)
+{
+	return host_number == potential_host->GetPlayerNumber();
+}
+
+bool SupportEntity::CreatedByTeam(ControledEntity* potential_host)
+{
+	return host_team == potential_host->GetTeamNumber();
+}
+
+float SupportEntity::GetAngle()
+{
+	return local_angle;
+}
+
+Vec2F SupportEntity::GetDirection()
+{
+	return local_direction;
+}
+
+Vec2F SupportEntity::GetNormalizeDirection()
+{
+	return local_direction.Normalize();
+}
+
+GameTypes::players_count_t SupportEntity::GetPlayerMasterNumber()
+{
+	return host_number;
+}
+
+GameTypes::players_count_t SupportEntity::GetPlayerMasterTeamNumber()
+{
+	return host_team;
+}
+
+Vec2F SupportEntity::GetPosition()
+{
+	return local_position;
+}
+
+void SupportEntity::Set(SupportEntity* support_entity)
+{
+	angle = support_entity->angle;
+	direction = support_entity->direction;
+	exist = support_entity->exist;
+	host_p = support_entity->host_p;
+	host_matrix_p = support_entity->host_matrix_p;
+	host_number = support_entity->host_number;
+	host_team = support_entity->host_team;
+	local_angle = support_entity->local_angle;
+	local_direction = support_entity->local_direction;
+	local_position = support_entity->local_position;
+	model_matrix = support_entity->model_matrix;
+	position = support_entity->position;
+	radius = support_entity->radius;
+}
+
+void SupportEntity::Set(ControledEntity* host, Vec2F position, float radius, float angle, bool exist)
+{
+	angle = host->GetAngle();
+	direction = host->GetDirectionNotNormalize();
+	this->exist = exist;
+	host_number = host->GetPlayerNumber();
+	host_team = host->GetTeamNumber();
+	local_angle = angle;
+	local_direction = Vec2F(1.0f, 0.0f).Rotate(angle);
+	local_position = position;
+	position = host->GetPosition();
+	this->radius = radius;
+
+	host_p = host;
+	host_matrix_p = host->GetModelMatrixPointer();
+}
+
+void SupportEntity::SetAngle(float angle)
+{
+	local_angle = angle;
+}
+
+void SupportEntity::SetDirection(Vec2F direction)
+{
+	local_direction = direction.Normalize();
+}
+
+void SupportEntity::SetDirection(Vec2F* direction)
+{
+	local_direction = direction->Normalize();
+}
+
+void SupportEntity::SetNotNormalizeDirection(Vec2F direction)
+{
+	local_direction = direction;
+}
+
+void SupportEntity::SetNotNormalizeDirection(Vec2F* direction)
+{
+	local_direction = *direction;
+}
+
+void SupportEntity::SetHost(ControledEntity* host)
+{
+	host_p = host;
+	host_matrix_p = host->GetModelMatrixPointer();
+}
+
+void SupportEntity::SetPosition(Vec2F position)
+{
+	local_position = position;
+}
+
+void SupportEntity::SetPosition(Vec2F* position)
+{
+	local_position = *position;
+}
+
+void SupportEntity::Update()
+{
+	if (host_p == nullptr)
+	{
+		return;
+	}
+	StaticEntity::Update();
+	angle = local_angle + host_p->GetAngle();
+	direction = local_direction * (Mat2F)*host_matrix_p;
+	position = local_position * *host_matrix_p;
+	exist = host_p->exist;
+}
+
+void SupportEntity::UpdateDirection()
+{
+	local_direction = Vec2F(direction.GetLength(), 0.0f).Rotate(local_angle);
+}
+
+void SupportEntity::operator=(SupportEntity support_entity)
+{
+	angle = support_entity.angle;
+	direction = support_entity.direction;
+	exist = support_entity.exist;
+	host_p = support_entity.host_p;
+	host_matrix_p = support_entity.host_matrix_p;
+	host_number = support_entity.host_number;
+	host_team = support_entity.host_team;
+	local_angle = support_entity.local_angle;
+	local_direction = support_entity.local_direction;
+	local_position = support_entity.local_position;
+	model_matrix = support_entity.model_matrix;
+	position = support_entity.position;
+	radius = support_entity.radius;
+}
+
+SupportEntity::~SupportEntity()
+{
 }
 
 
@@ -2260,25 +2516,19 @@ MegaLaser::~MegaLaser()
 
 
 Laser::Laser() :
-	StaticEntity(),
-	player_master_number(0),
-	player_master_team_number(0),
+	SupportEntity(),
 	shoot_time(0)
 {
 }
 
 Laser::Laser(const Laser& laser) :
-	StaticEntity(laser),
-	player_master_number(laser.player_master_number),
-	player_master_team_number(laser.player_master_team_number),
+	SupportEntity(laser),
 	shoot_time(laser.shoot_time)
 {
 }
 
-Laser::Laser(Beam* beam, GameTypes::players_count_t player_master_number, GameTypes::players_count_t player_master_team_number, GameTypes::tic_t shoot_time, bool exist) :
-	StaticEntity(&beam->point, 0.0f, beam->vector.GetAbsoluteAngle(), exist),
-	player_master_number(player_master_number),
-	player_master_team_number(player_master_team_number),
+Laser::Laser(ControledEntity* host, Beam* local_beam, GameTypes::tic_t shoot_time, bool exist) :
+	SupportEntity(host, &local_beam->point, 0.0f, local_beam->vector.GetAbsoluteAngle(), exist),
 	shoot_time(shoot_time)
 {
 }
@@ -2290,12 +2540,12 @@ bool Laser::CanShoot()
 
 bool Laser::CreatedBy(ControledEntity* controled_entity)
 {
-	return player_master_number == controled_entity->GetPlayerNumber();
+	return host_number == controled_entity->GetPlayerNumber();
 }
 
 Beam Laser::GetBeam()
 {
-	return Beam(&position, &direction, false);
+	return Beam(position, direction);
 }
 
 GameTypes::tic_t Laser::GetLifeTime()
@@ -2305,12 +2555,12 @@ GameTypes::tic_t Laser::GetLifeTime()
 
 GameTypes::players_count_t Laser::GetPlayerMasterNumber()
 {
-	return player_master_number;
+	return host_number;
 }
 
 GameTypes::players_count_t Laser::GetPlayerMasterTeamNumber()
 {
-	return player_master_team_number;
+	return host_team;
 }
 
 void Laser::Set(Laser* laser)
@@ -2318,27 +2568,33 @@ void Laser::Set(Laser* laser)
 	angle = laser->angle;
 	direction = laser->direction;
 	exist = laser->exist;
+	host_matrix_p = laser->host_matrix_p;
+	host_number = laser->host_number;
+	host_p = laser->host_p;
+	host_team = laser->host_team;
 	last_position = laser->last_position;
-	player_master_number = laser->player_master_number;
-	player_master_team_number = laser->player_master_team_number;
+	local_angle = laser->local_angle;
+	local_direction = laser->local_direction;
+	local_position = laser->local_position;
 	position = laser->position;
 	shoot_time = laser->shoot_time;
 }
 
-void Laser::Set(Beam* beam, GameTypes::players_count_t player_master_number, GameTypes::players_count_t player_master_team_number, GameTypes::tic_t shoot_time, bool exist)
+void Laser::Set(ControledEntity* host, Beam* local_beam, GameTypes::tic_t shoot_time, bool exist)
 {
-	angle = beam->vector.GetAbsoluteAngle();
 	UpdateDirection();
-	exist = exist;
-	player_master_number = player_master_number;
-	player_master_team_number = player_master_team_number;
-	position = beam->point;
+	this->exist = exist;
+	this->host_number = host_number;
+	this->host_team = host_team;
+	local_angle = local_beam->vector.GetAbsoluteAngle();
+	local_position = local_beam->point;
 	shoot_time = shoot_time;
+	SupportEntity::Update();
 }
 
 void Laser::Update()
 {
-	StaticEntity::Recalculate();
+	SupportEntity::Update();
 	if (shoot_time > 0)
 	{
 		shoot_time--;
@@ -2350,9 +2606,14 @@ void Laser::operator=(Laser laser)
 	angle = laser.angle;
 	direction = laser.direction;
 	exist = laser.exist;
+	host_matrix_p = laser.host_matrix_p;
+	host_number = laser.host_number;
+	host_p = laser.host_p;
+	host_team = laser.host_team;
 	last_position = laser.last_position;
-	player_master_number = laser.player_master_number;
-	player_master_team_number = laser.player_master_team_number;
+	local_angle = laser.local_angle;
+	local_direction = laser.local_direction;
+	local_position = laser.local_position;
 	position = laser.position;
 	shoot_time = laser.shoot_time;
 }
@@ -2447,58 +2708,58 @@ Bullet::~Bullet()
 
 
 Knife::Knife() :
-	KillerEntity(),
+	SupportEntity(),
 	health(KNIFE_DEFAULT_HEALTH)
 {
-
 }
 
-Knife::Knife(const Knife& knife) : KillerEntity(knife),
-health(knife.health)
+Knife::Knife(const Knife& knife) :
+	SupportEntity(knife),
+	health(knife.health)
 {
 }
 
-Knife::Knife(Segment* segment, Vec2F* velocity, GameTypes::players_count_t player_master_number, GameTypes::players_count_t player_master_team_number, EngineTypes::Knife::knife_health_t health, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, bool exist) :
-	KillerEntity(&segment->point, velocity, segment->vector.GetLength(), player_master_number, player_master_team_number, segment->vector.GetAbsoluteAngle(), angular_velocity, force_collision_coeffisient, force_resistance_air_coefficient, exist),
+Knife::Knife(ControledEntity* host, Segment* local_segment, EngineTypes::Knife::knife_health_t health, bool exist) :
+	SupportEntity(host, &local_segment->point, local_segment->vector.GetLength(), local_segment->vector.GetAbsoluteAngle(), exist),
 	health(health)
 {
 }
 
 Segment Knife::GetSegment()
 {
-	Vec2F temp = direction * radius;
-	return Segment(&position, &temp, false);
+	return Segment(position, direction * radius);
 }
 
 void Knife::Set(Knife* knife)
 {
 	angle = knife->angle;
-	angular_velocity = knife->angular_velocity;
-	UpdateDirection();
+	direction = knife->direction;
 	exist = knife->exist;
-	force_collision_coeffisient = knife->force_collision_coeffisient;
-	force_resistance_air_coefficient = knife->force_resistance_air_coefficient;
-	health = knife->health;
-	player_master_number = knife->player_master_number;
-	player_master_team_number = knife->player_master_team_number;
+	host_matrix_p = knife->host_matrix_p;
+	host_number = knife->host_number;
+	host_p = knife->host_p;
+	host_team = knife->host_team;
+	last_position = knife->last_position;
+	local_angle = knife->local_angle;
+	local_direction = knife->local_direction;
+	local_position = knife->local_position;
 	position = knife->position;
-	radius = knife->radius;
-	velocity = knife->velocity;
+	health = knife->health;
 }
 
-void Knife::Set(Segment* segment, Vec2F* velocity, GameTypes::players_count_t player_master_number, GameTypes::players_count_t player_master_team_number, EngineTypes::Knife::knife_health_t health, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, bool exist)
+void Knife::Set(ControledEntity* host, Segment* local_segment, EngineTypes::Knife::knife_health_t health, bool exist)
 {
-	this->angle = segment->vector.GetAbsoluteAngle();
-	this->angular_velocity = angular_velocity;
-	UpdateDirection();
 	this->exist = exist;
-	this->force_collision_coeffisient = force_collision_coeffisient;
-	this->force_resistance_air_coefficient = force_resistance_air_coefficient;
-	this->player_master_number = player_master_number;
-	this->player_master_team_number = player_master_team_number;
-	this->position = segment->point;
-	this->radius = segment->vector.GetLength();
-	this->velocity = *velocity;
+	host_matrix_p = host->GetModelMatrixPointer();
+	host_p = host;
+	host_number = host->GetPlayerNumber();
+	host_team = host->GetTeamNumber();
+	local_direction = local_segment->vector;
+	local_angle = local_direction.GetAbsoluteAngle();
+	local_position = local_segment->point;
+	radius = local_segment->vector.GetLength();
+	this->health = health;
+	SupportEntity::Update();
 }
 
 bool Knife::LoseHealth()
@@ -2519,18 +2780,18 @@ bool Knife::LoseHealth()
 void Knife::operator=(Knife knife)
 {
 	angle = knife.angle;
-	angular_velocity = knife.angular_velocity;
 	direction = knife.direction;
 	exist = knife.exist;
-	force = knife.force;
-	force_collision_coeffisient = knife.force_collision_coeffisient;
-	force_resistance_air_coefficient = knife.force_resistance_air_coefficient;
-	health = knife.health;
-	player_master_number = knife.player_master_number;
-	player_master_team_number = knife.player_master_team_number;
+	host_matrix_p = knife.host_matrix_p;
+	host_number = knife.host_number;
+	host_p = knife.host_p;
+	host_team = knife.host_team;
+	last_position = knife.last_position;
+	local_angle = knife.local_angle;
+	local_direction = knife.local_direction;
+	local_position = knife.local_position;
 	position = knife.position;
-	radius = knife.radius;
-	velocity = knife.velocity;
+	health = knife.health;
 }
 
 Knife::~Knife()
