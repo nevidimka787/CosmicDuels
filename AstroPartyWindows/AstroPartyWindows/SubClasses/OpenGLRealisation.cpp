@@ -507,9 +507,8 @@ void OpenGL::DrawObject(Knife* knife, bool update_shader)
         knife_shader.SetUniform("camera_position", temp__game__camera_position);
         knife_shader.SetUniform("camera_size", temp__game__camera_size);
     }
-    knife_shader.SetUniform("position", knife->StaticEntity::GetPosition());
-    knife_shader.SetUniform("vector", knife->StaticEntity::GetDirectionNotNormalize());
-    knife_shader.SetUniform("angle", knife->StaticEntity::GetDirectionNotNormalize().GetAbsoluteAngle());
+    //std::cout << "Segment: p1: " << knife->GetSegment().point << " p2: " << knife->GetSegment().point + knife->GetSegment().vector << std::endl;
+    knife_shader.SetUniform("beam", knife->GetSegment());
     knife_buffer.Draw();
 }
 
@@ -567,9 +566,7 @@ void OpenGL::DrawObject(Pilot* pilot, bool update_shader)
         }
     }
 
-    pilot_shader.SetUniform("position", pilot->GetPosition());
-    pilot_shader.SetUniform("angle", pilot->GetAngle());
-    pilot_shader.SetUniform("size", pilot->radius);
+    pilot_shader.SetUniform("model", pilot->GetModelMatrixPointer());
     pilot_shader.SetUniform("team", pilot->GetTeamNumber());
     ship_shader.SetUniform("player", number_of_player_in_team);
     pilot_shader.SetUniform("life", (float)pilot->GetRespawnDellay() / (float)PILOT_DEFAULT_RESPAWN_TIMER);
@@ -600,9 +597,7 @@ void OpenGL::DrawObject(Ship* ship, bool update_shader)
         }
     }
 
-    ship_shader.SetUniform("position", ship->GetPosition());
-    ship_shader.SetUniform("angle", ship->GetAngle());
-    ship_shader.SetUniform("size", ship->radius);
+    ship_shader.SetUniform("model", ship->GetModelMatrixPointer());
     ship_shader.SetUniform("team", ship->GetTeamNumber());
     ship_shader.SetUniform("player", number_of_player_in_team);
     ship_buffer.Draw();

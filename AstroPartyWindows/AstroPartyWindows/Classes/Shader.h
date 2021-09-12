@@ -35,6 +35,10 @@ public:
     void SetUniform(const std::string& name, Color3F* color) const;
     void SetUniform(const std::string& name, Line line) const;
     void SetUniform(const std::string& name, Line* line) const;
+    void SetUniform(const std::string& name, Mat2F matrix) const;
+    void SetUniform(const std::string& name, Mat2F* matrix) const;
+    void SetUniform(const std::string& name, Mat3x2F matrix) const;
+    void SetUniform(const std::string& name, Mat3x2F* matrix) const;
     void SetUniform(const std::string& name, Vec2F vector) const;
     void SetUniform(const std::string& name, Vec2F* vector) const;
     void SetUniform(const std::string& name, Segment segment) const;

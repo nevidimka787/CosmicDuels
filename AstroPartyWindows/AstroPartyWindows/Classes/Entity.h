@@ -122,11 +122,14 @@ public:
 		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
 		bool exist = true);
 
+	void AddForce(Vec2F force);
 	void AddForce(Vec2F* force);
 	void AddForceAlongDirection(float force);
 	void AddAngularVelocity(float angulat_velocity);
 	void AddGravityForce(float gravity_coeffisient, Vec2F* forced_point);
 	void AddGravityForce(float gravity_coeffisient, Vec2F forced_point);
+	void AddVelocity(Vec2F velocity);
+	void AddVelocity(Vec2F* velocity);
 	/*
 	If objects collide, function will be changing the physical parameters of those objects.
 	*/
@@ -460,7 +463,6 @@ public:
 	EngineTypes::Bonus::bonus_t GetActiveBaffs();
 	bool HaveBonus(EngineTypes::Bonus::bonus_t bonus);
 	Bonus LoseBonus();
-	void Update();
 	//If ship have bonus, the function reduces the amount of this bonus and return true.
 	bool SpendBonus(EngineTypes::Bonus::bonus_t bonus);
 	//The function reduces the amount of this bonus.
@@ -485,6 +487,8 @@ public:
 		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
 		bool exist = true);
 	void TakeBonus(Bonus* bonus);
+	void Update();
+	void UpdateMatrix();
 
 	void operator=(Ship entity);
 
@@ -521,8 +525,9 @@ public:
 	GameTypes::tic_t GetRespawnDellay();
 	bool CanRespawn();
 	Ship Respawn();
-	void Update();
 	void Set(Pilot* entity);
+	void Update();
+	void UpdateMatrix();
 
 	void operator=(Pilot entity);
 

@@ -176,6 +176,49 @@ void Shader::SetUniform(const std::string& name, Line* line) const
 	glUniform4f(glGetUniformLocation(id, name.c_str()), line->point.x, line->point.y, line->vector.x, line->vector.y);
 }
 
+void Shader::SetUniform(const std::string& name, Mat2F matrix) const
+{
+	float f_matrix[] = 
+	{
+		matrix.a11, matrix.a12,
+		matrix.a21, matrix.a22 
+	};
+	glUniformMatrix2fv(glGetUniformLocation(id, name.c_str()), 1, false, f_matrix);
+}
+
+void Shader::SetUniform(const std::string& name, Mat2F* matrix) const
+{
+	float f_matrix[] =
+	{
+		matrix->a11, matrix->a12,
+		matrix->a21, matrix->a22
+	};
+	glUniformMatrix2fv(glGetUniformLocation(id, name.c_str()), 1, false, f_matrix);
+}
+
+void Shader::SetUniform(const std::string& name, Mat3x2F matrix) const
+{
+	float f_matrix[] =
+	{
+		matrix.a11, matrix.a12, matrix.a13,
+		matrix.a21, matrix.a22, matrix.a23,
+		0.0f, 0.0f, 1.0f
+	};
+	glUniformMatrix3fv(glGetUniformLocation(id, name.c_str()), 1, false, f_matrix);
+}
+
+void Shader::SetUniform(const std::string& name, Mat3x2F* matrix) const
+{
+	float f_matrix[] =
+	{
+		matrix->a11, matrix->a12, matrix->a13,
+		matrix->a21, matrix->a22, matrix->a23,
+		0.0f, 0.0f, 1.0f
+	};
+	glUniformMatrix3fv(glGetUniformLocation(id, name.c_str()), 1, false, f_matrix);
+}
+
+
 void Shader::SetUniform(const std::string& name, Vec2F vector) const
 {
     glUniform2f(glGetUniformLocation(id, name.c_str()), vector.x, vector.y);

@@ -56,10 +56,13 @@ mat3 Rotate(float _angle)
 
 mat3 SetByBeam(vec4 _beam)
 {
-float l = length(_beam.zw);
-    return mat3(
-        _beam.z / l,   -_beam.w / l,    _beam.x,
-        _beam.w / l,    _beam.z / l,    _beam.y,
-        0.0f,           0.0f,           1.0f
-    );
+    if(_beam.z > 0.0f)
+    {
+        return Scale(vec2(length(_beam.zw), 1.0f)) * Rotate(atan(_beam.w / _beam.z)) * Transport(_beam.xy);
+    }
+    if(_beam.w > 0.0f)
+    {
+        return Scale(vec2(length(_beam.zw), 1.0f)) * Rotate(atan(_beam.w / _beam.z) + radians(180.0f)) * Transport(_beam.xy);
+    }
+    return Scale(vec2(length(_beam.zw), 1.0f)) * Rotate(atan(_beam.w / _beam.z) - radians(180.0f)) * Transport(_beam.xy);
 }

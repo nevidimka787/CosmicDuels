@@ -383,8 +383,8 @@ void Entity::UpdateDirection()
 void Entity::UpdateMatrix()
 {
 	model_matrix.SetByPosition(position);
-	model_matrix.ScaleThis(Vec2F(4.5f, 3.0f) * radius);
 	model_matrix.RotateThis(angle);
+	model_matrix.ScaleThis(Vec2F(1.0f, 1.0f) * radius);
 }
 
 void Entity::operator=(Entity entity)
@@ -429,6 +429,11 @@ DynamicEntity::DynamicEntity(Vec2F* position, Vec2F* velocity, float radius, flo
 {
 }
 
+void DynamicEntity::AddForce(Vec2F force)
+{
+	this->force += force;
+}
+
 void DynamicEntity::AddForce(Vec2F* force)
 {
 	this->force += *force;
@@ -459,6 +464,16 @@ void DynamicEntity::AddGravityForce(float gravity_coeffisient, Vec2F forced_poin
 	Vec2F grav_vec = (forced_point - position).Normalize();
 	grav_vec *= gravity_coeffisient / distance / distance;
 	force += grav_vec;// * *x_temp_coeff;
+}
+
+void DynamicEntity::AddVelocity(Vec2F velocity)
+{
+	this->velocity += velocity;
+}
+
+void DynamicEntity::AddVelocity(Vec2F* velocity)
+{
+	this->velocity += *velocity;
 }
 
 bool DynamicEntity::Collision(DynamicEntity* entity)
@@ -942,6 +957,19 @@ StaticEntity::~StaticEntity()
 }
 
 
+Particle::Particle() :
+	DynamicEntity(),
+	life_time(0)
+{
+
+}
+
+Particle::~Particle()
+{
+
+}
+
+
 
 Bonus::Bonus() :
 	DynamicEntity(),
@@ -1106,7 +1134,7 @@ Asteroid::Asteroid(const Asteroid& asteroid) :
 {
 }
 
-Asteroid::Asteroid(Vec2F* position, Vec2F* velocity, EngineTypes::Bonus::bonus_t bonus_type, uint8_t size, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, bool exist) :
+Asteroid::Asteroid(Vec2F* position, Vec2F* velocity, EngineTypes::Bonus::bonus_t bonus_type, EngineTypes::Asteroid::size_t size, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, bool exist) :
 	Bonus(position, velocity, bonus_type, 0.0f, angle, angular_velocity, force_collision_coeffisient, force_resistance_air_coefficient, exist),
 	size(size)
 {
@@ -1170,12 +1198,12 @@ end_of_cycle:;
 	return Asteroid(&temp_position, &velocity, return_bonus, size - 1);
 }
 
-uint8_t Asteroid::GetSize()
+EngineTypes::Asteroid::size_t Asteroid::GetSize()
 {
 	return size;
 }
 
-uint16_t Asteroid::GetBuffBonus()
+EngineTypes::Bonus::bonus_t Asteroid::GetBuffBonus()
 {
 	return bonus_type;
 }
@@ -1196,7 +1224,7 @@ void Asteroid::Set(Asteroid* entity)
 	velocity = entity->velocity;
 }
 
-void Asteroid::Set(Vec2F* position, Vec2F* velocity, EngineTypes::Bonus::bonus_t bonus_type, uint8_t size, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, bool exist)
+void Asteroid::Set(Vec2F* position, Vec2F* velocity, EngineTypes::Bonus::bonus_t bonus_type, EngineTypes::Asteroid::size_t size, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, bool exist)
 {
 	this->angle = angle;
 	this->angular_velocity = angular_velocity;
@@ -1751,10 +1779,10 @@ Knife Ship::CreateKnife(uint8_t knife_number)
 	switch (knife_number)
 	{
 	case 0:
-		new_knife_segment = Segment(Vec2F(1.0f, 1.0f), Vec2F(0.0f, 1.0f));
+		new_knife_segment = Segment(Vec2F(-0.25f, sqrt(3.0f) / 4.0f), Vec2F(0.75f, 0.0f));
 		return Knife(this, &new_knife_segment);
 	case 1:
-		new_knife_segment = Segment(Vec2F(1.0f, -1.0f), Vec2F(0.0f, 1.0f));
+		new_knife_segment = Segment(Vec2F(-0.25f, sqrt(3.0f) / -4.0f), Vec2F(0.75f, 0.0f));
 		return Knife(this, &new_knife_segment);
 	default:
 		return Knife();
@@ -1780,15 +1808,6 @@ bool Ship::HaveBonus(EngineTypes::Bonus::bonus_t bonus)
 Bonus Ship::LoseBonus()
 {
 	return Bonus(&position, &velocity, buffs_bonuses);
-}
-
-void Ship::Update()
-{
-	DynamicEntity::Update();
-	if (unbrakable > 0)
-	{
-		unbrakable--;
-	}
 }
 
 void Ship::Set(Ship* ship)
@@ -1893,6 +1912,23 @@ void Ship::TakeBonus(Bonus* bonus)
 	buffs_bonuses |= bonus->bonus_type;
 }
 
+void Ship::Update()
+{
+	DynamicEntity::Update();
+	if (unbrakable > 0)
+	{
+		unbrakable--;
+	}
+}
+
+void Ship::UpdateMatrix()
+{
+	model_matrix.SetByPosition(position);
+	model_matrix.RotateThis(angle);
+	model_matrix.ScaleThis(Vec2F(4.5f, 3.0f) * radius);
+}
+
+
 void Ship::operator=(Ship ship)
 {
 	active_baffs = ship.active_baffs;
@@ -1994,6 +2030,14 @@ void Pilot::Update()
 	}
 }
 
+void Pilot::UpdateMatrix()
+{
+	model_matrix.SetByPosition(position);
+	model_matrix.RotateThis(angle);
+	model_matrix.ScaleThis(Vec2F(4.5f, 3.0f) * radius);
+}
+
+
 void Pilot::operator=(Pilot pilot)
 {
 	angle = pilot.angle;
@@ -2026,6 +2070,7 @@ Pilot::~Pilot()
 
 
 SupportEntity::SupportEntity() :
+	StaticEntity(),
 	host_p(nullptr),
 	host_matrix_p(nullptr),
 	local_angle(0),
@@ -2118,6 +2163,10 @@ void SupportEntity::Set(SupportEntity* support_entity)
 
 void SupportEntity::Set(ControledEntity* host, Vec2F position, float radius, float angle, bool exist)
 {
+	if (host_p == nullptr)
+	{
+		return;
+	}
 	angle = host->GetAngle();
 	direction = host->GetDirectionNotNormalize();
 	this->exist = exist;
@@ -2180,11 +2229,10 @@ void SupportEntity::Update()
 	{
 		return;
 	}
-	StaticEntity::Update();
 	angle = local_angle + host_p->GetAngle();
 	direction = local_direction * (Mat2F)*host_matrix_p;
 	position = local_position * *host_matrix_p;
-	exist = host_p->exist;
+	StaticEntity::Update();
 }
 
 void SupportEntity::UpdateDirection()
@@ -2735,6 +2783,7 @@ void Knife::Set(Knife* knife)
 	angle = knife->angle;
 	direction = knife->direction;
 	exist = knife->exist;
+	health = knife->health;
 	host_matrix_p = knife->host_matrix_p;
 	host_number = knife->host_number;
 	host_p = knife->host_p;
@@ -2744,12 +2793,13 @@ void Knife::Set(Knife* knife)
 	local_direction = knife->local_direction;
 	local_position = knife->local_position;
 	position = knife->position;
-	health = knife->health;
+	radius = knife->radius;
 }
 
 void Knife::Set(ControledEntity* host, Segment* local_segment, EngineTypes::Knife::knife_health_t health, bool exist)
 {
 	this->exist = exist;
+	this->health = health;
 	host_matrix_p = host->GetModelMatrixPointer();
 	host_p = host;
 	host_number = host->GetPlayerNumber();
@@ -2758,7 +2808,6 @@ void Knife::Set(ControledEntity* host, Segment* local_segment, EngineTypes::Knif
 	local_angle = local_direction.GetAbsoluteAngle();
 	local_position = local_segment->point;
 	radius = local_segment->vector.GetLength();
-	this->health = health;
 	SupportEntity::Update();
 }
 
@@ -2782,6 +2831,7 @@ void Knife::operator=(Knife knife)
 	angle = knife.angle;
 	direction = knife.direction;
 	exist = knife.exist;
+	health = knife.health;
 	host_matrix_p = knife.host_matrix_p;
 	host_number = knife.host_number;
 	host_p = knife.host_p;
@@ -2791,7 +2841,7 @@ void Knife::operator=(Knife knife)
 	local_direction = knife.local_direction;
 	local_position = knife.local_position;
 	position = knife.position;
-	health = knife.health;
+	radius = knife.radius;
 }
 
 Knife::~Knife()

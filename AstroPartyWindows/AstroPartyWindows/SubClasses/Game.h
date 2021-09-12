@@ -143,7 +143,7 @@ public:
 	//Array of lazers.
 	Laser* lasers;
 	//Array of particles.
-	DynamicEntity* particles;
+	Particle* particles;
 
 	//Object stores data about map on current level.
 	Map map;
@@ -200,7 +200,7 @@ public:
 	void AddEntity(Laser new_lazer);
 	//Function adds entity to array that store entities of the same type.
 	//Not checking nullprt!
-	void AddEntity(DynamicEntity new_particle);
+	void AddEntity(Particle new_particle);
 
 
 

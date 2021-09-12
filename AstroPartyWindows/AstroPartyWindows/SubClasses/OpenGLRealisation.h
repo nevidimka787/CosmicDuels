@@ -277,7 +277,7 @@ public:
 	//Array of lazers.
 	Laser** game_p__lasers;
 	//Array of particles.
-	DynamicEntity** game_p__particles;
+	Particle** game_p__particles;
 
 	//Object stores data about map on current level.
 	Map* game_p__map;

@@ -2,9 +2,8 @@
 layout (location = 0) in vec2 aPos;
 
 uniform float scale;
-uniform vec2 position;
-uniform float size;
-uniform float angle;
+
+uniform mat3 model;
 
 uniform vec2 camera_position;
 uniform float camera_size;
@@ -23,9 +22,7 @@ void main()
 {
     matrix = 
         Rotate(radians(-90.0f)) *
-        Scale(vec2(size * 4.5f, size * 3.0f)) * 
-        Rotate(angle) * 
-        Transport(position) * 
+        model *
         Transport(-camera_position) *
         Scale(vec2(1.0f / camera_size)) *
         Scale(vec2(1.0f, scale));

@@ -12,8 +12,8 @@
 #include "SubClasses/OpenGLRealisation.h"
 #include "SubClasses/Linker.h"
 
-#define SCR_WIDTH 1600
-#define SCR_HEIGHT 800
+#define SCR_WIDTH   800
+#define SCR_HEIGHT  1000
 
 #define TIK_UPDATE_INIT 0x01
 #define PHYSICS_CALCULATION_INIT 0x02
@@ -136,18 +136,8 @@ void TikUpdate()
                 {
                     std::cout << "Team: " << (int)team << " Score: " << (int)main_game->scores[team] << std::endl;
                 }
-                std::cout << "Rounds remaining: " << (int)main_game->end_match_score << std::endl;
-                for (GameTypes::players_count_t player = 0; player < GAME_PLAYERS_MAX_COUNT; player++)
-                {
-                    std::cout << "Player " << (unsigned)player << " bonuses: "
-                        << (int)main_game->ships[player].HaveBonus(GAME_REVERSE) << ' '
-                        << (int)main_game->ships[player].HaveBonus(BUFF_SHIELD) << ' '
-                        << (int)main_game->ships[player].HaveBonus(BUFF_TRIPLE) << "  "
-                        << (int)main_game->ships[player].HaveBonus(BONUS_KNIFE) << ' '
-                        << (int)main_game->ships[player].HaveBonus(BONUS_BOMB) << ' '
-                        << (int)main_game->ships[player].HaveBonus(BONUS_LASER) << ' '
-                        << (int)main_game->ships[player].HaveBonus(BONUS_LOOP) << std::endl;
-                }
+                std::cout << "Rounds: " << (int)main_game->end_match_score - main_game->GetMaxScore() << std::endl;
+                std::cout << "Bombs count: " << main_game->bombs_count << std::endl;
                 std::cout << std::endl << std::endl << std::endl;
                 frame = 0;
                 physic = 0;
