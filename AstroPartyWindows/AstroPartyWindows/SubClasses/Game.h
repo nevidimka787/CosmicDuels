@@ -107,6 +107,8 @@ public:
 	bool* shoot_flags;
 	//Controled entities refer to this array.
 	bool* rotate_flags;
+	//Tumer for check double clk for ships' burnout.
+	int32_t* burnout_double_clk_timer;
 	//Controled entities refer to this array.
 	bool* burnout_flags;
 	//true - The sheep can shoot one time.

@@ -7,7 +7,7 @@
 class OpenGL
 {
 protected:
-	uint8_t mouse_buttons = 0x00;
+	uint16_t button_commands = 0x0000;
 	GLint window_height;
 	GLint window_width;
 	//width / height
@@ -115,6 +115,8 @@ public:
 	void FramebufferSizeCallback(GLFWwindow* window, int width, int height);
 	void LimitMenuPosition(Menu* menu);
 	void ProcessInput(GLFWwindow* window);
+	void FirstUpdatePlayersFlags(GameTypes::players_count_t player);
+	void SecondUpdatePlayersFlags(GameTypes::players_count_t player);
 
 	//Callback functions
 
@@ -305,6 +307,8 @@ public:
 
 	bool** game_p__rotate_flags;
 	bool** game_p__shoot_flags;
+	int32_t** game_p__burnout_double_clk_timer;
+	bool** game_p__burnout_flag;
 
 
 	//menu functions pointers

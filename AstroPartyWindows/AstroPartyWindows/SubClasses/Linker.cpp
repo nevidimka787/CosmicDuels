@@ -49,6 +49,8 @@ Linker::Linker(Game* game_object, MenuFunctions* menu_functions_object, OpenGL* 
 	open_gl_object->game_p__bonuses_count = &game_object->bonuses_count;
 	open_gl_object->game_p__bullets = &game_object->bullets;
 	open_gl_object->game_p__bullets_count = &game_object->bullets_count;
+	open_gl_object->game_p__burnout_double_clk_timer = &game_object->burnout_double_clk_timer;
+	open_gl_object->game_p__burnout_flag = &game_object->burnout_flags;
 	open_gl_object->game_p__camera = &game_object->camera;
 	open_gl_object->game_p__current_active_menu = &game_object->current_active_menu;
 	open_gl_object->game_p__flag_all_entities_initialisate = &game_object->flag_all_entities_initialisate;

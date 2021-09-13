@@ -85,6 +85,22 @@ void Game::Update()
 		camera.move_velocity_coefficient *= 1.01f;
 		camera.resize_velocity_coefficient *= 1.01f;
 	}
+	if (burnout_double_clk_timer[0] > 0)
+		burnout_double_clk_timer[0]--;
+	else if (burnout_double_clk_timer[0] < 0)
+		burnout_double_clk_timer[0]++;
+	if (burnout_double_clk_timer[1] > 0)
+		burnout_double_clk_timer[1]--;
+	else if (burnout_double_clk_timer[1] < 0)
+		burnout_double_clk_timer[1]++;
+	if (burnout_double_clk_timer[2] > 0)
+		burnout_double_clk_timer[2]--;
+	else if (burnout_double_clk_timer[2] < 0)
+		burnout_double_clk_timer[2]++;
+	if (burnout_double_clk_timer[3] > 0)
+		burnout_double_clk_timer[3]--;
+	else if (burnout_double_clk_timer[3] < 0)
+		burnout_double_clk_timer[3]++;
 }
 
 template<typename EntityType>
@@ -213,6 +229,7 @@ EngineTypes::Bonus::bonus_t Game::GenerateRandomBonus()
 			random--;
 		}
 	}
+	std::cout << "Bonus: " << (unsigned)(1 << ((bonus - 1) * 2)) << " number: " << (unsigned)bonus << std::endl;
 	return 1 << ((bonus - 1) * 2);
 }
 
@@ -252,6 +269,10 @@ void Game::AddEntity(Asteroid new_asteroid)
 
 void Game::AddEntity(Bonus new_bonus)
 {
+	if (new_bonus.exist == false)
+	{
+		return;
+	}
 	if (bonuses_count < GAME_BONUSES_MAX_COUNT)
 	{
 		for (GameTypes::entities_count_t bonus = 0; bonus < GAME_BONUSES_MAX_COUNT; bonus++)
@@ -1096,6 +1117,8 @@ void Game::InitLevel()
 	{
 		ships_can_shoot_flags[player] = SHIP_UNBRAKABLE_PERIOD;
 		players_in_team[player] = 0;
+		burnout_double_clk_timer[player] = 0;
+		burnout_flags[player] = false;
 	}
 
 	float temp_angles[GAME_PLAYERS_MAX_COUNT];
@@ -1157,9 +1180,11 @@ void Game::InitLevel()
 			ships[player].Set(
 				&temp_positions[player], &zero_velocity,
 				player, teams[player],
-				(void*)&rotate_flags[player], (void*)&shoot_flags[player],
+				(void*)&rotate_flags[player], (void*)&burnout_flags[player], (void*)&shoot_flags[player],
 				nullptr, 0,
 				temp_angles[player], start_bonus);
+
+			std::cout << (unsigned)ships[player].BonusInfo() << std::endl;
 
 			players_count++;
 			IncrementPlayersCountInTeam(teams[player]);
@@ -1451,6 +1476,8 @@ void Game::MemoryLock()
 	turels = new Turel[GAME_TURELS_MAX_COUNT];
 	turels_count = 0;
 
+	burnout_flags = new bool[GAME_PLAYERS_MAX_COUNT];
+	burnout_double_clk_timer = new int32_t[GAME_PLAYERS_MAX_COUNT];
 	shoot_flags = new bool[GAME_PLAYERS_MAX_COUNT];
 	rotate_flags = new bool[GAME_PLAYERS_MAX_COUNT];
 	ships_can_shoot_flags = new GameTypes::tic_t[GAME_PLAYERS_MAX_COUNT];
@@ -1570,6 +1597,13 @@ void Game::MemoryFree()
 
 	players_count = 0;
 	delete[] players_in_team;
+
+	delete[] burnout_flags;
+	delete[] burnout_double_clk_timer;
+	delete[] shoot_flags;
+	delete[] rotate_flags;
+	delete[] ships_can_shoot_flags;
+	delete[] scores;
 }
 
 //Memory functions.
@@ -1584,7 +1618,6 @@ void Game::ShipShoot(Ship* ship)
 	//Magicka and Magicka 2 are the best games I've seen.
 
 	ships_can_shoot_flags[ship->GetPlayerNumber()] = GAME_DELLAY_BETWEEN_SHOOTS;
-
 	if (ship->SpendBonus(BONUS_LASER))
 	{
 		if (ship->SpendBonus(BONUS_LOOP))
@@ -2026,9 +2059,9 @@ void Game::UpdateBullets()
 		temp__bullet_p = &bullets[bullet];
 		if (temp__bullet_p->exist)
 		{
-			if (temp__bullet_p->is_collision_master && !ships[temp__bullet_p->GetPlayerMasterNumber()].IsCollision(temp__bullet_p))
+			if (temp__bullet_p->is_collision && !ships[temp__bullet_p->GetPlayerMasterNumber()].IsColectEntity(temp__bullet_p))
 			{
-				temp__bullet_p->is_collision_master = false;
+				temp__bullet_p->is_collision &= BULLET_MUSTER_FULL - BULLET_MUSTER_ONLY;
 			}
 
 			temp__vector = temp__bullet_p->GetPosition();
@@ -2040,8 +2073,13 @@ void Game::UpdateBullets()
 			for (GameTypes::players_count_t ship = 0; ship < GAME_PLAYERS_MAX_COUNT; ship++)
 			{
 				temp__ship_p = &ships[ship];
-				if (temp__ship_p->exist && !(temp__bullet_p->is_collision_master && temp__bullet_p->CreatedBy(temp__ship_p)) && temp__ship_p->IsCollision(temp__bullet_p))
+				if (temp__ship_p->exist && !(temp__bullet_p->is_collision && temp__bullet_p->CreatedBy(temp__ship_p)) && temp__ship_p->IsCollision(temp__bullet_p))
 				{
+					if (game_rules & GAME_RULE_FRENDLY_FIRE && temp__bullet_p->CreatedByTeam(temp__ship_p))
+					{
+						RemoveEntity(temp__bullet_p);
+						goto end_of_cycle;
+					}
 					if (temp__ship_p->GetActiveBaffs() & BUFF_SHIELD)
 					{
 						temp__ship_p->BreakShield();
@@ -2060,6 +2098,11 @@ void Game::UpdateBullets()
 				temp__pilot_p = &pilots[pilot];
 				if (temp__pilot_p->exist && temp__pilot_p->IsCollision(temp__bullet_p))
 				{
+					if (game_rules & GAME_RULE_FRENDLY_FIRE && temp__bullet_p->CreatedByTeam(temp__ship_p))
+					{
+						RemoveEntity(temp__bullet_p);
+						goto end_of_cycle;
+					}
 					DestroyEntity(temp__bullet_p, temp__pilot_p);
 					if (game_rules & GAME_RULE_NEED_KILL_PILOT)
 					{
@@ -2087,16 +2130,13 @@ void Game::UpdateBullets()
 				for (GameTypes::entities_count_t knife = 0, found_knifes = 0; found_knifes < knifes_count; knife++)
 				{
 					temp__knife_p = &knifes[knife];
-					if (temp__bullet_p->exist)
+					if (temp__bullet_p->IsCollision(temp__knife_p->GetSegment()))
 					{
-						if (temp__knife_p->Entity::IsCollision(temp__bullet_p))
-						{
-							DestroyEntity(temp__bullet_p, temp__knife_p);
-							RemoveEntity(temp__bullet_p);
-							goto end_of_cycle;
-						}
-						found_knifes++;
+						DestroyEntity(temp__bullet_p, temp__knife_p);
+						RemoveEntity(temp__bullet_p);
+						goto end_of_cycle;
 					}
+					found_knifes++;
 				}
 			}
 			for (GameTypes::entities_count_t bomb = 0, found_bombs = 0; found_bombs < bombs_count; bomb++)
@@ -2134,7 +2174,8 @@ void Game::UpdateKnifes()
 			for (GameTypes::players_count_t ship = 0; ship < GAME_PLAYERS_MAX_COUNT; ship++)
 			{
 				temp__ship_p = &ships[ship];
-				if (temp__ship_p->exist && !temp__knife_p->CreatedBy(temp__ship_p) && temp__ship_p->IsCollision(&temp__segment))
+				if (!(game_rules & GAME_RULE_FRENDLY_FIRE && temp__knife_p->CreatedByTeam(temp__ship_p)) &&
+					temp__ship_p->exist && !temp__knife_p->CreatedBy(temp__ship_p) && temp__ship_p->IsCollision(&temp__segment))
 				{
 					DestroyEntity(temp__knife_p, temp__ship_p);
 					RemoveEntity(temp__knife_p);
@@ -2144,7 +2185,8 @@ void Game::UpdateKnifes()
 			for (GameTypes::players_count_t pilot = 0; pilot < GAME_PLAYERS_MAX_COUNT; pilot++)
 			{
 				temp__pilot_p = &pilots[pilot];
-				if (temp__pilot_p->exist && temp__pilot_p->IsCollision(&temp__segment))
+				if (!(game_rules & GAME_RULE_FRENDLY_FIRE && temp__knife_p->CreatedByTeam(temp__pilot_p)) &&
+					temp__pilot_p->exist && temp__pilot_p->IsCollision(&temp__segment))
 				{
 					DestroyEntity(temp__knife_p, temp__pilot_p);
 				}
@@ -2188,7 +2230,8 @@ void Game::UpdateLazers()
 			for (GameTypes::players_count_t ship = 0; ship < GAME_PLAYERS_MAX_COUNT; ship++)
 			{
 				temp__ship_p = &ships[ship];
-				if (temp__ship_p->exist && !temp__laser_p->CreatedBy(temp__ship_p) && temp__ship_p->IsCollision(&temp__beam))
+				if (!(game_rules & GAME_RULE_FRENDLY_FIRE && temp__laser_p->CreatedByTeam(temp__ship_p)) &&
+					temp__ship_p->exist && !temp__laser_p->CreatedBy(temp__ship_p) && temp__ship_p->IsCollision(&temp__beam))
 				{
 					DestroyEntity(temp__laser_p, temp__ship_p);
 				}
@@ -2196,7 +2239,8 @@ void Game::UpdateLazers()
 			for (GameTypes::players_count_t pilot = 0; pilot < GAME_PLAYERS_MAX_COUNT; pilot++)
 			{
 				temp__pilot_p = &pilots[pilot];
-				if (temp__pilot_p->exist && temp__pilot_p->IsCollision(&temp__beam))
+				if (!(game_rules & GAME_RULE_FRENDLY_FIRE && temp__laser_p->CreatedByTeam(temp__pilot_p)) &&
+					temp__pilot_p->exist && temp__pilot_p->IsCollision(&temp__beam))
 				{
 					DestroyEntity(temp__laser_p, temp__pilot_p);
 				}
@@ -2407,11 +2451,11 @@ void Game::UpdateShips()
 				temp__pilot_p = &pilots[pilot];
 				if (temp__pilot_p->exist && temp__pilot_p->Entity::IsCollision(temp__ship_p) == true)
 				{
-					if (temp__pilot_p->SameTeams(temp__ship_p) && game_rules & GAME_RULE_FRIEDNLY_SHEEP_CAN_RESTORE)
+					if (game_rules & GAME_RULE_FRIEDNLY_SHEEP_CAN_RESTORE && temp__pilot_p->SameTeams(temp__ship_p))
 					{
 						SpawnEntity(temp__ship_p, temp__pilot_p);
 					}
-					else
+					else if(!(game_rules & GAME_RULE_FRENDLY_FIRE && temp__pilot_p->SameTeams(temp__ship_p)))
 					{
 						DestroyEntity(temp__ship_p, temp__pilot_p);
 					}
@@ -2456,6 +2500,11 @@ void Game::UpdateShips()
 			else
 			{
 				temp__ship_p->SetAngularVelocity(0.0f);
+			}
+			if (burnout_flags[ship] == true)
+			{
+				burnout_flags[ship] = false;
+				temp__ship_p->Burnout(BULLET_DEFAULT_VELOCITY, !rotation_inverse);
 			}
 		}
 	}

@@ -150,9 +150,13 @@ public:
 	Segment GetLastTreck();
 	Segment GetTreck();
 	Vec2F GetVelocity();
+	bool IsCollision(Vec2F point);
 	bool IsCollision(Vec2F* point);
+	bool IsCollision(Line line);
 	bool IsCollision(Line* line);
+	bool IsCollision(Beam beam);
 	bool IsCollision(Beam* beam);
+	bool IsCollision(Segment segment);
 	bool IsCollision(Segment* segment);
 	bool IsCollision(DynamicEntity* entity);
 	bool IsCollision(StaticEntity* entity);
@@ -224,14 +228,14 @@ class Bonus : public DynamicEntity
 
 protected:
 public:
-	EngineTypes::Bonus::bonus_t bonus_type;
+	EngineTypes::Bonus::bonus_t bonus_inventory;
 	Bonus();
 	Bonus(bool exist);
 	Bonus(const Bonus& bonus);
 	Bonus(
 		Vec2F* position,
 		Vec2F* velocity,
-		EngineTypes::Bonus::bonus_t bonus_type,
+		EngineTypes::Bonus::bonus_t bonus_inventory,
 		float angle = 0.0f,
 		float angular_velocity = 0.0f,
 		float radius = BONUS_DEFAULT_RADIUS,
@@ -239,6 +243,7 @@ public:
 		float force_resistance_air_coefficient = BONUS_DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
 		bool exist = true);
 
+	EngineTypes::Bonus::bonus_t BonusInfo();
 	/*
 		If an object has more than one bonus type,
 		bonus type will be passed as a new object,
@@ -395,6 +400,7 @@ public:
 	bool IsCollision(MegaLaser* mega_laser);
 	//Check collision this heat box.
 	bool IsCollision(Segment* segment);
+	bool IsColectEntity(Entity* stored_entity);
 	bool SameTeams(ControledEntity* second_entity);
 	void Set(ControledEntity* entity);
 	void Set(
@@ -421,7 +427,8 @@ public:
 class Ship : public ControledEntity
 {
 protected:
-	EngineTypes::Bonus::bonus_t buffs_bonuses;
+	void* burnout_input_value_pointer;
+	EngineTypes::Bonus::bonus_t bonus_inventory;
 	EngineTypes::Bonus::bonus_t active_baffs;
 	GameTypes::tic_t unbrakable;
 public:
@@ -432,12 +439,13 @@ public:
 		Vec2F* velocity,
 		GameTypes::players_count_t player_number,
 		GameTypes::players_count_t player_team_number,
+		void* burnout_input_value_pointer,
 		void* rotate_input_value_pointer,
 		void* shoot_input_value_pointer,
 		Vec2F* heat_box_vertexes = nullptr,
 		EngineTypes::ControledEntity::heat_box_vertexes_count_t heat_box_vertexes_count = 0,
 		float angle = 0.0f,
-		EngineTypes::Bonus::bonus_t buffs_bonuses = BONUS_NO_BONUS,
+		EngineTypes::Bonus::bonus_t bonus_inventory = BONUS_NO_BONUS,
 		EngineTypes::Bonus::bonus_t active_baffs = BONUS_NO_BONUS,
 		GameTypes::tic_t unbrakable = SHIP_UNBRAKABLE_PERIOD,
 		float angular_velocity = 0.0f,
@@ -447,7 +455,9 @@ public:
 		bool exist = true);
 
 	void ActivateBuffs();
+	EngineTypes::Bonus::bonus_t BonusInfo();
 	void BreakShield();
+	void Burnout(float power, bool rotate_clockwise);
 	Bullet CreateBullet();
 	//The function does not check for the presence of a bonus.
 	Bullet CreateTriple(uint8_t bullet_number);
@@ -473,6 +483,7 @@ public:
 		Vec2F* velocity,
 		GameTypes::players_count_t player_number,
 		GameTypes::players_count_t player_team_number,
+		void* burnout_input_value_pointer,
 		void* rotate_input_value_pointer,
 		void* shoot_input_value_pointer,
 		Vec2F* heat_box_vertexes = nullptr,
@@ -519,7 +530,7 @@ public:
 		float angular_velocity = 0.0f,
 		float radius = PILOT_DEFAULT_RADIUS,
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
-		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
+		float force_resistance_air_coefficient = PILOT_DEFAULT_FORCE_RESISTANCE_AIR_COEFFISIENT,
 		bool exist = true);
 
 	GameTypes::tic_t GetRespawnDellay();
@@ -748,7 +759,7 @@ public:
 		float angle = 0.0f,
 		float angular_velocity = 0.0f,
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
-		float force_resistance_air_coefficient = BULLET_DEFAULT_RESISTANCE_AIR_COEFFICIENT,
+		float force_resistance_air_coefficient = BOMB_DEFAULT_RESISTANCE_AIR_COEFFICIENT,
 		float radius = BOMB_DEFAULT_RADIUS,
 		bool active = false,
 		bool boom = false,
@@ -786,7 +797,7 @@ class Bullet : public KillerEntity
 {
 protected:
 public:
-	bool is_collision_master;
+	EngineTypes::Bullet::entity_t is_collision;
 	Bullet();
 	Bullet(const Bullet& bullet);
 	Bullet(

@@ -2,6 +2,9 @@
 
 #define GAME_END_MATCH_DELLAY 100
 
+#define GAME_DOUBLE_CLK_TIME	10
+#define GAME_BURNOUT_COULDOWN	50
+
 /*
 asteroids, bombs, bonuses, bullets,
 knifes, lasers, particles, ships,
@@ -43,15 +46,15 @@ Asteroid
 #define GAME_RECTANGLES_MAX_COUNT	128
 
 	//KnockBack force of the pilot.
-#define GAME_KNOCKBACK_FORCE_OF_THE_PILOT	0.00003f
+#define GAME_KNOCKBACK_FORCE_OF_THE_PILOT	0.00005f
 	//KnockBack force of the ship.
 #define GAME_KNOCKBACK_FORCE_OF_THE_SHIP	0.0001f
 	//Ship's gravitation force.
 #define GAME_SHIP_GRAVITATION_FORCE			0.0001f
 	//Sheep's radius of influence.
 #define GAME_SHIP_INFLUENCE_RADIUS_COEFFISIENT	5.0f
-#define GAME_SHIP_ANGULAR_VELOCITY				0.02f
-#define GAME_PILOT_ANGULAR_VELOCITY				0.02f
+#define GAME_SHIP_ANGULAR_VELOCITY				0.03f
+#define GAME_PILOT_ANGULAR_VELOCITY				GAME_SHIP_ANGULAR_VELOCITY
 
 	//game engine rules
 

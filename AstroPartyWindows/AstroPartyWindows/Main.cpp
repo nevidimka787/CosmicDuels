@@ -21,13 +21,13 @@
 std::shared_mutex init_mtx;
 uint8_t init = 0x00;
 
-std::shared_mutex timer_mtx;
+std::shared_mutex input_output_mtx;
 std::shared_mutex physic_calculation_mtx;
 
 std::chrono::system_clock::time_point global_time_point;
 
 //This thread update 100 times per second and use for show information about app.
-void TikUpdate();
+void InputOutputUpdate();
 //This thread update 100 times per second and use for update all physical data of all entities.
 void PhysicsCalculation();
 
@@ -63,11 +63,10 @@ int main()
             main_game->InitMatch();
             while (main_game->play_match == true)
             {
-                std::thread timer_thread(TikUpdate);
+                std::thread timer_thread(InputOutputUpdate);
                 while (tik_update_thread_flag == false || physic_thread_flag == false)
                 {
                     physic_calculation_mtx.lock();
-                    main_draw_functions->ProcessInput(window);
                     main_draw_functions->DrawFrame();
                     physic_calculation_mtx.unlock();
                     glfwSwapBuffers(window);
@@ -77,7 +76,6 @@ int main()
                 while (tik_update_thread_flag == true || physic_thread_flag == true)
                 {
                     physic_calculation_mtx.lock();
-                    main_draw_functions->ProcessInput(window);
                     main_draw_functions->DrawFrame();
                     physic_calculation_mtx.unlock();
                     glfwSwapBuffers(window);
@@ -107,7 +105,7 @@ int main()
 
 #define LOGS_UPDATE_PERIOD
 
-void TikUpdate()
+void InputOutputUpdate()
 {
     global_time_point = std::chrono::system_clock::now();
     init_mtx.lock();
@@ -124,7 +122,8 @@ void TikUpdate()
 
     while (main_game->play_round == true)
     {
-        timer_mtx.lock();
+        input_output_mtx.lock();
+        main_draw_functions->ProcessInput(window);
         if (main_game->pause_round == false)
         {
             lock_timer++;
@@ -143,7 +142,7 @@ void TikUpdate()
                 physic = 0;
             }
         }
-        timer_mtx.unlock();
+        input_output_mtx.unlock();
 
         local_time_point += std::chrono::milliseconds(10);
         std::this_thread::sleep_until(local_time_point);

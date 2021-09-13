@@ -28,6 +28,11 @@ namespace EngineTypes
 		typedef uint16_t array_length_t;
 	}
 
+	namespace Bullet
+	{
+		typedef uint8_t entity_t;
+	}
+
 	namespace Button
 	{
 		typedef uint32_t button_id_t;

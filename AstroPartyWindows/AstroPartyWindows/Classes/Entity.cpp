@@ -293,8 +293,7 @@ bool Entity::IsCollision(Map* map)
 void Entity::Rotate(float angle)
 {
 	this->angle += angle;
-	this->direction.x = cos(angle);
-	this->direction.y = -sin(angle);
+	UpdateDirection();
 }
 
 void Entity::Set(Entity* entity)
@@ -688,9 +687,19 @@ Vec2F DynamicEntity::GetVelocity()
 	return velocity;
 }
 
+bool DynamicEntity::IsCollision(Vec2F point)
+{
+	return Segment(position, -velocity).GetDistance(point) < radius;
+}
+
 bool DynamicEntity::IsCollision(Vec2F* point)
 {
 	return Segment(position, -velocity).GetDistance(point) < radius;
+}
+
+bool DynamicEntity::IsCollision(Line line)
+{
+	return Segment(position, -velocity).GetDistance(&line) < radius;
 }
 
 bool DynamicEntity::IsCollision(Line* line)
@@ -698,9 +707,19 @@ bool DynamicEntity::IsCollision(Line* line)
 	return Segment(position, -velocity).GetDistance(line) < radius;
 }
 
+bool DynamicEntity::IsCollision(Beam beam)
+{
+	return Segment(position, -velocity).GetDistance(&beam) < radius;
+}
+
 bool DynamicEntity::IsCollision(Beam* beam)
 {
 	return Segment(position, -velocity).GetDistance(beam) < radius;
+}
+
+bool DynamicEntity::IsCollision(Segment segment)
+{
+	return Segment(position, -velocity).GetDistance(&segment) < radius;
 }
 
 bool DynamicEntity::IsCollision(Segment* segment)
@@ -973,7 +992,7 @@ Particle::~Particle()
 
 Bonus::Bonus() :
 	DynamicEntity(),
-	bonus_type(0)
+	bonus_inventory(0)
 {
 	radius = BONUS_DEFAULT_RADIUS;
 }
@@ -986,29 +1005,34 @@ Bonus::Bonus(bool exist) :
 
 Bonus::Bonus(const Bonus& bonus) :
 	DynamicEntity(bonus),
-	bonus_type(bonus.bonus_type)
+	bonus_inventory(bonus.bonus_inventory)
 {
 }
 
-Bonus::Bonus(Vec2F* position, Vec2F* velocity, EngineTypes::Bonus::bonus_t bonus_type, float angle, float angular_velocity, float radius, float force_collision_coeffisient, float force_resistance_air_coefficient, bool exist) :
+Bonus::Bonus(Vec2F* position, Vec2F* velocity, EngineTypes::Bonus::bonus_t bonus_inventory, float angle, float angular_velocity, float radius, float force_collision_coeffisient, float force_resistance_air_coefficient, bool exist) :
 	DynamicEntity(position, velocity, radius, angle, angular_velocity, force_collision_coeffisient, force_resistance_air_coefficient, exist),
-	bonus_type(bonus_type)
+	bonus_inventory(bonus_inventory)
 {
+}
+
+EngineTypes::Bonus::bonus_t Bonus::BonusInfo()
+{
+	return bonus_inventory;
 }
 
 Bonus Bonus::Division()
 {
-	EngineTypes::Bonus::bonus_t temp_bonus;
+	EngineTypes::Bonus::bonus_t temp_bonus_inventory;
 	for (uint8_t i = 0; i < BONUS_BONUSES_COUNT; i++)
 	{
-		temp_bonus = 0x11 << (i * 2);
-		if (bonus_type & temp_bonus)
+		temp_bonus_inventory = 0x11 << (i * 2);
+		if (bonus_inventory & temp_bonus_inventory)
 		{
-			temp_bonus &= bonus_type;
-			bonus_type &= BUFF_BONUS_ALL - temp_bonus;
-			if (bonus_type & (1 << (BONUS_BONUSES_COUNT * 2)) - 1)
+			temp_bonus_inventory &= bonus_inventory;
+			bonus_inventory &= BUFF_BONUS_ALL - temp_bonus_inventory;
+			if (bonus_inventory & (1 << (BONUS_BONUSES_COUNT * 2)) - 1)
 			{
-				return Bonus(&this->position, &this->velocity, temp_bonus);
+				return Bonus(&this->position, &this->velocity, temp_bonus_inventory);
 			}
 			return Bonus(false);
 		}
@@ -1018,7 +1042,7 @@ Bonus Bonus::Division()
 
 uint16_t Bonus::GetType()
 {
-	return bonus_type;
+	return bonus_inventory;
 }
 
 uint8_t Bonus::GetBonusesCount()
@@ -1026,7 +1050,7 @@ uint8_t Bonus::GetBonusesCount()
 	uint8_t count = 0;
 	for (uint8_t i = 0; i < BONUS_BONUSES_COUNT; i++)
 	{
-		if (bonus_type & (0x11 << (i << 1)))
+		if (bonus_inventory & (0x11 << (i << 1)))
 		{
 			count++;
 		}
@@ -1039,7 +1063,7 @@ uint8_t Bonus::GetBuffsCount()
 	uint8_t count = 0;
 	for (uint8_t i = BONUS_BONUSES_COUNT; i < BONUS_BONUSES_COUNT + BONUS_BUFFS_COUNT; i++)
 	{
-		if (bonus_type & (0x11 << (i << 1)))
+		if (bonus_inventory & (0x11 << (i << 1)))
 		{
 			count++;
 		}
@@ -1052,7 +1076,7 @@ uint8_t Bonus::GetGameRulesCount()
 	uint8_t count = 0;
 	for (uint8_t i = BONUS_BONUSES_COUNT + BONUS_BUFFS_COUNT; i < BONUS_BONUSES_COUNT + BONUS_BUFFS_COUNT + BONUS_GAME_RULES_COUNT; i++)
 	{
-		if (bonus_type & (0x11 << (i << 1)))
+		if (bonus_inventory & (0x11 << (i << 1)))
 		{
 			count++;
 		}
@@ -1065,7 +1089,7 @@ uint8_t Bonus::GetTypesCount()
 	uint8_t count = 0;
 	for (uint8_t i = 0; i < BONUS_TYPES_COUNT; i++)
 	{
-		if (bonus_type & (0x11 << (i << 1)))
+		if (bonus_inventory & (0x11 << (i << 1)))
 		{
 			count++;
 		}
@@ -1077,7 +1101,7 @@ void Bonus::Set(Bonus* bonus)
 {
 	angle = bonus->angle;
 	angular_velocity = bonus->angular_velocity;
-	bonus_type = bonus->bonus_type;
+	bonus_inventory = bonus->bonus_inventory;
 	direction = bonus->direction;
 	exist = bonus->exist;
 	force_collision_coeffisient = bonus->force_collision_coeffisient;
@@ -1087,11 +1111,11 @@ void Bonus::Set(Bonus* bonus)
 	velocity = bonus->velocity;
 }
 
-void Bonus::Set(Vec2F* position, Vec2F* velocity, EngineTypes::Bonus::bonus_t bonus_type, float angle, float angular_velocity, float radius, float force_collision_coeffisient, float force_resistance_air_coefficient, bool exist)
+void Bonus::Set(Vec2F* position, Vec2F* velocity, EngineTypes::Bonus::bonus_t bonus_inventory, float angle, float angular_velocity, float radius, float force_collision_coeffisient, float force_resistance_air_coefficient, bool exist)
 {
 	this->angle = angle;
 	this->angular_velocity = angular_velocity;
-	this->bonus_type = bonus_type;
+	this->bonus_inventory = bonus_inventory;
 	UpdateDirection();
 	this->exist = exist;
 	this->force_collision_coeffisient = force_collision_coeffisient;
@@ -1105,7 +1129,7 @@ void Bonus::operator=(Bonus bonus)
 {
 	angle = bonus.angle;
 	angular_velocity = bonus.angular_velocity;
-	bonus_type = bonus.bonus_type;
+	bonus_inventory = bonus.bonus_inventory;
 	direction = bonus.direction;
 	exist = bonus.exist;
 	force_collision_coeffisient = bonus.force_collision_coeffisient;
@@ -1134,8 +1158,8 @@ Asteroid::Asteroid(const Asteroid& asteroid) :
 {
 }
 
-Asteroid::Asteroid(Vec2F* position, Vec2F* velocity, EngineTypes::Bonus::bonus_t bonus_type, EngineTypes::Asteroid::size_t size, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, bool exist) :
-	Bonus(position, velocity, bonus_type, 0.0f, angle, angular_velocity, force_collision_coeffisient, force_resistance_air_coefficient, exist),
+Asteroid::Asteroid(Vec2F* position, Vec2F* velocity, EngineTypes::Bonus::bonus_t bonus_inventory, EngineTypes::Asteroid::size_t size, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, bool exist) :
+	Bonus(position, velocity, bonus_inventory, 0.0f, angle, angular_velocity, force_collision_coeffisient, force_resistance_air_coefficient, exist),
 	size(size)
 {
 	switch (this->size)
@@ -1154,13 +1178,13 @@ Asteroid::Asteroid(Vec2F* position, Vec2F* velocity, EngineTypes::Bonus::bonus_t
 		radius = ASTEROID_DEFAULT_RADIUS;
 		break;
 	}
-	this->bonus_type = bonus_type;
+	this->bonus_inventory = bonus_inventory;
 	exist = true;
 }
 
 Bonus Asteroid::Destroy()
 {
-	return Bonus(&position, &velocity, bonus_type);
+	return Bonus(&position, &velocity, bonus_inventory);
 }
 
 Asteroid Asteroid::Division()
@@ -1175,11 +1199,11 @@ Asteroid Asteroid::Division()
 	for (uint8_t i = 0; i < BONUS_BONUSES_COUNT; i++)
 	{
 		temp_bonus = 0x11 << (i * 2);
-		if (bonus_type & temp_bonus)
+		if (bonus_inventory & temp_bonus)
 		{
-			temp_bonus &= bonus_type;
-			bonus_type &= BUFF_BONUS_ALL - temp_bonus;
-			if (bonus_type & (1 << (BONUS_BONUSES_COUNT * 2)) - 1)
+			temp_bonus &= bonus_inventory;
+			bonus_inventory &= BUFF_BONUS_ALL - temp_bonus;
+			if (bonus_inventory & (1 << (BONUS_BONUSES_COUNT * 2)) - 1)
 			{
 				return_bonus = temp_bonus;
 				goto end_of_cycle;
@@ -1190,7 +1214,7 @@ Asteroid Asteroid::Division()
 end_of_cycle:;
 	if (return_bonus == BONUS_NO_BONUS)
 	{
-		return_bonus = bonus_type & BONUS_BONUS;
+		return_bonus = bonus_inventory & BONUS_BONUS;
 	}
 
 	Vec2F temp_position = position + Vec2F(((float)rand() - (float)RAND_MAX / 2.0f) / ((float)RAND_MAX * 10.0f), ((float)rand() - (float)RAND_MAX / 2.0f) / ((float)RAND_MAX * 10.0f));
@@ -1205,14 +1229,14 @@ EngineTypes::Asteroid::size_t Asteroid::GetSize()
 
 EngineTypes::Bonus::bonus_t Asteroid::GetBuffBonus()
 {
-	return bonus_type;
+	return bonus_inventory;
 }
 
 void Asteroid::Set(Asteroid* entity)
 {
 	angle = entity->angle;
 	angular_velocity = entity->angular_velocity;
-	bonus_type = entity->bonus_type;
+	bonus_inventory = entity->bonus_inventory;
 	direction = entity->direction;
 	exist = entity->exist;
 	force = entity->force;
@@ -1224,11 +1248,11 @@ void Asteroid::Set(Asteroid* entity)
 	velocity = entity->velocity;
 }
 
-void Asteroid::Set(Vec2F* position, Vec2F* velocity, EngineTypes::Bonus::bonus_t bonus_type, EngineTypes::Asteroid::size_t size, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, bool exist)
+void Asteroid::Set(Vec2F* position, Vec2F* velocity, EngineTypes::Bonus::bonus_t bonus_inventory, EngineTypes::Asteroid::size_t size, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, bool exist)
 {
 	this->angle = angle;
 	this->angular_velocity = angular_velocity;
-	this->bonus_type = bonus_type;
+	this->bonus_inventory = bonus_inventory;
 	UpdateDirection();
 	this->exist = exist;
 	this->force = force;
@@ -1244,7 +1268,7 @@ void Asteroid::operator=(Asteroid entity)
 {
 	angle = entity.angle;
 	angular_velocity = entity.angular_velocity;
-	bonus_type = entity.bonus_type;
+	bonus_inventory = entity.bonus_inventory;
 	direction = entity.direction;
 	exist = entity.exist;
 	force = entity.force;
@@ -1600,6 +1624,44 @@ bool ControledEntity::IsCollision(Segment* segment)
 	return false;
 }
 
+bool ControledEntity::IsColectEntity(Entity* stored_entity)
+{
+	Segment ce_side;
+	Vec2F
+		point1 = heat_box_vertexes_array[heat_box_vertexes_array_length - 1] * model_matrix,
+		point2 = heat_box_vertexes_array[0] * model_matrix;
+
+	Beam test_beam;
+	test_beam.Set(stored_entity->GetPosition(), Vec2F(1.0f, 0.0f));
+	EngineTypes::ControledEntity::heat_box_vertexes_count_t intersections_count = 0;
+
+	ce_side.Set(point1, point2, true);
+	if (stored_entity->GetDistance(&ce_side) < radius)
+	{
+		return true;
+	}
+	else if (test_beam.IsIntersection(&ce_side))
+	{
+		intersections_count++;
+	}
+	for (EngineTypes::ControledEntity::heat_box_vertexes_count_t vertex = 1; vertex < heat_box_vertexes_array_length; vertex++)
+	{
+		point1 = point2;
+		point2 = heat_box_vertexes_array[vertex] * model_matrix;
+		ce_side.Set(point1, point2, true);
+		if (stored_entity->GetDistance(&ce_side) < radius)
+		{
+			return true;
+		}
+		else if (test_beam.IsIntersection(&ce_side))
+		{
+			intersections_count++;
+		}
+	}
+	return intersections_count % 2;
+
+}
+
 bool ControledEntity::SameTeams(ControledEntity* second_entity)
 {
 	return player_team_number == second_entity->player_team_number;
@@ -1690,7 +1752,8 @@ ControledEntity::~ControledEntity()
 
 Ship::Ship() :
 	ControledEntity(),
-	buffs_bonuses(0),
+	bonus_inventory(0),
+	burnout_input_value_pointer(nullptr),
 	active_baffs(0),
 	unbrakable(0)
 {
@@ -1698,15 +1761,17 @@ Ship::Ship() :
 
 Ship::Ship(const Ship& ship) :
 	ControledEntity(ship),
-	buffs_bonuses(ship.buffs_bonuses),
+	bonus_inventory(ship.bonus_inventory),
+	burnout_input_value_pointer(ship.burnout_input_value_pointer),
 	active_baffs(ship.active_baffs),
 	unbrakable(ship.unbrakable)
 {
 }
 
-Ship::Ship(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t player_number, GameTypes::players_count_t player_team_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* heat_box_vertexes_array, EngineTypes::ControledEntity::heat_box_vertexes_count_t heat_box_vertexes_array_length, float angle, EngineTypes::Bonus::bonus_t buffs_bonuses, EngineTypes::Bonus::bonus_t active_baffs, GameTypes::tic_t unbrakable, float angular_velocity, float radius, float force_collision_coeffisient, float force_resistance_air_coefficient, bool exist) :
+Ship::Ship(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t player_number, GameTypes::players_count_t player_team_number, void* burnout_input_value_pointer, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* heat_box_vertexes_array, EngineTypes::ControledEntity::heat_box_vertexes_count_t heat_box_vertexes_array_length, float angle, EngineTypes::Bonus::bonus_t bonus_inventory, EngineTypes::Bonus::bonus_t active_baffs, GameTypes::tic_t unbrakable, float angular_velocity, float radius, float force_collision_coeffisient, float force_resistance_air_coefficient, bool exist) :
 	ControledEntity(position, velocity, radius, player_number, player_team_number, rotate_input_value_pointer, shoot_input_value_pointer, heat_box_vertexes_array, heat_box_vertexes_array_length, angle, angular_velocity, force_collision_coeffisient, force_resistance_air_coefficient, exist),
-	buffs_bonuses(buffs_bonuses),
+	bonus_inventory(bonus_inventory),
+	burnout_input_value_pointer(burnout_input_value_pointer),
 	active_baffs(active_baffs),
 	unbrakable(unbrakable)
 {
@@ -1714,7 +1779,12 @@ Ship::Ship(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t player_n
 
 void Ship::ActivateBuffs()
 {
-	active_baffs |= buffs_bonuses & BONUS_BUFF;
+	active_baffs |= bonus_inventory & BONUS_BUFF;
+}
+
+EngineTypes::Bonus::bonus_t Ship::BonusInfo()
+{
+	return bonus_inventory;
 }
 
 void Ship::BreakShield()
@@ -1723,10 +1793,25 @@ void Ship::BreakShield()
 	unbrakable = SHIP_UNBRAKABLE_PERIOD;
 }
 
+void Ship::Burnout(float power, bool rotate_clockwise)
+{
+	if (rotate_clockwise)
+	{
+		force -= direction.Perpendicular().Normalize() * power;
+		angle += M_PI / 2.0f;
+	}
+	else
+	{
+		force += direction.Perpendicular().Normalize() * power;
+		angle += -M_PI / 2.0f;
+	}
+	UpdateDirection();
+}
+
 Bullet Ship::CreateBullet()
 {
-	Vec2F bullet_position = Vec2F(0.5f, 0.0f) * model_matrix;
-	Vec2F bullet_velosity = direction * BULLET_DEFAULT_VELOCITY + velocity;
+	Vec2F bullet_position = position +  direction.Normalize() * radius;
+	Vec2F bullet_velosity = direction * BULLET_DEFAULT_VELOCITY + velocity - direction.Perpendicular() * angular_velocity * radius;
 	AddForceAlongDirection(-SHIP_SHOOT_FORCE);
 	return Bullet(&bullet_position, &bullet_velosity, player_number, player_team_number);
 }
@@ -1756,14 +1841,13 @@ Bullet Ship::CreateLoop(GameTypes::entities_count_t bullet_number)
 {
 	Vec2F bullet_vector = direction.Rotate(2.0f * (float)M_PI / BULLETS_IN_LOOP * ((float)bullet_number + 0.5f));
 	Vec2F bullet_velocity = bullet_vector * BULLET_DEFAULT_VELOCITY + velocity;
-	Vec2F bullet_position = position + bullet_vector * radius * 2.0f;
-	return Bullet(&bullet_position, &bullet_velocity, player_number, player_team_number);
+	return Bullet(&position, &bullet_velocity, player_number, player_team_number);
 }
 
 Bomb Ship::CreateBomb()
 {
-	Vec2F zero_vector;
-	return Bomb(&position, &zero_vector, player_number, player_team_number);
+	Vec2F bomb_position = Vec2F(-0.25f, 0.0f) * model_matrix;
+	return Bomb(&bomb_position, &velocity, player_number, player_team_number);
 }
 
 Laser Ship::CreateLaser()
@@ -1802,12 +1886,17 @@ EngineTypes::Bonus::bonus_t Ship::GetActiveBaffs()
 
 bool Ship::HaveBonus(EngineTypes::Bonus::bonus_t bonus)
 {
-	return buffs_bonuses & (bonus * 3);
+	return bonus_inventory & (bonus * 3);
 }
 
 Bonus Ship::LoseBonus()
 {
-	return Bonus(&position, &velocity, buffs_bonuses);
+	bonus_inventory &= BONUS_BONUS;
+	if (bonus_inventory)
+	{
+		return Bonus(&position, &velocity, bonus_inventory);
+	}
+	return Bonus();
 }
 
 void Ship::Set(Ship* ship)
@@ -1815,7 +1904,8 @@ void Ship::Set(Ship* ship)
 	active_baffs = ship->active_baffs;
 	angle = ship->angle;
 	angular_velocity = ship->angular_velocity;
-	buffs_bonuses = ship->buffs_bonuses;
+	bonus_inventory = ship->bonus_inventory;
+	burnout_input_value_pointer = ship->burnout_input_value_pointer;
 	direction = ship->direction;
 	exist = ship->exist;
 	force_collision_coeffisient = ship->force_collision_coeffisient;
@@ -1838,12 +1928,12 @@ void Ship::Set(Ship* ship)
 	}
 }
 
-void Ship::Set(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t player_number, GameTypes::players_count_t player_team_number, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* heat_box_vertexes_array, EngineTypes::ControledEntity::heat_box_vertexes_count_t heat_box_vertexes_array_length, float angle, EngineTypes::Bonus::bonus_t buffs_bonuses, EngineTypes::Bonus::bonus_t active_baffs, GameTypes::tic_t unbrakable, float angular_velocity, float radius, float force_collision_coeffisient, float force_resistance_air_coefficient, bool exist)
+void Ship::Set(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t player_number, GameTypes::players_count_t player_team_number, void* burnout_input_value_pointer, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* heat_box_vertexes_array, EngineTypes::ControledEntity::heat_box_vertexes_count_t heat_box_vertexes_array_length, float angle, EngineTypes::Bonus::bonus_t bonus_inventory, EngineTypes::Bonus::bonus_t active_baffs, GameTypes::tic_t unbrakable, float angular_velocity, float radius, float force_collision_coeffisient, float force_resistance_air_coefficient, bool exist)
 {
 	this->active_baffs = active_baffs;
 	this->angle = angle;
 	this->angular_velocity = angular_velocity;
-	this->buffs_bonuses = buffs_bonuses;
+	this->bonus_inventory = bonus_inventory;
 	UpdateDirection();
 	this->exist = exist;
 	this->force_collision_coeffisient = force_collision_coeffisient;
@@ -1875,15 +1965,13 @@ void Ship::Set(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t play
 			this->heat_box_vertexes_array[vertex] = heat_box_vertexes_array[vertex];
 		}
 	}
-
-	std::cout << "Ship::Set:: Ship: " << (unsigned)player_number << " in team: " << (unsigned)player_team_number << std::endl;
 }
 
 bool Ship::SpendBonus(EngineTypes::Bonus::bonus_t bonus)
 {
 	if (HaveBonus(bonus))
 	{
-		buffs_bonuses -= bonus;
+		bonus_inventory -= bonus;
 		return true;
 	}
 	return false;
@@ -1891,25 +1979,25 @@ bool Ship::SpendBonus(EngineTypes::Bonus::bonus_t bonus)
 
 void Ship::SpendBonusNoCheck(EngineTypes::Bonus::bonus_t bonus)
 {
-	buffs_bonuses -= bonus;
+	bonus_inventory -= bonus;
 }
 
 void Ship::TakeBonus(Bonus* bonus)
 {
-	if (buffs_bonuses & BUFF_TRIPLE)
+	if (bonus_inventory & BUFF_TRIPLE)
 	{
 		uint16_t temp;
 		for (uint8_t i = 0; i < BONUS_BONUS_DATA_LENGTH; i++)
 		{
 			temp = 0x11 << (i << 1);
-			if (bonus->bonus_type & temp)
+			if (bonus->bonus_inventory & temp)
 			{
-				buffs_bonuses |= temp;
+				bonus_inventory |= temp;
 			}
 		}
 		return;
 	}
-	buffs_bonuses |= bonus->bonus_type;
+	bonus_inventory |= bonus->bonus_inventory;
 }
 
 void Ship::Update()
@@ -1934,7 +2022,7 @@ void Ship::operator=(Ship ship)
 	active_baffs = ship.active_baffs;
 	angle = ship.angle;
 	angular_velocity = ship.angular_velocity;
-	buffs_bonuses = ship.buffs_bonuses;
+	bonus_inventory = ship.bonus_inventory;
 	direction = ship.direction;
 	exist = ship.exist;
 	force = ship.force;
@@ -2642,7 +2730,14 @@ void Laser::Set(ControledEntity* host, Beam* local_beam, GameTypes::tic_t shoot_
 
 void Laser::Update()
 {
-	SupportEntity::Update();
+	if (host_p == nullptr)
+	{
+		return;
+	}
+	direction = local_direction.Rotate(angle);
+	position = local_position * *host_matrix_p;
+	StaticEntity::Update();
+
 	if (shoot_time > 0)
 	{
 		shoot_time--;
@@ -2674,19 +2769,19 @@ Laser::~Laser()
 
 Bullet::Bullet() :
 	KillerEntity(),
-	is_collision_master(true)
+	is_collision(BULLET_MUSTER_ONLY | BULLET_MUSTER_KNIFES)
 {
 }
 
 Bullet::Bullet(const Bullet& bullet) :
 	KillerEntity(bullet),
-	is_collision_master(true)
+	is_collision(BULLET_MUSTER_ONLY | BULLET_MUSTER_KNIFES)
 {
 }
 
 Bullet::Bullet(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t player_master_number, GameTypes::players_count_t player_master_team_number, bool is_collision_master, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, float radius, bool exist) :
 	KillerEntity(position, velocity, radius, player_master_number, player_master_team_number, angle, angular_velocity, force_collision_coeffisient, force_resistance_air_coefficient, exist),
-	is_collision_master(true)
+	is_collision(BULLET_MUSTER_ONLY | BULLET_MUSTER_KNIFES)
 {
 }
 
@@ -2698,7 +2793,7 @@ void Bullet::Set(Bullet* bullet)
 	exist = bullet->exist;
 	force_collision_coeffisient = bullet->force_collision_coeffisient;
 	force_resistance_air_coefficient = bullet->force_resistance_air_coefficient;
-	is_collision_master = bullet->is_collision_master;
+	is_collision = bullet->is_collision;
 	player_master_number = bullet->player_master_number;
 	player_master_team_number = bullet->player_master_team_number;
 	position = bullet->position;
@@ -2714,7 +2809,7 @@ void Bullet::Set(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t pl
 	this->exist = exist;
 	this->force_collision_coeffisient = force_collision_coeffisient;
 	this->force_resistance_air_coefficient = force_resistance_air_coefficient;
-	this->is_collision_master = is_collision_master;
+	this->is_collision = is_collision_master;
 	this->player_master_number = player_master_number;
 	this->player_master_team_number = player_master_team_number;
 	this->position = *position;
@@ -2740,7 +2835,7 @@ void Bullet::operator=(Bullet bullet)
 	force = bullet.force;
 	force_collision_coeffisient = bullet.force_collision_coeffisient;
 	force_resistance_air_coefficient = bullet.force_resistance_air_coefficient;
-	is_collision_master = bullet.is_collision_master;
+	is_collision = bullet.is_collision;
 	player_master_number = bullet.player_master_number;
 	player_master_team_number = bullet.player_master_team_number;
 	position = bullet.position;

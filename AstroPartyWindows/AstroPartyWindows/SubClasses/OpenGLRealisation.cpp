@@ -51,6 +51,33 @@ void OpenGL::CallMenuFunction(Menu* menu, Vec2F* clk_pos, uint8_t clk_status)
     }
 }
 
+void OpenGL::FirstUpdatePlayersFlags(GameTypes::players_count_t player)
+{
+    (*game_p__rotate_flags)[player] = true;
+    if ((button_commands & (OPEN_GL_REALISATION_COMMAND_SHIP_ROTATE << player)) == OPEN_GL_REALISATION_COMMAND_NOTHING)
+    {
+        button_commands |= (OPEN_GL_REALISATION_COMMAND_SHIP_ROTATE << player);
+        if ((*game_p__burnout_double_clk_timer)[player] > 0)
+        {
+            (*game_p__burnout_flag)[player] = true;
+            (*game_p__burnout_double_clk_timer)[player] = -GAME_BURNOUT_COULDOWN;
+        }
+    }
+}
+
+void OpenGL::SecondUpdatePlayersFlags(GameTypes::players_count_t player)
+{
+    (*game_p__rotate_flags)[player] = false;
+    if ((button_commands & (OPEN_GL_REALISATION_COMMAND_SHIP_ROTATE << player)) != OPEN_GL_REALISATION_COMMAND_NOTHING)
+    {
+        button_commands &= OPEN_GL_REALISATION_COMMAND_FULL - (OPEN_GL_REALISATION_COMMAND_SHIP_ROTATE << player);
+        if ((*game_p__burnout_double_clk_timer)[player] == 0)
+        {
+            (*game_p__burnout_double_clk_timer)[player] = GAME_DOUBLE_CLK_TIME;
+        }
+    }
+}
+
 void OpenGL::FramebufferSizeCallback(GLFWwindow* window, int width, int height)
 {
     update_menu = OPEN_GL_REALISATION_FRAMES_AFTER_CALLBAC_COUNT;
@@ -78,6 +105,11 @@ void OpenGL::LimitMenuPosition(Menu* menu)
     }
 }
 
+#define PLAYER_0    0
+#define PLAYER_1    1
+#define PLAYER_2    2
+#define PLAYER_3    3
+
 void OpenGL::ProcessInput(GLFWwindow* window)
 {
     if (update_menu > 0 && flag_update_menu_can_change)
@@ -91,69 +123,69 @@ void OpenGL::ProcessInput(GLFWwindow* window)
     }
     if (*game_p__play_round)
     {
-        if (glfwGetKey(window, SHIP_0_ROTATE_BUTTON))
+        if (glfwGetKey(window, SHIP_0_ROTATE_BUTTON) == GLFW_PRESS)
         {
-            (*game_p__rotate_flags)[0] = true;
+            FirstUpdatePlayersFlags(PLAYER_0);
         }
         else
         {
-            (*game_p__rotate_flags)[0] = false;
+            SecondUpdatePlayersFlags(PLAYER_0);
         }
-        if (glfwGetKey(window, SHIP_0_SHOOT_BUTTON))
+        if (glfwGetKey(window, SHIP_0_SHOOT_BUTTON) == GLFW_PRESS)
         {
-            (*game_p__shoot_flags)[0] = true;
-        }
-        else
-        {
-            (*game_p__shoot_flags)[0] = false;
-        }
-        if (glfwGetKey(window, SHIP_1_ROTATE_BUTTON))
-        {
-            (*game_p__rotate_flags)[1] = true;
+            (*game_p__shoot_flags)[PLAYER_0] = true;
         }
         else
         {
-            (*game_p__rotate_flags)[1] = false;
+            (*game_p__shoot_flags)[PLAYER_0] = false;
         }
-        if (glfwGetKey(window, SHIP_1_SHOOT_BUTTON))
+        if (glfwGetKey(window, SHIP_1_ROTATE_BUTTON) == GLFW_PRESS)
         {
-            (*game_p__shoot_flags)[1] = true;
-        }
-        else
-        {
-            (*game_p__shoot_flags)[1] = false;
-        }
-        if (glfwGetKey(window, SHIP_2_ROTATE_BUTTON))
-        {
-            (*game_p__rotate_flags)[2] = true;
+            FirstUpdatePlayersFlags(PLAYER_1);
         }
         else
         {
-            (*game_p__rotate_flags)[2] = false;
+            SecondUpdatePlayersFlags(PLAYER_1);
         }
-        if (glfwGetKey(window, SHIP_2_SHOOT_BUTTON))
+        if (glfwGetKey(window, SHIP_1_SHOOT_BUTTON) == GLFW_PRESS)
         {
-            (*game_p__shoot_flags)[2] = true;
-        }
-        else
-        {
-            (*game_p__shoot_flags)[2] = false;
-        }
-        if (glfwGetKey(window, SHIP_3_ROTATE_BUTTON))
-        {
-            (*game_p__rotate_flags)[3] = true;
+            (*game_p__shoot_flags)[PLAYER_1] = true;
         }
         else
         {
-            (*game_p__rotate_flags)[3] = false;
+            (*game_p__shoot_flags)[PLAYER_1] = false;
         }
-        if (glfwGetKey(window, SHIP_3_SHOOT_BUTTON))
+        if (glfwGetKey(window, SHIP_2_ROTATE_BUTTON) == GLFW_PRESS)
         {
-            (*game_p__shoot_flags)[3] = true;
+            FirstUpdatePlayersFlags(PLAYER_2);
         }
         else
         {
-            (*game_p__shoot_flags)[3] = false;
+            SecondUpdatePlayersFlags(PLAYER_2);
+        }
+        if (glfwGetKey(window, SHIP_2_SHOOT_BUTTON) == GLFW_PRESS)
+        {
+            (*game_p__shoot_flags)[PLAYER_2] = true;
+        }
+        else
+        {
+            (*game_p__shoot_flags)[PLAYER_2] = false;
+        }
+        if (glfwGetKey(window, SHIP_3_ROTATE_BUTTON) == GLFW_PRESS)
+        {
+            FirstUpdatePlayersFlags(PLAYER_3);
+        }
+        else
+        {
+            SecondUpdatePlayersFlags(PLAYER_3);
+        }
+        if (glfwGetKey(window, SHIP_3_SHOOT_BUTTON) == GLFW_PRESS)
+        {
+            (*game_p__shoot_flags)[PLAYER_3] = true;
+        }
+        else
+        {
+            (*game_p__shoot_flags)[PLAYER_3] = false;
         }
     }
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -162,16 +194,16 @@ void OpenGL::ProcessInput(GLFWwindow* window)
         glfwSetWindowShouldClose(window, true);
         exit(0);
     }
-    if (glfwGetKey(window, GLFW_KEY_BACKSPACE) == GLFW_PRESS && (mouse_buttons & OPEN_GL_REALISATION_BACK) == OPEN_GL_REALISATION_NOTHING)
+    if (glfwGetKey(window, GLFW_KEY_BACKSPACE) == GLFW_PRESS && (button_commands & OPEN_GL_REALISATION_COMMAND_BACK) == OPEN_GL_REALISATION_COMMAND_NOTHING)
     {
         update_menu = OPEN_GL_REALISATION_FRAMES_AFTER_CALLBAC_COUNT;
-        mouse_buttons |= OPEN_GL_REALISATION_BACK;
+        button_commands |= OPEN_GL_REALISATION_COMMAND_BACK;
         object_p__menu_functions->Back();
     }
-    else if (glfwGetKey(window, GLFW_KEY_BACKSPACE) == GLFW_RELEASE && (mouse_buttons & OPEN_GL_REALISATION_BACK) != OPEN_GL_REALISATION_NOTHING)
+    else if (glfwGetKey(window, GLFW_KEY_BACKSPACE) == GLFW_RELEASE && (button_commands & OPEN_GL_REALISATION_COMMAND_BACK) != OPEN_GL_REALISATION_COMMAND_NOTHING)
     {
         update_menu = OPEN_GL_REALISATION_FRAMES_AFTER_CALLBAC_COUNT;
-        mouse_buttons &= OPEN_GL_REALISATION_FULL - OPEN_GL_REALISATION_BACK;
+        button_commands &= OPEN_GL_REALISATION_COMMAND_FULL - OPEN_GL_REALISATION_COMMAND_BACK;
     }
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS && *game_p__current_active_menu == game_p__ships_control_menu)
     {
@@ -180,26 +212,26 @@ void OpenGL::ProcessInput(GLFWwindow* window)
         clk_pos.Set(cursore_press_position->x / window_width - 0.5f, cursore_press_position->y / window_height - 0.5f);
         object_p__menu_functions->ShipsControlMenuFunction(&clk_pos, GLFW_PRESS);
     }
-    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS && (mouse_buttons & OPEN_GL_REALISATION_SELECT) == OPEN_GL_REALISATION_NOTHING)
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS && (button_commands & OPEN_GL_REALISATION_COMMAND_SELECT) == OPEN_GL_REALISATION_COMMAND_NOTHING)
     {
         update_menu = OPEN_GL_REALISATION_FRAMES_AFTER_CALLBAC_COUNT;
         flag_update_menu_can_change = false;
         flag_move_menu = true;
 
-        mouse_buttons |= OPEN_GL_REALISATION_SELECT;
+        button_commands |= OPEN_GL_REALISATION_COMMAND_SELECT;
         glfwGetCursorPos(window, &cursore_press_position->x, &cursore_press_position->y);
         *cursore_last_position = *cursore_press_position;
 
         Vec2F clk_pos = Vec2F(((float)cursore_press_position->x / window_width - 0.5f) * 2.0f, ((float)cursore_press_position->y / -window_height) * 2.0f / window_scale + 1.0f);
         CallMenuFunction(*game_p__current_active_menu, &clk_pos, GLFW_PRESS);
     }
-    else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE && (mouse_buttons & OPEN_GL_REALISATION_SELECT) != OPEN_GL_REALISATION_NOTHING)
+    else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE && (button_commands & OPEN_GL_REALISATION_COMMAND_SELECT) != OPEN_GL_REALISATION_COMMAND_NOTHING)
     {
         update_menu = OPEN_GL_REALISATION_FRAMES_AFTER_CALLBAC_COUNT;
         flag_update_menu_can_change = true;
         flag_move_menu = false;
 
-        mouse_buttons &= OPEN_GL_REALISATION_FULL - OPEN_GL_REALISATION_SELECT;
+        button_commands &= OPEN_GL_REALISATION_COMMAND_FULL - OPEN_GL_REALISATION_COMMAND_SELECT;
         glfwGetCursorPos(window, &cursore_release_position->x, &cursore_release_position->y);
         *cursore_press_position -= *cursore_release_position;
         if (fabs(cursore_press_position->x) < window_width / 100.0 && fabs(cursore_press_position->y) < window_height / 100.0)
@@ -224,6 +256,8 @@ void OpenGL::ProcessInput(GLFWwindow* window)
         *cursore_last_position = *cursore_current_position;
     }
 }
+
+
 
 //Callback functions
 
