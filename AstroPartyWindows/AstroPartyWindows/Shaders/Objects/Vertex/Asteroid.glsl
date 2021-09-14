@@ -1,11 +1,10 @@
 #version 330 core
 layout (location = 0) in vec2 aPos;
 
-uniform float scale;
-
-uniform vec2 position;
 uniform float size;
+uniform vec2 position;
 
+uniform float scale;
 uniform vec2 camera_position;
 uniform float camera_size;
 
@@ -15,12 +14,14 @@ mat3 Scale(vec2 vector);
 
 mat3 matrix;
 
-vec3 _position;
+out vec2 pixel_position;
 void main()
 {
+    pixel_position = aPos;
+
     matrix = 
-        Scale(vec2(size)) *
-        Transport(position) *
+        Scale(vec2(size)) * 
+        Transport(position) * 
         Transport(-camera_position) *
         Scale(vec2(1.0f / camera_size)) *
         Scale(vec2(1.0f, scale));

@@ -1162,6 +1162,101 @@ Asteroid::Asteroid(Vec2F* position, Vec2F* velocity, EngineTypes::Bonus::bonus_t
 	Bonus(position, velocity, bonus_inventory, 0.0f, angle, angular_velocity, force_collision_coeffisient, force_resistance_air_coefficient, exist),
 	size(size)
 {
+	UpdateRadius();
+	this->bonus_inventory = bonus_inventory;
+	exist = true;
+}
+
+void Asteroid::DecrementSize()
+{
+	if (size > ASTEROID_SIZE_SMALL)
+	{
+		size--;
+		UpdateRadius();
+	}
+}
+
+Bonus Asteroid::Destroy()
+{
+	if (bonus_inventory & BONUS_BONUS)
+	{
+		return Bonus(&position, &velocity, bonus_inventory & BONUS_BONUS);
+	}
+	return Bonus();
+}
+
+Asteroid Asteroid::Division()
+{
+	if (size == ASTEROID_SIZE_SMALL)
+	{
+		return Asteroid();
+	}
+
+	EngineTypes::Bonus::bonus_t return_bonus = BONUS_NO_BONUS;
+	EngineTypes::Bonus::bonus_t temp_bonus;
+	for (uint8_t i = 0; i < BONUS_BONUSES_COUNT; i++)
+	{
+		temp_bonus = 0x11 << (i * 2);
+		if (bonus_inventory & temp_bonus)
+		{
+			temp_bonus &= bonus_inventory;
+			bonus_inventory &= BUFF_BONUS_ALL - temp_bonus;
+			return_bonus = temp_bonus;
+			goto end_of_cycle;
+		}
+	}
+end_of_cycle:;
+
+	Vec2F asteroid_velocity = direction.Rotate(((float)rand() / (float)RAND_MAX) * M_PI * 2.0f) * ASTEROID_DEEFAULT_VELOCITY;
+	Vec2F asteroid_position = position + asteroid_velocity.Normalize() * radius;
+	
+	return Asteroid(&asteroid_position, &asteroid_velocity, return_bonus, size - 1);
+}
+
+EngineTypes::Asteroid::size_t Asteroid::GetSize()
+{
+	return size;
+}
+
+EngineTypes::Bonus::bonus_t Asteroid::GetBuffBonus()
+{
+	return bonus_inventory;
+}
+
+void Asteroid::Set(Asteroid* asteroid)
+{
+	angle = asteroid->angle;
+	angular_velocity = asteroid->angular_velocity;
+	bonus_inventory = asteroid->bonus_inventory;
+	direction = asteroid->direction;
+	exist = asteroid->exist;
+	force = asteroid->force;
+	force_collision_coeffisient = asteroid->force_collision_coeffisient;
+	force_resistance_air_coefficient = asteroid->force_resistance_air_coefficient;
+	position = asteroid->position;
+	radius = asteroid->radius;
+	size = asteroid->size;
+	velocity = asteroid->velocity;
+}
+
+void Asteroid::Set(Vec2F* position, Vec2F* velocity, EngineTypes::Bonus::bonus_t bonus_inventory, EngineTypes::Asteroid::size_t size, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, bool exist)
+{
+	this->angle = angle;
+	this->angular_velocity = angular_velocity;
+	this->bonus_inventory = bonus_inventory;
+	UpdateDirection();
+	this->exist = exist;
+	this->force = force;
+	this->force_collision_coeffisient = force_collision_coeffisient;
+	this->force_resistance_air_coefficient = force_resistance_air_coefficient;
+	this->position = *position;
+	this->size = size;
+	UpdateRadius();
+	this->velocity = *velocity;
+}
+
+void Asteroid::UpdateRadius()
+{
 	switch (this->size)
 	{
 	case ASTEROID_SIZE_SMALL:
@@ -1178,106 +1273,22 @@ Asteroid::Asteroid(Vec2F* position, Vec2F* velocity, EngineTypes::Bonus::bonus_t
 		radius = ASTEROID_DEFAULT_RADIUS;
 		break;
 	}
-	this->bonus_inventory = bonus_inventory;
-	exist = true;
 }
 
-Bonus Asteroid::Destroy()
+void Asteroid::operator=(Asteroid asteroid)
 {
-	return Bonus(&position, &velocity, bonus_inventory);
-}
-
-Asteroid Asteroid::Division()
-{
-	if (size > ASTEROID_SIZE_SMALL)
-	{
-		return Asteroid();
-	}
-
-	EngineTypes::Bonus::bonus_t return_bonus = BONUS_NO_BONUS;
-	EngineTypes::Bonus::bonus_t temp_bonus;
-	for (uint8_t i = 0; i < BONUS_BONUSES_COUNT; i++)
-	{
-		temp_bonus = 0x11 << (i * 2);
-		if (bonus_inventory & temp_bonus)
-		{
-			temp_bonus &= bonus_inventory;
-			bonus_inventory &= BUFF_BONUS_ALL - temp_bonus;
-			if (bonus_inventory & (1 << (BONUS_BONUSES_COUNT * 2)) - 1)
-			{
-				return_bonus = temp_bonus;
-				goto end_of_cycle;
-			}
-			goto end_of_cycle;
-		}
-	}
-end_of_cycle:;
-	if (return_bonus == BONUS_NO_BONUS)
-	{
-		return_bonus = bonus_inventory & BONUS_BONUS;
-	}
-
-	Vec2F temp_position = position + Vec2F(((float)rand() - (float)RAND_MAX / 2.0f) / ((float)RAND_MAX * 10.0f), ((float)rand() - (float)RAND_MAX / 2.0f) / ((float)RAND_MAX * 10.0f));
-	
-	return Asteroid(&temp_position, &velocity, return_bonus, size - 1);
-}
-
-EngineTypes::Asteroid::size_t Asteroid::GetSize()
-{
-	return size;
-}
-
-EngineTypes::Bonus::bonus_t Asteroid::GetBuffBonus()
-{
-	return bonus_inventory;
-}
-
-void Asteroid::Set(Asteroid* entity)
-{
-	angle = entity->angle;
-	angular_velocity = entity->angular_velocity;
-	bonus_inventory = entity->bonus_inventory;
-	direction = entity->direction;
-	exist = entity->exist;
-	force = entity->force;
-	force_collision_coeffisient = entity->force_collision_coeffisient;
-	force_resistance_air_coefficient = entity->force_resistance_air_coefficient;
-	position = entity->position;
-	radius = entity->radius;
-	size = entity->size;
-	velocity = entity->velocity;
-}
-
-void Asteroid::Set(Vec2F* position, Vec2F* velocity, EngineTypes::Bonus::bonus_t bonus_inventory, EngineTypes::Asteroid::size_t size, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, bool exist)
-{
-	this->angle = angle;
-	this->angular_velocity = angular_velocity;
-	this->bonus_inventory = bonus_inventory;
-	UpdateDirection();
-	this->exist = exist;
-	this->force = force;
-	this->force_collision_coeffisient = force_collision_coeffisient;
-	this->force_resistance_air_coefficient = force_resistance_air_coefficient;
-	this->position = *position;
-	this->radius = radius;
-	this->size = size;
-	this->velocity = *velocity;
-}
-
-void Asteroid::operator=(Asteroid entity)
-{
-	angle = entity.angle;
-	angular_velocity = entity.angular_velocity;
-	bonus_inventory = entity.bonus_inventory;
-	direction = entity.direction;
-	exist = entity.exist;
-	force = entity.force;
-	force_collision_coeffisient = entity.force_collision_coeffisient;
-	force_resistance_air_coefficient = entity.force_resistance_air_coefficient;
-	position = entity.position;
-	radius = entity.radius;
-	size = entity.size;
-	velocity = entity.velocity;
+	angle = asteroid.angle;
+	angular_velocity = asteroid.angular_velocity;
+	bonus_inventory = asteroid.bonus_inventory;
+	direction = asteroid.direction;
+	exist = asteroid.exist;
+	force = asteroid.force;
+	force_collision_coeffisient = asteroid.force_collision_coeffisient;
+	force_resistance_air_coefficient = asteroid.force_resistance_air_coefficient;
+	position = asteroid.position;
+	radius = asteroid.radius;
+	size = asteroid.size;
+	velocity = asteroid.velocity;
 }
 
 Asteroid::~Asteroid()
@@ -1875,7 +1886,7 @@ Knife Ship::CreateKnife(uint8_t knife_number)
 
 Pilot Ship::Destroy()
 {
-	Vec2F pilot_new_velocity = velocity * 2.0f;
+	Vec2F pilot_new_velocity = velocity * 1.5f;
 	return Pilot(&position, &pilot_new_velocity, player_number, player_team_number, rotate_input_value_pointer, shoot_input_value_pointer, PILOT_DEFAULT_RESPAWN_TIMER, nullptr, 0, angle);
 }
 

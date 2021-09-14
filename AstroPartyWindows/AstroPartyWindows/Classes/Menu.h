@@ -43,25 +43,25 @@ protected:
 	Area area;
 	EngineTypes::Button::text_t* text;
 	EngineTypes::Button::text_length_t text_length;
-	EngineTypes::Button::button_id_t id;
+	EngineTypes::Button::id_t id;
 public:
 	uint8_t text_size;
-	EngineTypes::Button::button_status_t status;
+	EngineTypes::Button::status_t status;
 
 	Button();
 	Button(const Button& button);
 	Button(
-		EngineTypes::Button::button_id_t id,
+		EngineTypes::Button::id_t id,
 		Vec2F* position,
 		Vec2F* size,
 		Area* area,
 		const char* text = "",
 		EngineTypes::Button::text_size_t text_size = BUTTON_DEFAULT_TEXT_SIZE);
 
-	EngineTypes::Button::button_id_t GetId();
+	EngineTypes::Button::id_t GetId();
 	Vec2F GetPosition();
 	Vec2F GetSize();
-	bool GetStatus(EngineTypes::Button::button_status_t status_mask);
+	bool GetStatus(EngineTypes::Button::status_t status_mask);
 	//Return pointer to memory space this text.
 	EngineTypes::Button::text_t* GetText();
 	//Create a new memory space and return pointer to it.
@@ -73,19 +73,19 @@ public:
 	void Move(Vec2F* move_vector);
 	void Set(Button* button);
 	void Set(
-		EngineTypes::Button::button_id_t id, 
+		EngineTypes::Button::id_t id, 
 		Vec2F* position, 
 		Vec2F* size,
 		Area* area,
 		const char* text = "",
 		EngineTypes::Button::text_size_t text_size = BUTTON_DEFAULT_TEXT_SIZE,
-		EngineTypes::Button::button_status_t status = BUTTON_STATUS_INACTIVE);
+		EngineTypes::Button::status_t status = BUTTON_STATUS_FALSE);
 	void SetArea(Area* area);
-	void SetId(EngineTypes::Button::button_id_t id);
-	void SetOnlyCustomStatus(EngineTypes::Button::button_status_t status_mask);
+	void SetId(EngineTypes::Button::id_t id);
+	void SetOnlyCustomStatus(EngineTypes::Button::status_t status_mask);
 	void SetPosition(Vec2F* position);
 	void SetSize(Vec2F* size);
-	void SetStatus(EngineTypes::Button::button_status_t status_mask, bool value);
+	void SetStatus(EngineTypes::Button::status_t status_mask, bool value);
 	void SetText(const char* text);
 	void SetText(char* text, EngineTypes::Button::text_length_t text_length);
 	void SetText(EngineTypes::Button::text_t* text);

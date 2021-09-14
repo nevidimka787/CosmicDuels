@@ -113,7 +113,7 @@ Area::~Area()
 
 
 Button::Button() :
-	status(BUTTON_STATUS_INACTIVE),
+	status(BUTTON_STATUS_FALSE),
 	text((EngineTypes::Button::text_t*)malloc(sizeof(EngineTypes::Button::text_t))),
 	text_size(0),
 	id(0),
@@ -138,11 +138,11 @@ Button::Button(const Button& button) :
 	}
 }
 
-Button::Button(EngineTypes::Button::button_id_t id, Vec2F* position, Vec2F* size, Area* area, const char* text, EngineTypes::Button::text_size_t text_size) :
+Button::Button(EngineTypes::Button::id_t id, Vec2F* position, Vec2F* size, Area* area, const char* text, EngineTypes::Button::text_size_t text_size) :
 	id(id), 
 	position(*position), 
 	size(*size),
-	status(BUTTON_STATUS_INACTIVE),
+	status(BUTTON_STATUS_FALSE),
 	text_size(text_size)
 {
 	this->area.Set(area);
@@ -156,7 +156,7 @@ Button::Button(EngineTypes::Button::button_id_t id, Vec2F* position, Vec2F* size
 	}
 }
 
-EngineTypes::Button::button_id_t Button::GetId()
+EngineTypes::Button::id_t Button::GetId()
 {
 	return id;
 }
@@ -171,7 +171,7 @@ Vec2F Button::GetSize()
 	return size;
 }
 
-bool Button::GetStatus(EngineTypes::Button::button_status_t status_mask)
+bool Button::GetStatus(EngineTypes::Button::status_t status_mask)
 {
 	return status & status_mask;
 }
@@ -251,7 +251,7 @@ void Button::Set(Button* button)
 	SetText(button->text, button->text_length);
 }
 
-void Button::Set(EngineTypes::Button::button_id_t id, Vec2F* position, Vec2F* size, Area* area, const char* text, EngineTypes::Button::text_size_t text_size, EngineTypes::Button::button_status_t status)
+void Button::Set(EngineTypes::Button::id_t id, Vec2F* position, Vec2F* size, Area* area, const char* text, EngineTypes::Button::text_size_t text_size, EngineTypes::Button::status_t status)
 {
 	this->area.Set(area);
 	this->id = id;
@@ -268,15 +268,15 @@ void Button::SetArea(Area* area)
 	this->area.Set(area);
 }
 
-void Button::SetId(EngineTypes::Button::button_id_t id)
+void Button::SetId(EngineTypes::Button::id_t id)
 {
 	this->id = id;
 }
 
-void Button::SetOnlyCustomStatus(EngineTypes::Button::button_status_t status_mask)
+void Button::SetOnlyCustomStatus(EngineTypes::Button::status_t status_mask)
 {
-	status |= status_mask & (BUTTON_STATUSE_ALL - (BUTTON_STATUS_ACTIVE | BUTTON_STATUS_SELECT));
-	status &= status_mask | (BUTTON_STATUS_ACTIVE | BUTTON_STATUS_SELECT);
+	status |= status_mask & (BUTTON_STATUSE_ALL - (BUTTON_STATUS_TRUE | BUTTON_STATUS_SELECT));
+	status &= status_mask | (BUTTON_STATUS_TRUE | BUTTON_STATUS_SELECT);
 }
 
 void Button::SetPosition(Vec2F* position)
@@ -289,7 +289,7 @@ void Button::SetSize(Vec2F* size)
 	this->size = *size;
 }
 
-void Button::SetStatus(EngineTypes::Button::button_status_t status_mask, bool value)
+void Button::SetStatus(EngineTypes::Button::status_t status_mask, bool value)
 {
 	if (value)
 	{

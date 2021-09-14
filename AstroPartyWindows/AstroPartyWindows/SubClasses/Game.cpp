@@ -54,6 +54,7 @@ void Game::Update()
 	DynamicEntitiesCollisions(&map, ships, ships_count);
 	DynamicEntitiesCollisions(&map, pilots, pilots_count);
 	DynamicEntitiesCollisions(&map, asteroids, asteroids_count);
+	DynamicEntitiesCollisions(&map, bombs, bombs_count);
 	
 	DynamicEntitiesAddForce(grav_gens, grav_gens_count, ships, ships_count);
 	DynamicEntitiesAddForce(grav_gens, grav_gens_count, pilots, pilots_count);
@@ -101,6 +102,8 @@ void Game::Update()
 		burnout_double_clk_timer[3]--;
 	else if (burnout_double_clk_timer[3] < 0)
 		burnout_double_clk_timer[3]++;
+
+	PollEvents();
 }
 
 template<typename EntityType>
@@ -447,16 +450,23 @@ void Game::DestroyEntity(Bomb* destroyer, Asteroid* entity)
 	{
 		return;
 	}
-	if (entity->GetSize() > ASTEROID_SIZE_SMALL)
+	if (entity->GetSize() > ASTEROID_SIZE_MEDIUM)
 	{
 		AddEntity(entity->Division());
 		AddEntity(entity->Division());
+		AddEntity(entity->Division());
+		entity->DecrementSize();
+	}
+	else if (entity->GetSize() > ASTEROID_SIZE_SMALL)
+	{
+		AddEntity(entity->Division());
+		entity->DecrementSize();
 	}
 	else
 	{
 		AddEntity(entity->Destroy());
+		RemoveEntity(entity);
 	}
-	RemoveEntity(entity);
 }
 
 void Game::DestroyEntity(Bomb* destroyer, Bonus* entity)
@@ -540,16 +550,23 @@ void Game::DestroyEntity(Bullet* destroyer, Asteroid* entity)
 	{
 		return;
 	}
-	if (entity->GetSize() > ASTEROID_SIZE_SMALL)
+	if (entity->GetSize() > ASTEROID_SIZE_MEDIUM)
 	{
 		AddEntity(entity->Division());
 		AddEntity(entity->Division());
+		AddEntity(entity->Division());
+		entity->DecrementSize();
+	}
+	else if (entity->GetSize() > ASTEROID_SIZE_SMALL)
+	{
+		AddEntity(entity->Division());
+		entity->DecrementSize();
 	}
 	else
 	{
 		AddEntity(entity->Destroy());
+		RemoveEntity(entity);
 	}
-	RemoveEntity(entity);
 }
 
 void Game::DestroyEntity(Bullet* destroyer, Knife* entity)
@@ -613,16 +630,23 @@ void Game::DestroyEntity(Knife* destroyer, Asteroid* entity)
 	{
 		return;
 	}
-	if (entity->GetSize() > ASTEROID_SIZE_SMALL)
+	if (entity->GetSize() > ASTEROID_SIZE_MEDIUM)
 	{
 		AddEntity(entity->Division());
 		AddEntity(entity->Division());
+		AddEntity(entity->Division());
+		entity->DecrementSize();
+	}
+	else if (entity->GetSize() > ASTEROID_SIZE_SMALL)
+	{
+		AddEntity(entity->Division());
+		entity->DecrementSize();
 	}
 	else
 	{
 		AddEntity(entity->Destroy());
+		RemoveEntity(entity);
 	}
-	RemoveEntity(entity);
 }
 
 void Game::DestroyEntity(Knife* destroyer, Ship* entity)
@@ -674,16 +698,23 @@ void Game::DestroyEntity(Laser* destroyer, Asteroid* entity)
 	{
 		return;
 	}
-	if (entity->GetSize() > ASTEROID_SIZE_SMALL)
+	if (entity->GetSize() > ASTEROID_SIZE_MEDIUM)
 	{
 		AddEntity(entity->Division());
 		AddEntity(entity->Division());
+		AddEntity(entity->Division());
+		entity->DecrementSize();
+	}
+	else if (entity->GetSize() > ASTEROID_SIZE_SMALL)
+	{
+		AddEntity(entity->Division());
+		entity->DecrementSize();
 	}
 	else
 	{
 		AddEntity(entity->Destroy());
+		RemoveEntity(entity);
 	}
-	RemoveEntity(entity);
 }
 
 void Game::DestroyEntity(Laser* destroyer, Bonus* entity)
@@ -767,16 +798,23 @@ void Game::DestroyEntity(MegaLaser* destroyer, Asteroid* entity)
 	{
 		return;
 	}
-	if (entity->GetSize() > ASTEROID_SIZE_SMALL)
+	if (entity->GetSize() > ASTEROID_SIZE_MEDIUM)
 	{
 		AddEntity(entity->Division());
 		AddEntity(entity->Division());
+		AddEntity(entity->Division());
+		entity->DecrementSize();
+	}
+	else if (entity->GetSize() > ASTEROID_SIZE_SMALL)
+	{
+		AddEntity(entity->Division());
+		entity->DecrementSize();
 	}
 	else
 	{
 		AddEntity(entity->Destroy());
+		RemoveEntity(entity);
 	}
-	RemoveEntity(entity);
 }
 
 void Game::DestroyEntity(MegaLaser* destroyer, Bonus* entity)
@@ -1044,6 +1082,31 @@ skip_bonus_pull_set:
 	end_match_score = 5;
 }
 
+void Game::PollEvents()
+{
+	switch (current_event)
+	{
+	case MAP_TEST_MAP:			Event0();	return;
+	case MAP_SQUARE_ON_CENTER:	Event1();	return;
+	}
+}
+
+void Game::Event0()
+{
+	if (!(global_timer % 100))
+	{
+		std::cout << "Event 0" << std::endl;
+	}
+}
+
+void Game::Event1()
+{
+	if (!(Game::global_timer % 100))
+	{
+		std::cout << "Event 1" << std::endl;
+	}
+}
+
 void Game::InitLevel()
 {
 	srand(time(0));
@@ -1056,9 +1119,14 @@ void Game::InitLevel()
 	Vec2F temp_positions[GAME_PLAYERS_MAX_COUNT];
 
 	const GameTypes::score_t max_score = GetMaxScore();
+	temp_positions[0].Set(1.0f, 1.0f);
+	asteroids[0].Set(&temp_positions[0], &temp_positions[1], BONUS_BOMB, ASTEROID_MAX_SIZE);
+	asteroids_count = 1;
 
 	Segment new_segment;
 	Rectangle rectangles[7];
+	
+	current_event = current_map_id;
 
 	switch (current_map_id)
 	{
@@ -1157,16 +1225,9 @@ void Game::InitLevel()
 	{
 		start_bonus |= game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_TRIPLE_BONUS ? BUFF_TRIPLE : 0x0000;
 	}
-	if (game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_BONUS)
+	if (game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_BONUS && !(game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_DIFFERENT_BONUS))
 	{
-		if (game_rules & GAME_RULE_START_BONUS_RANDOMIZE)
-		{
-			start_bonus |= GenerateRandomBonus() * ((game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_TRIPLE_BONUS) ? 3 : 1);
-		}
-		else
-		{
-			start_bonus |= *menu_p__start_bonus;
-		}
+		start_bonus |= GenerateRandomBonus() * ((game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_TRIPLE_BONUS) ? 3 : 1);
 	}
 
 	//Set start bonus
@@ -1177,6 +1238,11 @@ void Game::InitLevel()
 	{
 		if (teams[player] > 0)
 		{
+			if (game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_BONUS && game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_DIFFERENT_BONUS)
+			{
+				start_bonus &= BONUS_ALL - BONUS_BONUS;
+				start_bonus |= GenerateRandomBonus();
+			}
 			ships[player].Set(
 				&temp_positions[player], &zero_velocity,
 				player, teams[player],
@@ -1213,11 +1279,14 @@ void Game::InitMenus()
 	Vec2F size;
 	size.Set(1.0f, -0.60f);
 	buttons[0].Set(BUTTON_ID_START_MATCH, &position, &size, area, "PLAY", 20);
+	buttons[0].status = BUTTON_STATUS_ACTIVE;
 	position.Set(-0.5f, 0.3f);
 	size.Set(0.475f, -0.25f);
 	buttons[1].Set(BUTTON_ID_GO_TO_OPTINS_MENU, &position, &size, area, "Options", 6);
+	buttons[1].status = BUTTON_STATUS_ACTIVE;
 	position.Set(0.025f, 0.3f);
 	buttons[2].Set(BUTTON_ID_EXIT, &position, &size, area, "Exit", 6);
+	buttons[2].status = BUTTON_STATUS_ACTIVE;
 	position.Set(0.0f, 0.0f);
 	size.Set(1.0f, -1.0f);
 	main_menu.Set(&position, &size, buttons, 3);
@@ -1231,43 +1300,46 @@ void Game::InitMenus()
 #define GAME_OPTIONS_STAT_X		-0.75f
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 0 * GAME_OPTION_MENU_BORD);
 	buttons[0].Set(BUTTON_ID_SET_RANDOM_SPAWN, &position, &size, area, "Random spawn", 5);
-	buttons[0].status = (game_rules & GAME_RULE_PLAYERS_SPAWN_POSITION_RANDOMIZE) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_INACTIVE;
+	buttons[0].status = ((game_rules & GAME_RULE_PLAYERS_SPAWN_POSITION_RANDOMIZE) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 1 * GAME_OPTION_MENU_BORD);
 	buttons[1].Set(BUTTON_ID_SET_RANDOM_SPAWN_DIRECTION, &position, &size, area, "Random spawn direction", 5);
-	buttons[1].status = (game_rules & GAME_RULE_PLAYERS_SPAWN_DIRECTION_RANDOMIZE) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_INACTIVE;
+	buttons[1].status = ((game_rules & GAME_RULE_PLAYERS_SPAWN_DIRECTION_RANDOMIZE) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 2 * GAME_OPTION_MENU_BORD);
 	buttons[2].Set(BUTTON_ID_SET_SPAWN_THIS_BONUS, &position, &size, area, "Spawn this bonus", 5);
-	buttons[2].status = (game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_BONUS) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_INACTIVE;
+	buttons[2].status = ((game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_BONUS) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 3 * GAME_OPTION_MENU_BORD);
-	buttons[3].Set(BUTTON_ID_SET_SPAWN_THIS_RANDOM_BONUS, &position, &size, area, "Random start bonus", 5);
-	buttons[3].status = (game_rules & GAME_RULE_START_BONUS_RANDOMIZE) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_INACTIVE;
+	buttons[3].Set(BUTTON_ID_SET_SPAWN_THIS_DIFFERENT_BONUSES, &position, &size, area, "Can spawn this different bonuses", 4);
+	buttons[3].status = ((game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_DIFFERENT_BONUS) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | ((game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_BONUS) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_FALSE);
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 4 * GAME_OPTION_MENU_BORD);
 	buttons[4].Set(BUTTON_ID_SET_SPAWN_THIS_TRIPLE_BUFF, &position, &size, area, "Triple bonuses", 5);
-	buttons[4].status = (game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_TRIPLE_BONUS) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_INACTIVE;
+	buttons[4].status = ((game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_TRIPLE_BONUS) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 5 * GAME_OPTION_MENU_BORD);
 	buttons[5].Set(BUTTON_ID_SET_SPAWN_THIS_SHIELD_BAFF, &position, &size, area, "Spawn whis shield", 5);
-	buttons[5].status = (game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_SHIELD) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_INACTIVE;
+	buttons[5].status = ((game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_SHIELD) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 6 * GAME_OPTION_MENU_BORD);
 	buttons[6].Set(BUTTON_ID_SET_KNIFES_CAN_DESTROY_BULLETS, &position, &size, area, "Knifes can destroy bullets", 5);
-	buttons[6].status = (game_rules & GAME_RULE_KNIFES_CAN_DESTROY_BULLETS) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_INACTIVE;
+	buttons[6].status = ((game_rules & GAME_RULE_KNIFES_CAN_DESTROY_BULLETS) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 7 * GAME_OPTION_MENU_BORD);
-	buttons[7].Set(BUTTON_ID_SET_FRIEDLY_SHEEP_CAN_RESTORE, &position, &size, area, "Friendly sheep can restore", 5);
-	buttons[7].status = (game_rules & GAME_RULE_FRIEDNLY_SHEEP_CAN_RESTORE) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_INACTIVE;
+	buttons[7].Set(BUTTON_ID_SET_NEED_KILL_PILOT, &position, &size, area, "Need kill pilot", 5);
+	buttons[7].status = ((game_rules & GAME_RULE_NEED_KILL_PILOT) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | ((game_rules & GAME_RULE_NEED_KILL_PILOT) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_FALSE);
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 8 * GAME_OPTION_MENU_BORD);
-	buttons[8].Set(BUTTON_ID_SET_ACTIVE_FRIENDLY_FIRE, &position, &size, area, "Frendly fire", 5);
-	buttons[8].status = (game_rules & GAME_RULE_FRENDLY_FIRE) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_INACTIVE;
+	buttons[8].Set(BUTTON_ID_SET_FRIEDLY_SHEEP_CAN_RESTORE, &position, &size, area, "Friendly sheep can restore", 5);
+	buttons[8].status = ((game_rules & GAME_RULE_FRIEDNLY_SHEEP_CAN_RESTORE) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 9 * GAME_OPTION_MENU_BORD);
-	buttons[9].Set(BUTTON_ID_SET_NEED_KILL_PILOT, &position, &size, area, "Need kill pilot", 5);
-	buttons[9].status = (game_rules & GAME_RULE_NEED_KILL_PILOT) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_INACTIVE;
+	buttons[9].Set(BUTTON_ID_SET_ACTIVE_FRIENDLY_FIRE, &position, &size, area, "Frendly fire", 5);
+	buttons[9].status = ((game_rules & GAME_RULE_FRENDLY_FIRE) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 10 * GAME_OPTION_MENU_BORD);
 	buttons[10].Set(BUTTON_ID_GO_TO_SELECT_BONUSES_MENU, &position, &size, area, "Bonus pull menu", 5);
+	buttons[10].status = (game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_BONUS) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_FALSE;
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 11 * GAME_OPTION_MENU_BORD);
 	buttons[11].Set(BUTTON_ID_GO_TO_SELECT_MAP_MENU, &position, &size, area, "Map pull menu", 5);
+	buttons[11].status = BUTTON_STATUS_ACTIVE;
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 12 * GAME_OPTION_MENU_BORD);
 	buttons[12].Set(BUTTON_ID_GO_TO_SELECT_OBJECTS_MENU, &position, &size, area, "Spawning objects menu", 5);
+	buttons[12].status = BUTTON_STATUS_ACTIVE;
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 13 * GAME_OPTION_MENU_BORD);
 	buttons[13].Set(BUTTON_ID_SET_ACTIVE_BALANCE, &position, &size, area, "Auto balance", 5);
-	buttons[13].status = (game_rules & GAME_RULE_BALANCE_ACTIVE) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_INACTIVE;
+	buttons[13].status = ((game_rules & GAME_RULE_BALANCE_ACTIVE) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
 	position.Set(0.0f, 0.0f);
 	size.Set(1.5f, GAME_OPTION_MENU_UP_Y - 1.0f - 15.0f * GAME_OPTION_MENU_BORD);
 	option_menu.Set(&position, &size, buttons, 14);
@@ -1279,8 +1351,10 @@ void Game::InitMenus()
 	position.Set(-0.4f, 0.825f);
 	size.Set(0.8f, -0.2f);
 	buttons[0].Set(BUTTON_ID_RESUME_MATCH, &position, &size, area, "Resume", 6);
+	buttons[0].status = BUTTON_STATUS_ACTIVE;
 	position.Set(-0.4f, 0.6f);
 	buttons[1].Set(BUTTON_ID_GO_TO_MAIN_MENU, &position, &size, area, "Main menu", 6);
+	buttons[1].status = BUTTON_STATUS_ACTIVE;
 	position.Set(0.0f, 0.0f);
 	size.Set(1.0f, -1.0f);
 	pause_menu.Set(&position, &size, buttons, 2);
@@ -1291,15 +1365,20 @@ void Game::InitMenus()
 	size.Set(0.475f, -0.25f);
 	position.Set(-0.5f, 0.9f);
 	buttons[0].Set(BUTTON_ID_SELECT_SHIP_1, &position, &size, area, "Player 1", 6);
+	buttons[0].status = BUTTON_STATUS_ACTIVE;
 	position.Set(0.025f, 0.9f);
 	buttons[1].Set(BUTTON_ID_SELECT_SHIP_2, &position, &size, area, "Player 2", 6);
+	buttons[1].status = BUTTON_STATUS_ACTIVE;
 	position.Set(0.025f, 0.6f);
 	buttons[2].Set(BUTTON_ID_SELECT_SHIP_3, &position, &size, area, "Player 3", 6);
+	buttons[2].status = BUTTON_STATUS_ACTIVE;
 	position.Set(-0.5f, 0.6f);
 	buttons[3].Set(BUTTON_ID_SELECT_SHIP_4, &position, &size, area, "Player 4", 6);
+	buttons[3].status = BUTTON_STATUS_ACTIVE;
 	position.Set(-0.5f, 0.3f);
 	size.Set(1.0f, -0.25f);
 	buttons[4].Set(BUTTON_ID_START_GAME, &position, &size, area, "Start game", 7);
+	buttons[4].status = BUTTON_STATUS_ACTIVE;
 	position.Set(0.0f, 0.0f);
 	size.Set(1.0f, -1.0f);
 	ships_select_menu.Set(&position, &size, buttons, 5);
@@ -1314,7 +1393,8 @@ void Game::InitMenus()
 	for (uint8_t i = 0; i < GAME_MAPS_COUNT; i++)
 	{
 		position.Set(-0.5f + (float)(i % 2) * GAME_PULL_MENU_RIGHT_BORDER, GAME_PULL_MENU_UP_Y - (float)(i / 2) * GAME_PULL_MENU_RIGHT_BORDER);
-		buttons[i].Set(BUTTON_ID_SELECT_MAP + i, &position, &size, area, "", 5, BUTTON_STATUS_ACTIVE);
+		buttons[i].Set(BUTTON_ID_SELECT_MAP + i, &position, &size, area, "", 5, BUTTON_STATUS_TRUE);
+		buttons[i].status = BUTTON_STATUS_ACTIVE;
 	}
 	buttons[0].SetText("Test");
 	buttons[1].SetText("Square");
@@ -1328,6 +1408,7 @@ void Game::InitMenus()
 	position.Set(-0.5f, 0.9f);
 	size.Set(0.475f, -0.475f);
 	buttons[0].Set(BUTTON_ID_SELECT_OBJECT_ASTEROID, &position, &size, area, "Asteroid", 6);
+	buttons[0].status = BUTTON_STATUS_ACTIVE;
 	position.Set(0.0f, 0.0f);
 	size.Set(0.5f, -0.5f);
 	spawning_objects_select_menu.Set(&position, &size, buttons, 1);
@@ -1339,7 +1420,8 @@ void Game::InitMenus()
 	for (uint8_t i = 0; i < GAME_BONUSES_COUNT; i++)
 	{
 		position.Set(-0.5f + (float)(i % 2) * GAME_PULL_MENU_RIGHT_BORDER, GAME_PULL_MENU_UP_Y -(float)(i / 2) * GAME_PULL_MENU_DOWN_BORDER);
-		buttons[i].Set(BUTTON_ID_SELECT_BONUS + i, &position, &size, area, "", 7, BUTTON_STATUS_ACTIVE);
+		buttons[i].Set(BUTTON_ID_SELECT_BONUS + i, &position, &size, area, "", 7, BUTTON_STATUS_TRUE);
+		buttons[i].status = BUTTON_STATUS_ACTIVE;
 	}
 	buttons[0].SetText("Loop");
 	buttons[1].SetText("Laser");
@@ -1962,7 +2044,7 @@ void Game::UpdateBombs()
 				for (GameTypes::entities_count_t asteroid = 0, found_asteroids = 0; found_asteroids < asteroids_count; asteroid++)
 				{
 					temp__asteroid_p = &asteroids[asteroid];
-					if (temp__bonus_p->exist)
+					if (temp__asteroid_p->exist)
 					{
 						if (temp__asteroid_p->Entity::IsCollision(temp__bomb_p))
 						{
@@ -2007,7 +2089,7 @@ void Game::UpdateBombs()
 				for (GameTypes::entities_count_t knife = 0, found_knifes = 0; found_knifes < knifes_count; knife++)
 				{
 					temp__knife_p = &knifes[knife];
-					if (temp__bullet_p->exist)
+					if (temp__knife_p->exist)
 					{
 						if (temp__knife_p->Entity::IsCollision(temp__bomb_p))
 						{

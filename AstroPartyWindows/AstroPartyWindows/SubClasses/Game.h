@@ -47,6 +47,8 @@ public:
 	//If true match will finish.
 	bool flag_end_match;
 
+	GameTypes::maps_count_t current_event;
+
 	//Current scores of players.
 	GameTypes::score_t* scores;
 	//Last scores of plauers. 
@@ -322,6 +324,12 @@ public:
 	//Team's numbers start from 1.
 	void IncrementPlayersCountInTeam(GameTypes::players_count_t team_number);
 	void CheckEndMatch();
+
+	void PollEvents();
+	//Events on the current map.
+	void Event0();
+	//Events on the current map.
+	void Event1();
 
 	//Memory functions
 

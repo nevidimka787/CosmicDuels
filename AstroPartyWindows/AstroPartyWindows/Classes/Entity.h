@@ -289,6 +289,7 @@ public:
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
 		bool exist = true);
+	void DecrementSize();
 	Bonus Destroy();
 	/*
 	*The function creates a new smaller asteroid.
@@ -297,7 +298,7 @@ public:
 	Asteroid Division();
 	EngineTypes::Asteroid::size_t GetSize();
 	EngineTypes::Bonus::bonus_t GetBuffBonus();
-	void Set(Asteroid* entity);
+	void Set(Asteroid* asteroid);
 	void Set(
 		Vec2F* position,
 		Vec2F* velocity,
@@ -308,8 +309,9 @@ public:
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
 		bool exist = true);
+	void UpdateRadius();
 
-	void operator=(Asteroid entity);
+	void operator=(Asteroid asteroid);
 
 	~Asteroid();
 };

@@ -35,8 +35,8 @@ namespace EngineTypes
 
 	namespace Button
 	{
-		typedef uint32_t button_id_t;
-		typedef uint8_t button_status_t;
+		typedef uint32_t id_t;
+		typedef uint8_t status_t;
 		typedef int32_t text_t;
 		typedef uint16_t text_length_t;
 		typedef uint8_t text_size_t;

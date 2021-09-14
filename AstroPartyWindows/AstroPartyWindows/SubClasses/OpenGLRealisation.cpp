@@ -190,8 +190,9 @@ void OpenGL::ProcessInput(GLFWwindow* window)
     }
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     {
-        update_menu = OPEN_GL_REALISATION_FRAMES_AFTER_CALLBAC_COUNT;
+        //update_menu = OPEN_GL_REALISATION_FRAMES_AFTER_CALLBAC_COUNT;
         glfwSetWindowShouldClose(window, true);
+        glfwTerminate();
         exit(0);
     }
     if (glfwGetKey(window, GLFW_KEY_BACKSPACE) == GLFW_PRESS && (button_commands & OPEN_GL_REALISATION_COMMAND_BACK) == OPEN_GL_REALISATION_COMMAND_NOTHING)
@@ -293,6 +294,7 @@ void OpenGL::InitBuffers()
     points[4].Set(-1.0f, 1.0f);
     points[5].Set(1.0f, -1.0f);
 
+    asteroid_buffer.Initialisate(points, 6);
     bomb_buffer.Initialisate(points, 6);
     bonus_buffer.Initialisate(points, 6);
     bullet_buffer.Initialisate(points, 6);
@@ -314,7 +316,6 @@ void OpenGL::InitBuffers()
     points[4].Set(0.0f, -1.0f);
     points[5].Set(0.0f, 1.0f);
 
-    asteroid_buffer.Initialisate(points, 6);
     controler_buffer.Initialisate(points, 6);
 
     points[0].Set(1.0f, 0.02f);
@@ -480,7 +481,7 @@ void OpenGL::DrawObject(Asteroid* asteroid, bool update_shader)
         asteroid_shader.SetUniform("camera_size", temp__game__camera_size);
     }
     asteroid_shader.SetUniform("position", asteroid->GetPosition());
-    asteroid_shader.SetUniform("size", 0.05f);
+    asteroid_shader.SetUniform("size", asteroid->radius);
     asteroid_buffer.Draw();
 }
 
@@ -693,31 +694,38 @@ void OpenGL::DrawObject(Button* button, bool button_is_controller, bool update_s
     Color3F color;
     if (button->GetStatus(BUTTON_STATUS_ACTIVE))
     {
-        color = Color3F(0.1f, 0.6f, 0.1f);
-    }
-    else if (button->GetStatus(BUTTON_STATUS_CUSTOM_RED))
-    {
-        color = Color3F(1.0f, 0.0f, 0.0f);
-    }
-    else if (button->GetStatus(BUTTON_STATUS_CUSTOM_GREEN))
-    {
-        color = Color3F(0.0f, 1.0f, 0.0f);
-    }
-    else if (button->GetStatus(BUTTON_STATUS_CUSTOM_BLUE))
-    {
-        color = Color3F(0.0f, 0.0f, 1.0f);
-    }
-    else if (button->GetStatus(BUTTON_STATUS_CUSTOM_PURPURE))
-    {
-        color = Color3F(1.0f, 0.0f, 1.0f);
+        if (button->GetStatus(BUTTON_STATUS_TRUE))
+        {
+            color = Color3F(0.1f, 0.6f, 0.1f);
+        }
+        else if (button->GetStatus(BUTTON_STATUS_CUSTOM_RED))
+        {
+            color = Color3F(1.0f, 0.0f, 0.0f);
+        }
+        else if (button->GetStatus(BUTTON_STATUS_CUSTOM_GREEN))
+        {
+            color = Color3F(0.0f, 1.0f, 0.0f);
+        }
+        else if (button->GetStatus(BUTTON_STATUS_CUSTOM_BLUE))
+        {
+            color = Color3F(0.0f, 0.0f, 1.0f);
+        }
+        else if (button->GetStatus(BUTTON_STATUS_CUSTOM_PURPURE))
+        {
+            color = Color3F(1.0f, 0.0f, 1.0f);
+        }
+        else
+        {
+            color = Color3F(0.6f, 0.1f, 0.1f);
+        }
+        if (button->GetStatus(BUTTON_STATUS_SELECT))
+        {
+            color *= 0.6f;
+        }
     }
     else
     {
-        color = Color3F(0.6f, 0.1f, 0.1f);
-    }
-    if (button->GetStatus(BUTTON_STATUS_SELECT))
-    {
-        color *= 0.6f;
+        color = Color3F(0.3f, 0.3f, 0.3f);
     }
     if (button_is_controller)
     {
