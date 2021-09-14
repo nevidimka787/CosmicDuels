@@ -3,11 +3,11 @@ layout (location = 0) in vec2 aPos;
 
 uniform float size;
 uniform vec2 position;
+uniform float angle;
 
 uniform float scale;
 uniform vec2 camera_position;
 uniform float camera_size;
-uniform float angle;
 
 mat3 Rotate(float angel);
 mat3 Transport(vec2 vector);

@@ -71,36 +71,44 @@ void Camera::Focus(Ship* ships_array, Pilot* pilots_array, GameTypes::players_co
 	new_view_area_size_x = 0.0f;
 	for (GameTypes::players_count_t ship1 = 0; ship1 < players_count - 1; ship1++)
 	{
-		if (ships_array[ship1].exist == true)
+		if (ships_array[ship1].exist)
 		{
 			for (GameTypes::players_count_t ship2 = ship1; ship2 < players_count; ship2++)
 			{
-				if (ships_array[ship2].exist == true)
+				if (ships_array[ship2].exist)
 				{
 					max = ships_array[ship1].GetFrameSize(&ships_array[ship2], scale);
 					if (max > new_view_area_size_x)
 					{
 						new_view_area_size_x = max;
 					}
+					temp_position = ships_array[ship2].GetPosition();
+					UpdateLimits();
 				}
 			}
+			temp_position = ships_array[ship1].GetPosition();
+			UpdateLimits();
 		}
 	}
 	for (GameTypes::players_count_t pilot1 = 0; pilot1 < players_count - 1; pilot1++)
 	{
-		if (pilots_array[pilot1].exist == true)
+		if (pilots_array[pilot1].exist)
 		{
 			for (GameTypes::players_count_t pilot2 = pilot1; pilot2 < players_count; pilot2++)
 			{
-				if (pilots_array[pilot2].exist == true)
+				if (pilots_array[pilot2].exist)
 				{
 					max = pilots_array[pilot1].GetFrameSize(&pilots_array[pilot2], scale);
 					if (max > new_view_area_size_x)
 					{
 						new_view_area_size_x = max;
 					}
+					temp_position = pilots_array[pilot2].GetPosition();
+					UpdateLimits();
 				}
 			}
+			temp_position = pilots_array[pilot1].GetPosition();
+			UpdateLimits();
 		}
 	}
 	for (GameTypes::players_count_t ship = 0; ship < players_count; ship++)
@@ -117,63 +125,11 @@ void Camera::Focus(Ship* ships_array, Pilot* pilots_array, GameTypes::players_co
 						new_view_area_size_x = max;
 					}
 					temp_position = pilots_array[pilot].GetPosition();
-					if (temp_flag)
-					{
-						temp_limits.max_x = temp_position.x;
-						temp_limits.min_x = temp_position.x;
-						temp_limits.max_y = temp_position.y;
-						temp_limits.min_y = temp_position.y;
-						temp_flag = false;
-					}
-					else
-					{
-						if (temp_position.x > temp_limits.max_x)
-						{
-							temp_limits.max_x = temp_position.x;
-						}
-						else if (temp_position.x < temp_limits.min_x)
-						{
-							temp_limits.min_x = temp_position.x;
-						}
-						if (temp_position.y > temp_limits.max_y)
-						{
-							temp_limits.max_y = temp_position.y;
-						}
-						else if (temp_position.y < temp_limits.min_y)
-						{
-							temp_limits.min_y = temp_position.y;
-						}
-					}
+					UpdateLimits();
 				}
 			}
 			temp_position = ships_array[ship].GetPosition();
-			if (temp_flag)
-			{
-				temp_limits.max_x = temp_position.x;
-				temp_limits.min_x = temp_position.x;
-				temp_limits.max_y = temp_position.y;
-				temp_limits.min_y = temp_position.y;
-				temp_flag = false;
-			}
-			else
-			{
-				if (temp_position.x > temp_limits.max_x)
-				{
-					temp_limits.max_x = temp_position.x;
-				}
-				else if (temp_position.x < temp_limits.min_x)
-				{
-					temp_limits.min_x = temp_position.x;
-				}
-				if (temp_position.y > temp_limits.max_y)
-				{
-					temp_limits.max_y = temp_position.y;
-				}
-				else if (temp_position.y < temp_limits.min_y)
-				{
-					temp_limits.min_y = temp_position.y;
-				}
-			}
+			UpdateLimits();
 		}
 	}
 
@@ -279,6 +235,37 @@ void Camera::SetSize(float size)
 {
 	this->new_view_area_size_x = size;
 	this->view_area_size_x = size;
+}
+
+void Camera::UpdateLimits()
+{
+	if (temp_flag)
+	{
+		temp_limits.max_x = temp_position.x;
+		temp_limits.min_x = temp_position.x;
+		temp_limits.max_y = temp_position.y;
+		temp_limits.min_y = temp_position.y;
+		temp_flag = false;
+	}
+	else
+	{
+		if (temp_position.x > temp_limits.max_x)
+		{
+			temp_limits.max_x = temp_position.x;
+		}
+		else if (temp_position.x < temp_limits.min_x)
+		{
+			temp_limits.min_x = temp_position.x;
+		}
+		if (temp_position.y > temp_limits.max_y)
+		{
+			temp_limits.max_y = temp_position.y;
+		}
+		else if (temp_position.y < temp_limits.min_y)
+		{
+			temp_limits.min_y = temp_position.y;
+		}
+	}
 }
 
 Camera::~Camera()

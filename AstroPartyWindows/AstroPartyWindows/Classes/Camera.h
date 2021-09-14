@@ -39,6 +39,9 @@ private:
 	float view_area_size_x;
 
 	void Limit();
+	//Use temp_position
+	//Use and change temp flag.
+	inline void UpdateLimits();
 public:
 	//How mach space after limits camera can show.
 	float margin;

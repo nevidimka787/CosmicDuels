@@ -134,6 +134,7 @@ void MenuFunctions::SelectShip(GameTypes::players_count_t sheep_number, GameType
 
 void MenuFunctions::Exit()
 {
+	glfwTerminate();
 	exit(0);
 }
 

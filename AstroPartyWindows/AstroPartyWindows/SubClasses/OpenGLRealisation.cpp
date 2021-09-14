@@ -190,10 +190,7 @@ void OpenGL::ProcessInput(GLFWwindow* window)
     }
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     {
-        //update_menu = OPEN_GL_REALISATION_FRAMES_AFTER_CALLBAC_COUNT;
-        glfwSetWindowShouldClose(window, true);
-        glfwTerminate();
-        exit(0);
+        object_p__menu_functions->Exit();
     }
     if (glfwGetKey(window, GLFW_KEY_BACKSPACE) == GLFW_PRESS && (button_commands & OPEN_GL_REALISATION_COMMAND_BACK) == OPEN_GL_REALISATION_COMMAND_NOTHING)
     {
@@ -298,6 +295,15 @@ void OpenGL::InitBuffers()
     bomb_buffer.Initialisate(points, 6);
     bonus_buffer.Initialisate(points, 6);
     bullet_buffer.Initialisate(points, 6);
+
+    points[0].Set(2.0f, 2.0f);
+    points[1].Set(-2.0f, 2.0f);
+    points[2].Set(2.0f, -2.0f);
+    points[3].Set(-2.0f, -2.0f);
+    points[4].Set(-2.0f, 2.0f);
+    points[5].Set(2.0f, -2.0f);
+
+    turel_buffer.Initialisate(points, 6);
 
     points[0].Set(1.0f, 1.0f);
     points[1].Set(0.0f, 1.0f);
@@ -482,6 +488,7 @@ void OpenGL::DrawObject(Asteroid* asteroid, bool update_shader)
     }
     asteroid_shader.SetUniform("position", asteroid->GetPosition());
     asteroid_shader.SetUniform("size", asteroid->radius);
+    asteroid_shader.SetUniform("bonus", (asteroid->bonus_inventory & BONUS_BONUS) ? 1.0f : 0.0f);
     asteroid_buffer.Draw();
 }
 
@@ -641,6 +648,18 @@ void OpenGL::DrawObject(Ship* ship, bool update_shader)
 void OpenGL::DrawObject(Turel* turel, bool update_shader)
 {
 
+    if (update_shader)
+    {
+        turel_buffer.Use();
+        turel_shader.Use();
+        turel_shader.SetUniform("scale", window_scale);
+        turel_shader.SetUniform("camera_position", temp__game__camera_position);
+        turel_shader.SetUniform("camera_size", temp__game__camera_size);
+    }
+    turel_shader.SetUniform("angle", turel->GetAngle());
+    turel_shader.SetUniform("position", turel->GetPosition());
+    turel_shader.SetUniform("size", turel->radius);
+    turel_buffer.Draw();
 }
 
 void OpenGL::DrawObject(MapElement* map_element, bool update_shader)
@@ -759,7 +778,7 @@ void OpenGL::DrawAsteroids()
     asteroid_shader.SetUniform("camera_size", temp__game__camera_size);
     for (GameTypes::entities_count_t asteroid = 0, found_ateroids = 0; found_ateroids < *game_p__asteroids_count; asteroid++)
     {
-        if ((*game_p__asteroids)[asteroid].exist == true)
+        if ((*game_p__asteroids)[asteroid].exist)
         {
             found_ateroids++;
             DrawObject(&(*game_p__asteroids)[asteroid]);
@@ -776,7 +795,7 @@ void OpenGL::DrawBombs()
     bomb_shader.SetUniform("camera_size", temp__game__camera_size);
     for (GameTypes::entities_count_t bomb = 0, found_bombs = 0; found_bombs < *game_p__bombs_count; bomb++)
     {
-        if ((*game_p__bombs)[bomb].exist == true)
+        if ((*game_p__bombs)[bomb].exist)
         {
             found_bombs++;
             DrawObject(&(*game_p__bombs)[bomb]);
@@ -793,7 +812,7 @@ void OpenGL::DrawBonuses()
     bonus_shader.SetUniform("camera_size", temp__game__camera_size);
     for (GameTypes::entities_count_t bonus = 0, found_bonus = 0; found_bonus < *game_p__bonuses_count; bonus++)
     {
-        if ((*game_p__bonuses)[bonus].exist == true)
+        if ((*game_p__bonuses)[bonus].exist)
         {
             found_bonus++;
             DrawObject(&(*game_p__bonuses)[bonus]);
@@ -810,7 +829,7 @@ void OpenGL::DrawBullets()
     bullet_shader.SetUniform("camera_size", temp__game__camera_size);
     for (GameTypes::entities_count_t bullet = 0, found_bullets = 0; found_bullets < *game_p__bullets_count; bullet++)
     {
-        if ((*game_p__bullets)[bullet].exist == true)
+        if ((*game_p__bullets)[bullet].exist)
         {
             found_bullets++;
             DrawObject(&(*game_p__bullets)[bullet]);
@@ -827,7 +846,7 @@ void OpenGL::DrawKnifes()
     knife_shader.SetUniform("camera_size", temp__game__camera_size);
     for (GameTypes::entities_count_t knife = 0, found_knifes = 0; found_knifes < *game_p__knifes_count; knife++)
     {
-        if ((*game_p__knifes)[knife].exist == true)
+        if ((*game_p__knifes)[knife].exist)
         {
             found_knifes++;
             DrawObject(&(*game_p__knifes)[knife]);
@@ -844,7 +863,7 @@ void OpenGL::DrawLasers()
     laser_shader.SetUniform("camera_size", temp__game__camera_size);
     for (GameTypes::entities_count_t laser = 0, found_lasers = 0; found_lasers < *game_p__lasers_count; laser++)
     {
-        if ((*game_p__lasers)[laser].exist == true)
+        if ((*game_p__lasers)[laser].exist)
         {
             found_lasers++;
             DrawObject(&(*game_p__lasers)[laser]);
@@ -861,7 +880,7 @@ void OpenGL::DrawMegaLasers()
     mega_laser_shader.SetUniform("camera_size", temp__game__camera_size);
     for (GameTypes::entities_count_t mega_laser = 0, found_mega_lasers = 0; found_mega_lasers < *game_p__mega_lasers_count; mega_laser++)
     {
-        if ((*game_p__mega_lasers)[mega_laser].exist == true)
+        if ((*game_p__mega_lasers)[mega_laser].exist)
         {
             found_mega_lasers++;
             DrawObject(&(*game_p__mega_lasers)[mega_laser]);
@@ -903,7 +922,19 @@ void OpenGL::DrawShips()
 
 void OpenGL::DrawTurels()
 {
-    int i = 0;
+    turel_buffer.Use();
+    turel_shader.Use();
+    turel_shader.SetUniform("scale", window_scale);
+    turel_shader.SetUniform("camera_position", temp__game__camera_position);
+    turel_shader.SetUniform("camera_size", temp__game__camera_size);
+    for (GameTypes::entities_count_t turel = 0, found_turels = 0; found_turels < *game_p__turels_count; turel++)
+    {
+        if ((*game_p__turels)[turel].exist)
+        {
+            found_turels++;
+            DrawObject(&(*game_p__turels)[turel]);
+        }
+    }
 }
 
 

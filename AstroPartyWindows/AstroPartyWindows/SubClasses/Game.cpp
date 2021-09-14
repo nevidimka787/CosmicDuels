@@ -159,6 +159,18 @@ void Game::DynamicEntitiesCollisions(Map* map, EntityType* entities, GameTypes::
 	}
 }
 
+void Game::DynamicEntitiesCollisions(Map* map, Bomb* entities, GameTypes::entities_count_t entities_count)
+{
+	for (GameTypes::entities_count_t i = 0, found = 0; found < entities_count; i++)
+	{
+		if (entities[i].exist && !entities[i].IsBoom())
+		{
+			entities[i].Collision(map);
+			found++;
+		}
+	}
+}
+
 template<typename EntityType>
 void Game::DynamicEntitiesAddForce(Vec2F* force, EntityType* entities, GameTypes::entities_count_t entities_count)
 {
@@ -256,16 +268,13 @@ GameTypes::score_t Game::GetMaxScore()
 
 void Game::AddEntity(Asteroid new_asteroid)
 {
-	if (asteroids_count < GAME_ASTEROIDS_MAX_COUNT)
+	for (GameTypes::entities_count_t asteroid = 0; asteroid < GAME_ASTEROIDS_MAX_COUNT; asteroid++)
 	{
-		for (GameTypes::entities_count_t asteroid = 0; asteroid < GAME_ASTEROIDS_MAX_COUNT; asteroid++)
+		if (asteroids[asteroid].exist == false)
 		{
-			if (asteroids[asteroid].exist == false)
-			{
-				asteroids[asteroid] = new_asteroid;
-				asteroids_count++;
-				return;
-			}
+			asteroids[asteroid] = new_asteroid;
+			asteroids_count++;
+			return;
 		}
 	}
 }
@@ -276,96 +285,96 @@ void Game::AddEntity(Bonus new_bonus)
 	{
 		return;
 	}
-	if (bonuses_count < GAME_BONUSES_MAX_COUNT)
+	for (GameTypes::entities_count_t bonus = 0; bonus < GAME_BONUSES_MAX_COUNT; bonus++)
 	{
-		for (GameTypes::entities_count_t bonus = 0; bonus < GAME_BONUSES_MAX_COUNT; bonus++)
+		if (bonuses[bonus].exist == false)
 		{
-			if (bonuses[bonus].exist == false)
-			{
-				bonuses[bonus] = new_bonus;
-				bonuses_count++;
-				return;
-			}
+			bonuses[bonus] = new_bonus;
+			bonuses_count++;
+			return;
 		}
 	}
 }
 
 void Game::AddEntity(Bullet new_bullet)
 {
-	if (new_bullet.exist && bullets_count < GAME_BULLETS_MAX_COUNT)
+	for (GameTypes::entities_count_t bullet = 0; bullet < GAME_BULLETS_MAX_COUNT; bullet++)
 	{
-		for (GameTypes::entities_count_t bullet = 0; bullet < GAME_BULLETS_MAX_COUNT; bullet++)
+		if (bullets[bullet].exist == false)
 		{
-			if (bullets[bullet].exist == false)
-			{
-				bullets[bullet] = new_bullet;
-				bullets_count++;
-				return;
-			}
+			bullets[bullet] = new_bullet;
+			bullets_count++;
+			return;
 		}
 	}
 }
 
 void Game::AddEntity(Knife new_knife)
 {
-	if (bullets_count < GAME_KNIFES_MAX_COUNT)
+	for (GameTypes::entities_count_t knife = 0; knife < GAME_KNIFES_MAX_COUNT; knife++)
 	{
-		for (GameTypes::entities_count_t knife = 0; knife < GAME_KNIFES_MAX_COUNT; knife++)
+		if (knifes[knife].exist == false)
 		{
-			if (knifes[knife].exist == false)
-			{
-				knifes[knife] = new_knife;
-				knifes_count++;
-				return;
-			}
+			knifes[knife] = new_knife;
+			knifes_count++;
+			return;
 		}
 	}
 }
 
-void Game::AddEntity(Bomb new_bomb)
+void Game::AddEntityBomb(Bomb new_bomb)
 {
-	if (bullets_count < GAME_BOMBS_MAX_COUNT)
+	if (bombs_count == GAME_BOMBS_MAX_COUNT)
 	{
-		for (GameTypes::entities_count_t bomb = 0; bomb < GAME_BOMBS_MAX_COUNT; bomb++)
+		return;
+	}
+	for (GameTypes::entities_count_t bomb = 0; bomb < GAME_BOMBS_MAX_COUNT; bomb++)
+	{
+		if (bombs[bomb].exist == false)
 		{
-			if (bombs[bomb].exist == false)
-			{
-				bombs[bomb] = new_bomb;
-				bombs_count++;
-				return;
-			}
+			bombs[bomb] = new_bomb;
+			bombs_count++;
+			std::cout << "BC++" << std::endl;
+			return;
 		}
 	}
 }
 
 void Game::AddEntity(Laser new_laser)
 {
-	if (bullets_count < GAME_LASERS_MAX_COUNT)
+	for (GameTypes::entities_count_t laser = 0; laser < GAME_LASERS_MAX_COUNT; laser++)
 	{
-		for (GameTypes::entities_count_t laser = 0; laser < GAME_LASERS_MAX_COUNT; laser++)
+		if (lasers[laser].exist == false)
 		{
-			if (lasers[laser].exist == false)
-			{
-				lasers[laser] = new_laser;
-				lasers_count++;
-				return;
-			}
+			lasers[laser] = new_laser;
+			lasers_count++;
+			return;
+		}
+	}
+}
+
+void Game::AddEntity(Turel new_turel)
+{
+	for (GameTypes::entities_count_t turel = 0; turel < GAME_TURELS_MAX_COUNT; turel++)
+	{
+		if (turels[turel].exist == false)
+		{
+			turels[turel] = new_turel;
+			turels_count++;
+			return;
 		}
 	}
 }
 
 void Game::AddEntity(Particle new_particle)
 {
-	if (bullets_count < GAME_PARTICLES_MAX_COUNT)
+	for (GameTypes::entities_count_t particle = 0; particle < GAME_PARTICLES_MAX_COUNT; particle++)
 	{
-		for (GameTypes::entities_count_t particle = 0; particle < GAME_PARTICLES_MAX_COUNT; particle++)
+		if (particles[particle].exist == false)
 		{
-			if (particles[particle].exist == false)
-			{
-				particles[particle] = new_particle;
-				particles_count++;
-				return;
-			}
+			particles[particle] = new_particle;
+			particles_count++;
+			return;
 		}
 	}
 }
@@ -379,12 +388,13 @@ void Game::RemoveEntity(Asteroid* deleting_asteroid)
 	}
 }
 
-void Game::RemoveEntity(Bomb* deleting_mine)
+void Game::RemoveEntityBomb(Bomb* deleting_bomb)
 {
-	if (deleting_mine->exist)
+	if (deleting_bomb->exist)
 	{
-		deleting_mine->exist = false;
+		deleting_bomb->exist = false;
 		Game::bombs_count--;
+		std::cout << "BC--" << std::endl;
 	}
 }
 
@@ -492,11 +502,11 @@ void Game::DestroyEntity(Bomb* destroyer, Ship* entity)
 	}
 	if (!(game_rules && GAME_RULE_NEED_KILL_PILOT))
 	{
-		if (destroyer->CreatedByTeam(entity))
+		if (destroyer->CreatedByTeam(entity) || destroyer->GetPlayerMasterNumber() == AGGRESIVE_ENTITY_HOST_ID)
 		{
 			DecrementScore(entity->GetTeamNumber());
 		}
-		else
+		else if (destroyer->GetPlayerMasterNumber() != AGGRESIVE_ENTITY_HOST_ID)
 		{
 			IncrementScore(destroyer->GetPlayerMasterTeamNumber());
 		}
@@ -505,7 +515,13 @@ void Game::DestroyEntity(Bomb* destroyer, Ship* entity)
 	DestroySupportEntitiesBy(entity);
 	pilots[entity->GetPlayerNumber()] = entity->Destroy();
 	pilots_count++;
-	AddEntity(ships[entity->GetPlayerNumber()].LoseBonus());
+	Bonus ship_bonus = ships[entity->GetPlayerNumber()].LoseBonus();
+	Bonus temp_bonus = ship_bonus.Division();
+	while (temp_bonus.exist)
+	{
+		AddEntity(temp_bonus);
+		temp_bonus = ship_bonus.Division();
+	}
 	ships[entity->GetPlayerNumber()].exist = false;
 	ships_count--;
 	camera.SetCoefficients();
@@ -524,11 +540,11 @@ void Game::DestroyEntity(Bomb* destroyer, Pilot* entity)
 	}
 	if (game_rules && GAME_RULE_NEED_KILL_PILOT)
 	{
-		if (destroyer->CreatedByTeam(entity))
+		if (destroyer->CreatedByTeam(entity) || destroyer->GetPlayerMasterNumber() == AGGRESIVE_ENTITY_HOST_ID)
 		{
 			DecrementScore(entity->GetTeamNumber());
 		}
-		else
+		else if (destroyer->GetPlayerMasterNumber() != AGGRESIVE_ENTITY_HOST_ID)
 		{
 			IncrementScore(destroyer->GetPlayerMasterTeamNumber());
 		}
@@ -582,20 +598,26 @@ void Game::DestroyEntity(Bullet* destroyer, Ship* entity)
 	}
 	if (!(game_rules && GAME_RULE_NEED_KILL_PILOT))
 	{
-		if (destroyer->CreatedByTeam(entity))
+		if (destroyer->CreatedByTeam(entity) || destroyer->GetPlayerMasterNumber() == AGGRESIVE_ENTITY_HOST_ID)
 		{
 			DecrementScore(entity->GetTeamNumber());
 		}
-		else
+		else if(destroyer->GetPlayerMasterNumber() != AGGRESIVE_ENTITY_HOST_ID)
 		{
 			IncrementScore(destroyer->GetPlayerMasterTeamNumber());
 		}
 		DecrementPlayersCountInTeam(entity->GetTeamNumber());
 	}
 	DestroySupportEntitiesBy(entity);
-	pilots[entity->GetPlayerNumber()] = entity->Destroy();
 	pilots_count++;
-	AddEntity(ships[entity->GetPlayerNumber()].LoseBonus());
+	pilots[entity->GetPlayerNumber()] = entity->Destroy();
+	Bonus ship_bonus = ships[entity->GetPlayerNumber()].LoseBonus();
+	Bonus temp_bonus = ship_bonus.Division();
+	while (temp_bonus.exist)
+	{
+		AddEntity(temp_bonus);
+		temp_bonus = ship_bonus.Division();
+	}
 	ships[entity->GetPlayerNumber()].exist = false;
 	ships_count--;
 	camera.SetCoefficients();
@@ -609,11 +631,11 @@ void Game::DestroyEntity(Bullet* destroyer, Pilot* entity)
 	}
 	if (game_rules && GAME_RULE_NEED_KILL_PILOT)
 	{
-		if (destroyer->CreatedByTeam(entity))
+		if (destroyer->CreatedByTeam(entity) || destroyer->GetPlayerMasterNumber() == AGGRESIVE_ENTITY_HOST_ID)
 		{
 			DecrementScore(entity->GetTeamNumber());
 		}
-		else
+		else if(destroyer->GetPlayerMasterNumber() != AGGRESIVE_ENTITY_HOST_ID)
 		{
 			IncrementScore(destroyer->GetPlayerMasterTeamNumber());
 		}
@@ -658,7 +680,13 @@ void Game::DestroyEntity(Knife* destroyer, Ship* entity)
 	DestroySupportEntitiesBy(entity);
 	pilots[entity->GetPlayerNumber()] = entity->Destroy();
 	pilots_count++;
-	AddEntity(ships[entity->GetPlayerNumber()].LoseBonus());
+	Bonus ship_bonus = ships[entity->GetPlayerNumber()].LoseBonus();
+	Bonus temp_bonus = ship_bonus.Division();
+	while (temp_bonus.exist)
+	{
+		AddEntity(temp_bonus);
+		temp_bonus = ship_bonus.Division();
+	}
 	ships[entity->GetPlayerNumber()].exist = false;
 	ships_count--;
 	camera.SetCoefficients();
@@ -753,7 +781,13 @@ void Game::DestroyEntity(Laser* destroyer, Ship* entity)
 	DestroySupportEntitiesBy(entity);
 	pilots[entity->GetPlayerNumber()] = entity->Destroy();
 	pilots_count++;
-	AddEntity(ships[entity->GetPlayerNumber()].LoseBonus());
+	Bonus ship_bonus = ships[entity->GetPlayerNumber()].LoseBonus();
+	Bonus temp_bonus = ship_bonus.Division();
+	while (temp_bonus.exist)
+	{
+		AddEntity(temp_bonus);
+		temp_bonus = ship_bonus.Division();
+	}
 	ships[entity->GetPlayerNumber()].exist = false;
 	ships_count--;
 	camera.SetCoefficients();
@@ -845,8 +879,14 @@ void Game::DestroyEntity(MegaLaser* destroyer, Ship* entity)
 	}
 	DestroySupportEntitiesBy(entity);
 	pilots[entity->GetPlayerNumber()] = entity->Destroy();
+	Bonus ship_bonus = ships[entity->GetPlayerNumber()].LoseBonus();
+	Bonus temp_bonus = ship_bonus.Division();
 	pilots_count++;
-	AddEntity(ships[entity->GetPlayerNumber()].LoseBonus());
+	while (temp_bonus.exist)
+	{
+		AddEntity(temp_bonus);
+		temp_bonus = ship_bonus.Division();
+	}
 	ships[entity->GetPlayerNumber()].exist = false;
 	ships_count--;
 	camera.SetCoefficients();
@@ -1093,17 +1133,27 @@ void Game::PollEvents()
 
 void Game::Event0()
 {
-	if (!(global_timer % 100))
-	{
-		std::cout << "Event 0" << std::endl;
-	}
 }
 
 void Game::Event1()
 {
-	if (!(Game::global_timer % 100))
+	if (turels[0].exist)
 	{
-		std::cout << "Event 1" << std::endl;
+		turels[0].Rotate(0.01f);
+	}
+	if (!(global_timer % 1000) && asteroids_count == 0)
+	{
+		Vec2F positions[4];
+#define EVENT1_SQUARE_SIZE 0.7f
+		positions[0].Set(-EVENT1_SQUARE_SIZE, -EVENT1_SQUARE_SIZE);
+		positions[1].Set(-EVENT1_SQUARE_SIZE, EVENT1_SQUARE_SIZE);
+		positions[2].Set(EVENT1_SQUARE_SIZE, -EVENT1_SQUARE_SIZE);
+		positions[3].Set(EVENT1_SQUARE_SIZE, EVENT1_SQUARE_SIZE);
+		Vec2F zero_velocity;
+		AddEntity(Asteroid(&positions[0], &zero_velocity, GenerateRandomBonus() + GenerateRandomBonus(), ASTEROID_DEFAULT_SIZE));
+		AddEntity(Asteroid(&positions[1], &zero_velocity, GenerateRandomBonus() + GenerateRandomBonus(), ASTEROID_DEFAULT_SIZE));
+		AddEntity(Asteroid(&positions[2], &zero_velocity, GenerateRandomBonus() + GenerateRandomBonus(), ASTEROID_DEFAULT_SIZE));
+		AddEntity(Asteroid(&positions[3], &zero_velocity, GenerateRandomBonus() + GenerateRandomBonus(), ASTEROID_DEFAULT_SIZE));
 	}
 }
 
@@ -1119,9 +1169,6 @@ void Game::InitLevel()
 	Vec2F temp_positions[GAME_PLAYERS_MAX_COUNT];
 
 	const GameTypes::score_t max_score = GetMaxScore();
-	temp_positions[0].Set(1.0f, 1.0f);
-	asteroids[0].Set(&temp_positions[0], &temp_positions[1], BONUS_BOMB, ASTEROID_MAX_SIZE);
-	asteroids_count = 1;
 
 	Segment new_segment;
 	Rectangle rectangles[7];
@@ -1135,13 +1182,26 @@ void Game::InitLevel()
 
 		new_segment.Set(Vec2F(-2.0f, -2.0f), Vec2F(2.0f, 2.0f), true);
 		rectangles[0].Set(&new_segment);
-		new_segment.Set(Vec2F(-0.5f, -0.5f), Vec2F(0.5f, 0.5f), true);
+
+		new_segment.Set(Vec2F(-0.1f, -0.1f), Vec2F(0.1f, 0.1f), true);
 		rectangles[1].Set(&new_segment);
 
-		map.Set(rectangles, 2);
+		new_segment.Set(Vec2F(-1.0f, -1.0f), Vec2F(-1.5f, -1.5f), true);
+		rectangles[2].Set(&new_segment);
+		new_segment.Set(Vec2F(1.0f, 1.0f), Vec2F(1.5f, 1.5f), true);
+		rectangles[3].Set(&new_segment);
+		new_segment.Set(Vec2F(-1.0f, 1.0f), Vec2F(-1.5f, 1.5f), true);
+		rectangles[4].Set(&new_segment);
+		new_segment.Set(Vec2F(1.0f, -1.0f), Vec2F(1.5f, -1.5f), true);
+		rectangles[5].Set(&new_segment);
+
+		map.Set(rectangles, 6);
 		cyrcles_count = 0;
 		polygons_count = 0;
-		rectangles_count = 2;
+		rectangles_count = 6;
+
+		temp_positions[0].Set(0.0f, 0.0f);
+		AddEntity(Turel(&temp_positions[0]));
 
 
 		/*Spawn entities*/
@@ -1157,12 +1217,6 @@ void Game::InitLevel()
 		//Edge
 		new_segment.Set(Vec2F(-2.0f, -2.0f), Vec2F(2.0f, 2.0f), true);
 		rectangles[0].Set(&new_segment);
-
-
-		new_segment.Set(Vec2F(-1.0f, -1.0f), Vec2F(-1.5f, -1.5f), true);
-		rectangles[1].Set(&new_segment);
-		new_segment.Set(Vec2F(1.0f, 1.0f), Vec2F(1.5f, 1.5f), true);
-		rectangles[2].Set(&new_segment);
 
 		map.Set(rectangles, 3);
 		cyrcles_count = 0;
@@ -1279,14 +1333,14 @@ void Game::InitMenus()
 	Vec2F size;
 	size.Set(1.0f, -0.60f);
 	buttons[0].Set(BUTTON_ID_START_MATCH, &position, &size, area, "PLAY", 20);
-	buttons[0].status = BUTTON_STATUS_ACTIVE;
+	buttons[0].status |= BUTTON_STATUS_ACTIVE;
 	position.Set(-0.5f, 0.3f);
 	size.Set(0.475f, -0.25f);
 	buttons[1].Set(BUTTON_ID_GO_TO_OPTINS_MENU, &position, &size, area, "Options", 6);
-	buttons[1].status = BUTTON_STATUS_ACTIVE;
+	buttons[1].status |= BUTTON_STATUS_ACTIVE;
 	position.Set(0.025f, 0.3f);
 	buttons[2].Set(BUTTON_ID_EXIT, &position, &size, area, "Exit", 6);
-	buttons[2].status = BUTTON_STATUS_ACTIVE;
+	buttons[2].status |= BUTTON_STATUS_ACTIVE;
 	position.Set(0.0f, 0.0f);
 	size.Set(1.0f, -1.0f);
 	main_menu.Set(&position, &size, buttons, 3);
@@ -1333,10 +1387,10 @@ void Game::InitMenus()
 	buttons[10].status = (game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_BONUS) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_FALSE;
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 11 * GAME_OPTION_MENU_BORD);
 	buttons[11].Set(BUTTON_ID_GO_TO_SELECT_MAP_MENU, &position, &size, area, "Map pull menu", 5);
-	buttons[11].status = BUTTON_STATUS_ACTIVE;
+	buttons[11].status |= BUTTON_STATUS_ACTIVE;
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 12 * GAME_OPTION_MENU_BORD);
 	buttons[12].Set(BUTTON_ID_GO_TO_SELECT_OBJECTS_MENU, &position, &size, area, "Spawning objects menu", 5);
-	buttons[12].status = BUTTON_STATUS_ACTIVE;
+	buttons[12].status |= BUTTON_STATUS_ACTIVE;
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 13 * GAME_OPTION_MENU_BORD);
 	buttons[13].Set(BUTTON_ID_SET_ACTIVE_BALANCE, &position, &size, area, "Auto balance", 5);
 	buttons[13].status = ((game_rules & GAME_RULE_BALANCE_ACTIVE) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
@@ -1351,10 +1405,10 @@ void Game::InitMenus()
 	position.Set(-0.4f, 0.825f);
 	size.Set(0.8f, -0.2f);
 	buttons[0].Set(BUTTON_ID_RESUME_MATCH, &position, &size, area, "Resume", 6);
-	buttons[0].status = BUTTON_STATUS_ACTIVE;
+	buttons[0].status |= BUTTON_STATUS_ACTIVE;
 	position.Set(-0.4f, 0.6f);
 	buttons[1].Set(BUTTON_ID_GO_TO_MAIN_MENU, &position, &size, area, "Main menu", 6);
-	buttons[1].status = BUTTON_STATUS_ACTIVE;
+	buttons[1].status |= BUTTON_STATUS_ACTIVE;
 	position.Set(0.0f, 0.0f);
 	size.Set(1.0f, -1.0f);
 	pause_menu.Set(&position, &size, buttons, 2);
@@ -1365,20 +1419,20 @@ void Game::InitMenus()
 	size.Set(0.475f, -0.25f);
 	position.Set(-0.5f, 0.9f);
 	buttons[0].Set(BUTTON_ID_SELECT_SHIP_1, &position, &size, area, "Player 1", 6);
-	buttons[0].status = BUTTON_STATUS_ACTIVE;
+	buttons[0].status |= BUTTON_STATUS_ACTIVE;
 	position.Set(0.025f, 0.9f);
 	buttons[1].Set(BUTTON_ID_SELECT_SHIP_2, &position, &size, area, "Player 2", 6);
-	buttons[1].status = BUTTON_STATUS_ACTIVE;
+	buttons[1].status |= BUTTON_STATUS_ACTIVE;
 	position.Set(0.025f, 0.6f);
 	buttons[2].Set(BUTTON_ID_SELECT_SHIP_3, &position, &size, area, "Player 3", 6);
-	buttons[2].status = BUTTON_STATUS_ACTIVE;
+	buttons[2].status |= BUTTON_STATUS_ACTIVE;
 	position.Set(-0.5f, 0.6f);
 	buttons[3].Set(BUTTON_ID_SELECT_SHIP_4, &position, &size, area, "Player 4", 6);
-	buttons[3].status = BUTTON_STATUS_ACTIVE;
+	buttons[3].status |= BUTTON_STATUS_ACTIVE;
 	position.Set(-0.5f, 0.3f);
 	size.Set(1.0f, -0.25f);
 	buttons[4].Set(BUTTON_ID_START_GAME, &position, &size, area, "Start game", 7);
-	buttons[4].status = BUTTON_STATUS_ACTIVE;
+	buttons[4].status |= BUTTON_STATUS_ACTIVE;
 	position.Set(0.0f, 0.0f);
 	size.Set(1.0f, -1.0f);
 	ships_select_menu.Set(&position, &size, buttons, 5);
@@ -1394,7 +1448,7 @@ void Game::InitMenus()
 	{
 		position.Set(-0.5f + (float)(i % 2) * GAME_PULL_MENU_RIGHT_BORDER, GAME_PULL_MENU_UP_Y - (float)(i / 2) * GAME_PULL_MENU_RIGHT_BORDER);
 		buttons[i].Set(BUTTON_ID_SELECT_MAP + i, &position, &size, area, "", 5, BUTTON_STATUS_TRUE);
-		buttons[i].status = BUTTON_STATUS_ACTIVE;
+		buttons[i].status |= BUTTON_STATUS_ACTIVE;
 	}
 	buttons[0].SetText("Test");
 	buttons[1].SetText("Square");
@@ -1408,7 +1462,7 @@ void Game::InitMenus()
 	position.Set(-0.5f, 0.9f);
 	size.Set(0.475f, -0.475f);
 	buttons[0].Set(BUTTON_ID_SELECT_OBJECT_ASTEROID, &position, &size, area, "Asteroid", 6);
-	buttons[0].status = BUTTON_STATUS_ACTIVE;
+	buttons[0].status |= BUTTON_STATUS_ACTIVE;
 	position.Set(0.0f, 0.0f);
 	size.Set(0.5f, -0.5f);
 	spawning_objects_select_menu.Set(&position, &size, buttons, 1);
@@ -1421,7 +1475,7 @@ void Game::InitMenus()
 	{
 		position.Set(-0.5f + (float)(i % 2) * GAME_PULL_MENU_RIGHT_BORDER, GAME_PULL_MENU_UP_Y -(float)(i / 2) * GAME_PULL_MENU_DOWN_BORDER);
 		buttons[i].Set(BUTTON_ID_SELECT_BONUS + i, &position, &size, area, "", 7, BUTTON_STATUS_TRUE);
-		buttons[i].status = BUTTON_STATUS_ACTIVE;
+		buttons[i].status |= BUTTON_STATUS_ACTIVE;
 	}
 	buttons[0].SetText("Loop");
 	buttons[1].SetText("Laser");
@@ -1539,6 +1593,7 @@ void Game::MemoryLock()
 	asteroids_count = 0;
 	bombs = new Bomb[GAME_BOMBS_MAX_COUNT];
 	bombs_count = 0;
+	std::cout << "BC=0" << std::endl;
 	bonuses = new Bonus[GAME_BONUSES_MAX_COUNT];
 	bonuses_count = 0;
 	bullets = new Bullet[GAME_BULLETS_MAX_COUNT];
@@ -1579,6 +1634,7 @@ void Game::MemorySetDefault()
 
 	asteroids_count = 0;
 	bombs_count = 0;
+	std::cout << "BC=0" << std::endl;
 	bonuses_count = 0;
 	bullets_count = 0;
 	grav_gens_count = 0;
@@ -1656,6 +1712,7 @@ void Game::MemoryFree()
 	asteroids_count = 0;
 	delete[] bombs;
 	bombs_count = 0;
+	std::cout << "BC=0" << std::endl;
 	delete[] bonuses;
 	bonuses_count = 0;
 	delete[] bullets;
@@ -1853,7 +1910,8 @@ void Game::ShipShoot_Knife(Ship* ship)
 
 void Game::ShipShoot_Bomb(Ship* ship)
 {
-	Game::AddEntity(ship->CreateBomb());
+	std::cout << "Bomb" << std::endl;
+	Game::AddEntityBomb(ship->CreateBomb());
 }
 
 void Game::ShipShoot_Loop(Ship* ship)
@@ -2012,24 +2070,35 @@ void Game::UpdateBombs()
 {
 	//BombsChainReaction();
 
-	for (GameTypes::entities_count_t bomb = 0, found_bombs = 0; found_bombs < bombs_count && bomb < bombs_count; bomb++)
+	for (GameTypes::entities_count_t bomb = 0, found_bombs = 0; found_bombs < bombs_count; bomb++)
 	{
 		temp__bomb_p = &bombs[bomb];
 		if (temp__bomb_p->exist)
 		{
+			if (temp__bomb_p->CanRemove())
+			{
+				std::cout << "Main remove" << std::endl;
+				RemoveEntityBomb(temp__bomb_p);
+				goto end_of_cycle;
+			}
 			if (temp__bomb_p->IsBoom())
 			{
-				if (temp__bomb_p->CanRemove())
+				for (GameTypes::entities_count_t second_bomb = bomb + 1, found_second_bombs = found_bombs + 1; found_second_bombs < bombs_count; second_bomb++)
 				{
-					RemoveEntity(temp__bomb_p);
-					goto end_of_cycle;
+					if (bombs[second_bomb].exist)
+					{
+						if (!bombs[second_bomb].IsBoom() && bombs[second_bomb].IsCollision(temp__bomb_p))
+						{
+							bombs[second_bomb].Boom();
+						}
+						found_second_bombs++;
+					}
 				}
 				for (GameTypes::players_count_t ship = 0; ship < GAME_PLAYERS_MAX_COUNT; ship++)
 				{
 					temp__ship_p = &ships[ship];
 					if (temp__ship_p->exist && temp__ship_p->Entity::IsCollision(temp__bomb_p))
 					{
-
 						DestroyEntity(temp__bomb_p, temp__ship_p);
 					}
 				}
@@ -2145,6 +2214,25 @@ void Game::UpdateBullets()
 			{
 				temp__bullet_p->is_collision &= BULLET_MUSTER_FULL - BULLET_MUSTER_ONLY;
 			}
+			for (GameTypes::entities_count_t second_bullet = bullet + 1, found_second_bullets = found_bullets + 1; found_second_bullets < bullets_count; second_bullet++)
+			{
+				if (bullets[second_bullet].exist)
+				{
+					if (bullets[second_bullet].IsCollision(temp__bullet_p))
+					{
+						std::cout << "Anigilation" << std::endl;
+						Vec2F bomb_position = temp__bullet_p->GetPosition();
+						Vec2F bomb_velocity = (temp__bullet_p->GetVelocity() + bullets[second_bullet].GetVelocity()) / 2.0f;
+						GameTypes::players_count_t host_id = (bullets[second_bullet].SameTeam(temp__bullet_p)) ? temp__bullet_p->GetPlayerMasterTeamNumber() : AGGRESIVE_ENTITY_HOST_ID;
+						AddEntityBomb(Bomb(&bomb_position, &bomb_velocity, AGGRESIVE_ENTITY_HOST_ID, AGGRESIVE_ENTITY_HOST_ID, 100, 0.0f, 0.0f,
+							DEFAULT_FORCE_COLLISION_COEFFICIENT, BOMB_DEFAULT_RESISTANCE_AIR_COEFFICIENT, BOMB_DEFAULT_RADIUS * 3.0f, false, true, false, true));
+						RemoveEntity(temp__bullet_p);
+						RemoveEntity(&bullets[second_bullet]);
+						goto end_of_cycle;
+					}
+					found_second_bullets++;
+				}
+			}
 
 			temp__vector = temp__bullet_p->GetPosition();
 			if (temp__bullet_p->Entity::IsCollision(&map) || temp__vector > area_size || temp__vector < -area_size)
@@ -2224,7 +2312,7 @@ void Game::UpdateBullets()
 			for (GameTypes::entities_count_t bomb = 0, found_bombs = 0; found_bombs < bombs_count; bomb++)
 			{
 				temp__bomb_p = &bombs[bomb];
-				if (temp__bullet_p->exist)
+				if (temp__bomb_p->exist)
 				{
 					if (temp__bomb_p->IsActive() == false && temp__bomb_p->IsBoom() == false && temp__bomb_p->Entity::IsCollision(temp__bullet_p))
 					{
@@ -2604,40 +2692,6 @@ void Game::UpdateTurels()
 				Game::AddEntity(temp__turel_p->Shoot());
 			}
 			found_turels++;
-		}
-	}
-}
-
-void Game::BombsChainReaction()
-{
-	bool recursion = true;
-	while (recursion == true)
-	{
-		recursion = false;
-		for (GameTypes::entities_count_t bomb = 0, found_bomb = 0; found_bomb < bombs_count && bomb < GAME_BOMBS_MAX_COUNT; bomb++)
-		{
-			temp__bomb_p = &bombs[bomb];
-			if (temp__bomb_p->exist)
-			{
-				if (temp__bomb_p->IsBoom() == true)
-				{
-					Bomb* temp_bomb;
-					for (GameTypes::entities_count_t new_bomb = 0, found_new_bomb = 0; found_new_bomb < bombs_count && new_bomb < GAME_BOMBS_MAX_COUNT; new_bomb++)
-					{
-						temp_bomb = &bombs[new_bomb];
-						if (temp_bomb->exist)
-						{
-							if (new_bomb != bomb && temp_bomb->IsBoom() == false && temp__bomb_p->GetDistance(temp_bomb) == 0.0f)
-							{
-								recursion = true;
-								temp_bomb->Boom();
-							}
-							found_new_bomb++;
-						}
-					}
-				}
-				found_bomb++;
-			}
 		}
 	}
 }

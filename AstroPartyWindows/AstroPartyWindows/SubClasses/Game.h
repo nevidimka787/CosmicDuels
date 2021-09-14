@@ -185,7 +185,6 @@ public:
 
 	
 	//Function adds entity to array that store entities of the same type.
-	//Not checking nullprt!
 	void AddEntity(Bonus new_bonus);
 	//Function adds entity to array that store entities of the same type.
 	//Not checking nullprt!
@@ -198,10 +197,13 @@ public:
 	void AddEntity(Knife new_knife);
 	//Function adds entity to array that store entities of the same type.
 	//Not checking nullprt!
-	void AddEntity(Bomb new_mine);
+	void AddEntityBomb(Bomb new_mine);
 	//Function adds entity to array that store entities of the same type.
 	//Not checking nullprt!
 	void AddEntity(Laser new_lazer);
+	//Function adds entity to array that store entities of the same type.
+	//Not checking nullprt!
+	void AddEntity(Turel new_lazer);
 	//Function adds entity to array that store entities of the same type.
 	//Not checking nullprt!
 	void AddEntity(Particle new_particle);
@@ -222,7 +224,7 @@ public:
 	void RemoveEntity(Knife* deleting_knife);
 	//Function removes the specified entity from the array.
 	//Not checking nullprt!
-	void RemoveEntity(Bomb* deleting_mine);
+	void RemoveEntityBomb(Bomb* deleting_mine);
 	//Function removes the specified entity from the array.
 	//Not checking nullprt!
 	void RemoveEntity(Laser* deleting_lazer);
@@ -326,9 +328,9 @@ public:
 	void CheckEndMatch();
 
 	void PollEvents();
-	//Events on the current map.
+	//"Test"
 	void Event0();
-	//Events on the current map.
+	//"Square"
 	void Event1();
 
 	//Memory functions
@@ -366,6 +368,11 @@ public:
 	void DynamicEntitiesCollisions(
 		Map* map,
 		EntityType* entities,
+		GameTypes::entities_count_t entities_count);
+	//The function calculates forces of collisions between entities in the array and elements of the map.
+	void DynamicEntitiesCollisions(
+		Map* map,
+		Bomb* entities,
 		GameTypes::entities_count_t entities_count);
 	//The function adds the specified force to all entities in the array.
 	//Use temp_p1 temp_p2

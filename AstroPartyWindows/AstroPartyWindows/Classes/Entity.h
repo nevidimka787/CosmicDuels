@@ -340,6 +340,7 @@ public:
 	bool CreatedByTeam(ControledEntity* controled_entity);
 	GameTypes::players_count_t GetPlayerMasterNumber();
 	GameTypes::players_count_t GetPlayerMasterTeamNumber();
+	bool SameTeam(KillerEntity* killer_entity);
 	void Set(KillerEntity* killer_entity);
 	void Set(
 		Vec2F* position,
@@ -749,6 +750,7 @@ protected:
 	GameTypes::tic_t animation_tic;
 	bool active;
 	bool boom;
+	bool can_remove;
 public:
 	Bomb();
 	Bomb(const Bomb& bomb);
@@ -765,6 +767,7 @@ public:
 		float radius = BOMB_DEFAULT_RADIUS,
 		bool active = false,
 		bool boom = false,
+		bool can_remove = false,
 		bool exist = true);
 
 	void Activate();

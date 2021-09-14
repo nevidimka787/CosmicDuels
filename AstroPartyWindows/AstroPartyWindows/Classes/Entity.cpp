@@ -1032,7 +1032,8 @@ Bonus Bonus::Division()
 			bonus_inventory &= BUFF_BONUS_ALL - temp_bonus_inventory;
 			if (bonus_inventory & (1 << (BONUS_BONUSES_COUNT * 2)) - 1)
 			{
-				return Bonus(&this->position, &this->velocity, temp_bonus_inventory);
+				Vec2F new_position = position + direction.Rotate((float)rand() / (float)RAND_MAX * M_PI * 2.0f) * radius;
+				return Bonus(&new_position, &velocity, temp_bonus_inventory);
 			}
 			return Bonus(false);
 		}
@@ -1337,6 +1338,11 @@ GameTypes::players_count_t KillerEntity::GetPlayerMasterNumber()
 GameTypes::players_count_t KillerEntity::GetPlayerMasterTeamNumber()
 {
 	return player_master_team_number;
+}
+
+bool KillerEntity::SameTeam(KillerEntity* killer_entity)
+{
+	return player_master_team_number == killer_entity->player_master_team_number;
 }
 
 void KillerEntity::Set(KillerEntity* killer_entity)
@@ -2094,7 +2100,7 @@ GameTypes::tic_t Pilot::GetRespawnDellay()
 Ship Pilot::Respawn()
 {
 	Vec2F temp = Vec2F();
-	return Ship(&position, &velocity, player_number, player_team_number, rotate_input_value_pointer, shoot_input_value_pointer, nullptr, 0, angle);
+	return Ship(&position, &velocity, player_number, player_team_number, nullptr, rotate_input_value_pointer, shoot_input_value_pointer, nullptr, 0, angle);
 }
 
 void Pilot::Set(Pilot* pilot)
@@ -2472,8 +2478,8 @@ Turel::Turel(Vec2F* position, float angle, GameTypes::tic_t attack_dellay, GameT
 Bullet Turel::Shoot()
 {
 	Vec2F new_bullet_velocity = direction * BULLET_DEFAULT_VELOCITY;
-	Vec2F new_bullet_position = position + direction * radius;
-	return Bullet(&new_bullet_position, &new_bullet_velocity, AGGRESIVE_ENTITY_HOST_ID, AGGRESIVE_ENTITY_HOST_ID);
+	Vec2F new_bullet_position = position + direction * radius * 2.0f;
+	return Bullet(&new_bullet_position, &new_bullet_velocity, AGGRESIVE_ENTITY_HOST_ID, AGGRESIVE_ENTITY_HOST_ID, false);
 }
 
 void Turel::Set(Turel* turel)
@@ -2486,6 +2492,7 @@ void Turel::Set(Turel* turel)
 	inactive_period = turel->inactive_period;
 	last_position = turel->last_position;
 	position = turel->position;
+	radius = turel->radius;
 	shoots_count = turel->shoots_count;
 }
 
@@ -2499,6 +2506,7 @@ void Turel::Set(Vec2F* position, float angle, GameTypes::tic_t attack_dellay, Ga
 	this->inactive_period = inactive_period;
 	this->last_position = last_position;
 	this->position = *position;
+	this->radius = radius;
 	this->shoots_count = shoots_count;
 }
 
@@ -2512,6 +2520,7 @@ void Turel::operator=(Turel turel)
 	inactive_period = turel.inactive_period;
 	last_position = turel.last_position;
 	position = turel.position;
+	radius = turel.radius;
 	shoots_count = turel.shoots_count;
 }
 
@@ -2786,13 +2795,13 @@ Bullet::Bullet() :
 
 Bullet::Bullet(const Bullet& bullet) :
 	KillerEntity(bullet),
-	is_collision(BULLET_MUSTER_ONLY | BULLET_MUSTER_KNIFES)
+	is_collision(bullet.is_collision)
 {
 }
 
 Bullet::Bullet(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t player_master_number, GameTypes::players_count_t player_master_team_number, bool is_collision_master, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, float radius, bool exist) :
 	KillerEntity(position, velocity, radius, player_master_number, player_master_team_number, angle, angular_velocity, force_collision_coeffisient, force_resistance_air_coefficient, exist),
-	is_collision(BULLET_MUSTER_ONLY | BULLET_MUSTER_KNIFES)
+	is_collision((is_collision_master) ? BULLET_MUSTER_ONLY | BULLET_MUSTER_KNIFES : BULLET_MUSTER_NOTHING)
 {
 }
 
@@ -2961,7 +2970,8 @@ Bomb::Bomb() :
 	KillerEntity(),
 	animation_tic(BOMB_DEFAULT_BOOM_DELLAY),
 	active(false),
-	boom(false)
+	boom(false),
+	can_remove(false)
 {
 }
 
@@ -2969,15 +2979,17 @@ Bomb::Bomb(const Bomb& bomb) :
 	KillerEntity(bomb),
 	animation_tic(bomb.animation_tic),
 	active(bomb.active),
-	boom(bomb.boom)
+	boom(bomb.boom),
+	can_remove(bomb.can_remove)
 {
 }
 
-Bomb::Bomb(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t player_master_number, GameTypes::players_count_t player_master_team_number, GameTypes::tic_t animation_tic, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, float radius, bool active, bool boom, bool exist) :
+Bomb::Bomb(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t player_master_number, GameTypes::players_count_t player_master_team_number, GameTypes::tic_t animation_tic, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, float radius, bool active, bool boom, bool can_remove, bool exist) :
 	KillerEntity(position, velocity, radius, player_master_number, player_master_team_number, angle, angular_velocity, force_collision_coeffisient, force_resistance_air_coefficient, exist),
 	active(active),
 	animation_tic(animation_tic),
-	boom(boom)
+	boom(boom),
+	can_remove(can_remove)
 {
 }
 
@@ -3011,7 +3023,7 @@ bool Bomb::IsBoom()
 
 bool Bomb::CanRemove()
 {
-	return animation_tic == 0 && boom;
+	return can_remove;
 }
 
 void Bomb::Set(Bomb* bomb)
@@ -3021,6 +3033,7 @@ void Bomb::Set(Bomb* bomb)
 	angular_velocity = bomb->angular_velocity;
 	animation_tic = bomb->animation_tic;
 	boom = bomb->boom;
+	can_remove = bomb->can_remove;
 	direction = bomb->direction;
 	exist = bomb->exist;
 	force_collision_coeffisient = bomb->force_collision_coeffisient;
@@ -3039,6 +3052,7 @@ void Bomb::Set(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t paye
 	this->angular_velocity = angular_velocity;
 	this->animation_tic = animation_tic;
 	this->boom = boom;
+	this->can_remove = can_remove;
 	UpdateDirection();
 	this->exist = exist;
 	this->force_collision_coeffisient = force_collision_coeffisient;
@@ -3052,15 +3066,24 @@ void Bomb::Set(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t paye
 
 void Bomb::Update()
 {
-	DynamicEntity::Update();
-	if (animation_tic > 0 && (active || boom))
+	if (can_remove)
 	{
-		animation_tic--;
 		return;
 	}
-	if (animation_tic == 0 && !boom)
+	DynamicEntity::Update();
+	if (active || boom)
 	{
-		Boom();
+		animation_tic--;
+		if (animation_tic == 0)
+		{
+			if (boom)
+			{
+				can_remove = true;
+				return;
+			}
+			Boom();
+			return;
+		}
 		return;
 	}
 }
@@ -3072,6 +3095,7 @@ void Bomb::operator=(Bomb bomb)
 	angular_velocity = bomb.angular_velocity;
 	animation_tic = bomb.animation_tic;
 	boom = bomb.boom;
+	can_remove = bomb.can_remove;
 	direction = bomb.direction;
 	exist = bomb.exist;
 	force = bomb.force;

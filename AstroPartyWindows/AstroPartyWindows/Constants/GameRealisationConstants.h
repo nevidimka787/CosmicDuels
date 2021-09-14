@@ -21,7 +21,7 @@ Asteroid
 //tics to next shoot
 #define GAME_DELLAY_BETWEEN_SHOOTS	30
 
-#define GAME_GRAV_GENS_MAX_COUNT	2
+#define GAME_GRAV_GENS_MAX_COUNT	32
 //The maximum possible count of players on the map.
 #define GAME_PLAYERS_MAX_COUNT		4
 	//The maximum possible count of knifes on the map.
@@ -31,11 +31,11 @@ Asteroid
 	//The maximum possible count of bombs on the map.
 #define GAME_BOMBS_MAX_COUNT		(UINT8_MAX - 1)
 	//The maximum possible count of turels on the map.
-#define GAME_TURELS_MAX_COUNT		1
+#define GAME_TURELS_MAX_COUNT		32
 	//The maximum possible count of lasers on the map.
-#define GAME_MEGA_LASERS_MAX_COUNT	2
+#define GAME_MEGA_LASERS_MAX_COUNT	32
 	//The maximum possible count of asteroids on the map.
-#define GAME_ASTEROIDS_MAX_COUNT	16
+#define GAME_ASTEROIDS_MAX_COUNT	32
 	//The maximum possible count of bonuses on the map.
 #define GAME_BONUSES_MAX_COUNT		32
 	//The maximum possible count of bullets on the map.
