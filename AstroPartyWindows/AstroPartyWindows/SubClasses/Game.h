@@ -197,7 +197,7 @@ public:
 	void AddEntity(Knife new_knife);
 	//Function adds entity to array that store entities of the same type.
 	//Not checking nullprt!
-	void AddEntityBomb(Bomb new_mine);
+	void AddEntity(Bomb new_mine);
 	//Function adds entity to array that store entities of the same type.
 	//Not checking nullprt!
 	void AddEntity(Laser new_lazer);
@@ -224,7 +224,7 @@ public:
 	void RemoveEntity(Knife* deleting_knife);
 	//Function removes the specified entity from the array.
 	//Not checking nullprt!
-	void RemoveEntityBomb(Bomb* deleting_mine);
+	void RemoveEntity(Bomb* deleting_mine);
 	//Function removes the specified entity from the array.
 	//Not checking nullprt!
 	void RemoveEntity(Laser* deleting_lazer);
@@ -330,8 +330,10 @@ public:
 	void PollEvents();
 	//"Test"
 	void Event0();
-	//"Square"
+	//"Turel"
 	void Event1();
+	//"Cyrcle"
+	void Event2();
 
 	//Memory functions
 

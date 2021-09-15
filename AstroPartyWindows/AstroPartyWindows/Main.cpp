@@ -84,7 +84,7 @@ int main()
                     frame++;
                 }
                 timer_thread.join();
-                main_draw_functions->update_menu = OPEN_GL_REALISATION_FRAMES_AFTER_CALLBAC_COUNT;
+                main_draw_functions->update_menu = OPEN_GL_REALISATION_FRAMES_AFTER_CALLBAC_COUNT * 3;
             }
         }
         glfwSwapBuffers(window);
@@ -127,7 +127,7 @@ void InputOutputUpdate()
         if (main_game->pause_round == false)
         {
             lock_timer++;
-            if (!(lock_timer % 100) && false)
+            if (!(lock_timer % 100))
             {
                 std::cout << "Frame: " << frame  << std::endl 
                     << "Physic: " << physic << std::endl << std::endl;

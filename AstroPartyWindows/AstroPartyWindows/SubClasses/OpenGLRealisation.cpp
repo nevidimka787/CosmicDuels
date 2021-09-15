@@ -295,6 +295,7 @@ void OpenGL::InitBuffers()
     bomb_buffer.Initialisate(points, 6);
     bonus_buffer.Initialisate(points, 6);
     bullet_buffer.Initialisate(points, 6);
+    cyrcle_buffer.Initialisate(points, 6);
 
     points[0].Set(2.0f, 2.0f);
     points[1].Set(-2.0f, 2.0f);
@@ -683,12 +684,20 @@ void OpenGL::DrawObject(Rectangle* rectangle, bool update_shader)
 
 void OpenGL::DrawObject(Cyrcle* cyrcle, bool update_shader)
 {
-
+    if (update_shader)
+    {
+        cyrcle_buffer.Use();
+        cyrcle_shader.SetUniform("scale", window_scale);
+        cyrcle_shader.SetUniform("camera_position", temp__game__camera_position);
+        cyrcle_shader.SetUniform("camera_size", temp__game__camera_size);
+    }
+    cyrcle_shader.SetUniform("position", cyrcle->GetPosition());
+    cyrcle_shader.SetUniform("size", cyrcle->GetRadius());
+    cyrcle_buffer.Draw();
 }
 
 void OpenGL::DrawObject(Polygon* polygon, bool update_shader)
 {
-
 }
 
 
@@ -964,7 +973,8 @@ void OpenGL::DrawIndicatedMap(Map* map)
         rectangle_shader.SetUniform("camera_size", temp__game__camera_size);
         for (EngineTypes::Map::elements_array_length_t rectangle = 0; rectangle < map->rectangles_array_length; rectangle++)
         {
-            if (((Rectangle*)(map_element_p = (void*)map->GetRectanglePointer(rectangle)))->exist == true)
+            map_element_p = (void*)map->GetRectanglePointer(rectangle);
+            if (((Rectangle*)map_element_p)->exist == true)
             {
                 DrawObject((Rectangle*)map_element_p);
             }
@@ -980,7 +990,8 @@ void OpenGL::DrawIndicatedMap(Map* map)
         cyrcle_shader.SetUniform("camera_size", temp__game__camera_size);
         for (EngineTypes::Map::elements_array_length_t cyrcle = 0; cyrcle < map->cyrcles_array_length; cyrcle++)
         {
-            if (((Cyrcle*)(map_element_p = (void*)map->GetRectanglePointer(cyrcle)))->exist == true)
+            map_element_p = (void*)map->GetCyrclePointer(cyrcle);
+            if (((Cyrcle*)map_element_p)->exist)
             {
                 DrawObject((Cyrcle*)map_element_p);
             }
@@ -996,7 +1007,8 @@ void OpenGL::DrawIndicatedMap(Map* map)
         polygon_shader.SetUniform("camera_size", temp__game__camera_size);
         for (EngineTypes::Map::elements_array_length_t polygon = 0; polygon < map->polygons_array_length; polygon++)
         {
-            if (((Polygon*)(map_element_p = (void*)map->GetRectanglePointer(polygon)))->exist == true)
+            map_element_p = (void*)map->GetPolygonPointer(polygon);
+            if (((Polygon*)map->GetRectanglePointer(polygon))->exist == true)
             {
                 DrawObject((Polygon*)map_element_p);
             }

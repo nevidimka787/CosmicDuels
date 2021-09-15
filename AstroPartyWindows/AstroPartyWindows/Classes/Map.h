@@ -49,14 +49,10 @@ class Rectangle : public MapElement
 protected:
 	Vec2F point2;//down left point
 public:
-	EngineTypes::Rectangle::sides_t show_sides;
-	EngineTypes::Rectangle::sides_t collision_sides;
 	Rectangle();
 	Rectangle(const Rectangle& rectangle);
 	Rectangle(
 		Segment* diagonal,
-		EngineTypes::Rectangle::sides_t show_sides = (RECTANGLE_UP_SIDE | RECTANGLE_DOWN_SIDE | RECTANGLE_RIGHT_SIDE | RECTANGLE_LEFT_SIDE),
-		EngineTypes::Rectangle::sides_t collision_sides = (RECTANGLE_UP_SIDE | RECTANGLE_DOWN_SIDE | RECTANGLE_RIGHT_SIDE | RECTANGLE_LEFT_SIDE),
 		bool unbreakable = true,
 		bool exist = true);
 
@@ -72,8 +68,6 @@ public:
 	void Set(Rectangle* patent);
 	void Set(
 		Segment* diagonal,
-		EngineTypes::Rectangle::sides_t show_sides = (RECTANGLE_UP_SIDE | RECTANGLE_DOWN_SIDE | RECTANGLE_RIGHT_SIDE | RECTANGLE_LEFT_SIDE),
-		EngineTypes::Rectangle::sides_t collision_sides = (RECTANGLE_UP_SIDE | RECTANGLE_DOWN_SIDE | RECTANGLE_RIGHT_SIDE | RECTANGLE_LEFT_SIDE),
 		bool unbreakable = true,
 		bool exist = true);
 
@@ -118,6 +112,7 @@ protected:
 	EngineTypes::Polygon::points_array_length_t points_array_length;
 
 public:
+	bool closed;
 	Polygon();
 	Polygon(const Polygon& polygon);
 	Polygon(
@@ -167,12 +162,12 @@ public:
 		Polygon* polygons_array = nullptr,
 		EngineTypes::Map::elements_array_length_t polygons_array_length = 0);
 
-	Rectangle GetRectangle(uint8_t number);
-	Cyrcle GetCyrcle(uint8_t number);
-	Polygon GetPolygon(uint8_t number);
-	Rectangle* GetRectanglePointer(uint8_t number);
-	Cyrcle* GetCyrclePointer(uint8_t number);
-	Polygon* GetPolygonPointer(uint8_t number);
+	Rectangle GetRectangle(EngineTypes::Map::elements_array_length_t number);
+	Cyrcle GetCyrcle(EngineTypes::Map::elements_array_length_t number);
+	Polygon GetPolygon(EngineTypes::Map::elements_array_length_t number);
+	Rectangle* GetRectanglePointer(EngineTypes::Map::elements_array_length_t number);
+	Cyrcle* GetCyrclePointer(EngineTypes::Map::elements_array_length_t number);
+	Polygon* GetPolygonPointer(EngineTypes::Map::elements_array_length_t number);
 	void Set(Map* map);
 	void Set(
 		Rectangle* rectangles_array = nullptr,

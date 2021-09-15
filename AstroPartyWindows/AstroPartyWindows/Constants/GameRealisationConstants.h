@@ -62,7 +62,8 @@ Asteroid
 
 	//This map is first map on every match.
 #define MAP_TEST_MAP			0x00
-#define MAP_SQUARE_ON_CENTER	0x01
+#define MAP_TUREL_ON_CENTER		0x01
+#define MAP_CYRCLE_ON_CENTER	0x02
 
 	//map pull
 
@@ -93,7 +94,7 @@ Asteroid
 	//match rules
 
 #define GAME_RANDOM_ITERATIONS_COUNT			8
-#define GAME_MAPS_COUNT							2
+#define GAME_MAPS_COUNT							3
 #define GAME_OBJECTS_COUNT						1
 #define GAME_BONUSES_COUNT						4
 #define GAME_BALANCE_ACTIVATE_DIFFERENCE_SCORES	3
@@ -179,6 +180,7 @@ Asteroid
 
 #define BUTTON_ID_SELECT_MAP	300
 #define BUTTON_ID_SELECT_MAP_0	(BUTTON_ID_SELECT_MAP + MAP_TEST_MAP)
-#define BUTTON_ID_SELECT_MAP_1	(BUTTON_ID_SELECT_MAP + MAP_SQUARE_ON_CENTER)
+#define BUTTON_ID_SELECT_MAP_1	(BUTTON_ID_SELECT_MAP + MAP_TUREL_ON_CENTER)
+#define BUTTON_ID_SELECT_MAP_2	(BUTTON_ID_SELECT_MAP + MAP_CYRCLE_ON_CENTER)
 
 	//select map pull menu

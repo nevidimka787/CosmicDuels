@@ -135,7 +135,12 @@ float Entity::GetDistance(Rectangle* rectangle)
 float Entity::GetDistance(Cyrcle* cyrcle)
 {
 	Vec2F temp = cyrcle->GetPosition();
-	return GetDistance(&temp) - cyrcle->GetRadius();
+	float dist = GetDistance(&temp) - cyrcle->GetRadius();
+	if (dist < -2.0f * radius)
+	{
+		dist = cyrcle->GetRadius() - temp.GetDistance(&position) - 3.0f * radius;
+	}
+	return dist;
 }
 
 float Entity::GetDistance(Polygon* polygon)
@@ -210,37 +215,25 @@ bool Entity::IsCollision(Rectangle* rectangle)
 		return false;
 	}
 	Segment side;
-	if (rectangle->collision_sides & RECTANGLE_UP_SIDE)
+	side = rectangle->GetUpSide();
+	if (IsCollision(&side))
 	{
-		side = rectangle->GetUpSide();
-		if (IsCollision(&side))
-		{
-			return true;
-		}
+		return true;
 	}
-	if (rectangle->collision_sides & RECTANGLE_DOWN_SIDE)
+	side = rectangle->GetDownSide();
+	if (IsCollision(&side))
 	{
-		side = rectangle->GetDownSide();
-		if (IsCollision(&side))
-		{
-			return true;
-		}
+		return true;
 	}
-	if (rectangle->collision_sides & RECTANGLE_RIGHT_SIDE)
+	side = rectangle->GetRightSide();
+	if (IsCollision(&side))
 	{
-		side = rectangle->GetRightSide();
-		if (IsCollision(&side))
-		{
-			return true;
-		}
+		return true;
 	}
-	if (rectangle->collision_sides & RECTANGLE_LEFT_SIDE)
+	side = rectangle->GetLeftSide();
+	if (IsCollision(&side))
 	{
-		side = rectangle->GetLeftSide();
-		if (IsCollision(&side))
-		{
-			return true;
-		}
+		return true;
 	}
 	return false;
 }
@@ -616,19 +609,15 @@ bool DynamicEntity::Collision(Rectangle* rectangle)
 
 bool DynamicEntity::Collision(Cyrcle* cyrcle)
 {
-	Vec2F vec = cyrcle->GetPosition();
-	if (GetDistance(&vec) > radius + cyrcle->GetRadius())
+	float distance;
+	if ((distance = GetDistance(cyrcle)) > 0.0f)
 	{
 		return false;
 	}
-	Vec2F force_vec = position - cyrcle->GetPosition();
-	velocity -= force_vec.Project(&velocity);
-	force += force_vec * force_collision_coeffisient;
 
-	if (cyrcle->IsUnbreacable() == false)
-	{
-		cyrcle->exist = false;
-	}
+	Vec2F collision_direction = cyrcle->GetPosition() - position;
+	velocity -= collision_direction.Project(&velocity);
+	force -= collision_direction * (force_collision_coeffisient / (distance + radius) * radius) / 10.0f;
 	return true;
 }
 
@@ -640,28 +629,29 @@ bool DynamicEntity::Collision(Polygon* polygon)
 bool DynamicEntity::Collision(Map* map)
 {
 	bool collision = false;
-	for (uint8_t i = 0; i < map->rectangles_array_length; i++)
+	void* map_element;
+	for (EngineTypes::Map::elements_array_length_t i = 0; i < map->cyrcles_array_length; i++)
 	{
-		Rectangle temp = map->GetRectangle(i);
-		if (temp.exist)
+		map_element = (void*)map->GetCyrclePointer(i);
+		if (((Cyrcle*)map_element)->exist)
 		{
-			collision |= Collision(&temp);
+			collision |= Collision((Cyrcle*)map_element);
 		}
 	}
-	for (uint8_t i = 0; i < map->cyrcles_array_length; i++)
+	for (EngineTypes::Map::elements_array_length_t i = 0; i < map->polygons_array_length; i++)
 	{
-		Cyrcle temp = map->GetCyrcle(i);
-		if (temp.exist)
+		map_element = (void*)map->GetPolygonPointer(i);
+		if (((Polygon*)map_element)->exist)
 		{
-			collision |= Collision(&temp);
+			collision |= Collision((Polygon*)map_element);
 		}
 	}
-	for (uint8_t i = 0; i < map->polygons_array_length; i++)
+	for (EngineTypes::Map::elements_array_length_t i = 0; i < map->rectangles_array_length; i++)
 	{
-		Polygon temp = map->GetPolygon(i);
-		if (temp.exist)
+		map_element = (void*)map->GetRectanglePointer(i);
+		if (((Rectangle*)map_element)->exist)
 		{
-			collision |= Collision(&temp);
+			collision |= Collision((Rectangle*)map_element);
 		}
 	}
 	return collision;
@@ -1855,8 +1845,9 @@ Bullet Ship::CreateTriple(uint8_t bullet_number)
 }
 
 Bullet Ship::CreateLoop(GameTypes::entities_count_t bullet_number)
-{
-	Vec2F bullet_velocity = direction.Rotate(2.0f * (float)M_PI / BULLETS_IN_LOOP * ((float)bullet_number + 0.5f));
+{ 
+	float loc_angle = 2.0f * (float)M_PI / (float)BULLETS_IN_LOOP * (float)bullet_number;
+	Vec2F bullet_velocity = direction.Rotate(loc_angle);
 	Vec2F bullet_position = position + bullet_velocity * (radius + BULLET_DEFAULT_RADIUS);
 	bullet_velocity = bullet_velocity * BULLET_DEFAULT_VELOCITY + velocity;
 	return Bullet(&bullet_position, &bullet_velocity, player_number, player_team_number);
@@ -2981,12 +2972,10 @@ Bomb::Bomb(const Bomb& bomb) :
 {
 }
 
-Bomb::Bomb(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t player_master_number, GameTypes::players_count_t player_master_team_number, GameTypes::tic_t animation_tic, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, float radius, bool active, bool boom, bool can_remove, bool exist) :
+Bomb::Bomb(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t player_master_number, GameTypes::players_count_t player_master_team_number, GameTypes::tic_t animation_tic, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, float radius,EngineTypes::Bomb::status_t status, bool exist) :
 	KillerEntity(position, velocity, radius, player_master_number, player_master_team_number, angle, angular_velocity, force_collision_coeffisient, force_resistance_air_coefficient, exist),
-	active(active),
-	animation_tic(animation_tic),
-	boom(boom),
-	can_remove(can_remove)
+	animation_tic(animation_tic), 
+	status(status)
 {
 }
 
@@ -3040,7 +3029,7 @@ void Bomb::Set(Bomb* bomb)
 	velocity = bomb->velocity;
 }
 
-void Bomb::Set(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t payer_master_number, GameTypes::players_count_t player_master_team_number, GameTypes::tic_t animation_tic, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, float radius, bool active, bool boom, bool exist)
+void Bomb::Set(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t payer_master_number, GameTypes::players_count_t player_master_team_number, GameTypes::tic_t animation_tic, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, float radius, EngineTypes::Bomb::status_t status, bool exist)
 {
 	this->angle = angle;
 	this->angular_velocity = angular_velocity;

@@ -247,7 +247,6 @@ EngineTypes::Bonus::bonus_t Game::GenerateRandomBonus()
 			random--;
 		}
 	}
-	std::cout << "Bonus: " << (unsigned)(1 << ((bonus - 1) * 2)) << " number: " << (unsigned)bonus << std::endl;
 	return 1 << ((bonus - 1) * 2);
 }
 
@@ -1008,6 +1007,13 @@ void Game::InitGame()
 	for (GameTypes::objects_types_count_t i = 0; i < GAME_OBJECT_TYPES_COUNT; i++)
 	{
 		object_pull_array[i] = true;
+	}
+	for (GameTypes::objects_types_count_t i = 0; i < GAME_MAPS_COUNT; i++)
+	{
+		map_pull_array[i] = true;
+	}
+	for (GameTypes::objects_types_count_t i = 0; i < GAME_BONUSES_COUNT; i++)
+	{
 		bonus_pull_array[i] = true;
 	}
 }
@@ -1128,7 +1134,8 @@ void Game::PollEvents()
 	switch (current_event)
 	{
 	case MAP_TEST_MAP:			Event0();	return;
-	case MAP_SQUARE_ON_CENTER:	Event1();	return;
+	case MAP_TUREL_ON_CENTER:	Event1();	return;
+	case MAP_CYRCLE_ON_CENTER:	Event2();	return;
 	}
 }
 
@@ -1158,6 +1165,24 @@ void Game::Event1()
 	}
 }
 
+void Game::Event2()
+{
+	if (!(global_timer % 1000) && asteroids_count == 0)
+	{
+		Vec2F positions[4];
+#define EVENT1_SQUARE_SIZE 1.5f
+		positions[0].Set(-EVENT1_SQUARE_SIZE, 0.0f);
+		positions[1].Set(EVENT1_SQUARE_SIZE, 0.0f);
+		positions[2].Set(0.0f, -EVENT1_SQUARE_SIZE);
+		positions[3].Set(0.0f, EVENT1_SQUARE_SIZE);
+		Vec2F zero_velocity;
+		AddEntity(Asteroid(&positions[0], &zero_velocity, GenerateRandomBonus(), ASTEROID_MAX_SIZE));
+		AddEntity(Asteroid(&positions[1], &zero_velocity, GenerateRandomBonus(), ASTEROID_MAX_SIZE));
+		AddEntity(Asteroid(&positions[2], &zero_velocity, GenerateRandomBonus(), ASTEROID_MAX_SIZE));
+		AddEntity(Asteroid(&positions[3], &zero_velocity, GenerateRandomBonus(), ASTEROID_MAX_SIZE));
+	}
+}
+
 void Game::InitLevel()
 {
 	srand(time(0));
@@ -1168,18 +1193,62 @@ void Game::InitLevel()
 	current_map_id = GenerateRandomMapId();
 
 	Vec2F temp_positions[GAME_PLAYERS_MAX_COUNT];
+	float temp_angles[GAME_PLAYERS_MAX_COUNT];
 
 	const GameTypes::score_t max_score = GetMaxScore();
 
 	Segment new_segment;
-	Rectangle rectangles[7];
+	Vec2F new_position;
+	Rectangle* rectangles;
+	Cyrcle* cyrcles;
 	
 	current_event = current_map_id;
 
 	switch (current_map_id)
 	{
-	case MAP_SQUARE_ON_CENTER:
+	case MAP_CYRCLE_ON_CENTER:
+
+		rectangles = new Rectangle[5];
+		cyrcles = new Cyrcle[1];
+
+		new_segment.Set(Vec2F(-2.0f, -2.0f), Vec2F(2.0f, 2.0f), true);
+		rectangles[0].Set(&new_segment);
+		new_segment.Set(Vec2F(-1.5f, -1.5f), Vec2F(0.5f, 0.5f));
+		rectangles[1].Set(&new_segment);
+		new_segment.Set(Vec2F(1.5f, 1.5f), Vec2F(-0.5f, -0.5f));
+		rectangles[2].Set(&new_segment);
+		new_segment.Set(Vec2F(-1.5f, 1.5f), Vec2F(0.5f, -0.5f));
+		rectangles[3].Set(&new_segment);
+		new_segment.Set(Vec2F(1.5f, -1.5f), Vec2F(-0.5f, 0.5f));
+		rectangles[4].Set(&new_segment);
+
+
+		new_position.Set(0.0f, 0.0f);
+		cyrcles[0].Set(&new_position, 0.5f);
+
+		map.Set(rectangles, 5, cyrcles, 1);
+		cyrcles_count = 1;
+		polygons_count = 0;
+		rectangles_count = 5;
+
+		/*Spawn entities*/
+		temp_positions[0].Set(-1.9f, 1.9f);
+		temp_positions[1].Set(1.9f, 1.9f);
+		temp_positions[2].Set(1.9f, -1.9f);
+		temp_positions[3].Set(-1.9f, -1.9f);
+
+		temp_angles[0] = -(float)M_PI_4;
+		temp_angles[1] = -(float)M_PI_2 - (float)M_PI_4;
+		temp_angles[2] = (float)M_PI_2 + (float)M_PI_4;
+		temp_angles[3] = (float)M_PI_4;
+
+		delete[] rectangles;
+		delete[] cyrcles;
+		break;
+	case MAP_TUREL_ON_CENTER:
 		/* Create map */
+
+		rectangles = new Rectangle[6];
 
 		new_segment.Set(Vec2F(-2.0f, -2.0f), Vec2F(2.0f, 2.0f), true);
 		rectangles[0].Set(&new_segment);
@@ -1201,8 +1270,8 @@ void Game::InitLevel()
 		polygons_count = 0;
 		rectangles_count = 6;
 
-		temp_positions[0].Set(0.0f, 0.0f);
-		AddEntity(Turel(&temp_positions[0]));
+		new_position.Set(0.0f, 0.0f);
+		AddEntity(Turel(&new_position));
 
 
 		/*Spawn entities*/
@@ -1211,18 +1280,26 @@ void Game::InitLevel()
 		temp_positions[2].Set(1.9f, -1.9f);
 		temp_positions[3].Set(-1.9f, -1.9f);
 
+		temp_angles[0] = -(float)M_PI_4;
+		temp_angles[1] = -(float)M_PI_2 - (float)M_PI_4;
+		temp_angles[2] = (float)M_PI_2 + (float)M_PI_4;
+		temp_angles[3] = (float)M_PI_4;
+
+		delete[] rectangles;
 		break;
 	case MAP_TEST_MAP:
 	default:
 		/* Create map */
-		//Edge
+		
+		rectangles = new Rectangle[1];
+
 		new_segment.Set(Vec2F(-2.0f, -2.0f), Vec2F(2.0f, 2.0f), true);
 		rectangles[0].Set(&new_segment);
 
-		map.Set(rectangles, 3);
+		map.Set(rectangles, 1);
 		cyrcles_count = 0;
 		polygons_count = 0;
-		rectangles_count = 3;
+		rectangles_count = 1;
 		
 
 		/*Spawn entities*/
@@ -1231,6 +1308,12 @@ void Game::InitLevel()
 		temp_positions[2].Set(1.9f, -1.9f);
 		temp_positions[3].Set(-1.9f, -1.9f);
 
+		temp_angles[0] = -(float)M_PI_4;
+		temp_angles[1] = -(float)M_PI_2 - (float)M_PI_4;
+		temp_angles[2] = (float)M_PI_2 + (float)M_PI_4;
+		temp_angles[3] = (float)M_PI_4;
+
+		delete[] rectangles;
 		break;
 	}
 
@@ -1243,12 +1326,6 @@ void Game::InitLevel()
 		burnout_double_clk_timer[player] = 0;
 		burnout_flags[player] = false;
 	}
-
-	float temp_angles[GAME_PLAYERS_MAX_COUNT];
-	temp_angles[0] = -(float)M_PI_4;
-	temp_angles[1] = -(float)M_PI_2 - (float)M_PI_4;
-	temp_angles[2] = (float)M_PI_2 + (float)M_PI_4;
-	temp_angles[3] = (float)M_PI_4;
 
 	if (game_rules & GAME_RULE_PLAYERS_SPAWN_DIRECTION_RANDOMIZE)
 	{
@@ -1445,12 +1522,13 @@ void Game::InitMenus()
 	size.Set(0.5f, -0.25f);
 	for (uint8_t i = 0; i < GAME_MAPS_COUNT; i++)
 	{
-		position.Set(-0.5f + (float)(i % 2) * GAME_PULL_MENU_RIGHT_BORDER, GAME_PULL_MENU_UP_Y - (float)(i / 2) * GAME_PULL_MENU_RIGHT_BORDER);
+		position.Set(-0.5f + (float)(i % 2) * GAME_PULL_MENU_RIGHT_BORDER, GAME_PULL_MENU_UP_Y - (float)(i / 2) * GAME_PULL_MENU_DOWN_BORDER);
 		buttons[i].Set(BUTTON_ID_SELECT_MAP + i, &position, &size, area, "", 5, BUTTON_STATUS_TRUE);
 		buttons[i].status |= BUTTON_STATUS_ACTIVE;
 	}
 	buttons[0].SetText("Test");
-	buttons[1].SetText("Square");
+	buttons[1].SetText("Turel");
+	buttons[2].SetText("Cyrcle");
 	position.Set(0.0f, 0.0f);
 	size.Set(1.0f, GAME_PULL_MENU_RIGHT_BORDER * (float)(((GAME_MAPS_COUNT + 1) / 2) + 1));
 	map_pull_select_menu.Set(&position, &size, buttons, GAME_MAPS_COUNT);
@@ -1592,7 +1670,6 @@ void Game::MemoryLock()
 	asteroids_count = 0;
 	bombs = new Bomb[GAME_BOMBS_MAX_COUNT];
 	bombs_count = 0;
-	std::cout << "BC=0" << std::endl;
 	bonuses = new Bonus[GAME_BONUSES_MAX_COUNT];
 	bonuses_count = 0;
 	bullets = new Bullet[GAME_BULLETS_MAX_COUNT];
@@ -1633,7 +1710,6 @@ void Game::MemorySetDefault()
 
 	asteroids_count = 0;
 	bombs_count = 0;
-	std::cout << "BC=0" << std::endl;
 	bonuses_count = 0;
 	bullets_count = 0;
 	grav_gens_count = 0;
@@ -1711,7 +1787,6 @@ void Game::MemoryFree()
 	asteroids_count = 0;
 	delete[] bombs;
 	bombs_count = 0;
-	std::cout << "BC=0" << std::endl;
 	delete[] bonuses;
 	bonuses_count = 0;
 	delete[] bullets;
@@ -2218,12 +2293,11 @@ void Game::UpdateBullets()
 				{
 					if (bullets[second_bullet].IsCollision(temp__bullet_p))
 					{
-						std::cout << "Anigilation" << std::endl;
 						Vec2F bomb_position = temp__bullet_p->GetPosition();
 						Vec2F bomb_velocity = (temp__bullet_p->GetVelocity() + bullets[second_bullet].GetVelocity()) / 2.0f;
 						GameTypes::players_count_t host_id = (bullets[second_bullet].SameTeam(temp__bullet_p)) ? temp__bullet_p->GetPlayerMasterTeamNumber() : AGGRESIVE_ENTITY_HOST_ID;
 						AddEntity(Bomb(&bomb_position, &bomb_velocity, AGGRESIVE_ENTITY_HOST_ID, AGGRESIVE_ENTITY_HOST_ID, 100, 0.0f, 0.0f,
-							DEFAULT_FORCE_COLLISION_COEFFICIENT, BOMB_DEFAULT_RESISTANCE_AIR_COEFFICIENT, BOMB_DEFAULT_RADIUS * 3.0f, false, true, false, true));
+							DEFAULT_FORCE_COLLISION_COEFFICIENT, BOMB_DEFAULT_RESISTANCE_AIR_COEFFICIENT, BOMB_DEFAULT_RADIUS * 3.0f, BOMB_BOOM, true));
 						RemoveEntity(temp__bullet_p);
 						RemoveEntity(&bullets[second_bullet]);
 						goto end_of_cycle;
