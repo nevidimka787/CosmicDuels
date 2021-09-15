@@ -194,6 +194,9 @@ public:
 	void AddEntity(Bullet new_bullet);
 	//Function adds entity to array that store entities of the same type.
 	//Not checking nullprt!
+	void AddEntity(GravGen new_grav_gen);
+	//Function adds entity to array that store entities of the same type.
+	//Not checking nullprt!
 	void AddEntity(Knife new_knife);
 	//Function adds entity to array that store entities of the same type.
 	//Not checking nullprt!
@@ -398,6 +401,13 @@ public:
 		GameTypes::map_elements_count_t grav_gens_count,
 		EntityType* entities,
 		GameTypes::entities_count_t entities_count);
+	//The function adds forces of the all gravity generators to all entities in the array.
+	//Use temp_p1 temp_p2
+	void DynamicEntitiesAddForce(
+		GravGen* grav_gens,
+		GameTypes::map_elements_count_t grav_gens_count,
+		Bomb* entities,
+		GameTypes::entities_count_t entities_count);
 
 	//The function calculates the influence of entities on other entities. Any entity can be destroyed. New entities can be created.
 	void UpdateAsteroids();
@@ -442,9 +452,6 @@ public:
 	void TransportPilots();
 	//Update the position ans velocity of entity.
 	void TransportShips();
-
-	//All bombs that can be detonated will detonate.
-	void BombsChainReaction();
 
 
 	void DestroyEntity(Bomb* destroyer, Asteroid* entity);

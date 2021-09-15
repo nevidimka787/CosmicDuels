@@ -24,6 +24,7 @@ public:
 	StaticBuffer bomb_buffer;
 	StaticBuffer bonus_buffer;
 	StaticBuffer bullet_buffer;
+	StaticBuffer grav_gen_buffer;
 	StaticBuffer knife_buffer;
 	StaticBuffer laser_buffer;
 	StaticBuffer mega_laser_buffer;
@@ -73,6 +74,8 @@ public:
 	Shader bonus_shader;
 	//The shader use for draw bullets.
 	Shader bullet_shader;
+	//The shader use for draw gravity generators.
+	Shader grav_gen_shader;
 	//The shader use for draw knifes.
 	Shader knife_shader;
 	//The shader use for draw lasers.
@@ -147,6 +150,8 @@ public:
 	void DrawObject(Bonus* bonus, bool update_shader = false);
 	//The function draw bullet.
 	void DrawObject(Bullet* bullet, bool update_shader = false);
+	//The function draw gravity generator.
+	void DrawObject(GravGen* grav_gen, bool update_shader = false);
 	//The function draw knife.
 	void DrawObject(Knife* knife, bool update_shader = false);
 	//The function draw laser.
@@ -184,6 +189,8 @@ public:
 	void DrawBonuses();
 	//The function draw all bullets on the map.
 	void DrawBullets();
+	//The function draw all gravity generators on the map.
+	void DrawGravityGenerators();
 	//The function draw all knifes on the map.
 	void DrawKnifes();
 	//The function draw all lasers on the map.

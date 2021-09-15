@@ -115,6 +115,7 @@ void OpenGL::ProcessInput(GLFWwindow* window)
     if (update_menu > 0 && flag_update_menu_can_change)
     {
         update_menu--;
+        (*game_p__current_active_menu)->Recalculate();
     }
     if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
     {
@@ -296,6 +297,7 @@ void OpenGL::InitBuffers()
     bonus_buffer.Initialisate(points, 6);
     bullet_buffer.Initialisate(points, 6);
     cyrcle_buffer.Initialisate(points, 6);
+    grav_gen_buffer.Initialisate(points, 6);
 
     points[0].Set(2.0f, 2.0f);
     points[1].Set(-2.0f, 2.0f);
@@ -367,6 +369,7 @@ void OpenGL::InitShaders()
     bomb_shader.Initialisate("Shaders/Objects/Vertex/Bomb.glsl", "Shaders/Objects/Fragment/Bomb.glsl");
     bonus_shader.Initialisate("Shaders/Objects/Vertex/Bonus.glsl", "Shaders/Objects/Fragment/Bonus.glsl");
     bullet_shader.Initialisate("Shaders/Objects/Vertex/Bullet.glsl", "Shaders/Objects/Fragment/Bullet.glsl");
+    grav_gen_shader.Initialisate("Shaders/Objects/Vertex/GravGen.glsl", "Shaders/Objects/Fragment/GravGen.glsl");
     knife_shader.Initialisate("Shaders/Objects/Vertex/Knife.glsl", "Shaders/Objects/Fragment/Knife.glsl");
     laser_shader.Initialisate("Shaders/Objects/Vertex/Laser.glsl", "Shaders/Objects/Fragment/Laser.glsl");
     mega_laser_shader.Initialisate("Shaders/Objects/Vertex/MegaLaser.glsl", "Shaders/Objects/Fragment/MegaLaser.glsl");
@@ -400,6 +403,10 @@ void OpenGL::DrawFrame()
         temp__game__camera_size = game_p__camera->GetSize();
 
         DrawCurrentMap();
+        if (*game_p__grav_gens_count > 0)
+        {
+            DrawGravityGenerators();
+        }
         if (*game_p__turels_count > 0)
         {
             DrawTurels();
@@ -538,6 +545,22 @@ void OpenGL::DrawObject(Bullet* bullet, bool update_shader)
     bullet_shader.SetUniform("position", bullet->GetPosition());
     bullet_shader.SetUniform("size", bullet->radius);
     bullet_buffer.Draw();
+}
+
+void OpenGL::DrawObject(GravGen* grav_gen, bool update_shader)
+{
+    if (update_shader)
+    {
+        grav_gen_buffer.Use();
+        grav_gen_shader.Use();
+        grav_gen_shader.SetUniform("scale", window_scale);
+        grav_gen_shader.SetUniform("camera_position", temp__game__camera_position);
+        grav_gen_shader.SetUniform("camera_size", temp__game__camera_size);
+    }
+    grav_gen_shader.SetUniform("position", grav_gen->GetPosition());
+    grav_gen_shader.SetUniform("size", grav_gen->radius);
+    grav_gen_shader.SetUniform("gravity", grav_gen->gravity);
+    grav_gen_buffer.Draw();
 }
 
 void OpenGL::DrawObject(Knife* knife, bool update_shader)
@@ -842,6 +865,23 @@ void OpenGL::DrawBullets()
         {
             found_bullets++;
             DrawObject(&(*game_p__bullets)[bullet]);
+        }
+    }
+}
+
+void OpenGL::DrawGravityGenerators()
+{
+    grav_gen_buffer.Use();
+    grav_gen_shader.Use();
+    grav_gen_shader.SetUniform("scale", window_scale);
+    grav_gen_shader.SetUniform("camera_position", temp__game__camera_position);
+    grav_gen_shader.SetUniform("camera_size", temp__game__camera_size);
+    for (GameTypes::entities_count_t grav_gen = 0, found_grav_gens = 0; found_grav_gens < *game_p__grav_gens_count; grav_gen++)
+    {
+        if ((*game_p__grav_gens)[grav_gen].exist)
+        {
+            found_grav_gens++;
+            DrawObject(&(*game_p__grav_gens)[grav_gen]);
         }
     }
 }

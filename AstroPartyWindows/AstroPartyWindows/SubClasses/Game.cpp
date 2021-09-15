@@ -59,6 +59,7 @@ void Game::Update()
 	DynamicEntitiesAddForce(grav_gens, grav_gens_count, ships, ships_count);
 	DynamicEntitiesAddForce(grav_gens, grav_gens_count, pilots, pilots_count);
 	DynamicEntitiesAddForce(grav_gens, grav_gens_count, asteroids, asteroids_count);
+	DynamicEntitiesAddForce(grav_gens, grav_gens_count, bombs, bombs_count);
 	DynamicEntitiesAddForce(grav_gens, grav_gens_count, bullets, bullets_count);
 	
 	//collisions
@@ -231,6 +232,32 @@ void Game::DynamicEntitiesAddForce(GravGen* grav_gens, GameTypes::map_elements_c
 	}
 }
 
+void Game::DynamicEntitiesAddForce(GravGen* grav_gens, GameTypes::map_elements_count_t grav_gens_count, Bomb* entities, GameTypes::entities_count_t entities_count)
+{
+	Vec2F force;
+	float len2;
+	for (GameTypes::map_elements_count_t grav_gen = 0; grav_gen < grav_gens_count; grav_gen++)
+	{
+		if (grav_gens[grav_gen].exist)
+		{
+			for (GameTypes::entities_count_t i = 0, found = 0; found < entities_count; i++)
+			{
+				if (entities[i].exist)
+				{
+					if (!entities[i].IsBoom())
+					{
+						force = entities[i].GetPosition() - grav_gens[grav_gen].GetPosition();
+						len2 = force.x * force.x + force.y * force.y;
+						force /= len2 * sqrt(len2) / grav_gens[grav_gen].gravity;
+						entities[i].AddForce(&force);
+					}
+					found++;
+				}
+			}
+		}
+	}
+}
+
 EngineTypes::Bonus::bonus_t Game::GenerateRandomBonus()
 {
 	unsigned random = rand() % GAME_BONUSES_COUNT + 1;
@@ -306,6 +333,19 @@ void Game::AddEntity(Bullet new_bullet)
 		{
 			bullets[bullet] = new_bullet;
 			bullets_count++;
+			return;
+		}
+	}
+}
+
+void Game::AddEntity(GravGen new_grav_gen)
+{
+	for (GameTypes::entities_count_t grav_gen = 0; grav_gen < GAME_GRAV_GENS_MAX_COUNT; grav_gen++)
+	{
+		if (grav_gens[grav_gen].exist == false)
+		{
+			grav_gens[grav_gen] = new_grav_gen;
+			grav_gens_count++;
 			return;
 		}
 	}
@@ -1224,18 +1264,21 @@ void Game::InitLevel()
 
 
 		new_position.Set(0.0f, 0.0f);
-		cyrcles[0].Set(&new_position, 0.5f);
+		cyrcles[0].Set(&new_position, 0.1f / 0.8f);
 
 		map.Set(rectangles, 5, cyrcles, 1);
 		cyrcles_count = 1;
 		polygons_count = 0;
 		rectangles_count = 5;
 
+		new_position.Set(0.0f, 0.0f);
+		AddEntity(GravGen(&new_position));
+
 		/*Spawn entities*/
-		temp_positions[0].Set(-1.9f, 1.9f);
-		temp_positions[1].Set(1.9f, 1.9f);
-		temp_positions[2].Set(1.9f, -1.9f);
-		temp_positions[3].Set(-1.9f, -1.9f);
+		temp_positions[0].Set(-1.85f, 1.9f);
+		temp_positions[1].Set(1.9f, 1.85f);
+		temp_positions[2].Set(1.85f, -1.9f);
+		temp_positions[3].Set(-1.9f, -1.85f);
 
 		temp_angles[0] = -(float)M_PI_4;
 		temp_angles[1] = -(float)M_PI_2 - (float)M_PI_4;
@@ -1275,10 +1318,10 @@ void Game::InitLevel()
 
 
 		/*Spawn entities*/
-		temp_positions[0].Set(-1.9f, 1.9f);
-		temp_positions[1].Set(1.9f, 1.9f);
-		temp_positions[2].Set(1.9f, -1.9f);
-		temp_positions[3].Set(-1.9f, -1.9f);
+		temp_positions[0].Set(-1.85f, 1.9f);
+		temp_positions[1].Set(1.9f, 1.85f);
+		temp_positions[2].Set(1.85f, -1.9f);
+		temp_positions[3].Set(-1.9f, -1.85f);
 
 		temp_angles[0] = -(float)M_PI_4;
 		temp_angles[1] = -(float)M_PI_2 - (float)M_PI_4;
@@ -1303,10 +1346,10 @@ void Game::InitLevel()
 		
 
 		/*Spawn entities*/
-		temp_positions[0].Set(-1.9f, 1.9f);
-		temp_positions[1].Set(1.9f, 1.9f);
-		temp_positions[2].Set(1.9f, -1.9f);
-		temp_positions[3].Set(-1.9f, -1.9f);
+		temp_positions[0].Set(-1.85f, 1.9f);
+		temp_positions[1].Set(1.9f, 1.85f);
+		temp_positions[2].Set(1.85f, -1.9f);
+		temp_positions[3].Set(-1.9f, -1.85f);
 
 		temp_angles[0] = -(float)M_PI_4;
 		temp_angles[1] = -(float)M_PI_2 - (float)M_PI_4;
@@ -1526,9 +1569,9 @@ void Game::InitMenus()
 		buttons[i].Set(BUTTON_ID_SELECT_MAP + i, &position, &size, area, "", 5, BUTTON_STATUS_TRUE);
 		buttons[i].status |= BUTTON_STATUS_ACTIVE;
 	}
-	buttons[0].SetText("Test");
+	buttons[0].SetText("Empty");
 	buttons[1].SetText("Turel");
-	buttons[2].SetText("Cyrcle");
+	buttons[2].SetText("Grav gen");
 	position.Set(0.0f, 0.0f);
 	size.Set(1.0f, GAME_PULL_MENU_RIGHT_BORDER * (float)(((GAME_MAPS_COUNT + 1) / 2) + 1));
 	map_pull_select_menu.Set(&position, &size, buttons, GAME_MAPS_COUNT);
