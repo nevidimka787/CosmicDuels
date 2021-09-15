@@ -748,9 +748,7 @@ class Bomb : public KillerEntity
 {
 protected:
 	GameTypes::tic_t animation_tic;
-	bool active;
-	bool boom;
-	bool can_remove;
+	EngineTypes::Bomb::status_t status;
 public:
 	Bomb();
 	Bomb(const Bomb& bomb);
@@ -765,9 +763,7 @@ public:
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		float force_resistance_air_coefficient = BOMB_DEFAULT_RESISTANCE_AIR_COEFFICIENT,
 		float radius = BOMB_DEFAULT_RADIUS,
-		bool active = false,
-		bool boom = false,
-		bool can_remove = false,
+		EngineTypes::Bomb::status_t status = BOMB_INACTIVE,
 		bool exist = true);
 
 	void Activate();
@@ -789,8 +785,7 @@ public:
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		float force_resistance_air_coefficient = BULLET_DEFAULT_RESISTANCE_AIR_COEFFICIENT,
 		float radius = BOMB_DEFAULT_RADIUS,
-		bool active = false,
-		bool boom = false,
+		EngineTypes::Bomb::status_t status = BOMB_INACTIVE,
 		bool exist = true);
 
 	void operator=(Bomb bomb);

@@ -18,6 +18,11 @@ namespace EngineTypes
 		typedef uint8_t size_t;
 	}
 
+	namespace Bomb
+	{
+		typedef uint8_t status_t;
+	}
+
 	namespace Bonus
 	{
 		typedef uint16_t bonus_t;

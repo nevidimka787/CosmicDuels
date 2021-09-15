@@ -1856,9 +1856,10 @@ Bullet Ship::CreateTriple(uint8_t bullet_number)
 
 Bullet Ship::CreateLoop(GameTypes::entities_count_t bullet_number)
 {
-	Vec2F bullet_vector = direction.Rotate(2.0f * (float)M_PI / BULLETS_IN_LOOP * ((float)bullet_number + 0.5f));
-	Vec2F bullet_velocity = bullet_vector * BULLET_DEFAULT_VELOCITY + velocity;
-	return Bullet(&position, &bullet_velocity, player_number, player_team_number);
+	Vec2F bullet_velocity = direction.Rotate(2.0f * (float)M_PI / BULLETS_IN_LOOP * ((float)bullet_number + 0.5f));
+	Vec2F bullet_position = position + bullet_velocity * (radius + BULLET_DEFAULT_RADIUS);
+	bullet_velocity = bullet_velocity * BULLET_DEFAULT_VELOCITY + velocity;
+	return Bullet(&bullet_position, &bullet_velocity, player_number, player_team_number);
 }
 
 Bomb Ship::CreateBomb()
@@ -2969,18 +2970,14 @@ Knife::~Knife()
 Bomb::Bomb() :
 	KillerEntity(),
 	animation_tic(BOMB_DEFAULT_BOOM_DELLAY),
-	active(false),
-	boom(false),
-	can_remove(false)
+	status(BOMB_INACTIVE)
 {
 }
 
 Bomb::Bomb(const Bomb& bomb) :
 	KillerEntity(bomb),
 	animation_tic(bomb.animation_tic),
-	active(bomb.active),
-	boom(bomb.boom),
-	can_remove(bomb.can_remove)
+	status(bomb.status)
 {
 }
 
@@ -2995,15 +2992,15 @@ Bomb::Bomb(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t player_m
 
 void Bomb::Activate()
 {
-	active = true;
+	status |= BOMB_ACTIVE;
 }
 
 void Bomb::Boom()
 {
 	animation_tic = BOMB_BOOM_TIME;
-	active = false;
+	status &= BOMB_ALL - BOMB_ACTIVE;
 	radius = BOMB_BOOM_RADIUS;
-	boom = true;
+	status |= BOMB_BOOM;
 }
 
 GameTypes::tic_t Bomb::GetAnimationTic()
@@ -3013,27 +3010,24 @@ GameTypes::tic_t Bomb::GetAnimationTic()
 
 bool Bomb::IsActive()
 {
-	return active;
+	return status & BOMB_ACTIVE;
 }
 
 bool Bomb::IsBoom()
 {
-	return boom;
+	return status & BOMB_BOOM;
 }
 
 bool Bomb::CanRemove()
 {
-	return can_remove;
+	return status & BOMB_CAN_REMOVE;
 }
 
 void Bomb::Set(Bomb* bomb)
 {
-	active = bomb->active;
 	angle = bomb->angle;
 	angular_velocity = bomb->angular_velocity;
 	animation_tic = bomb->animation_tic;
-	boom = bomb->boom;
-	can_remove = bomb->can_remove;
 	direction = bomb->direction;
 	exist = bomb->exist;
 	force_collision_coeffisient = bomb->force_collision_coeffisient;
@@ -3042,17 +3036,15 @@ void Bomb::Set(Bomb* bomb)
 	player_master_team_number = bomb->player_master_team_number;
 	position = bomb->position;
 	radius = bomb->radius;
+	status = bomb->status;
 	velocity = bomb->velocity;
 }
 
 void Bomb::Set(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t payer_master_number, GameTypes::players_count_t player_master_team_number, GameTypes::tic_t animation_tic, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, float radius, bool active, bool boom, bool exist)
 {
-	this->active = active;
 	this->angle = angle;
 	this->angular_velocity = angular_velocity;
 	this->animation_tic = animation_tic;
-	this->boom = boom;
-	this->can_remove = can_remove;
 	UpdateDirection();
 	this->exist = exist;
 	this->force_collision_coeffisient = force_collision_coeffisient;
@@ -3061,24 +3053,25 @@ void Bomb::Set(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t paye
 	this->player_master_team_number = player_master_team_number;
 	this->position = *position;
 	this->radius = radius;
+	this->status = status;
 	this->velocity = *velocity;
 }
 
 void Bomb::Update()
 {
-	if (can_remove)
+	if (status & BOMB_CAN_REMOVE)
 	{
 		return;
 	}
 	DynamicEntity::Update();
-	if (active || boom)
+	if (status && (BOMB_ACTIVE | BOMB_BOOM))
 	{
 		animation_tic--;
 		if (animation_tic == 0)
 		{
-			if (boom)
+			if (status & BOMB_BOOM)
 			{
-				can_remove = true;
+				status |= BOMB_CAN_REMOVE;
 				return;
 			}
 			Boom();
@@ -3090,12 +3083,9 @@ void Bomb::Update()
 
 void Bomb::operator=(Bomb bomb)
 {
-	active = bomb.active;
 	angle = bomb.angle;
 	angular_velocity = bomb.angular_velocity;
 	animation_tic = bomb.animation_tic;
-	boom = bomb.boom;
-	can_remove = bomb.can_remove;
 	direction = bomb.direction;
 	exist = bomb.exist;
 	force = bomb.force;
@@ -3105,6 +3095,7 @@ void Bomb::operator=(Bomb bomb)
 	player_master_team_number = bomb.player_master_team_number;
 	position = bomb.position;
 	radius = bomb.radius;
+	status = bomb.status;
 	velocity = bomb.velocity;
 }
 

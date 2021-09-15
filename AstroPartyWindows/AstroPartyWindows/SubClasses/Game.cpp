@@ -59,7 +59,7 @@ void Game::Update()
 	DynamicEntitiesAddForce(grav_gens, grav_gens_count, ships, ships_count);
 	DynamicEntitiesAddForce(grav_gens, grav_gens_count, pilots, pilots_count);
 	DynamicEntitiesAddForce(grav_gens, grav_gens_count, asteroids, asteroids_count);
-	DynamicEntitiesAddForce(grav_gens, grav_gens_count, bullets, asteroids_count);
+	DynamicEntitiesAddForce(grav_gens, grav_gens_count, bullets, bullets_count);
 	
 	//collisions
 
@@ -163,9 +163,12 @@ void Game::DynamicEntitiesCollisions(Map* map, Bomb* entities, GameTypes::entiti
 {
 	for (GameTypes::entities_count_t i = 0, found = 0; found < entities_count; i++)
 	{
-		if (entities[i].exist && !entities[i].IsBoom())
+		if (entities[i].exist)
 		{
-			entities[i].Collision(map);
+			if (!entities[i].IsBoom())
+			{
+				entities[i].Collision(map);
+			}
 			found++;
 		}
 	}
@@ -322,7 +325,7 @@ void Game::AddEntity(Knife new_knife)
 	}
 }
 
-void Game::AddEntityBomb(Bomb new_bomb)
+void Game::AddEntity(Bomb new_bomb)
 {
 	if (bombs_count == GAME_BOMBS_MAX_COUNT)
 	{
@@ -334,7 +337,6 @@ void Game::AddEntityBomb(Bomb new_bomb)
 		{
 			bombs[bomb] = new_bomb;
 			bombs_count++;
-			std::cout << "BC++" << std::endl;
 			return;
 		}
 	}
@@ -388,13 +390,12 @@ void Game::RemoveEntity(Asteroid* deleting_asteroid)
 	}
 }
 
-void Game::RemoveEntityBomb(Bomb* deleting_bomb)
+void Game::RemoveEntity(Bomb* deleting_bomb)
 {
 	if (deleting_bomb->exist)
 	{
 		deleting_bomb->exist = false;
 		Game::bombs_count--;
-		std::cout << "BC--" << std::endl;
 	}
 }
 
@@ -1304,8 +1305,6 @@ void Game::InitLevel()
 				nullptr, 0,
 				temp_angles[player], start_bonus);
 
-			std::cout << (unsigned)ships[player].BonusInfo() << std::endl;
-
 			players_count++;
 			IncrementPlayersCountInTeam(teams[player]);
 		}
@@ -1911,7 +1910,7 @@ void Game::ShipShoot_Knife(Ship* ship)
 void Game::ShipShoot_Bomb(Ship* ship)
 {
 	std::cout << "Bomb" << std::endl;
-	Game::AddEntityBomb(ship->CreateBomb());
+	Game::AddEntity(ship->CreateBomb());
 }
 
 void Game::ShipShoot_Loop(Ship* ship)
@@ -2077,8 +2076,7 @@ void Game::UpdateBombs()
 		{
 			if (temp__bomb_p->CanRemove())
 			{
-				std::cout << "Main remove" << std::endl;
-				RemoveEntityBomb(temp__bomb_p);
+				RemoveEntity(temp__bomb_p);
 				goto end_of_cycle;
 			}
 			if (temp__bomb_p->IsBoom())
@@ -2194,8 +2192,8 @@ void Game::UpdateBombs()
 					}
 				}
 			}
+			found_bombs++;
 		}
-		found_bombs++;
 	end_of_cycle:;
 	}
 }
@@ -2224,7 +2222,7 @@ void Game::UpdateBullets()
 						Vec2F bomb_position = temp__bullet_p->GetPosition();
 						Vec2F bomb_velocity = (temp__bullet_p->GetVelocity() + bullets[second_bullet].GetVelocity()) / 2.0f;
 						GameTypes::players_count_t host_id = (bullets[second_bullet].SameTeam(temp__bullet_p)) ? temp__bullet_p->GetPlayerMasterTeamNumber() : AGGRESIVE_ENTITY_HOST_ID;
-						AddEntityBomb(Bomb(&bomb_position, &bomb_velocity, AGGRESIVE_ENTITY_HOST_ID, AGGRESIVE_ENTITY_HOST_ID, 100, 0.0f, 0.0f,
+						AddEntity(Bomb(&bomb_position, &bomb_velocity, AGGRESIVE_ENTITY_HOST_ID, AGGRESIVE_ENTITY_HOST_ID, 100, 0.0f, 0.0f,
 							DEFAULT_FORCE_COLLISION_COEFFICIENT, BOMB_DEFAULT_RESISTANCE_AIR_COEFFICIENT, BOMB_DEFAULT_RADIUS * 3.0f, false, true, false, true));
 						RemoveEntity(temp__bullet_p);
 						RemoveEntity(&bullets[second_bullet]);
