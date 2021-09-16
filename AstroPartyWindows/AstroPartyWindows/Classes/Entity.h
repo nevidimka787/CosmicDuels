@@ -228,14 +228,14 @@ class Bonus : public DynamicEntity
 
 protected:
 public:
-	EngineTypes::Bonus::bonus_t bonus_inventory;
+	EngineTypes::Bonus::inventory_t bonus_inventory;
 	Bonus();
 	Bonus(bool exist);
 	Bonus(const Bonus& bonus);
 	Bonus(
 		Vec2F* position,
 		Vec2F* velocity,
-		EngineTypes::Bonus::bonus_t bonus_inventory,
+		EngineTypes::Bonus::inventory_t bonus_inventory,
 		float angle = 0.0f,
 		float angular_velocity = 0.0f,
 		float radius = BONUS_DEFAULT_RADIUS,
@@ -243,14 +243,14 @@ public:
 		float force_resistance_air_coefficient = BONUS_DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
 		bool exist = true);
 
-	EngineTypes::Bonus::bonus_t BonusInfo();
+	EngineTypes::Bonus::inventory_t BonusInfo();
 	/*
 		If an object has more than one bonus type,
 		bonus type will be passed as a new object,
 		otherwise the function will return 'nullptr'.
 	*/
 	Bonus Division();
-	EngineTypes::Bonus::bonus_t GetType();
+	EngineTypes::Bonus::inventory_t GetType();
 	uint8_t GetBonusesCount();
 	uint8_t	GetBuffsCount();
 	uint8_t GetGameRulesCount();
@@ -259,7 +259,7 @@ public:
 	void Set(
 		Vec2F* position,
 		Vec2F* velocity,
-		EngineTypes::Bonus::bonus_t bonus_type,
+		EngineTypes::Bonus::inventory_t bonus_type,
 		float angle = 0.0f,
 		float angular_velocity = 0.0f,
 		float radius = BONUS_DEFAULT_RADIUS,
@@ -282,7 +282,7 @@ public:
 	Asteroid(
 		Vec2F* position,
 		Vec2F* velocity,
-		EngineTypes::Bonus::bonus_t bonus_type,
+		EngineTypes::Bonus::inventory_t bonus_type,
 		EngineTypes::Asteroid::size_t size = ASTEROID_DEFAULT_SIZE,
 		float angle = 0.0f,
 		float angular_velocity = 0.0f,
@@ -297,12 +297,12 @@ public:
 	*/
 	Asteroid Division();
 	EngineTypes::Asteroid::size_t GetSize();
-	EngineTypes::Bonus::bonus_t GetBuffBonus();
+	EngineTypes::Bonus::inventory_t GetBuffBonus();
 	void Set(Asteroid* asteroid);
 	void Set(
 		Vec2F* position,
 		Vec2F* velocity,
-		EngineTypes::Bonus::bonus_t bonus_type,
+		EngineTypes::Bonus::inventory_t bonus_type,
 		EngineTypes::Asteroid::size_t size = ASTEROID_DEFAULT_SIZE,
 		float angle = 0.0f,
 		float angular_velocity = 0.0f,
@@ -431,8 +431,8 @@ class Ship : public ControledEntity
 {
 protected:
 	void* burnout_input_value_pointer;
-	EngineTypes::Bonus::bonus_t bonus_inventory;
-	EngineTypes::Bonus::bonus_t active_baffs;
+	EngineTypes::Bonus::inventory_t bonus_inventory;
+	EngineTypes::Ship::inventory_t buff_inventory;
 	GameTypes::tic_t unbrakable;
 public:
 	Ship();
@@ -448,18 +448,20 @@ public:
 		Vec2F* heat_box_vertexes = nullptr,
 		EngineTypes::ControledEntity::heat_box_vertexes_count_t heat_box_vertexes_count = 0,
 		float angle = 0.0f,
-		EngineTypes::Bonus::bonus_t bonus_inventory = BONUS_NO_BONUS,
-		EngineTypes::Bonus::bonus_t active_baffs = BONUS_NO_BONUS,
-		GameTypes::tic_t unbrakable = SHIP_UNBRAKABLE_PERIOD,
+		EngineTypes::Bonus::inventory_t bonus_inventory = BONUS_NOTHING,
+		EngineTypes::Ship::inventory_t buff_inventory = BONUS_NOTHING,
+		GameTypes::tic_t unbrakable = SHIP_DEFAULT_UNBRAKABLE_PERIOD,
 		float angular_velocity = 0.0f,
 		float radius = SHIP_DEFAULT_RADIUS,
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
 		bool exist = true);
 
-	void ActivateBuffs();
-	EngineTypes::Bonus::bonus_t BonusInfo();
-	void BreakShield();
+	//If ship have bufs in bonuses invenory,
+	//the function activates all buffs that is in the bonus inventory and return true.
+	bool ActivateAvailableBuffs();
+	void ActivateBuffNoCheck(EngineTypes::Ship::inventory_t buff);
+	EngineTypes::Bonus::inventory_t BonusInfo();
 	void Burnout(float power, bool rotate_clockwise);
 	Bullet CreateBullet();
 	//The function does not check for the presence of a bonus.
@@ -473,13 +475,10 @@ public:
 	//The function does not check for the presence of a bonus.
 	Knife CreateKnife(uint8_t knife_number);
 	Pilot Destroy();
-	EngineTypes::Bonus::bonus_t GetActiveBaffs();
-	bool HaveBonus(EngineTypes::Bonus::bonus_t bonus);
+	bool HaveBonus(EngineTypes::Bonus::inventory_t bonus);
+	bool HaveBuff(EngineTypes::Ship::inventory_t buff);
+	bool IsUnbrakable();
 	Bonus LoseBonus();
-	//If ship have bonus, the function reduces the amount of this bonus and return true.
-	bool SpendBonus(EngineTypes::Bonus::bonus_t bonus);
-	//The function reduces the amount of this bonus.
-	void SpendBonusNoCheck(EngineTypes::Bonus::bonus_t bonus);
 	void Set(Ship* entity);
 	void Set(
 		Vec2F* position,
@@ -492,15 +491,24 @@ public:
 		Vec2F* heat_box_vertexes = nullptr,
 		EngineTypes::ControledEntity::heat_box_vertexes_count_t heat_box_vertexes_count = 0,
 		float angle = 0.0f,
-		EngineTypes::Bonus::bonus_t buffs_bonuses = BONUS_NO_BONUS,
-		EngineTypes::Bonus::bonus_t active_baffs = BONUS_NO_BONUS,
-		GameTypes::tic_t unbrakable = SHIP_UNBRAKABLE_PERIOD,
+		EngineTypes::Bonus::inventory_t bonus_inventory = BONUS_NOTHING,
+		EngineTypes::Ship::inventory_t buff_inventory = BONUS_NOTHING,
+		GameTypes::tic_t unbrakable = SHIP_DEFAULT_UNBRAKABLE_PERIOD,
 		float angular_velocity = 0.0f,
 		float radius = SHIP_DEFAULT_RADIUS,
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
 		bool exist = true);
-	void TakeBonus(Bonus* bonus);
+	void SetUnbrakablePeriod(GameTypes::tic_t period);
+	//If ship have bonus, the function reduces the amount of this bonus and return true.
+	bool SpendBonus(EngineTypes::Bonus::inventory_t bonus);
+	//The function reduces the amount of this bonus.
+	void SpendBonusNoCheck(EngineTypes::Bonus::inventory_t bonus);
+	//If ship have buff, the function reduces this buff and return true.
+	bool SpendBuff(EngineTypes::Ship::inventory_t bonus);
+	//The function reduces this buff.
+	void SpendBuffNoCheck(EngineTypes::Ship::inventory_t bonus);
+	void TakeBonus(Bonus* bonus, bool as_triple);
 	void Update();
 	void UpdateMatrix();
 
@@ -527,9 +535,9 @@ public:
 		Vec2F* heat_box_vertexes = nullptr,
 		EngineTypes::ControledEntity::heat_box_vertexes_count_t heat_box_vertexes_count = 0,
 		float angle = 0.0f,
-		EngineTypes::Bonus::bonus_t buffs_bonuses = BONUS_NO_BONUS,
-		EngineTypes::Bonus::bonus_t active_baffs = BONUS_NO_BONUS,
-		GameTypes::tic_t unbrakable = SHIP_UNBRAKABLE_PERIOD,
+		EngineTypes::Bonus::inventory_t buffs_bonuses = BONUS_NOTHING,
+		EngineTypes::Bonus::inventory_t active_baffs = BONUS_NOTHING,
+		GameTypes::tic_t unbrakable = SHIP_DEFAULT_UNBRAKABLE_PERIOD,
 		float angular_velocity = 0.0f,
 		float radius = PILOT_DEFAULT_RADIUS,
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,

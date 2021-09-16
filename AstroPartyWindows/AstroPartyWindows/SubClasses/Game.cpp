@@ -258,7 +258,7 @@ void Game::DynamicEntitiesAddForce(GravGen* grav_gens, GameTypes::map_elements_c
 	}
 }
 
-EngineTypes::Bonus::bonus_t Game::GenerateRandomBonus()
+EngineTypes::Bonus::inventory_t Game::GenerateRandomBonus()
 {
 	unsigned random = rand() % GAME_BONUSES_COUNT + 1;
 	GameTypes::objects_types_count_t bonus = 0;
@@ -1364,7 +1364,7 @@ void Game::InitLevel()
 
 	for (GameTypes::players_count_t player = 0; player < GAME_PLAYERS_MAX_COUNT; player++)
 	{
-		ships_can_shoot_flags[player] = SHIP_UNBRAKABLE_PERIOD;
+		ships_can_shoot_flags[player] = SHIP_DEFAULT_UNBRAKABLE_PERIOD;
 		players_in_team[player] = 0;
 		burnout_double_clk_timer[player] = 0;
 		burnout_flags[player] = false;
@@ -1391,18 +1391,18 @@ void Game::InitLevel()
 
 	//Set start bonus
 
-	start_bonus = BONUS_NO_BONUS;
+	start_bonus = BONUS_NOTHING;
+	if (game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_TRIPLE)
+	{
+		start_bonus |= (game_rules & GAME_RULE_TRIPLE_BONUSES) ? BONUS_BUFF_TRIPLE * 3 : BONUS_BUFF_TRIPLE;
+	}
 	if (game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_SHIELD)
 	{
-		start_bonus |= game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_SHIELD ? BUFF_SHIELD : 0x0000;
-	}
-	if (game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_TRIPLE_BONUS)
-	{
-		start_bonus |= game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_TRIPLE_BONUS ? BUFF_TRIPLE : 0x0000;
+		start_bonus |= (game_rules & GAME_RULE_TRIPLE_BONUSES) ? BONUS_BUFF_SHIELD * 3 : BONUS_BUFF_SHIELD;
 	}
 	if (game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_BONUS && !(game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_DIFFERENT_BONUS))
 	{
-		start_bonus |= GenerateRandomBonus() * ((game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_TRIPLE_BONUS) ? 3 : 1);
+		start_bonus |= GenerateRandomBonus() * ((game_rules & GAME_RULE_TRIPLE_BONUSES) ? 3 : 1);
 	}
 
 	//Set start bonus
@@ -1484,38 +1484,41 @@ void Game::InitMenus()
 	buttons[3].Set(BUTTON_ID_SET_SPAWN_THIS_DIFFERENT_BONUSES, &position, &size, area, "Can spawn this different bonuses", 4);
 	buttons[3].status = ((game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_DIFFERENT_BONUS) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | ((game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_BONUS) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_FALSE);
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 4 * GAME_OPTION_MENU_BORD);
-	buttons[4].Set(BUTTON_ID_SET_SPAWN_THIS_TRIPLE_BUFF, &position, &size, area, "Triple bonuses", 5);
-	buttons[4].status = ((game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_TRIPLE_BONUS) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
+	buttons[4].Set(BUTTON_ID_SET_TRIPLE_BONUSES, &position, &size, area, "Triple bonuses", 5);
+	buttons[4].status = ((game_rules & GAME_RULE_TRIPLE_BONUSES) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 5 * GAME_OPTION_MENU_BORD);
-	buttons[5].Set(BUTTON_ID_SET_SPAWN_THIS_SHIELD_BAFF, &position, &size, area, "Spawn whis shield", 5);
-	buttons[5].status = ((game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_SHIELD) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
+	buttons[5].Set(BUTTON_ID_SET_SPAWN_THIS_TRIPLE_BAFF, &position, &size, area, "Spawn this triple", 5);
+	buttons[5].status = ((game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_TRIPLE) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 6 * GAME_OPTION_MENU_BORD);
-	buttons[6].Set(BUTTON_ID_SET_KNIFES_CAN_DESTROY_BULLETS, &position, &size, area, "Knifes can destroy bullets", 5);
-	buttons[6].status = ((game_rules & GAME_RULE_KNIFES_CAN_DESTROY_BULLETS) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
+	buttons[6].Set(BUTTON_ID_SET_SPAWN_THIS_SHIELD_BAFF, &position, &size, area, "Spawn this shield", 5);
+	buttons[6].status = ((game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_SHIELD) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 7 * GAME_OPTION_MENU_BORD);
-	buttons[7].Set(BUTTON_ID_SET_NEED_KILL_PILOT, &position, &size, area, "Need kill pilot", 5);
-	buttons[7].status = ((game_rules & GAME_RULE_NEED_KILL_PILOT) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | ((game_rules & GAME_RULE_NEED_KILL_PILOT) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_FALSE);
+	buttons[7].Set(BUTTON_ID_SET_KNIFES_CAN_DESTROY_BULLETS, &position, &size, area, "Knifes can destroy bullets", 5);
+	buttons[7].status = ((game_rules & GAME_RULE_KNIFES_CAN_DESTROY_BULLETS) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 8 * GAME_OPTION_MENU_BORD);
-	buttons[8].Set(BUTTON_ID_SET_FRIEDLY_SHEEP_CAN_RESTORE, &position, &size, area, "Friendly sheep can restore", 5);
-	buttons[8].status = ((game_rules & GAME_RULE_FRIEDNLY_SHEEP_CAN_RESTORE) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
+	buttons[8].Set(BUTTON_ID_SET_NEED_KILL_PILOT, &position, &size, area, "Need kill pilot", 5);
+	buttons[8].status = ((game_rules & GAME_RULE_NEED_KILL_PILOT) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | ((game_rules & GAME_RULE_NEED_KILL_PILOT) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_FALSE);
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 9 * GAME_OPTION_MENU_BORD);
-	buttons[9].Set(BUTTON_ID_SET_ACTIVE_FRIENDLY_FIRE, &position, &size, area, "Frendly fire", 5);
-	buttons[9].status = ((game_rules & GAME_RULE_FRENDLY_FIRE) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
+	buttons[9].Set(BUTTON_ID_SET_FRIEDLY_SHEEP_CAN_RESTORE, &position, &size, area, "Friendly sheep can restore", 5);
+	buttons[9].status = ((game_rules & GAME_RULE_FRIEDNLY_SHEEP_CAN_RESTORE) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 10 * GAME_OPTION_MENU_BORD);
-	buttons[10].Set(BUTTON_ID_GO_TO_SELECT_BONUSES_MENU, &position, &size, area, "Bonus pull menu", 5);
-	buttons[10].status = (game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_BONUS) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_FALSE;
+	buttons[10].Set(BUTTON_ID_SET_ACTIVE_FRIENDLY_FIRE, &position, &size, area, "Frendly fire", 5);
+	buttons[10].status = ((game_rules & GAME_RULE_FRENDLY_FIRE) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 11 * GAME_OPTION_MENU_BORD);
-	buttons[11].Set(BUTTON_ID_GO_TO_SELECT_MAP_MENU, &position, &size, area, "Map pull menu", 5);
-	buttons[11].status |= BUTTON_STATUS_ACTIVE;
+	buttons[11].Set(BUTTON_ID_GO_TO_SELECT_BONUSES_MENU, &position, &size, area, "Bonus pull menu", 5);
+	buttons[11].status = (game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_BONUS) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_FALSE;
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 12 * GAME_OPTION_MENU_BORD);
-	buttons[12].Set(BUTTON_ID_GO_TO_SELECT_OBJECTS_MENU, &position, &size, area, "Spawning objects menu", 5);
+	buttons[12].Set(BUTTON_ID_GO_TO_SELECT_MAP_MENU, &position, &size, area, "Map pull menu", 5);
 	buttons[12].status |= BUTTON_STATUS_ACTIVE;
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 13 * GAME_OPTION_MENU_BORD);
-	buttons[13].Set(BUTTON_ID_SET_ACTIVE_BALANCE, &position, &size, area, "Auto balance", 5);
-	buttons[13].status = ((game_rules & GAME_RULE_BALANCE_ACTIVE) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
+	buttons[13].Set(BUTTON_ID_GO_TO_SELECT_OBJECTS_MENU, &position, &size, area, "Spawning objects menu", 5);
+	buttons[13].status |= BUTTON_STATUS_ACTIVE;
+	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 14 * GAME_OPTION_MENU_BORD);
+	buttons[14].Set(BUTTON_ID_SET_ACTIVE_BALANCE, &position, &size, area, "Auto balance", 5);
+	buttons[14].status = ((game_rules & GAME_RULE_BALANCE_ACTIVE) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
 	position.Set(0.0f, 0.0f);
 	size.Set(1.5f, GAME_OPTION_MENU_UP_Y - 1.0f - 15.0f * GAME_OPTION_MENU_BORD);
-	option_menu.Set(&position, &size, buttons, 14);
+	option_menu.Set(&position, &size, buttons, 15);
 	option_menu.HardRecalculate();
 	delete[] buttons;
 
@@ -1870,10 +1873,15 @@ void Game::ShipShoot(Ship* ship)
 	{
 		return;
 	}
+	ships_can_shoot_flags[ship->GetPlayerNumber()] = GAME_DELLAY_BETWEEN_SHOOTS;
+
+	if (ship->ActivateAvailableBuffs())
+	{
+		return;
+	}
 
 	//Magicka and Magicka 2 are the best games I've seen.
 
-	ships_can_shoot_flags[ship->GetPlayerNumber()] = GAME_DELLAY_BETWEEN_SHOOTS;
 	if (ship->SpendBonus(BONUS_LASER))
 	{
 		if (ship->SpendBonus(BONUS_LOOP))
@@ -1957,96 +1965,121 @@ void Game::ShipShoot_LaserLoopBombKnife(Ship* ship)
 {
 	std::cout << "Laser Loop Bomb Knife" << std::endl;
 	ShipShoot_NoBonus(ship);
+	ships_can_shoot_flags[ship->GetPlayerNumber()] += GAME_ADD_DELLAY_BONUS_USE + GAME_ADD_DELLAY_CONBO_USE * 3;
 }
 
 void Game::ShipShoot_LaserLoopBomb(Ship* ship)
 {
 	std::cout << "Laser Loop Bomb" << std::endl;
 	ShipShoot_NoBonus(ship);
+	ships_can_shoot_flags[ship->GetPlayerNumber()] += GAME_ADD_DELLAY_BONUS_USE + GAME_ADD_DELLAY_CONBO_USE * 2;
 }
 
 void Game::ShipShoot_LaserLoopKnife(Ship* ship)
 {
 	std::cout << "Laser Loop Knife" << std::endl;
 	ShipShoot_NoBonus(ship);
+	ships_can_shoot_flags[ship->GetPlayerNumber()] += GAME_ADD_DELLAY_BONUS_USE + GAME_ADD_DELLAY_CONBO_USE * 2;
 }
 
 void Game::ShipShoot_LaserBombKnife(Ship* ship)
 {
 	std::cout << "Laser Bomb Knife" << std::endl;
 	ShipShoot_NoBonus(ship);
+	ships_can_shoot_flags[ship->GetPlayerNumber()] += GAME_ADD_DELLAY_BONUS_USE + GAME_ADD_DELLAY_CONBO_USE * 2;
 }
 
 void Game::ShipShoot_LoopBombKnife(Ship* ship)
 {
 	std::cout << "Loop Bomb Knife" << std::endl;
 	ShipShoot_NoBonus(ship);
+	ships_can_shoot_flags[ship->GetPlayerNumber()] += GAME_ADD_DELLAY_BONUS_USE + GAME_ADD_DELLAY_CONBO_USE * 2;
 }
 
 void Game::ShipShoot_LaserLoop(Ship* ship)
 {
 	std::cout << "Laser Loop" << std::endl;
 	ShipShoot_NoBonus(ship);
+	ships_can_shoot_flags[ship->GetPlayerNumber()] += GAME_ADD_DELLAY_BONUS_USE + GAME_ADD_DELLAY_CONBO_USE;
 }
 
 void Game::ShipShoot_LaserBomb(Ship* ship)
 {
 	std::cout << "Laser Bomb" << std::endl;
 	ShipShoot_NoBonus(ship);
+	ships_can_shoot_flags[ship->GetPlayerNumber()] += GAME_ADD_DELLAY_BONUS_USE + GAME_ADD_DELLAY_CONBO_USE;
 }
 
 void Game::ShipShoot_LoopBomb(Ship* ship)
 {
 	std::cout << "Loop Bomb" << std::endl;
 	ShipShoot_NoBonus(ship);
+	ships_can_shoot_flags[ship->GetPlayerNumber()] += GAME_ADD_DELLAY_BONUS_USE + GAME_ADD_DELLAY_CONBO_USE;
 }
 
 void Game::ShipShoot_LaserKnife(Ship* ship)
 {
 	std::cout << "Laser Knife" << std::endl;
 	ShipShoot_NoBonus(ship);
+	ships_can_shoot_flags[ship->GetPlayerNumber()] += GAME_ADD_DELLAY_BONUS_USE + GAME_ADD_DELLAY_CONBO_USE;
 }
 
 void Game::ShipShoot_LoopKnife(Ship* ship)
 {
 	std::cout << "Loop Knife" << std::endl;
 	ShipShoot_NoBonus(ship);
+	ships_can_shoot_flags[ship->GetPlayerNumber()] += GAME_ADD_DELLAY_BONUS_USE + GAME_ADD_DELLAY_CONBO_USE;
 }
 
 void Game::ShipShoot_BombKnife(Ship* ship)
 {
 	std::cout << "Bomb Knife" << std::endl;
 	ShipShoot_NoBonus(ship);
+	ships_can_shoot_flags[ship->GetPlayerNumber()] += GAME_ADD_DELLAY_BONUS_USE + GAME_ADD_DELLAY_CONBO_USE;
 }
 
 void Game::ShipShoot_Knife(Ship* ship)
 {
 	Game::AddEntity(ship->CreateKnife(0));
 	Game::AddEntity(ship->CreateKnife(1));
+	ships_can_shoot_flags[ship->GetPlayerNumber()] += GAME_ADD_DELLAY_BONUS_USE;
 }
 
 void Game::ShipShoot_Bomb(Ship* ship)
 {
 	std::cout << "Bomb" << std::endl;
 	Game::AddEntity(ship->CreateBomb());
+	ships_can_shoot_flags[ship->GetPlayerNumber()] += GAME_ADD_DELLAY_BONUS_USE;
 }
 
 void Game::ShipShoot_Loop(Ship* ship)
 {
-	for (GameTypes::entities_count_t bullet = 0; bullet < BULLETS_IN_LOOP; bullet++)
+	for (GameTypes::entities_count_t bullet = 0; bullet < SHIP_BULLETS_IN_LOOP; bullet++)
 	{
 		Game::AddEntity(ship->CreateLoop(bullet));
 	}
+	ships_can_shoot_flags[ship->GetPlayerNumber()] += GAME_ADD_DELLAY_BONUS_USE;
 }
 
 void Game::ShipShoot_Laser(Ship* ship)
 {
 	Game::AddEntity(ship->CreateLaser());
+	ships_can_shoot_flags[ship->GetPlayerNumber()] += GAME_ADD_DELLAY_BONUS_USE;
 }
 
 void Game::ShipShoot_NoBonus(Ship* ship)
 {
-	Game::AddEntity(ship->CreateBullet());
+	if (ship->HaveBuff(SHIP_BUFF_TRIPLE))
+	{
+		AddEntity(ship->CreateTriple(0));
+		AddEntity(ship->CreateTriple(1));
+		AddEntity(ship->CreateTriple(2));
+		ships_can_shoot_flags[ship->GetPlayerNumber()] += GAME_ADD_DELLAY_BETWEEN_TRIPLES;
+	}
+	else
+	{
+		AddEntity(ship->CreateBullet());
+	}
 }
 
 
@@ -2334,13 +2367,13 @@ void Game::UpdateBullets()
 			{
 				if (bullets[second_bullet].exist)
 				{
-					if (bullets[second_bullet].IsCollision(temp__bullet_p))
+					if (bullets[second_bullet].Entity::IsCollision(temp__bullet_p))
 					{
 						Vec2F bomb_position = temp__bullet_p->GetPosition();
 						Vec2F bomb_velocity = (temp__bullet_p->GetVelocity() + bullets[second_bullet].GetVelocity()) / 2.0f;
 						GameTypes::players_count_t host_id = (bullets[second_bullet].SameTeam(temp__bullet_p)) ? temp__bullet_p->GetPlayerMasterTeamNumber() : AGGRESIVE_ENTITY_HOST_ID;
-						AddEntity(Bomb(&bomb_position, &bomb_velocity, AGGRESIVE_ENTITY_HOST_ID, AGGRESIVE_ENTITY_HOST_ID, 100, 0.0f, 0.0f,
-							DEFAULT_FORCE_COLLISION_COEFFICIENT, BOMB_DEFAULT_RESISTANCE_AIR_COEFFICIENT, BOMB_DEFAULT_RADIUS * 3.0f, BOMB_BOOM, true));
+						AddEntity(Bomb(&bomb_position, &bomb_velocity, AGGRESIVE_ENTITY_HOST_ID, AGGRESIVE_ENTITY_HOST_ID, 90, 0.0f, 0.0f,
+							DEFAULT_FORCE_COLLISION_COEFFICIENT, BOMB_DEFAULT_RESISTANCE_AIR_COEFFICIENT, BOMB_BOOM_RADIUS / 3.0f, BOMB_BOOM, true));
 						RemoveEntity(temp__bullet_p);
 						RemoveEntity(&bullets[second_bullet]);
 						goto end_of_cycle;
@@ -2358,16 +2391,17 @@ void Game::UpdateBullets()
 			for (GameTypes::players_count_t ship = 0; ship < GAME_PLAYERS_MAX_COUNT; ship++)
 			{
 				temp__ship_p = &ships[ship];
-				if (temp__ship_p->exist && !(temp__bullet_p->is_collision && temp__bullet_p->CreatedBy(temp__ship_p)) && temp__ship_p->IsCollision(temp__bullet_p))
+				if (temp__ship_p->exist && !temp__ship_p->IsUnbrakable() && !(temp__bullet_p->is_collision && temp__bullet_p->CreatedBy(temp__ship_p)) && temp__ship_p->IsCollision(temp__bullet_p))
 				{
 					if (game_rules & GAME_RULE_FRENDLY_FIRE && temp__bullet_p->CreatedByTeam(temp__ship_p))
 					{
 						RemoveEntity(temp__bullet_p);
 						goto end_of_cycle;
 					}
-					if (temp__ship_p->GetActiveBaffs() & BUFF_SHIELD)
+					if (temp__ship_p->HaveBuff(SHIP_BUFF_SHIELD))
 					{
-						temp__ship_p->BreakShield();
+						temp__ship_p->SetUnbrakablePeriod(SHIP_DEFAULT_UNBRAKABLE_PERIOD);
+						temp__ship_p->SpendBuffNoCheck(SHIP_BUFF_SHIELD);
 					}
 					else
 					{
@@ -2460,7 +2494,7 @@ void Game::UpdateKnifes()
 			{
 				temp__ship_p = &ships[ship];
 				if (!(game_rules & GAME_RULE_FRENDLY_FIRE && temp__knife_p->CreatedByTeam(temp__ship_p)) &&
-					temp__ship_p->exist && !temp__knife_p->CreatedBy(temp__ship_p) && temp__ship_p->IsCollision(&temp__segment))
+					temp__ship_p->exist && !temp__ship_p->IsUnbrakable() && !temp__knife_p->CreatedBy(temp__ship_p) && temp__ship_p->IsCollision(&temp__segment))
 				{
 					DestroyEntity(temp__knife_p, temp__ship_p);
 					RemoveEntity(temp__knife_p);
@@ -2516,7 +2550,7 @@ void Game::UpdateLazers()
 			{
 				temp__ship_p = &ships[ship];
 				if (!(game_rules & GAME_RULE_FRENDLY_FIRE && temp__laser_p->CreatedByTeam(temp__ship_p)) &&
-					temp__ship_p->exist && !temp__laser_p->CreatedBy(temp__ship_p) && temp__ship_p->IsCollision(&temp__beam))
+					temp__ship_p->exist && !temp__ship_p->IsUnbrakable() && !temp__laser_p->CreatedBy(temp__ship_p) && temp__ship_p->IsCollision(&temp__beam))
 				{
 					DestroyEntity(temp__laser_p, temp__ship_p);
 				}
@@ -2695,7 +2729,7 @@ void Game::UpdatePilots()
 			if (temp__pilot_p->CanRespawn())
 			{
 				ships[pilot] = temp__pilot_p->Respawn();
-				ships_can_shoot_flags[pilot] = SHIP_UNBRAKABLE_PERIOD;
+				ships_can_shoot_flags[pilot] = SHIP_DEFAULT_UNBRAKABLE_PERIOD;
 				temp__pilot_p->exist = false;
 				ships_count++;
 				pilots_count--;
@@ -2755,7 +2789,7 @@ void Game::UpdateShips()
 					{
 						if (temp__bonus_p->GetDistance(temp__ship_p) < 0.0f)
 						{
-							temp__ship_p->TakeBonus(temp__bonus_p);
+							temp__ship_p->TakeBonus(temp__bonus_p, game_rules & GAME_RULE_TRIPLE_BONUSES);
 							RemoveEntity(temp__bonus_p);
 						}
 						temp__bonus_p->AddGravityForce(GAME_SHIP_GRAVITATION_FORCE, temp__ship_p->GetPosition());

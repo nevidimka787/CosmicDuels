@@ -95,7 +95,7 @@ public:
 	GameTypes::map_elements_count_t polygons_count;
 
 	//Bonus in all ships at the start of the game.
-	EngineTypes::Bonus::bonus_t start_bonus;
+	EngineTypes::Bonus::inventory_t start_bonus;
 
 	//This variable stores all the values of rules of ghe game. To change the values of rules of ghe game use |= and &=. To get the values of rules of the game use &.
 	GameTypes::game_rules_t game_rules;
@@ -525,7 +525,7 @@ public:
 	void Update();
 
 	//The function returns a random bonus type.
-	EngineTypes::Bonus::bonus_t GenerateRandomBonus();
+	EngineTypes::Bonus::inventory_t GenerateRandomBonus();
 	//The function returns a random id of map that is in the selected_maps_id_array.
 	GameTypes::maps_count_t GenerateRandomMapId();
 	//The function return the maximum score of all players.
@@ -536,7 +536,7 @@ public:
 	//menu pointers
 	uint8_t* menu_p__ships_select_buttons;
 	//menu pointers
-	EngineTypes::Bonus::bonus_t* menu_p__start_bonus;
+	EngineTypes::Bonus::inventory_t* menu_p__start_bonus;
 
 	//open gl pointers
 	OpenGL* object_p__open_gl_realisation;

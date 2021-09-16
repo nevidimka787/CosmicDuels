@@ -285,12 +285,16 @@ void MenuFunctions::OptionMenuFunction(Vec2F* clk_pos, uint8_t clk_status)
 					current_button->SetStatus(BUTTON_STATUS_TRUE, option);
 					SetStatusToButton(game_p__option_menu, BUTTON_ID_SET_SPAWN_THIS_DIFFERENT_BONUSES, BUTTON_STATUS_ACTIVE, option);
 					SetStatusToButton(game_p__option_menu, BUTTON_ID_GO_TO_SELECT_BONUSES_MENU, BUTTON_STATUS_ACTIVE, option);
+					SetStatusToButton(game_p__option_menu, BUTTON_ID_SET_TRIPLE_BONUSES, BUTTON_STATUS_ACTIVE, option);
 					return;
 				case BUTTON_ID_SET_SPAWN_THIS_DIFFERENT_BONUSES:
 					current_button->SetStatus(BUTTON_STATUS_TRUE, ChangeOption(GAME_RULE_PLAYERS_SPAWN_THIS_DIFFERENT_BONUS));
 					return;
-				case BUTTON_ID_SET_SPAWN_THIS_TRIPLE_BUFF:
-					current_button->SetStatus(BUTTON_STATUS_TRUE, ChangeOption(GAME_RULE_PLAYERS_SPAWN_THIS_TRIPLE_BONUS));
+				case BUTTON_ID_SET_TRIPLE_BONUSES:
+					current_button->SetStatus(BUTTON_STATUS_TRUE, ChangeOption(GAME_RULE_TRIPLE_BONUSES));
+					return;
+				case BUTTON_ID_SET_SPAWN_THIS_TRIPLE_BAFF:
+					current_button->SetStatus(BUTTON_STATUS_TRUE, ChangeOption(GAME_RULE_PLAYERS_SPAWN_THIS_TRIPLE));
 					return;
 				case BUTTON_ID_SET_SPAWN_THIS_SHIELD_BAFF:
 					current_button->SetStatus(BUTTON_STATUS_TRUE, ChangeOption(GAME_RULE_PLAYERS_SPAWN_THIS_SHIELD));

@@ -529,6 +529,7 @@ void OpenGL::DrawObject(Bonus* bonus, bool update_shader)
     }
     bonus_shader.SetUniform("position", bonus->GetPosition());
     bonus_shader.SetUniform("size", bonus->radius);
+    bonus_shader.SetUniform("inventory", bonus->bonus_inventory);
     bonus_buffer.Draw();
 }
 
@@ -634,13 +635,14 @@ void OpenGL::DrawObject(Pilot* pilot, bool update_shader)
 
     pilot_shader.SetUniform("model", pilot->GetModelMatrixPointer());
     pilot_shader.SetUniform("team", pilot->GetTeamNumber());
-    ship_shader.SetUniform("player", number_of_player_in_team);
+    pilot_shader.SetUniform("player", number_of_player_in_team);
     pilot_shader.SetUniform("life", (float)pilot->GetRespawnDellay() / (float)PILOT_DEFAULT_RESPAWN_TIMER);
     pilot_buffer.Draw();
 }
 
 void OpenGL::DrawObject(Ship* ship, bool update_shader)
 {
+#define PLAYER_SHIELD 0x0F00
     if (update_shader)
     {
         ship_buffer.Use();
@@ -665,7 +667,14 @@ void OpenGL::DrawObject(Ship* ship, bool update_shader)
 
     ship_shader.SetUniform("model", ship->GetModelMatrixPointer());
     ship_shader.SetUniform("team", ship->GetTeamNumber());
-    ship_shader.SetUniform("player", number_of_player_in_team);
+
+    if (ship->HaveBuff(SHIP_BUFF_SHIELD))
+    {
+        ship_shader.SetUniform("player", PLAYER_SHIELD);
+        ship_buffer.Draw();
+    }
+
+    ship_shader.SetUniform("player", number_of_player_in_team | (ship->IsUnbrakable() ? 0xF000 : 0x0000));
     ship_buffer.Draw();
 }
 

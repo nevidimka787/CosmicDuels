@@ -25,7 +25,8 @@ namespace EngineTypes
 
 	namespace Bonus
 	{
-		typedef uint16_t bonus_t;
+		typedef uint8_t inventory_length_t;
+		typedef uint16_t inventory_t;
 	}
 
 	namespace Buffer
@@ -45,6 +46,11 @@ namespace EngineTypes
 		typedef int32_t text_t;
 		typedef uint16_t text_length_t;
 		typedef uint8_t text_size_t;
+	}
+
+	namespace ControledEntity
+	{
+		typedef uint16_t heat_box_vertexes_count_t;
 	}
 
 	namespace Knife
@@ -72,8 +78,8 @@ namespace EngineTypes
 		typedef uint8_t sides_t;
 	}
 
-	namespace ControledEntity
+	namespace Ship
 	{
-		typedef uint16_t heat_box_vertexes_count_t;
+		typedef uint8_t inventory_t;
 	}
 }

@@ -9,7 +9,7 @@ private:
 public:
 	uint8_t* ships_select_buttons;
 
-	EngineTypes::Bonus::bonus_t start_bonus;
+	EngineTypes::Bonus::inventory_t start_bonus;
 
 	MenuFunctions();
 

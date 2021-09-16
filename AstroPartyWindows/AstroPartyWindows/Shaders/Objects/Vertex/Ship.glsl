@@ -8,6 +8,8 @@ uniform mat3 model;
 uniform vec2 camera_position;
 uniform float camera_size;
 
+uniform int player;
+
 mat3 Rotate(mat3 matrix, float angel);
 mat3 Transport(mat3 matrix, vec2 vector);
 mat3 Scale(mat3 matrix, vec2 vector);
@@ -18,6 +20,11 @@ mat3 Scale(vec2 vector);
 mat3 matrix;
 
 vec3 _position;
+
+#define SHIELD		0x0F00
+
+out vec2 pixel_position;
+
 void main()
 {
     matrix = 
@@ -27,7 +34,16 @@ void main()
         Scale(vec2(1.0f / camera_size)) *
         Scale(vec2(1.0f, scale));
  
-    gl_Position = vec4(vec3(aPos, 1.0f) * matrix, 1.0f);
+    if((player & SHIELD) != 0x0000)
+    {
+        pixel_position = aPos * 1.25f;
+    }
+    else
+    {
+        pixel_position = aPos;
+    }
+ 
+    gl_Position = vec4(vec3(pixel_position, 1.0f) * matrix, 1.0f);
 }
 
 mat3 Transport(mat3 matrix, vec2 vector)
