@@ -1,25 +1,27 @@
 #include "Shader.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <iostream>
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
+#define FRAGMENT 1
+#define VERTEX 2
+#define PROGRAM 3
 
 #define INFO_LOG_LENGTH	1024
 #define SUCCESS	1
 #define FAILED	0
 
-#pragma warning (disable : 26451)
+Shader::Shader():
+    id(0)
+{}
 
-Shader::Shader(const char* vertex_file_name, const char* fragment_file_name)
+bool Shader::Initialisate(const char* vertex_file_name, const char* fragment_file_name)
 {
+    bool succses_flag = true;
+
 	char* vertex_code = nullptr;
 	char* fragment_code = nullptr;
 
 	FILE* vertex_file = nullptr;
 	FILE* fragment_file = nullptr;
 
-	if (fopen_s(&vertex_file, fragment_file_name, "r") != 0)
+	if (fopen_s(&vertex_file, vertex_file_name, "r") != 0)
 	{
 		std::cout << "ERROR::SHADER_CONSTRUCTOR::VERTEX::File not found." << std::endl
 			<< "File: " << vertex_file_name << std::endl << std::endl;
@@ -32,7 +34,7 @@ Shader::Shader(const char* vertex_file_name, const char* fragment_file_name)
 			file_length++;
 		}
 		fseek(vertex_file, SEEK_SET, 0);
-		vertex_code = (char*)malloc(sizeof(char) * (file_length + 1));
+		vertex_code = (char*)malloc((uint64_t)sizeof(char) * ((uint64_t)file_length + 1));
 		vertex_code[file_length] = '\0';
 		for (uint32_t i = 0; i < file_length; i++)
 		{
@@ -54,7 +56,7 @@ Shader::Shader(const char* vertex_file_name, const char* fragment_file_name)
 			file_length++;
 		}
 		fseek(fragment_file, SEEK_SET, 0);
-		fragment_code = (char*)malloc(sizeof(char) * (file_length + 1));
+		fragment_code = (char*)malloc((uint64_t)sizeof(char) * ((uint64_t)file_length + 1));
 		fragment_code[file_length] = '\0';
 		for (uint32_t i = 0; i < file_length; i++)
 		{
@@ -63,11 +65,11 @@ Shader::Shader(const char* vertex_file_name, const char* fragment_file_name)
 		fclose(fragment_file);
 	}
 
-	uint32_t vertex_shader;
-	uint32_t fragment_shader;
+	GLuint vertex_shader;
+	GLuint fragment_shader;
 
-	int32_t status;
-	char* info_log = (char*)malloc(sizeof(char) * INFO_LOG_LENGTH);
+	GLint status;
+	GLchar* info_log = (GLchar*)malloc(sizeof(GLchar) * INFO_LOG_LENGTH);
 
 	vertex_shader = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertex_shader, 1, &vertex_code, NULL);
@@ -113,7 +115,7 @@ Shader::Shader(const char* vertex_file_name, const char* fragment_file_name)
 	glDeleteShader(vertex_shader);
 	glDeleteShader(fragment_shader);
 
-	free(info_log);
+	free((void*)info_log);
 
 	if (vertex_code != nullptr)
 	{
@@ -123,34 +125,121 @@ Shader::Shader(const char* vertex_file_name, const char* fragment_file_name)
 	{
 		free((void*)fragment_code);
 	}
-}
 
-void Shader::SetValue(char* name, float value)
-{
-	glUniform1f(glGetUniformLocation(id, name), value);
+	return succses_flag;
 }
-
-void Shader::SetValue(char* name, int value)
-{
-	glUniform1i(glGetUniformLocation(id, name), value);
-}
-
-void Shader::SetValue(char* name, unsigned value)
-{
-	glUniform1ui(glGetUniformLocation(id, name), value);
-}
-
-void Shader::SetValue(char* name, Vec2F* vector)
-{
-	glUniform2f(glGetUniformLocation(id, name), vector->x, vector->y);
-}
-
 void Shader::Use()
 {
-	glUseProgram(id);
+    glUseProgram(id);
+}
+
+void Shader::SetUniform(const std::string& name, EngineTypes::Button::text_t* text, uint16_t text_length) const
+{
+    glUniform1iv(glGetUniformLocation(id, name.c_str()), text_length, (GLint*)text);
+}
+void Shader::SetUniform(const std::string& name, int value) const
+{
+    glUniform1i(glGetUniformLocation(id, name.c_str()), value);
+}
+void Shader::SetUniform(const std::string& name, float value) const
+{
+    glUniform1f(glGetUniformLocation(id, name.c_str()), value);
+}
+
+void Shader::SetUniform(const std::string& name, Beam beam) const
+{
+	glUniform4f(glGetUniformLocation(id, name.c_str()), beam.point.x, beam.point.y, beam.vector.x, beam.vector.y);
+}
+
+void Shader::SetUniform(const std::string& name, Beam* beam) const
+{
+	glUniform4f(glGetUniformLocation(id, name.c_str()), beam->point.x, beam->point.y, beam->vector.x, beam->vector.y);
+}
+
+void Shader::SetUniform(const std::string& name, Color3F color) const
+{
+    glUniform3f(glGetUniformLocation(id, name.c_str()), color.red, color.green, color.blue);
+}
+
+void Shader::SetUniform(const std::string& name, Color3F* color) const
+{
+    glUniform3f(glGetUniformLocation(id, name.c_str()), color->red, color->green, color->blue);
+}
+
+void Shader::SetUniform(const std::string& name, Line line) const
+{
+	glUniform4f(glGetUniformLocation(id, name.c_str()), line.point.x, line.point.y, line.vector.x, line.vector.y);
+}
+
+void Shader::SetUniform(const std::string& name, Line* line) const
+{
+	glUniform4f(glGetUniformLocation(id, name.c_str()), line->point.x, line->point.y, line->vector.x, line->vector.y);
+}
+
+void Shader::SetUniform(const std::string& name, Mat2F matrix) const
+{
+	float f_matrix[] = 
+	{
+		matrix.a11, matrix.a12,
+		matrix.a21, matrix.a22 
+	};
+	glUniformMatrix2fv(glGetUniformLocation(id, name.c_str()), 1, false, f_matrix);
+}
+
+void Shader::SetUniform(const std::string& name, Mat2F* matrix) const
+{
+	float f_matrix[] =
+	{
+		matrix->a11, matrix->a12,
+		matrix->a21, matrix->a22
+	};
+	glUniformMatrix2fv(glGetUniformLocation(id, name.c_str()), 1, false, f_matrix);
+}
+
+void Shader::SetUniform(const std::string& name, Mat3x2F matrix) const
+{
+	float f_matrix[] =
+	{
+		matrix.a11, matrix.a12, matrix.a13,
+		matrix.a21, matrix.a22, matrix.a23,
+		0.0f, 0.0f, 1.0f
+	};
+	glUniformMatrix3fv(glGetUniformLocation(id, name.c_str()), 1, false, f_matrix);
+}
+
+void Shader::SetUniform(const std::string& name, Mat3x2F* matrix) const
+{
+	float f_matrix[] =
+	{
+		matrix->a11, matrix->a12, matrix->a13,
+		matrix->a21, matrix->a22, matrix->a23,
+		0.0f, 0.0f, 1.0f
+	};
+	glUniformMatrix3fv(glGetUniformLocation(id, name.c_str()), 1, false, f_matrix);
+}
+
+
+void Shader::SetUniform(const std::string& name, Vec2F vector) const
+{
+    glUniform2f(glGetUniformLocation(id, name.c_str()), vector.x, vector.y);
+}
+
+void Shader::SetUniform(const std::string& name, Vec2F* vector) const
+{
+    glUniform2f(glGetUniformLocation(id, name.c_str()), vector->x, vector->y);
+}
+
+void Shader::SetUniform(const std::string& name, Segment segment) const
+{
+	glUniform4f(glGetUniformLocation(id, name.c_str()), segment.point.x, segment.point.y, segment.vector.x, segment.vector.y);
+}
+
+void Shader::SetUniform(const std::string& name, Segment* segment) const
+{
+	glUniform4f(glGetUniformLocation(id, name.c_str()), segment->point.x, segment->point.y, segment->vector.x, segment->vector.y);
 }
 
 Shader::~Shader()
 {
-	glDeleteProgram(id);
+    glDeleteProgram(id);
 }

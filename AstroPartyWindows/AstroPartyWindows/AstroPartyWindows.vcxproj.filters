@@ -23,17 +23,14 @@
     <Filter Include="Classes\Файлы заголовков">
       <UniqueIdentifier>{9b1afe95-fa2e-4fbb-8d78-cef55d1873be}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GameRealisation">
-      <UniqueIdentifier>{51be4966-05e4-41fd-ba98-0d98d9f2ae6c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Types">
       <UniqueIdentifier>{584b0972-fe1d-45b2-bee4-256df8bc132f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="MenuRealisation">
-      <UniqueIdentifier>{768e48dc-4278-46f2-9366-7c583c5dc041}</UniqueIdentifier>
+    <Filter Include="Constants">
+      <UniqueIdentifier>{23c9089e-a8df-48a1-8873-2fc4722235aa}</UniqueIdentifier>
     </Filter>
-    <Filter Include="OpenGLRealisation">
-      <UniqueIdentifier>{7fbd2602-dd7e-4797-ae6f-a72c289e72fc}</UniqueIdentifier>
+    <Filter Include="Textures">
+      <UniqueIdentifier>{bda6f163-ae58-4eaa-869a-8c2115a5b620}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -42,9 +39,6 @@
     </ClCompile>
     <ClCompile Include="gald.c">
       <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\GameEngine.cpp">
-      <Filter>Classes\Файлы ресурсов</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Line.cpp">
       <Filter>Classes\Файлы ресурсов</Filter>
@@ -55,20 +49,41 @@
     <ClCompile Include="Classes\Menu.cpp">
       <Filter>Classes\Файлы ресурсов</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Vec.cpp">
-      <Filter>Classes\Файлы ресурсов</Filter>
-    </ClCompile>
-    <ClCompile Include="GameRealisation.cpp">
-      <Filter>GameRealisation</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Shader.cpp">
       <Filter>Classes\Файлы ресурсов</Filter>
     </ClCompile>
-    <ClCompile Include="MenuRealisation.cpp">
-      <Filter>MenuRealisation</Filter>
+    <ClCompile Include="SubClasses\MenuFunctions.cpp">
+      <Filter>Classes\Файлы ресурсов</Filter>
     </ClCompile>
-    <ClCompile Include="OpenGLRealisation.cpp">
-      <Filter>OpenGLRealisation</Filter>
+    <ClCompile Include="SubClasses\OpenGLRealisation.cpp">
+      <Filter>Classes\Файлы ресурсов</Filter>
+    </ClCompile>
+    <ClCompile Include="SubClasses\Linker.cpp">
+      <Filter>Classes\Файлы ресурсов</Filter>
+    </ClCompile>
+    <ClCompile Include="SubClasses\Game.cpp">
+      <Filter>Classes\Файлы ресурсов</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Color.cpp">
+      <Filter>Classes\Файлы ресурсов</Filter>
+    </ClCompile>
+    <ClCompile Include="stb_image.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Texture.cpp">
+      <Filter>Classes\Файлы ресурсов</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Camera.cpp">
+      <Filter>Classes\Файлы ресурсов</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Entity.cpp">
+      <Filter>Classes\Файлы ресурсов</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Map.cpp">
+      <Filter>Classes\Файлы ресурсов</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Buffer.cpp">
+      <Filter>Classes\Файлы ресурсов</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -150,6 +165,24 @@
     <None Include="Shaders\Objects\Vertex\Turel.glsl">
       <Filter>Shaders\Vertex</Filter>
     </None>
+    <None Include="Shaders\Menu\Vertex\Button.glsl">
+      <Filter>Shaders\Vertex</Filter>
+    </None>
+    <None Include="Shaders\Menu\Fragment\Button.glsl">
+      <Filter>Shaders\Fragment</Filter>
+    </None>
+    <None Include="Shaders\Menu\Fragment\Controler.glsl">
+      <Filter>Shaders\Fragment</Filter>
+    </None>
+    <None Include="Shaders\Menu\Vertex\Controler.glsl">
+      <Filter>Shaders\Vertex</Filter>
+    </None>
+    <None Include="Shaders\Objects\Fragment\GravGen.glsl">
+      <Filter>Shaders\Fragment</Filter>
+    </None>
+    <None Include="Shaders\Objects\Vertex\GravGen.glsl">
+      <Filter>Shaders\Vertex</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\GameEngine.h">
@@ -164,12 +197,6 @@
     <ClInclude Include="Classes\Menu.h">
       <Filter>Classes\Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Vec.h">
-      <Filter>Classes\Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="GameRealisation.h">
-      <Filter>GameRealisation</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Shader.h">
       <Filter>Classes\Файлы заголовков</Filter>
     </ClInclude>
@@ -182,14 +209,67 @@
     <ClInclude Include="Types\OpenGLRealisationTypes.h">
       <Filter>Types</Filter>
     </ClInclude>
-    <ClInclude Include="Types\ClassesTypes.h">
+    <ClInclude Include="Types\GameEngineTypes.h">
       <Filter>Types</Filter>
     </ClInclude>
-    <ClInclude Include="MenuRealisation.h">
-      <Filter>MenuRealisation</Filter>
+    <ClInclude Include="SubClasses\MenuFunctions.h">
+      <Filter>Classes\Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="OpenGLRealisation.h">
-      <Filter>OpenGLRealisation</Filter>
+    <ClInclude Include="SubClasses\OpenGLRealisation.h">
+      <Filter>Classes\Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="SubClasses\Linker.h">
+      <Filter>Classes\Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="SubClasses\Game.h">
+      <Filter>Classes\Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Constants\GameEngineConstants.h">
+      <Filter>Constants</Filter>
+    </ClInclude>
+    <ClInclude Include="Constants\GameRealisationConstants.h">
+      <Filter>Constants</Filter>
+    </ClInclude>
+    <ClInclude Include="Constants\MenuRealisationConstants.h">
+      <Filter>Constants</Filter>
+    </ClInclude>
+    <ClInclude Include="Constants\OpenGLRealisationConstants.h">
+      <Filter>Constants</Filter>
+    </ClInclude>
+    <ClInclude Include="Constants\AllConstants.h">
+      <Filter>Constants</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Color.h">
+      <Filter>Classes\Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_image.h">
+      <Filter>Исходные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Texture.h">
+      <Filter>Classes\Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Camera.h">
+      <Filter>Classes\Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Types\AllTypes.h">
+      <Filter>Types</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Entity.h">
+      <Filter>Classes\Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Map.h">
+      <Filter>Classes\Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Math.h">
+      <Filter>Classes\Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Buffer.h">
+      <Filter>Classes\Файлы заголовков</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Textures\Symbols.bmp">
+      <Filter>Textures</Filter>
+    </Image>
   </ItemGroup>
 </Project>

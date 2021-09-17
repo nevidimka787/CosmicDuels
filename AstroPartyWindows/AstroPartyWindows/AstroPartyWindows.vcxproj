@@ -81,8 +81,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\Documents\GItHub\AstroParty\AstroPartyWindows\ALLIncludes;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\Documents\GItHub\AstroParty\AstroPartyWindows\AllLibs;$(LibraryPath)</LibraryPath>
+    <IncludePath>E:\Documents\GItHub\AstroParty\AstroPartyWindows\ALLIncludes;$(IncludePath)</IncludePath>
+    <LibraryPath>E:\Documents\GItHub\AstroParty\AstroPartyWindows\AllLibs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -146,17 +146,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Classes\GameEngine.cpp" />
+    <ClCompile Include="Classes\Buffer.cpp" />
+    <ClCompile Include="Classes\Camera.cpp" />
+    <ClCompile Include="Classes\Color.cpp" />
+    <ClCompile Include="Classes\Entity.cpp" />
     <ClCompile Include="Classes\Line.cpp" />
+    <ClCompile Include="Classes\Map.cpp" />
     <ClCompile Include="Classes\Mat.cpp" />
     <ClCompile Include="Classes\Menu.cpp" />
     <ClCompile Include="Classes\Shader.cpp" />
-    <ClCompile Include="Classes\Vec.cpp" />
+    <ClCompile Include="Classes\Texture.cpp" />
     <ClCompile Include="gald.c" />
-    <ClCompile Include="GameRealisation.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="MenuRealisation.cpp" />
-    <ClCompile Include="OpenGLRealisation.cpp" />
+    <ClCompile Include="stb_image.cpp" />
+    <ClCompile Include="SubClasses\Game.cpp" />
+    <ClCompile Include="SubClasses\Linker.cpp" />
+    <ClCompile Include="SubClasses\MenuFunctions.cpp" />
+    <ClCompile Include="SubClasses\OpenGLRealisation.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Map\Fragment\Cyrcle.glsl" />
@@ -165,6 +171,10 @@
     <None Include="Shaders\Map\Vertex\Cyrcle.glsl" />
     <None Include="Shaders\Map\Vertex\Polygon.glsl" />
     <None Include="Shaders\Map\Vertex\Rectangle.glsl" />
+    <None Include="Shaders\Menu\Fragment\Button.glsl" />
+    <None Include="Shaders\Menu\Fragment\Controler.glsl" />
+    <None Include="Shaders\Menu\Vertex\Button.glsl" />
+    <None Include="Shaders\Menu\Vertex\Controler.glsl" />
     <None Include="Shaders\Objects\Fragment\Asteroid.glsl" />
     <None Include="Shaders\Objects\Fragment\Bomb.glsl" />
     <None Include="Shaders\Objects\Fragment\Bonus.glsl" />
@@ -187,19 +197,36 @@
     <None Include="Shaders\Objects\Vertex\Turel.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Classes\Buffer.h" />
+    <ClInclude Include="Classes\Camera.h" />
+    <ClInclude Include="Classes\Color.h" />
+    <ClInclude Include="Classes\Entity.h" />
     <ClInclude Include="Classes\GameEngine.h" />
     <ClInclude Include="Classes\Line.h" />
+    <ClInclude Include="Classes\Map.h" />
     <ClInclude Include="Classes\Mat.h" />
+    <ClInclude Include="Classes\Math.h" />
     <ClInclude Include="Classes\Menu.h" />
     <ClInclude Include="Classes\Shader.h" />
-    <ClInclude Include="Classes\Vec.h" />
-    <ClInclude Include="GameRealisation.h" />
-    <ClInclude Include="MenuRealisation.h" />
-    <ClInclude Include="OpenGLRealisation.h" />
-    <ClInclude Include="Types\ClassesTypes.h" />
+    <ClInclude Include="Classes\Texture.h" />
+    <ClInclude Include="Constants\AllConstants.h" />
+    <ClInclude Include="Constants\GameEngineConstants.h" />
+    <ClInclude Include="Constants\GameRealisationConstants.h" />
+    <ClInclude Include="Constants\MenuRealisationConstants.h" />
+    <ClInclude Include="Constants\OpenGLRealisationConstants.h" />
+    <ClInclude Include="stb_image.h" />
+    <ClInclude Include="SubClasses\Game.h" />
+    <ClInclude Include="SubClasses\Linker.h" />
+    <ClInclude Include="SubClasses\MenuFunctions.h" />
+    <ClInclude Include="SubClasses\OpenGLRealisation.h" />
+    <ClInclude Include="Types\AllTypes.h" />
+    <ClInclude Include="Types\GameEngineTypes.h" />
     <ClInclude Include="Types\GameRealisationTypes.h" />
     <ClInclude Include="Types\MenuRealisationTypes.h" />
     <ClInclude Include="Types\OpenGLRealisationTypes.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Textures\Symbols.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
