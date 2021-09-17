@@ -526,6 +526,7 @@ public:
 
 	//The function returns a random bonus type.
 	EngineTypes::Bonus::inventory_t GenerateRandomBonus();
+	EngineTypes::Bonus::inventory_t GenerateRandomBonusAndRule();
 	//The function returns a random id of map that is in the selected_maps_id_array.
 	GameTypes::maps_count_t GenerateRandomMapId();
 	//The function return the maximum score of all players.

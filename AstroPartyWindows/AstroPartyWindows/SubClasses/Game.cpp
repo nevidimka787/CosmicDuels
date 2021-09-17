@@ -277,6 +277,30 @@ EngineTypes::Bonus::inventory_t Game::GenerateRandomBonus()
 	return 1 << ((bonus - 1) * 2);
 }
 
+
+EngineTypes::Bonus::inventory_t Game::GenerateRandomBonusAndRule()
+{	
+	unsigned random = rand() % GAME_BONUSES_COUNT + 2;
+	if (random == GAME_BONUSES_COUNT + 1)
+	{
+		return BONUS_RULE_REVERSE;
+	}
+	GameTypes::objects_types_count_t bonus = 0;
+	GameTypes::objects_types_count_t select_bonuses_count = 0;
+	for (; random > 0; bonus++)
+	{
+		if (bonus == GAME_BONUSES_COUNT)
+		{
+			bonus = 0;
+		}
+		if (bonus_pull_array[bonus])
+		{
+			random--;
+		}
+	}
+	return 1 << ((bonus - 1) * 2);
+}
+
 GameTypes::maps_count_t Game::GenerateRandomMapId()
 {
 	return selected_maps_id_array[rand() % selected_maps_id_array_length];
@@ -1181,6 +1205,14 @@ void Game::PollEvents()
 
 void Game::Event0()
 {
+	if (!(global_timer % 500) && asteroids_count == 0)
+	{
+		Vec2F positions[1];
+#define EVENT1_SQUARE_SIZE 0.7f
+		positions[0].Set(-EVENT1_SQUARE_SIZE, -EVENT1_SQUARE_SIZE);
+		Vec2F zero_velocity;
+		AddEntity(Asteroid(&positions[0], &zero_velocity, BONUS_RULE_REVERSE, ASTEROID_SIZE_SMALL));
+	}
 }
 
 void Game::Event1()
@@ -2789,6 +2821,18 @@ void Game::UpdateShips()
 					{
 						if (temp__bonus_p->GetDistance(temp__ship_p) < 0.0f)
 						{
+							if (temp__bonus_p->bonus_inventory & BONUS_RULE_REVERSE)
+							{
+								if (rotation_inverse)
+								{
+									rotation_inverse = false;
+								}
+								else
+								{
+									rotation_inverse = true;
+								}
+								temp__bonus_p->bonus_inventory &= BONUS_ALL - BONUS_RULE_REVERSE;
+							}
 							temp__ship_p->TakeBonus(temp__bonus_p, game_rules & GAME_RULE_TRIPLE_BONUSES);
 							RemoveEntity(temp__bonus_p);
 						}

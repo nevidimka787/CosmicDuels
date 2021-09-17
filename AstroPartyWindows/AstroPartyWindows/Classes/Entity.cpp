@@ -1169,9 +1169,9 @@ void Asteroid::DecrementSize()
 
 Bonus Asteroid::Destroy()
 {
-	if (bonus_inventory & BONUS_BONUS)
+	if (bonus_inventory & (BONUS_BONUS | BONUS_RULE_REVERSE))
 	{
-		return Bonus(&position, &velocity, bonus_inventory & BONUS_BONUS);
+		return Bonus(&position, &velocity, bonus_inventory & (BONUS_BONUS | BONUS_RULE_REVERSE));
 	}
 	return Bonus();
 }

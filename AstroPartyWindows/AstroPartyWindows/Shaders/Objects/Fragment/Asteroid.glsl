@@ -4,7 +4,7 @@ out vec4 frag_color;
 
 in vec2 pixel_position;
 
-uniform float bonus;
+uniform int inventory;
 
 void main()
 {
@@ -12,7 +12,7 @@ void main()
 	{
 		discard;
 	}
-	if(bonus > 0.5f)
+	if((inventory & 0xC0FF) != 0)//bonuses and revers
 	{
 		frag_color = vec4(0.7f, 0.2f, 0.0f, 1.0f);
 	}

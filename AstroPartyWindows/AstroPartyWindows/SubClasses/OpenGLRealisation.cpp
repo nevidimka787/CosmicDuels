@@ -496,7 +496,7 @@ void OpenGL::DrawObject(Asteroid* asteroid, bool update_shader)
     }
     asteroid_shader.SetUniform("position", asteroid->GetPosition());
     asteroid_shader.SetUniform("size", asteroid->radius);
-    asteroid_shader.SetUniform("bonus", (asteroid->bonus_inventory & BONUS_BONUS) ? 1.0f : 0.0f);
+    asteroid_shader.SetUniform("inventory", asteroid->bonus_inventory);
     asteroid_buffer.Draw();
 }
 

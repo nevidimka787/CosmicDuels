@@ -10,10 +10,11 @@ float radius;
 
 vec3 color;
 
-#define LOOP	0x03 //0000 0011
-#define LASER	0x0C //0000 1100
-#define BOMB	0x30 //0011 0000
-#define KNIFE	0xC0 //1100 0000
+#define LOOP	0x0003 //0000 0000 0000 0011
+#define LASER	0x000C //0000 0000 0000 1100
+#define BOMB	0x0030 //0000 0000 0011 0000
+#define KNIFE	0x00C0 //0000 0000 1100 0000
+#define REVERS	0x4000 //0100 0000 0000 0000
 
 void main()
 {
@@ -21,25 +22,31 @@ void main()
 	{
 		discard;
 	}
-
-	if((inventory & (LOOP | LASER)) != 0)
+	if((inventory & 0x00FF) != 0)
 	{
-		if((inventory & LOOP) != 0)
-		{//LOOP
-			color = vec3(0.8f, 0.2f, 0.0f);
+		if((inventory & (LOOP | LASER)) != 0)
+		{
+			if((inventory & LOOP) != 0)
+			{//LOOP
+				color = vec3(0.8f, 0.2f, 0.0f);//red
+			}
+			else
+			{//LASER
+				color = vec3(0.0f, 0.0f, 0.5f);//dark blue
+			}
+		}
+		else if((inventory & BOMB) != 0)
+		{//BOMB
+			color = vec3(0.5f, 0.9f, 0.0f);//yellow - green
 		}
 		else
-		{//LASER
-			color = vec3(0.0f, 0.0f, 0.5f);
+		{//KNIFE
+			color = vec3(0.0f, 1.0f, 0.0f);//green
 		}
 	}
-	else if((inventory & BOMB) != 0)
-	{//BOMB
-		color = vec3(0.5f, 0.9f, 0.0f);
-	}
 	else
-	{//KNIFE
-		color = vec3(0.0f, 1.0f, 0.0f);
+	{//REVERS
+		color = vec3(1.0f, 0.0f, 1.0f);//purpure
 	}
 
 	fragment_color = vec4(color * (1.0f - radius / 5.0f) + radius / 5.0f, 1.0f); 
