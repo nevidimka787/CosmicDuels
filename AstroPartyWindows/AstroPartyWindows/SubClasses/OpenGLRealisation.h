@@ -239,6 +239,7 @@ public:
 	bool* game_p__play_match;
 	bool* game_p__play_round;
 	bool* game_p__flag_all_entities_initialisate;
+	bool* game_p__flag_round_results;
 
 	//Count of gravity generators on the map.
 	GameTypes::map_elements_count_t* game_p__grav_gens_count;
@@ -266,8 +267,6 @@ public:
 	GameTypes::entities_count_t* game_p__bullets_count;
 	//Count of particles on the map.
 	GameTypes::entities_count_t* game_p__particles_count;
-	//Count of map's rectangles on the map.
-	GameTypes::map_elements_count_t* game_p__rectangles_count;
 
 	//Array of ships
 	Ship** game_p__ships;
@@ -290,8 +289,6 @@ public:
 
 	//Object stores data about map on current level.
 	Map* game_p__map;
-	//Array of rectangles.
-	Rectangle** game_p__rectangles;
 	//Array of gravity generators.
 	GravGen** game_p__grav_gens;
 	//Array of turels.

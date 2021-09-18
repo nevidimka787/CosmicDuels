@@ -79,7 +79,8 @@ void Game::Update()
 
 	if (flag_end_match)
 	{
-		EndMatch();
+		play_round = false;
+		flag_end_match = true;
 	}
 
 	if (camera.move_velocity_coefficient < 1000.0f)
@@ -577,15 +578,9 @@ void Game::DestroyEntity(Bomb* destroyer, Ship* entity)
 		DecrementPlayersCountInTeam(entity->GetTeamNumber());
 	}
 	DestroySupportEntitiesBy(entity);
+	AddBonuses(entity);
 	pilots[entity->GetPlayerNumber()] = entity->Destroy();
 	pilots_count++;
-	Bonus ship_bonus = ships[entity->GetPlayerNumber()].LoseBonus();
-	Bonus temp_bonus = ship_bonus.Division();
-	while (temp_bonus.exist)
-	{
-		AddEntity(temp_bonus);
-		temp_bonus = ship_bonus.Division();
-	}
 	ships[entity->GetPlayerNumber()].exist = false;
 	ships_count--;
 	camera.SetCoefficients();
@@ -673,15 +668,9 @@ void Game::DestroyEntity(Bullet* destroyer, Ship* entity)
 		DecrementPlayersCountInTeam(entity->GetTeamNumber());
 	}
 	DestroySupportEntitiesBy(entity);
-	pilots_count++;
+	AddBonuses(entity);
 	pilots[entity->GetPlayerNumber()] = entity->Destroy();
-	Bonus ship_bonus = ships[entity->GetPlayerNumber()].LoseBonus();
-	Bonus temp_bonus = ship_bonus.Division();
-	while (temp_bonus.exist)
-	{
-		AddEntity(temp_bonus);
-		temp_bonus = ship_bonus.Division();
-	}
+	pilots_count++;
 	ships[entity->GetPlayerNumber()].exist = false;
 	ships_count--;
 	camera.SetCoefficients();
@@ -742,15 +731,9 @@ void Game::DestroyEntity(Knife* destroyer, Ship* entity)
 		return;
 	}
 	DestroySupportEntitiesBy(entity);
+	AddBonuses(entity);
 	pilots[entity->GetPlayerNumber()] = entity->Destroy();
 	pilots_count++;
-	Bonus ship_bonus = ships[entity->GetPlayerNumber()].LoseBonus();
-	Bonus temp_bonus = ship_bonus.Division();
-	while (temp_bonus.exist)
-	{
-		AddEntity(temp_bonus);
-		temp_bonus = ship_bonus.Division();
-	}
 	ships[entity->GetPlayerNumber()].exist = false;
 	ships_count--;
 	camera.SetCoefficients();
@@ -843,15 +826,9 @@ void Game::DestroyEntity(Laser* destroyer, Ship* entity)
 		DecrementPlayersCountInTeam(entity->GetTeamNumber());
 	}
 	DestroySupportEntitiesBy(entity);
+	AddBonuses(entity);
 	pilots[entity->GetPlayerNumber()] = entity->Destroy();
 	pilots_count++;
-	Bonus ship_bonus = ships[entity->GetPlayerNumber()].LoseBonus();
-	Bonus temp_bonus = ship_bonus.Division();
-	while (temp_bonus.exist)
-	{
-		AddEntity(temp_bonus);
-		temp_bonus = ship_bonus.Division();
-	}
 	ships[entity->GetPlayerNumber()].exist = false;
 	ships_count--;
 	camera.SetCoefficients();
@@ -942,15 +919,9 @@ void Game::DestroyEntity(MegaLaser* destroyer, Ship* entity)
 		DecrementPlayersCountInTeam(entity->GetTeamNumber());
 	}
 	DestroySupportEntitiesBy(entity);
+	AddBonuses(entity);
 	pilots[entity->GetPlayerNumber()] = entity->Destroy();
-	Bonus ship_bonus = ships[entity->GetPlayerNumber()].LoseBonus();
-	Bonus temp_bonus = ship_bonus.Division();
 	pilots_count++;
-	while (temp_bonus.exist)
-	{
-		AddEntity(temp_bonus);
-		temp_bonus = ship_bonus.Division();
-	}
 	ships[entity->GetPlayerNumber()].exist = false;
 	ships_count--;
 	camera.SetCoefficients();
@@ -1049,6 +1020,12 @@ void Game::SpawnEntity(Ship* spawner, Pilot* pilot)
 	}
 }
 
+void Game::AddBonuses(Ship* spawner)
+{
+	Bonus ship_bonus = spawner->LoseBonus();
+	AddEntity(ship_bonus);
+}
+
 Game::Game()
 {
 	InitGame();
@@ -1058,6 +1035,8 @@ Game::Game()
 void Game::InitGame()
 {
 	game_rules = GAME_RULE_DEFAULT_GAME_RULES;
+	flag_all_entities_initialisate = false;
+	flag_round_results = false;
 	global_timer = 0;
 
 	teams = new GameTypes::entities_count_t[GAME_PLAYERS_MAX_COUNT];
@@ -1259,6 +1238,9 @@ void Game::InitLevel()
 {
 	srand(time(0));
 	play_round = true;
+	flag_round_results = false;
+
+	logs.Clear();
 
 	MemorySetDefault();
 
@@ -1299,9 +1281,6 @@ void Game::InitLevel()
 		cyrcles[0].Set(&new_position, 0.1f / 0.8f);
 
 		map.Set(rectangles, 5, cyrcles, 1);
-		cyrcles_count = 1;
-		polygons_count = 0;
-		rectangles_count = 5;
 
 		new_position.Set(0.0f, 0.0f);
 		AddEntity(GravGen(&new_position));
@@ -1341,9 +1320,6 @@ void Game::InitLevel()
 		rectangles[5].Set(&new_segment);
 
 		map.Set(rectangles, 6);
-		cyrcles_count = 0;
-		polygons_count = 0;
-		rectangles_count = 6;
 
 		new_position.Set(0.0f, 0.0f);
 		AddEntity(Turel(&new_position));
@@ -1372,9 +1348,6 @@ void Game::InitLevel()
 		rectangles[0].Set(&new_segment);
 
 		map.Set(rectangles, 1);
-		cyrcles_count = 0;
-		polygons_count = 0;
-		rectangles_count = 1;
 		
 
 		/*Spawn entities*/
@@ -1672,16 +1645,11 @@ void Game::NextLevel()
 	{
 		flag_end_match = true;
 	}
-	else
-	{
-		play_round = false;
-	}
 }
 
 void Game::EndMatch()
 {
 	play_match = false;
-	play_round = false;
 	flag_all_entities_initialisate = false;
 
 	MemoryFree();
@@ -1714,7 +1682,8 @@ void Game::CheckEndMatch()
 	{
 		if (global_timer > end_match_tik)
 		{
-			NextLevel();
+			RoundResultsInit();
+			//NextLevel();
 		}
 	}
 	else if(flag_update_end_match)
@@ -1736,6 +1705,123 @@ void Game::CheckEndMatch()
 		end_match_tik = global_timer + GAME_END_MATCH_DELLAY;
 		flag_update_end_match = false;
 	}
+}
+
+void Game::RoundResultsInit()
+{
+	play_round = false;
+	flag_round_results = true;
+
+	GameTypes::score_t step = end_match_score * 2 + 1;
+
+	Segment segment;
+	Rectangle* rectangles = new Rectangle[4 + step + 1];
+
+	segment.Set(Vec2F(-1.0f, -1.0f), Vec2F(1.0f, 1.0f), true);
+	rectangles[0].Set(&segment);//frame
+
+
+	for (EngineTypes::Map::elements_array_length_t element = 0; element < step; element++)//vertical lines
+	{
+		segment.Set(
+			Vec2F(
+				-1.0f + (float)element / (float)step * 2.0f,
+				-1.0f / (float)step * 4.0f),
+			Vec2F(
+				-1.0f + (float)(element + 1) / (float)step * 2.0f,
+				1.0f / (float)step * 4.0f),
+			true);
+
+		rectangles[element + 1].Set(&segment);
+	}
+	for (EngineTypes::Map::elements_array_length_t element = 0; element < 4; element++)//horizontal lines
+	{
+		segment.Set(
+			Vec2F(-1.0f, 
+				-1.0f / (float)step * 4.0f + (float)element / (float)step * 2.0f),
+			Vec2F(1.0f,
+				-1.0f / (float)step * 4.0f + (float)(element + 1) / (float)step * 2.0f),
+			true);
+
+		rectangles[element + 1 + step].Set(&segment);
+	}
+
+	map.Set(rectangles, 4 + step + 1);
+
+	delete[] rectangles;
+	
+	MemorySetDefault();
+
+	GameTypes::players_count_t y_pos = 0;
+
+	for (GameTypes::players_count_t team = 1; team <= GAME_PLAYERS_MAX_COUNT; team++)
+	{
+		for (GameTypes::players_count_t ship = 0; ship < GAME_PLAYERS_MAX_COUNT; ship++)
+		{
+			if (ships[ship].GetTeamNumber() == team)
+			{
+				ships[ship].exist = true;
+				ships[ship].SetPosition(
+					Vec2F(
+						(float)scores[team - 1] / ((float)end_match_score + 0.5f) - 0.015f,
+						(-3 + 2 * y_pos) / (float)step));
+				ships[ship].radius = SHIP_DEFAULT_RADIUS / (float)step * 5.0f;
+				ships[ship].SetAngle(0.0f);
+				ships[ship].UpdateMatrix();
+				ships_count++;
+				y_pos++;
+			}
+		}
+	}
+
+	camera.SetPosition(Vec2F(0.0f, 0.0f));
+	camera.SetSize(1.0f);
+}
+
+bool Game::RoundResults()
+{
+	if (!logs.HaveData())
+	{
+		flag_round_results = false;
+		return false;
+	}
+
+	GameTypes::score_t step = end_match_score;
+
+	EngineTypes::Log::data_t data = logs.PopFromStart();
+
+	if (((data >> LOG_HEAD) & LOG_MASK_BITS) == LOG_CHANGE_SCORE)
+	{
+		for (GameTypes::players_count_t ship = 0; ship < GAME_PLAYERS_MAX_COUNT; ship++)
+		{
+			if (ships[ship].exist && ships[ship].GetTeamNumber() == ((data >> LOG_DATA_TEAM) & LOG_MASK_BITS) + 1)
+			{
+				if (((data >> LOG_DATA_SCORE) & LOG_MASK_BITS) == LOG_INCREMENT)
+				{
+					ships[ship].Move(Vec2F(1.0f / ((float)step + 0.5f), 0.0f));
+					ships[ship].UpdateMatrix();
+					scores[ships[ship].GetTeamNumber() - 1]++;
+				}
+				else if (((data >> LOG_DATA_SCORE) & LOG_MASK_BITS) == LOG_DECREMENT)
+				{
+					ships[ship].Move(Vec2F(-1.0f / ((float)step + 0.5f), 0.0f));
+					ships[ship].UpdateMatrix();
+					scores[ships[ship].GetTeamNumber() - 1]--;
+				}
+			}
+		}
+	}
+
+	if (!logs.HaveData() && !play_match)
+	{
+		delete[] ships;
+	}
+	if (!logs.HaveData())
+	{
+		std::cout << "End results." << std::endl;
+	}
+	flag_round_results = logs.HaveData();
+	return flag_round_results;
 }
 
 //Memory functions.
@@ -2118,12 +2204,12 @@ void Game::ShipShoot_NoBonus(Ship* ship)
 
 void Game::IncrementScore(GameTypes::players_count_t team_number)
 {
-	scores[team_number - 1]++;
+	logs.PushToEnd((LOG_CHANGE_SCORE << LOG_HEAD) | (LOG_INCREMENT << LOG_DATA_SCORE) | (((team_number - 1) & LOG_MASK_BITS) << LOG_DATA_TEAM));
 }
 
 void Game::DecrementScore(GameTypes::players_count_t team_number)
 {
-	scores[team_number - 1]--;
+	logs.PushToEnd((LOG_CHANGE_SCORE << LOG_HEAD) | (LOG_DECREMENT << LOG_DATA_SCORE) | (((team_number - 1) & LOG_MASK_BITS) << LOG_DATA_TEAM));
 }
 
 
@@ -2665,7 +2751,7 @@ void Game::UpdateLazers()
 void Game::UpdateMap()
 {
 	void* element_pointer;
-	for (EngineTypes::Map::elements_array_length_t element = 0, found_elements = 0; found_elements < rectangles_count; element++)
+	for (EngineTypes::Map::elements_array_length_t element = 0, found_elements = 0; found_elements < map.rectangles_array_length; element++)
 	{
 		element_pointer = (void*)map.GetRectanglePointer(element);
 		if (((Rectangle*)element_pointer)->exist)

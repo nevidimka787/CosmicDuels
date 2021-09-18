@@ -1015,12 +1015,12 @@ Bonus Bonus::Division()
 	EngineTypes::Bonus::inventory_t temp_bonus_inventory;
 	for (uint8_t i = 0; i < BONUS_BONUSES_COUNT; i++)
 	{
-		temp_bonus_inventory = 0x11 << (i * 2);
+		temp_bonus_inventory = 0x03 << (i * 2);
 		if (bonus_inventory & temp_bonus_inventory)
 		{
 			temp_bonus_inventory &= bonus_inventory;
 			bonus_inventory &= BONUS_ALL - temp_bonus_inventory;
-			if (bonus_inventory & (1 << (BONUS_BONUSES_COUNT * 2)) - 1)
+			if (bonus_inventory & (1u << (BONUS_BONUSES_COUNT * 2)) - 1)
 			{
 				Vec2F new_position = position + direction.Rotate((float)rand() / (float)RAND_MAX * M_PI * 2.0f) * radius;
 				return Bonus(&new_position, &velocity, temp_bonus_inventory);
@@ -1841,15 +1841,15 @@ Bullet Ship::CreateTriple(uint8_t bullet_number)
 	switch (bullet_number)
 	{
 	case 0:
-		bullet_position = position + direction * (radius + BULLET_DEFAULT_RADIUS);
+		bullet_position = position + direction * radius;
 		bullet_velocity = direction * BULLET_DEFAULT_VELOCITY + velocity;
 		return Bullet(&bullet_position, &bullet_velocity, player_number, player_team_number);
 	case 1:
-		bullet_position = position - direction.Perpendicular() * (radius + BULLET_DEFAULT_RADIUS);
+		bullet_position = position - direction.Perpendicular() * radius;
 		bullet_velocity = direction * BULLET_DEFAULT_VELOCITY + velocity;
 		return Bullet(&bullet_position, &bullet_velocity, player_number, player_team_number);
 	case 2:
-		bullet_position = position + direction.Perpendicular() * (radius + BULLET_DEFAULT_RADIUS);
+		bullet_position = position + direction.Perpendicular() * radius;
 		bullet_velocity = direction * BULLET_DEFAULT_VELOCITY + velocity;
 		return Bullet(&bullet_position, &bullet_velocity, player_number, player_team_number);
 	default:
@@ -1863,7 +1863,11 @@ Bullet Ship::CreateLoop(GameTypes::entities_count_t bullet_number)
 	Vec2F bullet_velocity = direction.Rotate(loc_angle);
 	Vec2F bullet_position = position + bullet_velocity * (radius + BULLET_DEFAULT_RADIUS);
 	bullet_velocity = bullet_velocity * BULLET_DEFAULT_VELOCITY + velocity;
-	return Bullet(&bullet_position, &bullet_velocity, player_number, player_team_number);
+	return Bullet(&bullet_position, &bullet_velocity, 
+		player_number, player_team_number, true,
+		0.0f, 0.0f, 
+		DEFAULT_FORCE_COLLISION_COEFFICIENT, BULLET_DEFAULT_RESISTANCE_AIR_COEFFICIENT / 2.0f, 
+		BULLET_DEFAULT_RADIUS / 2.0f);
 }
 
 Bomb Ship::CreateBomb()

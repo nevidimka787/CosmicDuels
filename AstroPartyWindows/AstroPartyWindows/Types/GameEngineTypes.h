@@ -58,6 +58,13 @@ namespace EngineTypes
 		typedef uint8_t knife_health_t;
 	}
 
+	namespace Log
+	{
+		typedef uint8_t header_t;
+		typedef uint32_t data_t;
+		typedef uint8_t length_t;
+	}
+
 	namespace Map
 	{
 		typedef uint8_t elements_array_length_t;

@@ -54,6 +54,7 @@ Linker::Linker(Game* game_object, MenuFunctions* menu_functions_object, OpenGL* 
 	open_gl_object->game_p__camera = &game_object->camera;
 	open_gl_object->game_p__current_active_menu = &game_object->current_active_menu;
 	open_gl_object->game_p__flag_all_entities_initialisate = &game_object->flag_all_entities_initialisate;
+	open_gl_object->game_p__flag_round_results = &game_object->flag_round_results;
 	open_gl_object->game_p__grav_gens = &game_object->grav_gens;
 	open_gl_object->game_p__grav_gens_count = &game_object->grav_gens_count;
 	open_gl_object->game_p__knifes = &game_object->knifes;
@@ -72,8 +73,6 @@ Linker::Linker(Game* game_object, MenuFunctions* menu_functions_object, OpenGL* 
 	open_gl_object->game_p__pilots = &game_object->pilots;
 	open_gl_object->game_p__pilots_count = &game_object->pilots_count;
 	open_gl_object->game_p__players_count = &game_object->players_count;
-	open_gl_object->game_p__rectangles = &game_object->rectangles;
-	open_gl_object->game_p__rectangles_count = &game_object->rectangles_count;
 	open_gl_object->game_p__rotate_flags = &game_object->rotate_flags;
 	open_gl_object->game_p__ships = &game_object->ships;
 	open_gl_object->game_p__ships_control_menu = &game_object->ships_control_menu;

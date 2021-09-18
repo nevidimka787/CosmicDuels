@@ -194,7 +194,35 @@ void PhysicsCalculation()
         std::this_thread::sleep_until(local_time_point);
     }
 
-    //std::cout << "Thread PhysicsCalculation exit." << std::endl;
+    if (main_game->flag_end_match == false)
+    {
+        while (true)
+        {
+            local_time_point += std::chrono::seconds(1);
+            std::this_thread::sleep_until(local_time_point);
+
+            physic_calculation_mtx.lock();
+            if (main_game->RoundResults())
+            {
+                physic_calculation_mtx.unlock();
+            }
+            else
+            {
+                physic_calculation_mtx.unlock();
+                break;
+            }
+        }
+
+        main_game->NextLevel();
+
+        local_time_point += std::chrono::seconds(1);
+        std::this_thread::sleep_until(local_time_point);
+    }
+    if(main_game->flag_end_match == true)
+    {
+        main_game->EndMatch();
+    }
+
     physic_thread_flag = false;
 }
 

@@ -12,6 +12,7 @@
 #include "Color.h"
 #include "Entity.h"
 #include "Line.h"
+#include "Logs.h"
 #include "Map.h"
 #include "Mat.h"
 #include "Menu.h"

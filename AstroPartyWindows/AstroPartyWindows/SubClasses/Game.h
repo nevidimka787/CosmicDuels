@@ -46,6 +46,8 @@ public:
 	bool flag_update_end_match;
 	//If true match will finish.
 	bool flag_end_match;
+	//If true results of round are drawind.
+	bool flag_round_results;
 
 	GameTypes::maps_count_t current_event;
 
@@ -87,12 +89,6 @@ public:
 	GameTypes::entities_count_t bullets_count;
 	//Count of particles on the map.
 	GameTypes::entities_count_t particles_count;
-	//Count of map's rectangles on the map.
-	GameTypes::map_elements_count_t rectangles_count;
-	//Count of map's rectangles on the map.
-	GameTypes::map_elements_count_t cyrcles_count;
-	//Count of map's rectangles on the map.
-	GameTypes::map_elements_count_t polygons_count;
 
 	//Bonus in all ships at the start of the game.
 	EngineTypes::Bonus::inventory_t start_bonus;
@@ -129,6 +125,8 @@ public:
 
 	//game objects
 
+	Logs logs;
+
 	//Array of shiips.
 	Ship* ships;
 	//Array of pilots.
@@ -151,8 +149,6 @@ public:
 
 	//Object stores data about map on current level.
 	Map map;
-	//Array of rectangles.
-	Rectangle* rectangles;
 	//Array of gravity generators.
 	GravGen* grav_gens;
 	//Array of turels.
@@ -330,6 +326,12 @@ public:
 	void IncrementPlayersCountInTeam(GameTypes::players_count_t team_number);
 	void CheckEndMatch();
 
+	void RoundResultsInit();
+	//The function show round results.
+	//The function block timer.
+	//If logs not empty, the function return true.
+	bool RoundResults();
+
 	void PollEvents();
 	//"Test"
 	void Event0();
@@ -453,7 +455,6 @@ public:
 	//Update the position ans velocity of entity.
 	void TransportShips();
 
-
 	void DestroyEntity(Bomb* destroyer, Asteroid* entity);
 	void DestroyEntity(Bomb* destroyer, Bonus* entity);
 	void DestroyEntity(Bomb* destroyer, Bullet* entity);
@@ -496,6 +497,7 @@ public:
 	
 	//The function spawn the shep from the pilot.
 	void SpawnEntity(Ship* spawner, Pilot* pilot);
+	void AddBonuses(Ship* spawner);
 		
 	
 	//Not checking nullprt!

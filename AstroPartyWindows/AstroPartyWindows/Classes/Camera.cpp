@@ -216,6 +216,11 @@ void Camera::SetLowLimits(float size_x, float size_y)
 	low_limits.Set(size_x, size_y);
 }
 
+void Camera::SetPosition(Vec2F position)
+{
+	this->position = position;
+}
+
 void Camera::SetPosition(Vec2F* position)
 {
 	if (position != nullptr)
