@@ -14,6 +14,7 @@ class MegaLaser;
 class AggressiveEntity;
 class Turel;
 class GravGen;
+class DecelerationArea;
 class DynamicEntity;
 class KillerEntity;
 class Bullet;
@@ -31,7 +32,6 @@ protected:
 	Vec2F position;
 	Vec2F direction;
 	float angle;
-	Mat3x2F model_matrix;
 public:
 	float radius;
 	bool exist;
@@ -45,35 +45,59 @@ public:
 
 	float GetAngle();
 	Vec2F GetDirectionNotNormalize();
-	/*
-	Getting the distance between two closest points of objects.
-	*/
-	float GetDistance(Entity* entity);
-	float GetDistance(Vec2F point);
-	float GetDistance(Vec2F* point);
-	float GetDistance(Line* line);
+	//Getting the distance between two closest points of objects.
 	float GetDistance(Beam* beam);
-	float GetDistance(Segment* segment);
-	float GetDistance(DynamicEntity* entity);
-	float GetDistance(StaticEntity* entity);
-	float GetDistance(Rectangle* rectangle);
+	//Getting the distance between two closest points of objects.
 	float GetDistance(Cyrcle* cyrcle);
+	//Getting the distance between two closest points of objects.
+	float GetDistance(DecelerationArea* deceler_area);
+	//Getting the distance between two closest points of objects.
+	float GetDistance(DynamicEntity* entity);
+	//Getting the distance between two closest points of objects.
+	float GetDistance(Entity* entity);
+	//Getting the distance between two closest points of objects.
+	float GetDistance(Line* line);
+	//Getting the distance between two closest points of objects.
 	float GetDistance(Polygon* polygon);
+	//Getting the distance between two closest points of objects.
+	float GetDistance(Rectangle* rectangle);
+	//Getting the distance between two closest points of objects.
+	float GetDistance(Segment* segment);
+	//Getting the distance between two closest points of objects.
+	float GetDistance(StaticEntity* entity);
+	//Getting the distance between two closest points of objects.
+	float GetDistance(Vec2F point);
+	//Getting the distance between two closest points of objects.
+	float GetDistance(Vec2F* point);
 	float GetFrameSize(Entity* entity, float scale);
-	Mat3x2F GetModelMatrix();
 	Vec2F GetDirection();
 	Vec2F GetPosition();
-	bool IsCollision(Vec2F point);
-	bool IsCollision(Vec2F* point);
-	bool IsCollision(Line* line);
+	//If distance between two objects is less then zero, the function return true.
 	bool IsCollision(Beam* beam);
-	bool IsCollision(Segment* segment);
-	bool IsCollision(DynamicEntity* entity);
-	bool IsCollision(StaticEntity* entity);
-	bool IsCollision(Rectangle* rectangle);
+	//If distance between two objects is less then zero, the function return true.
 	bool IsCollision(Cyrcle* cyrcle);
-	bool IsCollision(Polygon* polygon);
+	//If distance between two objects is less then zero, the function return true.
+	bool IsCollision(DecelerationArea* deceler_area);
+	//If distance between two objects is less then zero, the function return true.
+	bool IsCollision(DynamicEntity* entity);
+	//If distance between two objects is less then zero, the function return true.
+	bool IsCollision(Entity* entity);
+	//If distance between two objects is less then zero, the function return true.
+	bool IsCollision(Line* line);
+	//If distance between two objects is less then zero, the function return true.
 	bool IsCollision(Map* map);
+	//If distance between two objects is less then zero, the function return true.
+	bool IsCollision(Polygon* polygon);
+	//If distance between two objects is less then zero, the function return true.
+	bool IsCollision(Rectangle* rectangle);
+	//If distance between two objects is less then zero, the function return true.
+	bool IsCollision(Segment* segment);
+	//If distance between two objects is less then zero, the function return true.
+	bool IsCollision(StaticEntity* entity);
+	//If distance between two objects is less then zero, the function return true.
+	bool IsCollision(Vec2F point);
+	//If distance between two objects is less then zero, the function return true.
+	bool IsCollision(Vec2F* point);
 	void Rotate(float angle);
 	void Set(Entity* entity);
 	void Set(
@@ -91,7 +115,6 @@ public:
 	void UpdateAngle();
 	void UpdateDirection();
 	//need manual call
-	void UpdateMatrix();
 	void Move(Vec2F delta);
 	void Move(Vec2F* delta);
 
@@ -363,6 +386,7 @@ class ControledEntity : public DynamicEntity
 {
 protected:
 	Vec2F* heat_box_vertexes_array;
+	Mat3x2F model_matrix;
 	EngineTypes::ControledEntity::heat_box_vertexes_count_t heat_box_vertexes_array_length;
 	GameTypes::players_count_t player_number;
 	GameTypes::players_count_t player_team_number;
@@ -386,6 +410,7 @@ public:
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
 		bool exist = true);
+	Mat3x2F GetModelMatrix();
 	Mat3x2F* GetModelMatrixPointer();
 	GameTypes::players_count_t GetPlayerNumber();
 	GameTypes::players_count_t GetTeamNumber();
@@ -421,6 +446,7 @@ public:
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
 		bool exist = true);
+	void UpdateMatrix();
 
 	void operator=(ControledEntity entity);
 
@@ -660,6 +686,32 @@ public:
 	~AggressiveEntity();
 };
 
+class DecelerationArea : public StaticEntity
+{
+public:
+	float deceleration_parameter;
+
+	DecelerationArea();
+	DecelerationArea(const DecelerationArea& deceleration_area);
+	DecelerationArea(
+		Vec2F* position,
+		float deseleration_parameter = DECELERATION_AREA_DEFAULT_DECELERATION_CEFFICIENT,
+		float radius = DECELERATION_AREA_DEFAULT_RADIUS,
+		float angle = 0.0f,
+		bool exist = true);
+
+	void Set(DecelerationArea* deceleration_area);
+	void Set(
+		Vec2F* position,
+		float deseleration_parameter = DECELERATION_AREA_DEFAULT_DECELERATION_CEFFICIENT,
+		float radius = DECELERATION_AREA_DEFAULT_RADIUS,
+		float angle = 0.0f,
+		bool exist = true);
+	void operator=(DecelerationArea deceleration_area);
+
+	~DecelerationArea();
+};
+
 class GravGen : public StaticEntity
 {
 public:
@@ -805,6 +857,8 @@ class Bullet : public KillerEntity
 {
 protected:
 public:
+	float min_velocity;
+
 	EngineTypes::Bullet::entity_t is_collision;
 	Bullet();
 	Bullet(const Bullet& bullet);
@@ -819,6 +873,7 @@ public:
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		float force_resistance_air_coefficient = BULLET_DEFAULT_RESISTANCE_AIR_COEFFICIENT,
 		float radius = BULLET_DEFAULT_RADIUS,
+		float min_velocity = BULLET_DEFAULT_MIN_VELOCITY,
 		bool exist = true);
 	void Set(Bullet* bullet);
 	void Set(
@@ -832,6 +887,7 @@ public:
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		float force_resistance_air_coefficient = BULLET_DEFAULT_RESISTANCE_AIR_COEFFICIENT,
 		float radius = BULLET_DEFAULT_RADIUS,
+		float min_velocity = BULLET_DEFAULT_MIN_VELOCITY,
 		bool exist = true);
 	void Update();
 
