@@ -1,38 +1,33 @@
 #version 330 core
-layout (location = 0) in vec2 a_pos;
+layout (location = 0) in vec2 aPos;
+
+uniform float size;
+uniform vec2 position;
 
 uniform float scale;
-
-uniform vec2 position;
-uniform vec2 point2;
-
 uniform vec2 camera_position;
 uniform float camera_size;
 
+mat3 Rotate(float angel);
 mat3 Transport(vec2 vector);
 mat3 Scale(vec2 vector);
 
 mat3 matrix;
-vec3 _position;
 
-out vec2 v_pos;
-out vec2 size;
-
-#define BORDER  0.02f
+out vec2 pixel_position;
 
 void main()
 {
-    size = abs(position - point2);
-    v_pos = a_pos * (1.0f + BORDER / size);
+    pixel_position = aPos;
 
     matrix = 
-        Scale((point2 - position) / 2.0f) * 
-        Transport((point2 + position) / 2.0f) * 
+        Scale(vec2(size)) * 
+        Transport(position) * 
         Transport(-camera_position) *
         Scale(vec2(1.0f / camera_size)) *
         Scale(vec2(1.0f, scale));
-
-    gl_Position = vec4(vec3(v_pos, 1.0f) * matrix, 1.0f);
+ 
+    gl_Position = vec4(vec3(aPos, 1.0f) * matrix, 1.0f);
 }
 
 mat3 Transport(vec2 vector)
@@ -50,4 +45,12 @@ mat3 Scale(vec2 vector)
         vector.x,   0.0f,       0.0f,
         0.0f,       vector.y,   0.0f,
         0.0f,       0.0f,       1.0f);
+}
+
+mat3 Rotate(float angle)
+{
+    return mat3(
+        cos(angle),    -sin(angle),     0.0f,
+        sin(angle),     cos(angle),     0.0f,
+        0.0f,           0.0f,           1.0f);
 }

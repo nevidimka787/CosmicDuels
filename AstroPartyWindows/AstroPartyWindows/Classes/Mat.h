@@ -151,7 +151,7 @@ std::ostream& operator<<(std::ostream& stream, Vec2F vector);
 class Mat2D
 {
 public:
-	float
+	double
 		a11, a12,
 		a21, a22;
 
@@ -329,8 +329,8 @@ public:
 	operator Mat2F();
 
 	float Determinant();
-	Mat3x2F Rotate(double angle);
-	void RotateThis(double angle);
+	Mat3x2F Rotate(float angle);
+	void RotateThis(float angle);
 	Mat3x2F Scale(Vec2F vector);
 	Mat3x2F Scale(Vec2F* vector);
 	void ScaleThis(Vec2F vector);
