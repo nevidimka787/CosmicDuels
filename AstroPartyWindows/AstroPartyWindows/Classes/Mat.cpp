@@ -168,7 +168,7 @@ bool Vec2D::operator<=(Vec2D vector)
 
 Vec2D::operator Vec2F()
 {
-	return Vec2F((float)x, (float)y);
+	return Vec2F(x, y);
 }
 
 double Vec2D::GetAbsoluteAngle()
@@ -366,14 +366,14 @@ void Vec2F::operator*=(float value)
 
 void Vec2F::operator*=(Mat2F matrix)
 {
-	float temp = x * matrix.a11 + y * matrix.a12;
+	double temp = x * matrix.a11 + y * matrix.a12;
 	y = x * matrix.a21 + y * matrix.a22;
 	x = temp;
 }
 
 void Vec2F::operator*=(Mat3x2F matrix)
 {
-	float temp = x * matrix.a11 + y * matrix.a12 + matrix.a13;
+	double temp = x * matrix.a11 + y * matrix.a12 + matrix.a13;
 	y = x * matrix.a21 + y * matrix.a22 + matrix.a23;
 	x = temp;
 }
@@ -541,8 +541,8 @@ void Vec2F::Set(Vec2F* vector)
 
 void Vec2F::Set(Vec2D* vector)
 {
-	x = (float)vector->x;
-	y = (float)vector->y;
+	x = vector->x;
+	y = vector->y;
 }
 
 void Vec2F::Set(float x, float y)
@@ -553,8 +553,8 @@ void Vec2F::Set(float x, float y)
 
 void Vec2F::Set(double x, double y)
 {
-	this->x = (float)x;
-	this->y = (float)y;
+	this->x = x;
+	this->y = y;
 }
 
 void Vec2F::operator=(Vec2F vector)
@@ -565,8 +565,8 @@ void Vec2F::operator=(Vec2F vector)
 
 void Vec2F::operator=(Vec2D vector)
 {
-	x = (float)vector.x;
-	y = (float)vector.y;
+	x = vector.x;
+	y = vector.y;
 }
 
 Vec2F::~Vec2F()
@@ -834,7 +834,7 @@ void Mat2F::operator*=(float value)
 
 void Mat2F::operator*=(Mat2F matrix)
 {
-	float
+	double
 		temp_a12 = a11 * matrix.a21 + a12 * matrix.a22,
 		temp_a22 = a21 * matrix.a21 + a22 * matrix.a22;
 
@@ -1441,18 +1441,18 @@ float Mat3x2F::Determinant()
 	return a11 * a22 - a21 * a12;
 }
 
-Mat3x2F Mat3x2F::Rotate(float angle)
+Mat3x2F Mat3x2F::Rotate(double angle)
 {
 	return *this * Mat3x2F(
-		cosf(angle), -sinf(angle), 0.0f,
-		sinf(angle), cosf(angle), 0.0f);
+		cos(angle), -sin(angle), 0.0f,
+		sin(angle), cos(angle), 0.0f);
 }
 
-void Mat3x2F::RotateThis(float angle)
+void Mat3x2F::RotateThis(double angle)
 {
 	*this *= Mat3x2F(
-		cosf(angle), -sinf(angle), 0.0f,
-		sinf(angle), cosf(angle), 0.0f);
+		cos(angle), -sin(angle), 0.0f,
+		sin(angle), cos(angle), 0.0f);
 }
 
 Mat3x2F Mat3x2F::Scale(Vec2F vector)

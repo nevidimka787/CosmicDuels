@@ -63,7 +63,6 @@ public:
 	//If value is 0, the match ends.
 	GameTypes::score_t end_match_score;
 
-	GameTypes::map_elements_count_t deceler_areas_count;
 	//Count of gravity generators on the map.
 	GameTypes::map_elements_count_t grav_gens_count;
 	//Count of players on the map.
@@ -79,9 +78,9 @@ public:
 	//Count of bombs on the map.
 	GameTypes::entities_count_t bombs_count;
 	//Count of turels on the map.
-	GameTypes::map_elements_count_t turels_count;
+	GameTypes::entities_count_t turels_count;
 	//Count of map's lazers on the map.
-	GameTypes::map_elements_count_t mega_lasers_count;
+	GameTypes::entities_count_t mega_lasers_count;
 	//Count of asteroids on the map.
 	GameTypes::entities_count_t asteroids_count;
 	//Count of bonuses on the map.
@@ -150,8 +149,6 @@ public:
 
 	//Object stores data about map on current level.
 	Map map;
-	//Array of deceleration areas.
-	DecelerationArea* deceler_areas;
 	//Array of gravity generators.
 	GravGen* grav_gens;
 	//Array of turels.
@@ -193,28 +190,22 @@ public:
 	void AddEntity(Bullet new_bullet);
 	//Function adds entity to array that store entities of the same type.
 	//Not checking nullprt!
-	void AddEntity(DecelerationArea new_deceleration_area);
-	//Function adds entity to array that store entities of the same type.
-	//Not checking nullprt!
 	void AddEntity(GravGen new_grav_gen);
 	//Function adds entity to array that store entities of the same type.
 	//Not checking nullprt!
 	void AddEntity(Knife new_knife);
 	//Function adds entity to array that store entities of the same type.
 	//Not checking nullprt!
-	void AddEntity(Bomb new_bomb);
+	void AddEntity(Bomb new_mine);
 	//Function adds entity to array that store entities of the same type.
 	//Not checking nullprt!
-	void AddEntity(Laser new_lazsr);
-	//Function adds entity to array that store entities of the same type.
-	//Not checking nullprt!
-	void AddEntity(MegaLaser new_laser);
-	//Function adds entity to array that store entities of the same type.
-	//Not checking nullprt!
-	void AddEntity(Particle new_particle);
+	void AddEntity(Laser new_lazer);
 	//Function adds entity to array that store entities of the same type.
 	//Not checking nullprt!
 	void AddEntity(Turel new_lazer);
+	//Function adds entity to array that store entities of the same type.
+	//Not checking nullprt!
+	void AddEntity(Particle new_particle);
 
 
 
@@ -226,31 +217,22 @@ public:
 	void RemoveEntity(Asteroid* deleting_asteroid);
 	//Function removes the specified entity from the array.
 	//Not checking nullprt!
-	void RemoveEntity(Bomb* deleting_bomb);
-	//Function removes the specified entity from the array.
-	//Not checking nullprt!
 	void RemoveEntity(Bullet* deleting_bullet);
-	//Function adds entity to array that store entities of the same type.
-	//Not checking nullprt!
-	void RemoveEntity(DecelerationArea* new_deceleration_area);
-	//Function adds entity to array that store entities of the same type.
-	//Not checking nullprt!
-	void RemoveEntity(GravGen* new_grav_gen);
 	//Function removes the specified entity from the array.
 	//Not checking nullprt!
 	void RemoveEntity(Knife* deleting_knife);
 	//Function removes the specified entity from the array.
 	//Not checking nullprt!
-	void RemoveEntity(Laser* deleting_laser);
+	void RemoveEntity(Bomb* deleting_mine);
 	//Function removes the specified entity from the array.
 	//Not checking nullprt!
-	void RemoveEntity(MegaLaser* deleting_mega_laser);
-	//Function removes the specified entity from the array.
-	//Not checking nullprt!
-	void RemoveEntity(Particle* deleting_particle);
+	void RemoveEntity(Laser* deleting_lazer);
 	//Function removes the specified entity from the array.
 	//Not checking nullprt!
 	void RemoveEntity(Turel* deleting_turel);
+	//Function removes the specified entity from the array.
+	//Not checking nullprt!
+	void RemoveEntity(Particle* deleting_particle);
 	
 
 //temp containers
@@ -357,17 +339,6 @@ public:
 	void Event1();
 	//"Cyrcle"
 	void Event2();
-	//"Deceleration area"
-	void Event3();
-
-	//"Test"
-	void CreateMap0(Vec2F* ships_positions, float* ships_angles);
-	//"Turel"
-	void CreateMap1(Vec2F* ships_positions, float* ships_angles);
-	//"Cyrcle"
-	void CreateMap2(Vec2F* ships_positions, float* ships_angles);
-	//"Deceleration area"
-	void CreateMap3(Vec2F* ships_positions, float* ships_angles);
 
 	//Memory functions
 
@@ -417,6 +388,13 @@ public:
 		Vec2F* force,
 		EntityType* entities,
 		GameTypes::entities_count_t entities_count);
+	//The function adds the force of the gravity generator to all entities in the array.
+	//Use temp_p1 temp_p2
+	template<typename EntityType>
+	void DynamicEntitiesAddForce(
+		GravGen* grav_gen,
+		EntityType* entities,
+		GameTypes::entities_count_t entities_count);
 	//The function adds forces of the all gravity generators to all entities in the array.
 	//Use temp_p1 temp_p2
 	template<typename EntityType>
@@ -431,14 +409,6 @@ public:
 		GravGen* grav_gens,
 		GameTypes::map_elements_count_t grav_gens_count,
 		Bomb* entities,
-		GameTypes::entities_count_t entities_count);
-	//The function adds forces of the all gravity generators to all entities in the array.
-	//Use temp_p1 temp_p2
-	template<typename EntityType>
-	void DynamicEntitiesAddForce(
-		DecelerationArea* deceler_area,
-		GameTypes::map_elements_count_t deceler_area_count,
-		EntityType* entities,
 		GameTypes::entities_count_t entities_count);
 
 	//The function calculates the influence of entities on other entities. Any entity can be destroyed. New entities can be created.

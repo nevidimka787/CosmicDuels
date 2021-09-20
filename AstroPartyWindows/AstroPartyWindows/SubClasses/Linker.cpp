@@ -53,8 +53,6 @@ Linker::Linker(Game* game_object, MenuFunctions* menu_functions_object, OpenGL* 
 	open_gl_object->game_p__burnout_flag = &game_object->burnout_flags;
 	open_gl_object->game_p__camera = &game_object->camera;
 	open_gl_object->game_p__current_active_menu = &game_object->current_active_menu;
-	open_gl_object->game_p__deceler_areas = &game_object->deceler_areas;
-	open_gl_object->game_p__deceler_areas_count = &game_object->deceler_areas_count;
 	open_gl_object->game_p__flag_all_entities_initialisate = &game_object->flag_all_entities_initialisate;
 	open_gl_object->game_p__flag_round_results = &game_object->flag_round_results;
 	open_gl_object->game_p__grav_gens = &game_object->grav_gens;

@@ -18,21 +18,19 @@ vec3 _position;
 out vec2 v_pos;
 out vec2 size;
 
-#define BORDER  0.02f
-
 void main()
 {
+    v_pos = a_pos;
     size = abs(position - point2);
-    v_pos = a_pos * (1.0f + BORDER / size);
 
     matrix = 
-        Scale((point2 - position) / 2.0f) * 
-        Transport((point2 + position) / 2.0f) * 
+        Scale(point2 - position) * 
+        Transport(position) * 
         Transport(-camera_position) *
         Scale(vec2(1.0f / camera_size)) *
         Scale(vec2(1.0f, scale));
 
-    gl_Position = vec4(vec3(v_pos, 1.0f) * matrix, 1.0f);
+    gl_Position = vec4(vec3(a_pos, 1.0f) * matrix, 1.0f);
 }
 
 mat3 Transport(vec2 vector)

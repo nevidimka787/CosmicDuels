@@ -222,7 +222,6 @@ void PhysicsCalculation()
     {
         main_game->EndMatch();
     }
-    main_game->flag_round_results = false;
 
     physic_thread_flag = false;
 }

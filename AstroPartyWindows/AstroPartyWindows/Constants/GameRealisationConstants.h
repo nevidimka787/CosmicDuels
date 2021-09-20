@@ -24,9 +24,6 @@ Asteroid
 #define GAME_ADD_DELLAY_BONUS_USE	20 //dellay added to GAME_DELLAY_BETWEEN_SHOOTS
 #define GAME_ADD_DELLAY_CONBO_USE		5  //dellay added to GAME_ADD_DELLAY_BETWEEN_BONUSES_USE
 
-//The maximum count of deceleration areas on the map.
-#define GAME_DECEL_AREAS_MAX_COUNT	32
-//The maximum count of gravity generators on the map.
 #define GAME_GRAV_GENS_MAX_COUNT	32
 //The maximum possible count of players on the map.
 #define GAME_PLAYERS_MAX_COUNT		4
@@ -67,10 +64,9 @@ Asteroid
 	//map pull
 
 	//This map is first map on every match.
-#define MAP_TEST_MAP			0
-#define MAP_TUREL_ON_CENTER		1
-#define MAP_CYRCLE_ON_CENTER	2
-#define MAP_DECELERATION_AREA	3
+#define MAP_TEST_MAP			0x00
+#define MAP_TUREL_ON_CENTER		0x01
+#define MAP_CYRCLE_ON_CENTER	0x02
 
 	//map pull
 
@@ -102,7 +98,7 @@ Asteroid
 	//match rules
 
 #define GAME_RANDOM_ITERATIONS_COUNT			8
-#define GAME_MAPS_COUNT							4
+#define GAME_MAPS_COUNT							3
 #define GAME_OBJECTS_COUNT						1
 #define GAME_BONUSES_COUNT						4
 #define GAME_BALANCE_ACTIVATE_DIFFERENCE_SCORES	3
@@ -191,6 +187,5 @@ Asteroid
 #define BUTTON_ID_SELECT_MAP_0	(BUTTON_ID_SELECT_MAP + MAP_TEST_MAP)
 #define BUTTON_ID_SELECT_MAP_1	(BUTTON_ID_SELECT_MAP + MAP_TUREL_ON_CENTER)
 #define BUTTON_ID_SELECT_MAP_2	(BUTTON_ID_SELECT_MAP + MAP_CYRCLE_ON_CENTER)
-#define BUTTON_ID_SELECT_MAP_3	(BUTTON_ID_SELECT_MAP + MAP_DECELERATION_AREA)
 
 	//select map pull menu

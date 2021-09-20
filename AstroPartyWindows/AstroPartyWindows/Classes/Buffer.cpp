@@ -51,8 +51,6 @@ bool StaticBuffer::Initialisate(Vec2F* points_array, EngineTypes::Buffer::array_
 	glEnableVertexAttribArray(0);       //disable vertex array
 	glBindBuffer(GL_ARRAY_BUFFER, 0);   //unbind buffer
 	glBindVertexArray(0);               //unbind array
-
-	return true;
 }
 
 void StaticBuffer::Use()

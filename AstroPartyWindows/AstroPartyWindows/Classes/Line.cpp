@@ -989,6 +989,7 @@ float Segment::GetDistance(Beam* target)
 	{
 		temp_float1 = point.GetDistance(temp_vector2);
 
+		temp_vector2 = vector.Perpendicular();
 		temp_line1.Set(point + vector, temp_vector2);
 		//dist from this->point2 to target 
 		if (target->Intersection(&temp_line1, &temp_vector2, AS_LINE))
@@ -1019,7 +1020,7 @@ float Segment::GetDistance(Beam* target)
 		}
 		temp_vector2 = target->vector.Perpendicular();
 		temp_line1.Set(&target->point, &temp_vector2);
-		//dist from target->point to this
+		//dist from target->point to target
 		if (Intersection(&temp_line1, &temp_vector2, AS_LINE))
 		{
 			temp_float2 = target->point.GetDistance(temp_vector2);
@@ -1035,14 +1036,14 @@ float Segment::GetDistance(Beam* target)
 
 	temp_vector2 = vector.Perpendicular();
 	temp_line1.Set(point + vector, temp_vector2);
-	//dist from this->point2 to target 
+	//dist from point2 to this 
 	if (target->Intersection(&temp_line1, &temp_vector2, AS_LINE))
 	{
 		temp_float1 = point.GetDistance(temp_vector2);
 
 		temp_vector2 = target->vector.Perpendicular();
 		temp_line1.Set(&target->point, &temp_vector2);
-		//dist from target->point to this
+		//dist from target->point to target
 		if (Intersection(&temp_line1, &temp_vector2, AS_LINE))
 		{
 			temp_float2 = target->point.GetDistance(temp_vector2);
@@ -1055,23 +1056,6 @@ float Segment::GetDistance(Beam* target)
 		}
 		return temp_float1;
 	}
-
-	temp_vector2 = target->vector.Perpendicular();
-	temp_line1.Set(&target->point, &temp_vector2);
-	//dist from target->point to this
-	if (Intersection(&temp_line1, &temp_vector2, AS_LINE))
-	{
-		return target->point.GetDistance(temp_vector2);
-	}
-
-	temp_float1 = point.GetDistance(target->point);
-	temp_float2 = (point + vector).GetDistance(target->point);
-
-	if (temp_float1 > temp_float2)
-	{
-		return temp_float2;
-	}
-	return temp_float1;
 }
 
 float Segment::GetDistance(Segment* target)

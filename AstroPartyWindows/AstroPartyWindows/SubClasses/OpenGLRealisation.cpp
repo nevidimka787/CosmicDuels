@@ -297,9 +297,7 @@ void OpenGL::InitBuffers()
     bonus_buffer.Initialisate(points, 6);
     bullet_buffer.Initialisate(points, 6);
     cyrcle_buffer.Initialisate(points, 6);
-    deceler_area_buffer.Initialisate(points, 6);
     grav_gen_buffer.Initialisate(points, 6);
-    rectangle_buffer.Initialisate(points, 6);
 
     points[0].Set(2.0f, 2.0f);
     points[1].Set(-2.0f, 2.0f);
@@ -318,6 +316,7 @@ void OpenGL::InitBuffers()
     points[5].Set(1.0f, 0.0f);
 
     button_buffer.Initialisate(points, 6);
+    rectangle_buffer.Initialisate(points, 6);
  
     points[0].Set(-1.0f, 0.0f);
     points[1].Set(0.0f, 1.0f);
@@ -370,7 +369,6 @@ void OpenGL::InitShaders()
     bomb_shader.Initialisate("Shaders/Objects/Vertex/Bomb.glsl", "Shaders/Objects/Fragment/Bomb.glsl");
     bonus_shader.Initialisate("Shaders/Objects/Vertex/Bonus.glsl", "Shaders/Objects/Fragment/Bonus.glsl");
     bullet_shader.Initialisate("Shaders/Objects/Vertex/Bullet.glsl", "Shaders/Objects/Fragment/Bullet.glsl");
-    deceler_area_shader.Initialisate("Shaders/Objects/Vertex/Deceler.glsl", "Shaders/Objects/Fragment/Deceler.glsl");
     grav_gen_shader.Initialisate("Shaders/Objects/Vertex/GravGen.glsl", "Shaders/Objects/Fragment/GravGen.glsl");
     knife_shader.Initialisate("Shaders/Objects/Vertex/Knife.glsl", "Shaders/Objects/Fragment/Knife.glsl");
     laser_shader.Initialisate("Shaders/Objects/Vertex/Laser.glsl", "Shaders/Objects/Fragment/Laser.glsl");
@@ -399,15 +397,11 @@ void OpenGL::DrawFrame()
     glClearColor(0.1f, 0.1f, 0.5f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    if (*game_p__flag_all_entities_initialisate == true && *game_p__flag_round_results == false)
+    if (*game_p__flag_all_entities_initialisate == true)
     {
         temp__game__camera_position = game_p__camera->GetPosition();
         temp__game__camera_size = game_p__camera->GetSize();
 
-        if (*game_p__deceler_areas_count > 0)
-        {
-            DrawDecelerationAreas();
-        }
         DrawCurrentMap();
         if (*game_p__grav_gens_count > 0)
         {
@@ -455,13 +449,6 @@ void OpenGL::DrawFrame()
         {
             DrawShips();
         }
-    }
-    else if (*game_p__flag_round_results == true)
-    {
-        temp__game__camera_position = game_p__camera->GetPosition();
-        temp__game__camera_size = game_p__camera->GetSize();
-        DrawCurrentMap();
-        DrawShips();
     }
 
     DrawCurrentMenu();
@@ -559,21 +546,6 @@ void OpenGL::DrawObject(Bullet* bullet, bool update_shader)
     bullet_shader.SetUniform("position", bullet->GetPosition());
     bullet_shader.SetUniform("size", bullet->radius);
     bullet_buffer.Draw();
-}
-
-void OpenGL::DrawObject(DecelerationArea* deceler_area, bool update_shader)
-{
-    if (update_shader)
-    {
-        deceler_area_buffer.Use();
-        deceler_area_shader.Use();
-        deceler_area_shader.SetUniform("scale", window_scale);
-        deceler_area_shader.SetUniform("camera_position", temp__game__camera_position);
-        deceler_area_shader.SetUniform("camera_size", temp__game__camera_size);
-    }
-    deceler_area_shader.SetUniform("position", deceler_area->GetPosition());
-    deceler_area_shader.SetUniform("size", deceler_area->radius);
-    deceler_area_buffer.Draw();
 }
 
 void OpenGL::DrawObject(GravGen* grav_gen, bool update_shader)
@@ -919,23 +891,6 @@ void OpenGL::DrawGravityGenerators()
         {
             found_grav_gens++;
             DrawObject(&(*game_p__grav_gens)[grav_gen]);
-        }
-    }
-}
-
-void OpenGL::DrawDecelerationAreas()
-{
-    deceler_area_buffer.Use();
-    deceler_area_shader.Use();
-    deceler_area_shader.SetUniform("scale", window_scale);
-    deceler_area_shader.SetUniform("camera_position", temp__game__camera_position);
-    deceler_area_shader.SetUniform("camera_size", temp__game__camera_size);
-    for (GameTypes::entities_count_t deceler_area = 0, found_deceler_area = 0; found_deceler_area < *game_p__deceler_areas_count; deceler_area++)
-    {
-        if ((*game_p__deceler_areas)[deceler_area].exist)
-        {
-            found_deceler_area++;
-            DrawObject(&(*game_p__deceler_areas)[deceler_area]);
         }
     }
 }

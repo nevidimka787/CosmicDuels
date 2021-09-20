@@ -24,7 +24,6 @@ public:
 	StaticBuffer bomb_buffer;
 	StaticBuffer bonus_buffer;
 	StaticBuffer bullet_buffer;
-	StaticBuffer deceler_area_buffer;
 	StaticBuffer grav_gen_buffer;
 	StaticBuffer knife_buffer;
 	StaticBuffer laser_buffer;
@@ -75,8 +74,6 @@ public:
 	Shader bonus_shader;
 	//The shader use for draw bullets.
 	Shader bullet_shader;
-	//The shader use for draw deceleration areas.
-	Shader deceler_area_shader;
 	//The shader use for draw gravity generators.
 	Shader grav_gen_shader;
 	//The shader use for draw knifes.
@@ -153,8 +150,6 @@ public:
 	void DrawObject(Bonus* bonus, bool update_shader = false);
 	//The function draw bullet.
 	void DrawObject(Bullet* bullet, bool update_shader = false);
-	//The function draw deceleration area.
-	void DrawObject(DecelerationArea* deceler_area, bool update_shader = false);
 	//The function draw gravity generator.
 	void DrawObject(GravGen* grav_gen, bool update_shader = false);
 	//The function draw knife.
@@ -196,8 +191,6 @@ public:
 	void DrawBullets();
 	//The function draw all gravity generators on the map.
 	void DrawGravityGenerators();
-	//The function draw all deceleration areas on the map.
-	void DrawDecelerationAreas();
 	//The function draw all knifes on the map.
 	void DrawKnifes();
 	//The function draw all lasers on the map.
@@ -248,58 +241,54 @@ public:
 	bool* game_p__flag_all_entities_initialisate;
 	bool* game_p__flag_round_results;
 
-	//Count of asteroids on the map.
-	GameTypes::entities_count_t* game_p__asteroids_count;
-	//Count of bombs on the map.
-	GameTypes::entities_count_t* game_p__bombs_count;
-	//Count of bonuses on the map.
-	GameTypes::entities_count_t* game_p__bonuses_count;
-	//Count of bullets on the map.
-	GameTypes::entities_count_t* game_p__bullets_count;
-	//Count of deceleration areas on the map.
-	GameTypes::map_elements_count_t* game_p__deceler_areas_count;
 	//Count of gravity generators on the map.
 	GameTypes::map_elements_count_t* game_p__grav_gens_count;
-	//Count of knifes on the map.
-	GameTypes::entities_count_t* game_p__knifes_count;
-	//Count of lazers on the map.
-	GameTypes::entities_count_t* game_p__lasers_count;
-	//Count of map's lazers on the map.
-	GameTypes::map_elements_count_t* game_p__mega_lasers_count;
-	//Count of particles on the map.
-	GameTypes::entities_count_t* game_p__particles_count;
-	//Count of pilots on the map.
-	GameTypes::players_count_t* game_p__pilots_count;
 	//Count of players on the map.
 	GameTypes::players_count_t* game_p__players_count;
 	//Count of ships on the map.
 	GameTypes::players_count_t* game_p__ships_count;
+	//Count of pilots on the map.
+	GameTypes::players_count_t* game_p__pilots_count;
+	//Count of knifes on the map.
+	GameTypes::entities_count_t* game_p__knifes_count;
+	//Count of lazers on the map.
+	GameTypes::entities_count_t* game_p__lasers_count;
+	//Count of bombs on the map.
+	GameTypes::entities_count_t* game_p__bombs_count;
 	//Count of turels on the map.
-	GameTypes::map_elements_count_t* game_p__turels_count;
+	GameTypes::entities_count_t* game_p__turels_count;
+	//Count of map's lazers on the map.
+	GameTypes::entities_count_t* game_p__mega_lasers_count;
+	//Count of asteroids on the map.
+	GameTypes::entities_count_t* game_p__asteroids_count;
+	//Count of bonuses on the map.
+	GameTypes::entities_count_t* game_p__bonuses_count;
+	//Count of bullets on the map.
+	GameTypes::entities_count_t* game_p__bullets_count;
+	//Count of particles on the map.
+	GameTypes::entities_count_t* game_p__particles_count;
 
+	//Array of ships
+	Ship** game_p__ships;
+	//Array of pilots.
+	Pilot** game_p__pilots;
 	//Array of asteroids.
 	Asteroid** game_p__asteroids;
-	//Array of bombs.
-	Bomb** game_p__bombs;
 	//Array of bonuses.
 	Bonus** game_p__bonuses;
+	//Array of bombs.
+	Bomb** game_p__bombs;
 	//Array of bullets.
 	Bullet** game_p__bullets;
 	//Array of knifes.
 	Knife** game_p__knifes;
 	//Array of lazers.
 	Laser** game_p__lasers;
-	//Array of pilots.
-	Pilot** game_p__pilots;
 	//Array of particles.
 	Particle** game_p__particles;
-	//Array of ships
-	Ship** game_p__ships;
 
 	//Object stores data about map on current level.
 	Map* game_p__map;
-	//Array of deceleration_areas.
-	DecelerationArea** game_p__deceler_areas;
 	//Array of gravity generators.
 	GravGen** game_p__grav_gens;
 	//Array of turels.
