@@ -638,11 +638,11 @@ void Game::DestroyEntity(Bomb* destroyer, Ship* entity)
 	}
 	if (!(game_rules && GAME_RULE_NEED_KILL_PILOT))
 	{
-		if (destroyer->CreatedByTeam(entity) || destroyer->GetPlayerMasterNumber() == AGGRESIVE_ENTITY_HOST_ID)
+		if (destroyer->CreatedByTeam(entity) || destroyer->GetPlayerMasterTeamNumber() == AGGRESIVE_ENTITY_HOST_ID)
 		{
 			DecrementScore(entity->GetTeamNumber());
 		}
-		else if (destroyer->GetPlayerMasterNumber() != AGGRESIVE_ENTITY_HOST_ID)
+		else if (destroyer->GetPlayerMasterTeamNumber() != AGGRESIVE_ENTITY_HOST_ID)
 		{
 			IncrementScore(destroyer->GetPlayerMasterTeamNumber());
 		}
@@ -670,11 +670,11 @@ void Game::DestroyEntity(Bomb* destroyer, Pilot* entity)
 	}
 	if (game_rules && GAME_RULE_NEED_KILL_PILOT)
 	{
-		if (destroyer->CreatedByTeam(entity) || destroyer->GetPlayerMasterNumber() == AGGRESIVE_ENTITY_HOST_ID)
+		if (destroyer->CreatedByTeam(entity) || destroyer->GetPlayerMasterTeamNumber() == AGGRESIVE_ENTITY_HOST_ID)
 		{
 			DecrementScore(entity->GetTeamNumber());
 		}
-		else if (destroyer->GetPlayerMasterNumber() != AGGRESIVE_ENTITY_HOST_ID)
+		else if (destroyer->GetPlayerMasterTeamNumber() != AGGRESIVE_ENTITY_HOST_ID)
 		{
 			IncrementScore(destroyer->GetPlayerMasterTeamNumber());
 		}
@@ -728,11 +728,11 @@ void Game::DestroyEntity(Bullet* destroyer, Ship* entity)
 	}
 	if (!(game_rules && GAME_RULE_NEED_KILL_PILOT))
 	{
-		if (destroyer->CreatedByTeam(entity) || destroyer->GetPlayerMasterNumber() == AGGRESIVE_ENTITY_HOST_ID)
+		if (destroyer->CreatedByTeam(entity) || destroyer->GetPlayerMasterTeamNumber() == AGGRESIVE_ENTITY_HOST_ID)
 		{
 			DecrementScore(entity->GetTeamNumber());
 		}
-		else if(destroyer->GetPlayerMasterNumber() != AGGRESIVE_ENTITY_HOST_ID)
+		else if(destroyer->GetPlayerMasterTeamNumber() != AGGRESIVE_ENTITY_HOST_ID)
 		{
 			IncrementScore(destroyer->GetPlayerMasterTeamNumber());
 		}
@@ -755,11 +755,11 @@ void Game::DestroyEntity(Bullet* destroyer, Pilot* entity)
 	}
 	if (game_rules && GAME_RULE_NEED_KILL_PILOT)
 	{
-		if (destroyer->CreatedByTeam(entity) || destroyer->GetPlayerMasterNumber() == AGGRESIVE_ENTITY_HOST_ID)
+		if (destroyer->CreatedByTeam(entity) || destroyer->GetPlayerMasterTeamNumber() == AGGRESIVE_ENTITY_HOST_ID)
 		{
 			DecrementScore(entity->GetTeamNumber());
 		}
-		else if(destroyer->GetPlayerMasterNumber() != AGGRESIVE_ENTITY_HOST_ID)
+		else if(destroyer->GetPlayerMasterTeamNumber() != AGGRESIVE_ENTITY_HOST_ID)
 		{
 			IncrementScore(destroyer->GetPlayerMasterTeamNumber());
 		}
@@ -800,6 +800,18 @@ void Game::DestroyEntity(Knife* destroyer, Ship* entity)
 	if (destroyer->exist == false || entity->exist == false)
 	{
 		return;
+	}
+	if (!(game_rules && GAME_RULE_NEED_KILL_PILOT))
+	{
+		if (destroyer->CreatedByTeam(entity))
+		{
+			DecrementScore(entity->GetTeamNumber());
+		}
+		else
+		{
+			IncrementScore(destroyer->GetPlayerMasterTeamNumber());
+		}
+		DecrementPlayersCountInTeam(entity->GetTeamNumber());
 	}
 	DestroySupportEntitiesBy(entity);
 	AddBonuses(entity);
@@ -1256,11 +1268,11 @@ void Game::PollEvents()
 
 void Game::Event0()
 {
-	if (!(global_timer % 500) && asteroids_count == 0)
+	if (object_pull_array[GAME_OBJECT_ASTEROID] && !(global_timer % 500) && asteroids_count == 0)
 	{
 		Vec2F positions[1];
-#define EVENT1_SQUARE_SIZE 0.7f
-		positions[0].Set(-EVENT1_SQUARE_SIZE, -EVENT1_SQUARE_SIZE);
+#define EVENT0__CENTER_POSITION	6.0f
+		positions[0].Set(EVENT0__CENTER_POSITION, EVENT0__CENTER_POSITION);
 		Vec2F zero_velocity;
 		AddEntity(Asteroid(&positions[0], &zero_velocity, BONUS_RULE_REVERSE, ASTEROID_SIZE_SMALL));
 	}
@@ -1272,7 +1284,7 @@ void Game::Event1()
 	{
 		turels[0].Rotate(0.01f);
 	}
-	if (!(global_timer % 1000) && asteroids_count == 0)
+	if (object_pull_array[GAME_OBJECT_ASTEROID] && !(global_timer % 1000) && asteroids_count == 0)
 	{
 		Vec2F positions[4];
 #define EVENT1_SQUARE_SIZE 0.7f
@@ -1290,7 +1302,7 @@ void Game::Event1()
 
 void Game::Event2()
 {
-	if (!(global_timer % 1000) && asteroids_count == 0)
+	if (object_pull_array[GAME_OBJECT_ASTEROID] && !(global_timer % 1000) && asteroids_count == 0)
 	{
 		Vec2F positions[4];
 #define EVENT2_SQUARE_SIZE 1.5f
@@ -1308,7 +1320,7 @@ void Game::Event2()
 
 void Game::Event3()
 {
-	if (!(global_timer % 1000) && asteroids_count < 2)
+	if (object_pull_array[GAME_OBJECT_ASTEROID] && !(global_timer % 1000) && asteroids_count < 2)
 	{
 		Vec2F asteroid_velocityes[4];
 		Vec2F asteroid_position;
@@ -1447,14 +1459,19 @@ void Game::CreateMap0(Vec2F* ships_positions, float* ships_angles)
 	Vec2F new_position;
 	Segment new_segment;
 
+#define MAP_TEST_MAP__CENTER_POSITION	EVENT0__CENTER_POSITION
 #define MAP_TEST_MAP__FRAME_SIZE		2.0f
 #define MAP_TEST_MAP__RECTANGLES_COUNT	1
+#define MAP_TEST_MAP__CAMERA_SIZE		10.0f
 
 	/* Create map */
 
 	Rectangle* rectangles = new Rectangle[MAP_TEST_MAP__RECTANGLES_COUNT];
 
-	new_segment.Set(Vec2F(-MAP_TEST_MAP__FRAME_SIZE, -MAP_TEST_MAP__FRAME_SIZE), Vec2F(MAP_TEST_MAP__FRAME_SIZE, MAP_TEST_MAP__FRAME_SIZE), true);
+	new_segment.Set(
+		Vec2F(MAP_TEST_MAP__CENTER_POSITION - MAP_TEST_MAP__FRAME_SIZE, MAP_TEST_MAP__CENTER_POSITION - MAP_TEST_MAP__FRAME_SIZE),
+		Vec2F(MAP_TEST_MAP__CENTER_POSITION + MAP_TEST_MAP__FRAME_SIZE, MAP_TEST_MAP__CENTER_POSITION + MAP_TEST_MAP__FRAME_SIZE),
+		true);
 	rectangles[0].Set(&new_segment);
 
 	map.Set(rectangles, MAP_TEST_MAP__RECTANGLES_COUNT);
@@ -1462,15 +1479,23 @@ void Game::CreateMap0(Vec2F* ships_positions, float* ships_angles)
 
 	/* Spawn entities */
 
-	ships_positions[0].Set(-1.85f, 1.9f);
-	ships_positions[1].Set(1.9f, 1.85f);
-	ships_positions[2].Set(1.85f, -1.9f);
-	ships_positions[3].Set(-1.9f, -1.85f);
+	ships_positions[0].Set(MAP_TEST_MAP__CENTER_POSITION - 1.85f, MAP_TEST_MAP__CENTER_POSITION + 1.9f);
+	ships_positions[1].Set(MAP_TEST_MAP__CENTER_POSITION + 1.9f, MAP_TEST_MAP__CENTER_POSITION + 1.85f);
+	ships_positions[2].Set(MAP_TEST_MAP__CENTER_POSITION + 1.85f, MAP_TEST_MAP__CENTER_POSITION - 1.9f);
+	ships_positions[3].Set(MAP_TEST_MAP__CENTER_POSITION - 1.9f, MAP_TEST_MAP__CENTER_POSITION - 1.85f);
 
 	ships_angles[0] = -(float)M_PI_4;
 	ships_angles[1] = -(float)M_PI_2 - (float)M_PI_4;
 	ships_angles[2] = (float)M_PI_2 + (float)M_PI_4;
 	ships_angles[3] = (float)M_PI_4;
+
+	camera.SetHightLimits(
+		MAP_TEST_MAP__CENTER_POSITION - CAMERA_DEFAULT_HIGH_LIMITS,
+		MAP_TEST_MAP__CENTER_POSITION - CAMERA_DEFAULT_HIGH_LIMITS,
+		MAP_TEST_MAP__CENTER_POSITION + CAMERA_DEFAULT_HIGH_LIMITS,
+		MAP_TEST_MAP__CENTER_POSITION + CAMERA_DEFAULT_HIGH_LIMITS);
+	camera.SetPosition(Vec2F(MAP_TEST_MAP__CENTER_POSITION, MAP_TEST_MAP__CENTER_POSITION));
+	camera.SetSize(MAP_TEST_MAP__CAMERA_SIZE);
 
 	delete[] rectangles;
 }
@@ -1862,7 +1887,7 @@ void Game::InitMenus()
 	buttons = new Button[GAME_OBJECTS_COUNT];
 	position.Set(-0.5f, 0.9f);
 	size.Set(0.475f, -0.475f);
-	buttons[0].Set(BUTTON_ID_SELECT_OBJECT_ASTEROID, &position, &size, area, "Asteroid", 6);
+	buttons[0].Set(BUTTON_ID_SELECT_OBJECT_ASTEROID, &position, &size, area, "Asteroid", 6, (object_pull_array[GAME_OBJECT_ASTEROID] == true) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE);
 	buttons[0].status |= BUTTON_STATUS_ACTIVE;
 	position.Set(0.0f, 0.0f);
 	size.Set(0.5f, -0.5f);
@@ -1872,16 +1897,16 @@ void Game::InitMenus()
 	//spawning bonuses select menu
 	buttons = new Button[GAME_BONUSES_COUNT];
 	size.Set(0.5f, -0.25f);
-	for (uint8_t i = 0; i < GAME_BONUSES_COUNT; i++)
+	for (uint8_t bonus = 0; bonus < GAME_BONUSES_COUNT; bonus++)
 	{
-		position.Set(-0.5f + (float)(i % 2) * GAME_PULL_MENU_RIGHT_BORDER, GAME_PULL_MENU_UP_Y -(float)(i / 2) * GAME_PULL_MENU_DOWN_BORDER);
-		buttons[i].Set(BUTTON_ID_SELECT_BONUS + i, &position, &size, area, "", 7, BUTTON_STATUS_TRUE);
-		buttons[i].status |= BUTTON_STATUS_ACTIVE;
+		position.Set(-0.5f + (float)(bonus % 2) * GAME_PULL_MENU_RIGHT_BORDER, GAME_PULL_MENU_UP_Y -(float)(bonus / 2) * GAME_PULL_MENU_DOWN_BORDER);
+		buttons[bonus].Set(BUTTON_ID_SELECT_BONUS + bonus, &position, &size, area, "", 7, (bonus_pull_array[bonus] == true) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE);
+		buttons[bonus].status |= BUTTON_STATUS_ACTIVE;
 	}
-	buttons[0].SetText("Loop");
-	buttons[1].SetText("Laser");
-	buttons[2].SetText("Bomb");
-	buttons[3].SetText("Knife");
+	buttons[GAME_BONUS_LOOP].SetText("Loop");
+	buttons[GAME_BONUS_LASER].SetText("Laser");
+	buttons[GAME_BONUS_BOMB].SetText("Bomb");
+	buttons[GAME_BONUS_KNIFE].SetText("Knife");
 	position.Set(0.0f, 0.0f);
 	size.Set(1.0f, GAME_PULL_MENU_RIGHT_BORDER * (float)(((GAME_BONUSES_COUNT + 1) / 2) + 1));
 	bonus_pull_select_menu.Set(&position, &size, buttons, GAME_BONUSES_COUNT);
@@ -2147,7 +2172,7 @@ void Game::MemorySetDefault()
 
 	camera.SetCoefficients();
 	camera.SetHightLimits();
-	camera.SetLowLimits(0.3f * GAME_ENGINE_AREA_SIZE, 0.3f * GAME_ENGINE_AREA_SIZE);
+	camera.SetLowLimits();
 	camera.SetScale(object_p__open_gl_realisation->GetScale());
 
 	asteroids_count = 0;
@@ -2649,7 +2674,7 @@ void Game::UpdateBombs()
 				for (GameTypes::players_count_t ship = 0; ship < GAME_PLAYERS_MAX_COUNT; ship++)
 				{
 					temp__ship_p = &ships[ship];
-					if (temp__ship_p->exist && temp__ship_p->Entity::IsCollision(temp__bomb_p))
+					if (temp__ship_p->exist && temp__ship_p->IsCollision(temp__bomb_p))
 					{
 						DestroyEntity(temp__bomb_p, temp__ship_p);
 					}
@@ -2657,7 +2682,7 @@ void Game::UpdateBombs()
 				for (GameTypes::players_count_t pilot = 0; pilot < GAME_PLAYERS_MAX_COUNT; pilot++)
 				{
 					temp__pilot_p = &pilots[pilot];
-					if (temp__pilot_p->exist && temp__pilot_p->Entity::IsCollision(temp__bomb_p))
+					if (temp__pilot_p->exist && temp__pilot_p->IsCollision(temp__bomb_p))
 					{
 						DestroyEntity(temp__bomb_p, temp__pilot_p);
 					}
@@ -2772,10 +2797,19 @@ void Game::UpdateBullets()
 				{
 					if (bullets[second_bullet].Entity::IsCollision(temp__bullet_p))
 					{
+#define BOMB_BY_BULLET_BOOM_PERIOD	90
 						Vec2F bomb_position = temp__bullet_p->GetPosition();
 						Vec2F bomb_velocity = (temp__bullet_p->GetVelocity() + bullets[second_bullet].GetVelocity()) / 2.0f;
-						GameTypes::players_count_t host_id = (bullets[second_bullet].SameTeam(temp__bullet_p)) ? temp__bullet_p->GetPlayerMasterTeamNumber() : AGGRESIVE_ENTITY_HOST_ID;
-						AddEntity(Bomb(&bomb_position, &bomb_velocity, AGGRESIVE_ENTITY_HOST_ID, AGGRESIVE_ENTITY_HOST_ID, 90, 0.0f, 0.0f,
+						GameTypes::players_count_t host_id;
+						if (bullets[second_bullet].SameTeam(temp__bullet_p))
+						{
+							host_id = temp__bullet_p->GetPlayerMasterTeamNumber();
+						}
+						else
+						{
+							host_id = AGGRESIVE_ENTITY_HOST_ID;
+						}
+						AddEntity(Bomb(&bomb_position, &bomb_velocity, AGGRESIVE_ENTITY_HOST_ID, host_id, BOMB_BY_BULLET_BOOM_PERIOD, 0.0f, 0.0f,
 							DEFAULT_FORCE_COLLISION_COEFFICIENT, BOMB_DEFAULT_RESISTANCE_AIR_COEFFICIENT, BOMB_BOOM_RADIUS / 3.0f, BOMB_BOOM, true));
 						RemoveEntity(temp__bullet_p);
 						RemoveEntity(&bullets[second_bullet]);
@@ -2786,7 +2820,7 @@ void Game::UpdateBullets()
 			}
 
 			temp__vector = temp__bullet_p->GetPosition();
-			if (temp__bullet_p->Entity::IsCollision(&map) || temp__vector > area_size || temp__vector < -area_size)
+			if (temp__bullet_p->Entity::IsCollision(&map))
 			{
 				RemoveEntity(temp__bullet_p);
 				goto end_of_cycle;
@@ -3190,7 +3224,7 @@ void Game::UpdateShips()
 				{
 					if (temp__bonus_p->GetDistance(temp__ship_p) < temp__ship_p->radius * GAME_SHIP_INFLUENCE_RADIUS_COEFFISIENT)
 					{
-						if (temp__bonus_p->GetDistance(temp__ship_p) < 0.0f)
+						if (temp__bonus_p->IsCollision(temp__ship_p))
 						{
 							if (temp__bonus_p->bonus_inventory & BONUS_RULE_REVERSE)
 							{

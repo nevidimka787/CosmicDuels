@@ -275,7 +275,7 @@ void Button::SetId(EngineTypes::Button::id_t id)
 
 void Button::SetOnlyCustomStatus(EngineTypes::Button::status_t status_mask)
 {
-	status |= status_mask & (BUTTON_STATUSE_ALL - (BUTTON_STATUS_TRUE | BUTTON_STATUS_SELECT));
+	status |= status_mask & (BUTTON_STATUS_ALL - (BUTTON_STATUS_TRUE | BUTTON_STATUS_SELECT));
 	status &= status_mask | (BUTTON_STATUS_TRUE | BUTTON_STATUS_SELECT);
 }
 
@@ -296,7 +296,7 @@ void Button::SetStatus(EngineTypes::Button::status_t status_mask, bool value)
 		status |= status_mask;
 		return;
 	}
-	status &= BUTTON_STATUSE_ALL - status_mask;
+	status &= BUTTON_STATUS_ALL - status_mask;
 }
 
 void Button::SetText(const char* text)
