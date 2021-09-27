@@ -638,13 +638,13 @@ void Game::DestroyEntity(Bomb* destroyer, Ship* entity)
 	}
 	if (!(game_rules && GAME_RULE_NEED_KILL_PILOT))
 	{
-		if (destroyer->IsAggressiveFor(entity))
+		if (destroyer->CreatedByTeam(entity) || destroyer->GetPlayerMasterTeamNumber() == AGGRESIVE_ENTITY_HOST_ID)
 		{
 			DecrementScore(entity->GetTeamNumber());
 		}
-		else
+		else if (destroyer->GetPlayerMasterTeamNumber() != AGGRESIVE_ENTITY_HOST_ID)
 		{
-			IncrementScore(destroyer->GetTeamNumber(entity));
+			IncrementScore(destroyer->GetPlayerMasterTeamNumber());
 		}
 		DecrementPlayersCountInTeam(entity->GetTeamNumber());
 	}
@@ -670,13 +670,13 @@ void Game::DestroyEntity(Bomb* destroyer, Pilot* entity)
 	}
 	if (game_rules && GAME_RULE_NEED_KILL_PILOT)
 	{
-		if (destroyer->IsAggressiveFor(entity))
+		if (destroyer->CreatedByTeam(entity) || destroyer->GetPlayerMasterTeamNumber() == AGGRESIVE_ENTITY_HOST_ID)
 		{
 			DecrementScore(entity->GetTeamNumber());
 		}
-		else
+		else if (destroyer->GetPlayerMasterTeamNumber() != AGGRESIVE_ENTITY_HOST_ID)
 		{
-			IncrementScore(destroyer->GetTeamNumber(entity));
+			IncrementScore(destroyer->GetPlayerMasterTeamNumber());
 		}
 		DecrementPlayersCountInTeam(entity->GetTeamNumber());
 	}
@@ -1352,6 +1352,11 @@ void Game::InitLevel()
 	float ships_angles[GAME_PLAYERS_MAX_COUNT];
 
 	const GameTypes::score_t max_score = GetMaxScore();
+
+	Segment new_segment;
+	Vec2F new_position;
+	Rectangle* rectangles;
+	Cyrcle* cyrcles;
 	
 	current_event = current_map_id;
 
@@ -2795,20 +2800,17 @@ void Game::UpdateBullets()
 #define BOMB_BY_BULLET_BOOM_PERIOD	90
 						Vec2F bomb_position = temp__bullet_p->GetPosition();
 						Vec2F bomb_velocity = (temp__bullet_p->GetVelocity() + bullets[second_bullet].GetVelocity()) / 2.0f;
-						AddEntity(
-							Bomb(
-								&bomb_position,
-								&bomb_velocity,
-								temp__bullet_p->GetPlayerMasterTeamNumber(),
-								bullets[second_bullet].GetPlayerMasterTeamNumber(),
-								BOMB_BY_BULLET_BOOM_PERIOD,
-								0.0f,
-								0.0f,
-								DEFAULT_FORCE_COLLISION_COEFFICIENT,
-								BOMB_DEFAULT_RESISTANCE_AIR_COEFFICIENT,
-								BOMB_BOOM_RADIUS / 3.0f,
-								BOMB_BOOM,
-								true));
+						GameTypes::players_count_t host_id;
+						if (bullets[second_bullet].SameTeam(temp__bullet_p))
+						{
+							host_id = temp__bullet_p->GetPlayerMasterTeamNumber();
+						}
+						else
+						{
+							host_id = AGGRESIVE_ENTITY_HOST_ID;
+						}
+						AddEntity(Bomb(&bomb_position, &bomb_velocity, AGGRESIVE_ENTITY_HOST_ID, host_id, BOMB_BY_BULLET_BOOM_PERIOD, 0.0f, 0.0f,
+							DEFAULT_FORCE_COLLISION_COEFFICIENT, BOMB_DEFAULT_RESISTANCE_AIR_COEFFICIENT, BOMB_BOOM_RADIUS / 3.0f, BOMB_BOOM, true));
 						RemoveEntity(temp__bullet_p);
 						RemoveEntity(&bullets[second_bullet]);
 						goto end_of_cycle;

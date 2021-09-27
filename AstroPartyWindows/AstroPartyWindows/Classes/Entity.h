@@ -460,7 +460,6 @@ protected:
 	EngineTypes::Bonus::inventory_t bonus_inventory;
 	EngineTypes::Ship::inventory_t buff_inventory;
 	GameTypes::tic_t unbrakable;
-	GameTypes::tic_t burnout;
 public:
 	Ship();
 	Ship(const Ship& ship);
@@ -478,7 +477,6 @@ public:
 		EngineTypes::Bonus::inventory_t bonus_inventory = BONUS_NOTHING,
 		EngineTypes::Ship::inventory_t buff_inventory = BONUS_NOTHING,
 		GameTypes::tic_t unbrakable = SHIP_DEFAULT_UNBRAKABLE_PERIOD,
-		GameTypes::tic_t burnout = 0.0f,
 		float angular_velocity = 0.0f,
 		float radius = SHIP_DEFAULT_RADIUS,
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
@@ -490,10 +488,7 @@ public:
 	bool ActivateAvailableBuffs();
 	void ActivateBuffNoCheck(EngineTypes::Ship::inventory_t buff);
 	EngineTypes::Bonus::inventory_t BonusInfo();
-	void Burnout(
-		float power,
-		bool rotate_clockwise,
-		GameTypes::tic_t burnout_period = SHIP_DEFAULT_BURNOUT_PERIOD);
+	void Burnout(float power, bool rotate_clockwise);
 	Bullet CreateBullet();
 	//The function does not check for the presence of a bonus.
 	Bullet CreateTriple(uint8_t bullet_number);
@@ -525,7 +520,6 @@ public:
 		EngineTypes::Bonus::inventory_t bonus_inventory = BONUS_NOTHING,
 		EngineTypes::Ship::inventory_t buff_inventory = BONUS_NOTHING,
 		GameTypes::tic_t unbrakable = SHIP_DEFAULT_UNBRAKABLE_PERIOD,
-		GameTypes::tic_t burnout = 0,
 		float angular_velocity = 0.0f,
 		float radius = SHIP_DEFAULT_RADIUS,
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
@@ -834,17 +828,11 @@ public:
 
 	void Activate();
 	void Boom();
-	bool CanRemove();
 	GameTypes::tic_t GetAnimationTic();
 	bool IsActive();
 	bool IsBoom();
-	bool CreatedByAggressiveTeam();
-	bool CreatedByAggressiveTeamOnly();
-	bool CreatedByAggressiveTeamNotOnly();
-	bool CreatedByTeam(ControledEntity* host);
-	GameTypes::players_count_t GetTeamNumber(ControledEntity* not_host);
-	//The function return true, if host will be decrrementing score after boom.
-	bool IsAggressiveFor(ControledEntity* host);
+	bool CanRemove();
+	void Update();
 	void Set(Bomb* bomb);
 	void Set(
 		Vec2F* position,
@@ -859,7 +847,6 @@ public:
 		float radius = BOMB_DEFAULT_RADIUS,
 		EngineTypes::Bomb::status_t status = BOMB_INACTIVE,
 		bool exist = true);
-	void Update();
 
 	void operator=(Bomb bomb);
 
