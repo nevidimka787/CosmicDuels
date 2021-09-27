@@ -849,6 +849,7 @@ void DynamicEntity::Set(DynamicEntity* dynamic_entity)
 	angular_velocity = dynamic_entity->angular_velocity;
 	direction = dynamic_entity->direction;
 	exist = dynamic_entity->exist;
+	force = dynamic_entity->force;
 	force_collision_coeffisient = dynamic_entity->force_collision_coeffisient;
 	force_resistance_air_coefficient = dynamic_entity->force_resistance_air_coefficient;
 	position = dynamic_entity->position;
@@ -862,6 +863,7 @@ void DynamicEntity::Set(Vec2F* position, Vec2F* velocity, float radius, float an
 	UpdateDirection();
 	this->force_resistance_air_coefficient = angular_velocity;
 	this->exist = exist;
+	this->force.Set(0.0f, 0.0f);
 	this->force_collision_coeffisient = force_collision_coeffisient;
 	this->force_resistance_air_coefficient = force_resistance_air_coefficient;
 	this->position = *position;
@@ -1095,6 +1097,7 @@ void Bonus::Set(Bonus* bonus)
 	bonus_inventory = bonus->bonus_inventory;
 	direction = bonus->direction;
 	exist = bonus->exist;
+	force = bonus->force;
 	force_collision_coeffisient = bonus->force_collision_coeffisient;
 	force_resistance_air_coefficient = bonus->force_resistance_air_coefficient;
 	position = bonus->position;
@@ -1109,6 +1112,7 @@ void Bonus::Set(Vec2F* position, Vec2F* velocity, EngineTypes::Bonus::inventory_
 	this->bonus_inventory = bonus_inventory;
 	UpdateDirection();
 	this->exist = exist;
+	this->force.Set(0.0f, 0.0f);
 	this->force_collision_coeffisient = force_collision_coeffisient;
 	this->force_resistance_air_coefficient = force_resistance_air_coefficient;
 	this->position = *position;
@@ -1123,6 +1127,7 @@ void Bonus::operator=(Bonus bonus)
 	bonus_inventory = bonus.bonus_inventory;
 	direction = bonus.direction;
 	exist = bonus.exist;
+	force = bonus.force;
 	force_collision_coeffisient = bonus.force_collision_coeffisient;
 	force_resistance_air_coefficient = bonus.force_resistance_air_coefficient;
 	position = bonus.position;
@@ -1341,6 +1346,7 @@ void KillerEntity::Set(KillerEntity* killer_entity)
 	angular_velocity = killer_entity->angular_velocity;
 	direction = killer_entity->direction;
 	exist = killer_entity->exist;
+	force = killer_entity->force;
 	force_collision_coeffisient = killer_entity->force_collision_coeffisient;
 	force_resistance_air_coefficient = killer_entity->force_resistance_air_coefficient;
 	player_master_number = killer_entity->player_master_number;
@@ -1356,6 +1362,7 @@ void KillerEntity::Set(Vec2F* position, Vec2F* velocity, float radius, GameTypes
 	this->angular_velocity = angular_velocity;
 	UpdateDirection();
 	this->exist = exist;
+	this->force.Set(0.0f, 0.0f);
 	this->force_collision_coeffisient = force_collision_coeffisient;
 	this->force_resistance_air_coefficient = force_resistance_air_coefficient;
 	this->player_master_number = player_master_number;
@@ -1713,6 +1720,7 @@ void ControledEntity::Set(ControledEntity* controled_entity)
 	angular_velocity = controled_entity->angular_velocity;
 	direction = controled_entity->direction;
 	exist = controled_entity->exist;
+	force = controled_entity->force;
 	force_collision_coeffisient = controled_entity->force_collision_coeffisient;
 	force_resistance_air_coefficient = controled_entity->force_resistance_air_coefficient;
 	heat_box_vertexes_array_length = controled_entity->heat_box_vertexes_array_length;
@@ -1738,6 +1746,7 @@ void ControledEntity::Set(Vec2F* position, Vec2F* velocity, float radius, GameTy
 	this->angular_velocity = angular_velocity;
 	UpdateDirection();
 	this->exist = exist;
+	this->force.Set(0.0f, 0.0f);
 	this->force_collision_coeffisient = force_collision_coeffisient;
 	this->force_resistance_air_coefficient = force_resistance_air_coefficient;
 	this->heat_box_vertexes_array_length = heat_box_vertexes_array_length;
@@ -1984,6 +1993,7 @@ void Ship::Set(Ship* ship)
 	burnout_input_value_pointer = ship->burnout_input_value_pointer;
 	direction = ship->direction;
 	exist = ship->exist;
+	force = ship->force;
 	force_collision_coeffisient = ship->force_collision_coeffisient;
 	force_resistance_air_coefficient = ship->force_resistance_air_coefficient;
 	heat_box_vertexes_array_length = ship->heat_box_vertexes_array_length;
@@ -2013,6 +2023,7 @@ void Ship::Set(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t play
 	this->burnout = burnout;
 	UpdateDirection();
 	this->exist = exist;
+	this->force.Set(0.0f, 0.0f);
 	this->force_collision_coeffisient = force_collision_coeffisient;
 	this->force_resistance_air_coefficient = force_resistance_air_coefficient;
 	this->heat_box_vertexes_array_length = heat_box_vertexes_array_length;
@@ -2214,6 +2225,9 @@ void Pilot::Set(Pilot* pilot)
 	angular_velocity = pilot->angular_velocity;
 	direction = pilot->direction;
 	exist = pilot->exist;
+	force = pilot->force;
+	force_collision_coeffisient = pilot->force_collision_coeffisient;
+	force_resistance_air_coefficient = pilot->force_resistance_air_coefficient;
 	heat_box_vertexes_array_length = pilot->heat_box_vertexes_array_length;
 	player_number = pilot->player_number;
 	player_team_number = pilot->player_team_number;
@@ -2255,6 +2269,8 @@ void Pilot::operator=(Pilot pilot)
 	direction = pilot.direction;
 	exist = pilot.exist;
 	force = pilot.force;
+	force_collision_coeffisient = pilot.force_collision_coeffisient;
+	force_resistance_air_coefficient = pilot.force_resistance_air_coefficient;
 	heat_box_vertexes_array_length = pilot.heat_box_vertexes_array_length;
 	player_number = pilot.player_number;
 	player_team_number = pilot.player_team_number;
@@ -2972,6 +2988,7 @@ void Bullet::Set(Bullet* bullet)
 	angular_velocity = bullet->angular_velocity;
 	UpdateDirection();
 	exist = bullet->exist;
+	force = bullet->force;
 	force_collision_coeffisient = bullet->force_collision_coeffisient;
 	force_resistance_air_coefficient = bullet->force_resistance_air_coefficient;
 	is_collision = bullet->is_collision;
@@ -2989,6 +3006,7 @@ void Bullet::Set(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t pl
 	this->angular_velocity = angular_velocity;
 	UpdateDirection();
 	this->exist = exist;
+	this->force.Set(0.0f, 0.0f);
 	this->force_collision_coeffisient = force_collision_coeffisient;
 	this->force_resistance_air_coefficient = force_resistance_air_coefficient;
 	this->is_collision = is_collision_master;
@@ -3234,6 +3252,7 @@ void Bomb::Set(Bomb* bomb)
 	animation_tic = bomb->animation_tic;
 	direction = bomb->direction;
 	exist = bomb->exist;
+	force = bomb->force;
 	force_collision_coeffisient = bomb->force_collision_coeffisient;
 	force_resistance_air_coefficient = bomb->force_resistance_air_coefficient;
 	player_master_number = bomb->player_master_number;
@@ -3251,6 +3270,7 @@ void Bomb::Set(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t paye
 	this->animation_tic = animation_tic;
 	UpdateDirection();
 	this->exist = exist;
+	this->force.Set(0.0f, 0.0f);
 	this->force_collision_coeffisient = force_collision_coeffisient;
 	this->force_resistance_air_coefficient = force_resistance_air_coefficient;
 	this->player_master_number = player_master_number;
