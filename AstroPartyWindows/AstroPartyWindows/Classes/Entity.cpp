@@ -1492,34 +1492,6 @@ bool ControledEntity::IsCollision(Beam* beam)
 	return false;
 }
 
-bool ControledEntity::IsCollision(Bomb* bomb)
-{
-	//Frame of reference set to this entity.
-	Segment segment = bomb->GetLastTreck();
-	segment.vector -= velocity;
-	//controled entity side
-	Segment ce_side;
-	Vec2F
-		point1 = heat_box_vertexes_array[heat_box_vertexes_array_length - 1] * model_matrix,
-		point2 = heat_box_vertexes_array[0] * model_matrix;
-	ce_side.Set(point1, point2, true);
-	if (segment.GetDistance(&ce_side) < bomb->radius)
-	{
-		return true;
-	}
-	for (EngineTypes::ControledEntity::heat_box_vertexes_count_t vertex = 1; vertex < heat_box_vertexes_array_length; vertex++)
-	{
-		point1 = point2;
-		point2 = heat_box_vertexes_array[vertex] * model_matrix;
-		ce_side.Set(point1, point2, true);
-		if (segment.GetDistance(&ce_side) < bomb->radius)
-		{
-			return true;
-		}
-	}
-	return false;
-}
-
 bool ControledEntity::IsCollision(Bullet* bullet)
 {
 	//Frame of reference set to this entity.
