@@ -10,3 +10,7 @@
 *.tlog
 *.log
 *.pdb
+*.recipe
+*.ilk
+*.exe
+*.idb
