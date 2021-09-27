@@ -2760,7 +2760,7 @@ void Game::UpdateBombs()
 				for (GameTypes::players_count_t sheep = 0; sheep < GAME_PLAYERS_MAX_COUNT; sheep++)
 				{
 					temp__ship_p = &ships[sheep];
-					if (temp__ship_p->exist && !temp__bomb_p->CreatedBy(temp__ship_p) && temp__ship_p->GetDistance(temp__bomb_p) < BOMB_ACTIVATION_RADIUS)
+					if (temp__ship_p->exist && !temp__bomb_p->CreatedByTeam(temp__ship_p) && temp__ship_p->GetDistance(temp__bomb_p) < BOMB_ACTIVATION_RADIUS)
 					{
 						temp__bomb_p->Activate();
 					}
