@@ -64,6 +64,15 @@ Asteroid
 
 	//game engine rules
 
+	//bonus pull
+
+#define GAME_BONUS_LOOP		0
+#define GAME_BONUS_LASER	1
+#define GAME_BONUS_BOMB		2
+#define GAME_BONUS_KNIFE	3
+
+	//bonus pull
+
 	//map pull
 
 	//This map is first map on every match.
@@ -73,6 +82,12 @@ Asteroid
 #define MAP_DECELERATION_AREA	3
 
 	//map pull
+
+	//object pull
+
+#define GAME_OBJECT_ASTEROID	0
+
+	//object pull
 
 	//game rules
 
@@ -90,12 +105,11 @@ Asteroid
 #define GAME_RULE_FRIEDNLY_SHEEP_CAN_RESTORE			(1 << 9)
 #define GAME_RULE_NEED_KILL_PILOT						(1 << 10)
 #define GAME_RULE_RANDOMLY_MAP							(1 << 11)
-#define GAME_RULE_ASTEROIDS_IS_SPAWNING					(1 << 12)
-#define GAME_RULE_BONUSES_IS_SPAWNING					(1 << 13)
-#define GAME_RULE_BALANCE_ACTIVE						(1 << 14)
-#define GAME_RULE_KNIFES_CAN_DESTROY_BULLETS			(1 << 15)
+#define GAME_RULE_BONUSES_IS_SPAWNING					(1 << 12)
+#define GAME_RULE_BALANCE_ACTIVE						(1 << 13)
+#define GAME_RULE_KNIFES_CAN_DESTROY_BULLETS			(1 << 14)
 
-#define GAME_RULE_DEFAULT_GAME_RULES (GAME_RULE_PLAYERS_SPAWN_THIS_BONUS | GAME_RULE_NEED_KILL_PILOT | GAME_RULE_ASTEROIDS_IS_SPAWNING | GAME_RULE_BONUSES_IS_SPAWNING)
+#define GAME_RULE_DEFAULT_GAME_RULES (GAME_RULE_PLAYERS_SPAWN_THIS_BONUS | GAME_RULE_NEED_KILL_PILOT | GAME_RULE_BONUSES_IS_SPAWNING)
 
 	//game rules
 
