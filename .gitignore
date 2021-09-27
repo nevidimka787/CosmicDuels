@@ -10,3 +10,7 @@
 *.pdb
 *.suo
 *.tlog
+*.recipe
+*.ilk
+*.exe
+AstroPartyWindows/AstroPartyWindows/AstroPartyWindows.vcxproj
