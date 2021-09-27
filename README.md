@@ -4,13 +4,13 @@ In the future, it is planned to port the application to android.
 
 For starting project use Visual Studio 2019.
 
-#Threads
+# Threads
 Game use 3 threads.
 Physic calculation thread.
 Input output thread.
 Draw thread.
 
-#Controles
+# Controles
 Game use next keys to control.
 q - rotate ship 0
 a - ship 0 shoots or pilot 0 goes
