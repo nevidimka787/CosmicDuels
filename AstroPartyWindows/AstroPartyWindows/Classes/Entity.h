@@ -419,8 +419,6 @@ public:
 	//Check collision this heat box.
 	bool IsCollision(Beam* beam);
 	//Check collision this heat box.
-	bool IsCollision(Bomb* bullet);
-	//Check collision this heat box.
 	bool IsCollision(Bullet* bullet);
 	//Check collision this heat box.
 	bool IsCollision(Knife* knife);
