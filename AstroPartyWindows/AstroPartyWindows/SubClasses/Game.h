@@ -34,8 +34,6 @@ public:
 
 	GameTypes::maps_count_t selected_maps_id_array_length;
 
-	float area_size = GAME_ENGINE_AREA_SIZE;
-
 	//Controle is inversing
 	bool rotation_inverse;
 	//Buttons positions in inveres.

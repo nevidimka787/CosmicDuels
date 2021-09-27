@@ -79,13 +79,13 @@ public:
 		float move_velocity_coefficient = CAMERA_DEFAULT_MOVE_VELOCITY,
 		float resize_velocity_coefficient = CAMERA_DEFAULT_RESIZE_VELOCITY);
 	void SetHightLimits(
-		float min_x = -GAME_ENGINE_AREA_SIZE,
-		float min_y = -GAME_ENGINE_AREA_SIZE,
-		float max_x = GAME_ENGINE_AREA_SIZE,
-		float max_y = GAME_ENGINE_AREA_SIZE);
+		float min_x = -CAMERA_DEFAULT_HIGH_LIMITS,
+		float min_y = -CAMERA_DEFAULT_HIGH_LIMITS,
+		float max_x = CAMERA_DEFAULT_HIGH_LIMITS,
+		float max_y = CAMERA_DEFAULT_HIGH_LIMITS);
 	void SetLowLimits(
-		float size_x = GAME_ENGINE_AREA_SIZE / 10.0f,
-		float size_y = GAME_ENGINE_AREA_SIZE / 10.0f);
+		float size_x = CAMERA_DEFAULT_LOW_LIMITS,
+		float size_y = CAMERA_DEFAULT_LOW_LIMITS);
 	void SetPosition(Vec2F position = Vec2F());
 	void SetPosition(Vec2F* position = nullptr);
 	void SetScale(float scale = 16.0f / 9.0f);
