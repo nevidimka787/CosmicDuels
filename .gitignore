@@ -1,9 +1,12 @@
 
-*.ipch
-*.tlog
-*.obj
-*.log
 *.db
 *.db-shm
 *.db-wal
+*.ipch
+*.idb
+*.log
 *.opendb
+*.obj
+*.pdb
+*.suo
+*.tlog
