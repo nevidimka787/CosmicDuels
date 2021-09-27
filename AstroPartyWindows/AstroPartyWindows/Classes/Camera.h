@@ -86,7 +86,7 @@ public:
 	void SetLowLimits(
 		float size_x = GAME_ENGINE_AREA_SIZE / 10.0f,
 		float size_y = GAME_ENGINE_AREA_SIZE / 10.0f);
-	void SetPosition(Vec2F position = Vec2F());
+	void SetPosition(Vec2F position = Vec2F()); 
 	void SetPosition(Vec2F* position = nullptr);
 	void SetScale(float scale = 16.0f / 9.0f);
 	void SetSize(float size = 1.0f);
