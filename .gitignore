@@ -3,3 +3,7 @@
 *.tlog
 *.obj
 *.log
+*.db
+*.db-shm
+*.db-wal
+*.opendb
