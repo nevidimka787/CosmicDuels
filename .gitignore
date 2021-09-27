@@ -2,8 +2,8 @@
 *.db
 *.db-shm
 *.db-wal
-*.ipch
 *.idb
+*.ipch
 *.log
 *.opendb
 *.obj
