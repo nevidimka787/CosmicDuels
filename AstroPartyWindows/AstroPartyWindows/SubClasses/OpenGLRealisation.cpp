@@ -362,6 +362,7 @@ void OpenGL::InitOpenGL()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_SAMPLES, 4);
 }
 
 void OpenGL::InitShaders()
@@ -401,67 +402,101 @@ void OpenGL::DrawFrame()
 
     if (*game_p__flag_all_entities_initialisate == true && *game_p__flag_round_results == false)
     {
+        game_p__camera_data_mtx->lock();
         temp__game__camera_position = game_p__camera->GetPosition();
         temp__game__camera_size = game_p__camera->GetSize();
+        game_p__camera_data_mtx->unlock();
 
+        game_p__deceler_areas_array_mtx->lock();
         if (*game_p__deceler_areas_count > 0)
         {
             DrawDecelerationAreas();
         }
+        game_p__deceler_areas_array_mtx->unlock();
+        game_p__map_data_mtx->lock();
         DrawCurrentMap();
+        game_p__map_data_mtx->unlock();
+        game_p__grav_gens_array_mtx->lock();
         if (*game_p__grav_gens_count > 0)
         {
             DrawGravityGenerators();
         }
+        game_p__grav_gens_array_mtx->unlock();
+        game_p__turels_array_mtx->lock();
         if (*game_p__turels_count > 0)
         {
             DrawTurels();
         }
+        game_p__turels_array_mtx->unlock();
 
+        game_p__bombs_array_mtx->lock();
         if (*game_p__bombs_count > 0)
         {
             DrawBombs();
         }
+        game_p__bombs_array_mtx->unlock();
+        game_p__bonuses_array_mtx->lock();
         if (*game_p__bonuses_count > 0)
         {
             DrawBonuses();
         }
+        game_p__bonuses_array_mtx->unlock();
+        game_p__bullets_array_mtx->lock();
         if (*game_p__bullets_count > 0)
         {
             DrawBullets();
         }
+        game_p__bullets_array_mtx->unlock();
+        game_p__knifes_array_mtx->lock();
         if (*game_p__knifes_count > 0)
         {
             DrawKnifes();
         }
+        game_p__knifes_array_mtx->unlock();
+        game_p__lasers_array_mtx->lock();
         if (*game_p__lasers_count > 0)
         {
             DrawLasers();
         }
+        game_p__lasers_array_mtx->unlock();
+        game_p__mega_lasers_array_mtx->lock();
         if (*game_p__mega_lasers_count > 0)
         {
             DrawMegaLasers();
         }
+        game_p__mega_lasers_array_mtx->unlock();
+        game_p__asteroids_array_mtx->lock();
         if (*game_p__asteroids_count > 0)
         {
             DrawAsteroids();
         }
+        game_p__asteroids_array_mtx->unlock();
 
+        game_p__pilots_array_mtx->lock();
         if (*game_p__pilots_count > 0)
         {
             DrawPilots();
         }
+        game_p__pilots_array_mtx->unlock();
+        game_p__ships_array_mtx->lock();
         if (*game_p__ships_count > 0)
         {
             DrawShips();
         }
+        game_p__ships_array_mtx->unlock();
     }
     else if (*game_p__flag_round_results == true)
     {
+        game_p__camera_data_mtx->lock();
         temp__game__camera_position = game_p__camera->GetPosition();
         temp__game__camera_size = game_p__camera->GetSize();
+        game_p__camera_data_mtx->unlock();
+        game_p__map_data_mtx->lock();
         DrawCurrentMap();
+        game_p__map_data_mtx->unlock();
+        game_p__ships_array_mtx->lock();
         DrawShips();
+        game_p__ships_array_mtx->unlock();
     }
 
     DrawCurrentMenu();
@@ -632,9 +667,10 @@ void OpenGL::DrawObject(MegaLaser* mega_laser, bool update_shader)
         mega_laser_shader.SetUniform("camera_position", temp__game__camera_position);
         mega_laser_shader.SetUniform("camera_size", temp__game__camera_size);
     }
+    mega_laser_shader.SetUniform("is_active", mega_laser->IsShooting(*game_p__global_timer));
     mega_laser_shader.SetUniform("angle", mega_laser->GetDirectionNotNormalize().GetAbsoluteAngle());
     mega_laser_shader.SetUniform("position", mega_laser->GetPosition());
-    mega_laser_shader.SetUniform("vector", mega_laser->GetDirectionNotNormalize());
+    mega_laser_shader.SetUniform("vector", mega_laser->GetDirectionNotNormalize() * mega_laser->radius);
     mega_laser_buffer.Draw();
 }
 
@@ -737,6 +773,7 @@ void OpenGL::DrawObject(Rectangle* rectangle, bool update_shader)
         rectangle_shader.SetUniform("camera_position", temp__game__camera_position);
         rectangle_shader.SetUniform("camera_size", temp__game__camera_size);
     }
+    rectangle_shader.SetUniform("unbreakable", rectangle->IsUnbreacable());
     rectangle_shader.SetUniform("position",rectangle->GetUpLeftPoint());
     rectangle_shader.SetUniform("point2", rectangle->GetDownRightPoint());
     rectangle_buffer.Draw();
@@ -998,10 +1035,11 @@ void OpenGL::DrawPilots()
     pilot_shader.SetUniform("scale", window_scale);
     pilot_shader.SetUniform("camera_position", temp__game__camera_position);
     pilot_shader.SetUniform("camera_size", temp__game__camera_size);
-    for (GameTypes::players_count_t pilot = 0; pilot < GAME_PLAYERS_MAX_COUNT; pilot++)
+    for (GameTypes::players_count_t pilot = 0, found_pilots = 0; found_pilots < *game_p__pilots_count; pilot++)
     {
         if ((*game_p__pilots)[pilot].exist == true)
         {
+            found_pilots++;
             DrawObject(&(*game_p__pilots)[pilot]);
         }
     }
@@ -1014,10 +1052,11 @@ void OpenGL::DrawShips()
     ship_shader.SetUniform("scale", window_scale);
     ship_shader.SetUniform("camera_position", temp__game__camera_position);
     ship_shader.SetUniform("camera_size", temp__game__camera_size);
-    for (GameTypes::players_count_t ship = 0; ship < GAME_PLAYERS_MAX_COUNT; ship++)
+    for (GameTypes::players_count_t ship = 0, found_ships = 0; found_ships < *game_p__ships_count; ship++)
     {
         if ((*game_p__ships)[ship].exist == true)
         {
+            found_ships++;
             DrawObject(&(*game_p__ships)[ship]);
         }
     }

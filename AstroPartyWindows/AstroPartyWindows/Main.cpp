@@ -21,15 +21,20 @@
 std::shared_mutex init_mtx;
 uint8_t init = 0x00;
 
-std::shared_mutex input_output_mtx;
-std::shared_mutex physic_calculation_mtx;
-
 std::chrono::system_clock::time_point global_time_point;
 
 //This thread update 100 times per second and use for show information about app.
 void InputOutputUpdate();
+//This thread start physics calculation thread and wait when they stop.
+void PhysicsCalculationStarter();
 //This thread update 100 times per second and use for update all physical data of all entities.
-void PhysicsCalculation();
+void PhysicsCalculation0();
+//This thread update 100 times per second and use for update all physical data of all entities.
+void PhysicsCalculation1();
+//This thread update 100 times per second and use for update all physical data of all entities.
+void PhysicsCalculation2();
+//This thread update 100 times per second and use for update all physical data of all entities.
+void PhysicsCalculation3();
 
 bool physic_thread_flag = false;
 bool tik_update_thread_flag = false;
@@ -44,11 +49,15 @@ OpenGL* main_draw_functions = new OpenGL(SCR_WIDTH, SCR_HEIGHT, "AstroParty", nu
 Linker* main_linker;
 
 unsigned frame = 0;
-unsigned physic = 0;
+unsigned ph0 = 0;
+unsigned ph1 = 0;
+unsigned ph2 = 0;
+unsigned ph3 = 0;
 
 int main()
 {
     main_linker = new Linker(main_game, main_menu_functions, main_draw_functions);
+    glEnable(GL_MULTISAMPLE);
     //game cycle
     while (true)
     {
@@ -66,18 +75,14 @@ int main()
                 std::thread timer_thread(InputOutputUpdate);
                 while (tik_update_thread_flag == false || physic_thread_flag == false)
                 {
-                    physic_calculation_mtx.lock();
                     main_draw_functions->DrawFrame();
-                    physic_calculation_mtx.unlock();
                     glfwSwapBuffers(window);
                     glfwPollEvents();
                     glfwSwapInterval(1);
                 }
                 while (tik_update_thread_flag == true || physic_thread_flag == true)
                 {
-                    physic_calculation_mtx.lock();
                     main_draw_functions->DrawFrame();
-                    physic_calculation_mtx.unlock();
                     glfwSwapBuffers(window);
                     glfwPollEvents();
                     glfwSwapInterval(1);
@@ -98,13 +103,6 @@ int main()
 
 #pragma warning(disable : 6269)
 
-#define SECOND  100
-#define MINUTE  6000
-#define HOUR    360000
-
-
-#define LOGS_UPDATE_PERIOD
-
 void InputOutputUpdate()
 {
     global_time_point = std::chrono::system_clock::now();
@@ -118,33 +116,49 @@ void InputOutputUpdate()
 
     unsigned lock_timer = 0;
     main_game->play_round = true;
-    std::thread physics_calculation(PhysicsCalculation);
+    std::thread physics_calculation(PhysicsCalculationStarter);
 
     while (main_game->play_round == true)
     {
-        input_output_mtx.lock();
+        main_game->input_values_mtx.lock();
         main_draw_functions->ProcessInput(window);
+        main_game->input_values_mtx.unlock();
         if (main_game->pause_round == false)
         {
             lock_timer++;
             if (!(lock_timer % 100))
             {
-                std::cout << "Frame: " << frame  << std::endl 
-                    << "Physic: " << physic << std::endl << std::endl;
+                std::cout << "Frame: " << frame << std::endl;
+                printf("Ph0:%4u Ph1:%4u Ph2:%4u Ph3:%4u\n", ph0, ph1, ph2, ph3);
                 for (GameTypes::players_count_t team = 0; team < GAME_PLAYERS_MAX_COUNT; team++)
                 {
                     std::cout << "Team: " << (int)team << " Score: " << (int)main_game->scores[team] << std::endl;
                 }
-                std::cout << "Rounds: " << (int)main_game->end_match_score - main_game->GetMaxScore() << std::endl;
-                std::cout << "Bombs count: " << main_game->bombs_count << std::endl;
-                std::cout << std::endl << std::endl << std::endl;
                 frame = 0;
-                physic = 0;
+                ph0 = 0;
+                ph1 = 0;
+                ph2 = 0;
+                ph3 = 0;
+            }
+            else if (!((lock_timer + 30) % 100))
+            {
+                if (ph0 == 0 || ph1 == 0 || ph2 == 0 || ph3 == 0)
+                {
+                    std::cout << "Thread lock detected." << std::endl;
+                    std::cout << "Checking mutexes..." << std::endl;
+                    main_game->DebugLog__CheckMutexeslLock();
+                }
+            }
+            else if (!((lock_timer + 60) % 100))
+            {
+                if (!(ph0 == ph1 && ph1 == ph2 && ph2 == ph3))
+                {
+                    std::cout << "Thread desinchronisation detected." << std::endl;
+                }
             }
         }
-        input_output_mtx.unlock();
 
-        local_time_point += std::chrono::milliseconds(10);
+        local_time_point += std::chrono::milliseconds(THREAD_INPUT_TIK_PERIOD);
         std::this_thread::sleep_until(local_time_point);
     }
     physics_calculation.join();
@@ -152,7 +166,9 @@ void InputOutputUpdate()
     tik_update_thread_flag = false;
 }
 
-void PhysicsCalculation()
+std::shared_mutex physic_start;
+
+void PhysicsCalculationStarter()
 {
 
     init_mtx.lock();
@@ -161,7 +177,6 @@ void PhysicsCalculation()
         init_mtx.unlock();
         init_mtx.lock();
     }
-    physic_calculation_mtx.lock();
     //std::cout << "Thread PhysicsCalculation start init." << std::endl;
     //start initialisate all entities and variables
 
@@ -169,30 +184,26 @@ void PhysicsCalculation()
 
     //start initialisate all entities and variables
     //std::cout << "Thread PhysicsCalculation end init." << std::endl;
-    physic_calculation_mtx.unlock();
     init |= PHYSICS_CALCULATION_INIT;
     //std::cout << "Threads init." << std::endl;
     physic_thread_flag = true;
     init_mtx.unlock();
 
-    std::chrono::system_clock::time_point local_time_point = global_time_point;
+    physic_start.lock();
+    std::thread physics_calculation0(PhysicsCalculation0);
+    std::thread physics_calculation1(PhysicsCalculation1);
+    std::thread physics_calculation2(PhysicsCalculation2);
+    std::thread physics_calculation3(PhysicsCalculation3);
+    physic_start.unlock();
 
-    while (main_game->play_round == true)
-    {
-        if (main_game->pause_round == false)
-        {
-            physic_calculation_mtx.lock();
-            //start physics calculation
+    physics_calculation0.join();
+    physics_calculation1.join();
+    physics_calculation2.join();
+    physics_calculation3.join();
 
-            main_game->Update();
-            physic++;
-            //end physics calculation
-            physic_calculation_mtx.unlock();
-        }
+    std::chrono::system_clock::time_point local_time_point = std::chrono::system_clock::now();
 
-        local_time_point += std::chrono::milliseconds(10);
-        std::this_thread::sleep_until(local_time_point);
-    }
+    main_game->RoundResultsInit();
 
     if (main_game->flag_end_match == false)
     {
@@ -201,16 +212,16 @@ void PhysicsCalculation()
             local_time_point += std::chrono::seconds(1);
             std::this_thread::sleep_until(local_time_point);
 
-            physic_calculation_mtx.lock();
-            if (main_game->RoundResults())
+            main_game->ships_array_mtx.lock();
+            main_game->log_data_mtx.lock();
+            if (!main_game->RoundResults())
             {
-                physic_calculation_mtx.unlock();
-            }
-            else
-            {
-                physic_calculation_mtx.unlock();
+                main_game->ships_array_mtx.unlock();
+                main_game->log_data_mtx.unlock();
                 break;
             }
+            main_game->ships_array_mtx.unlock();
+            main_game->log_data_mtx.unlock();
         }
 
         main_game->NextLevel();
@@ -225,6 +236,74 @@ void PhysicsCalculation()
     main_game->flag_round_results = false;
 
     physic_thread_flag = false;
+}
+
+void PhysicsCalculation0()
+{
+    std::chrono::system_clock::time_point local_time_point = global_time_point;
+    physic_start.lock();
+    physic_start.unlock();
+    while (main_game->play_round)
+    {
+        if (!main_game->pause_round)
+        {
+            main_game->PhysicThread0();
+            ph0++;
+        }
+        local_time_point += std::chrono::milliseconds(THREAD_PHYSIC_TIK_PERIOD);
+        std::this_thread::sleep_until(local_time_point);
+    }
+}
+
+void PhysicsCalculation1()
+{
+    std::chrono::system_clock::time_point local_time_point = global_time_point;
+    physic_start.lock();
+    physic_start.unlock();
+    while (main_game->play_round)
+    {
+        if (!main_game->pause_round)
+        {
+            main_game->PhysicThread1();
+            ph1++;
+        }
+        local_time_point += std::chrono::milliseconds(THREAD_PHYSIC_TIK_PERIOD);
+        std::this_thread::sleep_until(local_time_point);
+    }
+}
+
+void PhysicsCalculation2()
+{
+    std::chrono::system_clock::time_point local_time_point = global_time_point;
+    physic_start.lock();
+    physic_start.unlock();
+    while (main_game->play_round)
+    {
+        if (!main_game->pause_round)
+        {
+            main_game->PhysicThread2();
+            ph2++;
+        }
+        local_time_point += std::chrono::milliseconds(THREAD_PHYSIC_TIK_PERIOD);
+        std::this_thread::sleep_until(local_time_point);
+    }
+}
+
+void PhysicsCalculation3()
+{
+    std::chrono::system_clock::time_point local_time_point = global_time_point;
+    physic_start.lock();
+    physic_start.unlock();
+    while (main_game->play_round)
+    {
+        if (!main_game->pause_round)
+        {
+            main_game->PhysicThread3();
+            ph3++;
+        }
+        local_time_point += std::chrono::milliseconds(THREAD_PHYSIC_TIK_PERIOD);
+        std::this_thread::sleep_until(local_time_point);
+    }
 }
 
 

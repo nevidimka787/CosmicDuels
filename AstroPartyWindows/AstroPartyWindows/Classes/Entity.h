@@ -172,6 +172,10 @@ public:
 	float GetAngularVelocity();
 	Segment GetLastTreck();
 	Segment GetTreck();
+	Segment GetTreckDouble();
+	Segment GetTreckDoubleRelative(DynamicEntity* entity);
+	Segment GetTreckRelative(DynamicEntity* entity);
+	Segment GetTreckRelativeDouble(DynamicEntity* entity);
 	Vec2F GetVelocity();
 	bool IsCollision(Vec2F point);
 	bool IsCollision(Vec2F* point);
@@ -423,6 +427,8 @@ public:
 	//Check collision this heat box.
 	bool IsCollision(Bullet* bullet);
 	//Check collision this heat box.
+	bool IsCollision(DynamicEntity* bullet);
+	//Check collision this heat box.
 	bool IsCollision(Knife* knife);
 	//Check collision this heat box.
 	bool IsCollision(Laser* laser);
@@ -431,6 +437,7 @@ public:
 	//Check collision this heat box.
 	bool IsCollision(Segment* segment);
 	bool IsColectEntity(Entity* stored_entity);
+	bool IsColectEntity(DynamicEntity* stored_entity);
 	bool SameTeams(ControledEntity* second_entity);
 	void Set(ControledEntity* entity);
 	void Set(
@@ -805,7 +812,7 @@ public:
 		EngineTypes::AgressiveEntity::shoots_count_t shoots_count = AGGRESIVE_ENTITY_DEFAULT_SHOOTS_COUNT,
 		bool active = false,
 		bool exist = true);
-	bool IsShooting();
+	bool IsShooting(GameTypes::tic_t current_tic);
 
 	void operator=(MegaLaser entity);
 
@@ -873,8 +880,8 @@ class Bullet : public KillerEntity
 protected:
 public:
 	float min_velocity;
+	EngineTypes::Bullet::entity_t is_ignore;
 
-	EngineTypes::Bullet::entity_t is_collision;
 	Bullet();
 	Bullet(const Bullet& bullet);
 	Bullet(

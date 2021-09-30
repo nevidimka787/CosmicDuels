@@ -63,22 +63,22 @@ float Entity::GetDistance(DynamicEntity* entity)
 
 float Entity::GetDistance(Entity* entity)
 {
-	return entity->position.GetDistance(&position) - entity->radius - radius, 0.0f;
+	return entity->position.GetDistance(&position) - entity->radius - radius;
 }
 
 float Entity::GetDistance(Line* line)
 {
-	return line->GetDistance(&position) - radius, 0.0f;
+	return line->GetDistance(&position) - radius;
 }
 
 float Entity::GetDistance(Segment* segment)
 {
-	return segment->GetDistance(&position) - radius, 0.0f;
+	return segment->GetDistance(&position) - radius;
 }
 
 float Entity::GetDistance(StaticEntity* entity)
 {
-	return entity->GetDistance(&position) - radius, 0.0f;
+	return entity->GetDistance(&position) - radius;
 }
 
 float Entity::GetDistance(Polygon* polygon)
@@ -515,6 +515,7 @@ bool DynamicEntity::Collision(StaticEntity* entity)
 bool DynamicEntity::Collision(Rectangle* rectangle)
 {
 	Vec2F nearest_position1;
+	Vec2F rectangle_velocity = rectangle->GetVelocity();
 	float distance1;
 
 	if ((distance1 = rectangle->GetUpSide().GetDistance(&position, &nearest_position1)) < radius)
@@ -523,33 +524,31 @@ bool DynamicEntity::Collision(Rectangle* rectangle)
 		Vec2F collision_direction;
 		float distance2;
 
+		collision_direction = nearest_position1 - position;
+		force -= collision_direction.Project(&velocity) / 2.0f;
+		force -= collision_direction * (force_collision_coeffisient / distance1 * radius);
+		force += Vec2F(0.0f, 1.0f).ProjectSign(rectangle_velocity);
+
 		if ((distance2 = rectangle->GetRightSide().GetDistance(&position, &nearest_position2)) < radius)
 		{
 			collision_direction = nearest_position2 - position;
-			velocity -= collision_direction.Project(&velocity);
+			force -= collision_direction.Project(&velocity) / 2.0f;
 			force -= collision_direction * (force_collision_coeffisient / distance2 * radius);
+			force += Vec2F(1.0f, 0.0f).ProjectSign(rectangle_velocity);
 
-			collision_direction = nearest_position1 - position;
-			velocity -= collision_direction.Project(&velocity);
-			force -= collision_direction * (force_collision_coeffisient / distance1 * radius);
 			return true;
 		}
 
 		if ((distance2 = rectangle->GetLeftSide().GetDistance(&position, &nearest_position2)) < radius)
 		{
 			collision_direction = nearest_position2 - position;
-			velocity -= collision_direction.Project(&velocity);
+			force -= collision_direction.Project(&velocity) / 2.0f;
 			force -= collision_direction * (force_collision_coeffisient / distance2 * radius);
+			force += Vec2F(-1.0f, 0.0f).ProjectSign(rectangle_velocity);
 
-			collision_direction = nearest_position1 - position;
-			velocity -= collision_direction.Project(&velocity);
-			force -= collision_direction * (force_collision_coeffisient / distance1 * radius);
 			return true;
 		}
 
-		collision_direction = nearest_position1 - position;
-		velocity -= collision_direction.Project(&velocity);
-		force -= collision_direction * (force_collision_coeffisient / distance1 * radius);
 		return true;
 	}
 
@@ -559,49 +558,51 @@ bool DynamicEntity::Collision(Rectangle* rectangle)
 		Vec2F collision_direction;
 		float distance2;
 
+		collision_direction = nearest_position1 - position;
+		force -= collision_direction.Project(&velocity) / 2.0f;
+		force -= collision_direction * (force_collision_coeffisient / distance1 * radius);
+		force += Vec2F(0.0f, -1.0f).ProjectSign(rectangle_velocity);
+
 		if ((distance2 = rectangle->GetRightSide().GetDistance(&position, &nearest_position2)) < radius)
 		{
 			collision_direction = nearest_position2 - position;
-			velocity -= collision_direction.Project(&velocity);
+			force -= collision_direction.Project(&velocity) / 2.0f;
 			force -= collision_direction * (force_collision_coeffisient / distance2 * radius);
+			force += Vec2F(1.0f, 0.0f).ProjectSign(rectangle_velocity);
 
-			collision_direction = nearest_position1 - position;
-			velocity -= collision_direction.Project(&velocity);
-			force -= collision_direction * (force_collision_coeffisient / distance1 * radius);
 			return true;
 		}
 
 		if ((distance2 = rectangle->GetLeftSide().GetDistance(&position, &nearest_position2)) < radius)
 		{
 			collision_direction = nearest_position2 - position;
-			velocity -= collision_direction.Project(&velocity);
+			force -= collision_direction.Project(&velocity) / 2.0f;
 			force -= collision_direction * (force_collision_coeffisient / distance2 * radius);
+			force += Vec2F(-1.0f, 0.0f).ProjectSign(rectangle_velocity);
 
-			collision_direction = nearest_position1 - position;
-			velocity -= collision_direction.Project(&velocity);
-			force -= collision_direction * (force_collision_coeffisient / distance1 * radius);
 			return true;
 		}
 
-		collision_direction = nearest_position1 - position;
-		velocity -= collision_direction.Project(&velocity);
-		force -= collision_direction * (force_collision_coeffisient / distance1 * radius);
 		return true;
 	}
 
 	if ((distance1 = rectangle->GetRightSide().GetDistance(&position, &nearest_position1)) < radius)
 	{
 		Vec2F collision_direction = nearest_position1 - position;
-		velocity -= collision_direction.Project(&velocity);
+		force -= collision_direction.Project(&velocity) / 2.0f;
 		force -= collision_direction * (force_collision_coeffisient / distance1 * radius);
+		force += Vec2F(1.0f, 0.0f).ProjectSign(rectangle_velocity);
+
 		return true;
 	}
 
 	if ((distance1 = rectangle->GetLeftSide().GetDistance(&position, &nearest_position1)) < radius)
 	{
 		Vec2F collision_direction = nearest_position1 - position;
-		velocity -= collision_direction.Project(&velocity);
+		force -= collision_direction.Project(&velocity) / 2.0f;
 		force -= collision_direction * (force_collision_coeffisient / distance1 * radius);
+		force += Vec2F(-1.0f, 0.0f).ProjectSign(rectangle_velocity);
+
 		return true;
 	}
 	return false;
@@ -616,8 +617,9 @@ bool DynamicEntity::Collision(Cyrcle* cyrcle)
 	}
 
 	Vec2F collision_direction = cyrcle->GetPosition() - position;
-	velocity -= collision_direction.Project(&velocity);
+	force -= collision_direction.Project(&velocity) / 2.0f;
 	force -= collision_direction * (force_collision_coeffisient / (distance + radius) * radius) / 10.0f;
+	force += collision_direction.ProjectSign(cyrcle->GetVelocity());
 	return true;
 }
 
@@ -670,6 +672,26 @@ Segment DynamicEntity::GetLastTreck()
 Segment DynamicEntity::GetTreck()
 {
 	return Segment(&position, &velocity);
+}
+
+Segment DynamicEntity::GetTreckDouble()
+{
+	return Segment(position, velocity * 2.0f);
+}
+
+Segment DynamicEntity::GetTreckDoubleRelative(DynamicEntity* entity)
+{
+	return Segment(position, (velocity - entity->velocity) * 2.0f);
+}
+
+Segment DynamicEntity::GetTreckRelative(DynamicEntity* entity)
+{
+	return Segment(position, velocity - entity->velocity);
+}
+
+Segment DynamicEntity::GetTreckRelativeDouble(DynamicEntity* entity)
+{
+	return Segment(position, velocity - entity->velocity * 2.0f);
 }
 
 Vec2F DynamicEntity::GetVelocity()
@@ -824,22 +846,9 @@ void DynamicEntity::Update()
 	}
 	UpdateDirection();
 
-	bool not_nan = true;
-	if (velocity.x != velocity.x)
-	{
-		int i = 0;
-	}
-	if (force.x != force.x)
-	{
-		int i = 0;
-	}
 	velocity += force;
 	velocity *= 1.0f - force_resistance_air_coefficient;
 	force.Set(0.0f, 0.0f);
-	if (not_nan && velocity.x != velocity.x)
-	{
-		int i = 0;
-	}
 	Move(&velocity);
 }
 
@@ -849,7 +858,6 @@ void DynamicEntity::Set(DynamicEntity* dynamic_entity)
 	angular_velocity = dynamic_entity->angular_velocity;
 	direction = dynamic_entity->direction;
 	exist = dynamic_entity->exist;
-	force = dynamic_entity->force;
 	force_collision_coeffisient = dynamic_entity->force_collision_coeffisient;
 	force_resistance_air_coefficient = dynamic_entity->force_resistance_air_coefficient;
 	position = dynamic_entity->position;
@@ -863,7 +871,6 @@ void DynamicEntity::Set(Vec2F* position, Vec2F* velocity, float radius, float an
 	UpdateDirection();
 	this->force_resistance_air_coefficient = angular_velocity;
 	this->exist = exist;
-	this->force.Set(0.0f, 0.0f);
 	this->force_collision_coeffisient = force_collision_coeffisient;
 	this->force_resistance_air_coefficient = force_resistance_air_coefficient;
 	this->position = *position;
@@ -1097,7 +1104,6 @@ void Bonus::Set(Bonus* bonus)
 	bonus_inventory = bonus->bonus_inventory;
 	direction = bonus->direction;
 	exist = bonus->exist;
-	force = bonus->force;
 	force_collision_coeffisient = bonus->force_collision_coeffisient;
 	force_resistance_air_coefficient = bonus->force_resistance_air_coefficient;
 	position = bonus->position;
@@ -1112,7 +1118,6 @@ void Bonus::Set(Vec2F* position, Vec2F* velocity, EngineTypes::Bonus::inventory_
 	this->bonus_inventory = bonus_inventory;
 	UpdateDirection();
 	this->exist = exist;
-	this->force.Set(0.0f, 0.0f);
 	this->force_collision_coeffisient = force_collision_coeffisient;
 	this->force_resistance_air_coefficient = force_resistance_air_coefficient;
 	this->position = *position;
@@ -1127,7 +1132,6 @@ void Bonus::operator=(Bonus bonus)
 	bonus_inventory = bonus.bonus_inventory;
 	direction = bonus.direction;
 	exist = bonus.exist;
-	force = bonus.force;
 	force_collision_coeffisient = bonus.force_collision_coeffisient;
 	force_resistance_air_coefficient = bonus.force_resistance_air_coefficient;
 	position = bonus.position;
@@ -1346,7 +1350,6 @@ void KillerEntity::Set(KillerEntity* killer_entity)
 	angular_velocity = killer_entity->angular_velocity;
 	direction = killer_entity->direction;
 	exist = killer_entity->exist;
-	force = killer_entity->force;
 	force_collision_coeffisient = killer_entity->force_collision_coeffisient;
 	force_resistance_air_coefficient = killer_entity->force_resistance_air_coefficient;
 	player_master_number = killer_entity->player_master_number;
@@ -1362,7 +1365,6 @@ void KillerEntity::Set(Vec2F* position, Vec2F* velocity, float radius, GameTypes
 	this->angular_velocity = angular_velocity;
 	UpdateDirection();
 	this->exist = exist;
-	this->force.Set(0.0f, 0.0f);
 	this->force_collision_coeffisient = force_collision_coeffisient;
 	this->force_resistance_air_coefficient = force_resistance_air_coefficient;
 	this->player_master_number = player_master_number;
@@ -1561,6 +1563,34 @@ bool ControledEntity::IsCollision(Bullet* bullet)
 	return false;
 }
 
+bool ControledEntity::IsCollision(DynamicEntity* dynamic_entity)
+{
+	//Frame of reference set to this entity.
+	Segment segment = dynamic_entity->GetLastTreck();
+	segment.vector -= velocity;
+	//controled entity side
+	Segment ce_side;
+	Vec2F
+		point1 = heat_box_vertexes_array[heat_box_vertexes_array_length - 1] * model_matrix,
+		point2 = heat_box_vertexes_array[0] * model_matrix;
+	ce_side.Set(point1, point2, true);
+	if (segment.GetDistance(&ce_side) < dynamic_entity->radius)
+	{
+		return true;
+	}
+	for (EngineTypes::ControledEntity::heat_box_vertexes_count_t vertex = 1; vertex < heat_box_vertexes_array_length; vertex++)
+	{
+		point1 = point2;
+		point2 = heat_box_vertexes_array[vertex] * model_matrix;
+		ce_side.Set(point1, point2, true);
+		if (segment.GetDistance(&ce_side) < dynamic_entity->radius)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
 bool ControledEntity::IsCollision(Knife* knife)
 {
 	//Frame of reference set to this entity.
@@ -1673,7 +1703,7 @@ bool ControledEntity::IsCollision(Segment* segment)
 
 bool ControledEntity::IsColectEntity(Entity* stored_entity)
 {
-	Segment ce_side;
+	Segment ce_side;//side of the heatbox of the controled entity
 	Vec2F
 		point1 = heat_box_vertexes_array[heat_box_vertexes_array_length - 1] * model_matrix,
 		point2 = heat_box_vertexes_array[0] * model_matrix;
@@ -1683,7 +1713,7 @@ bool ControledEntity::IsColectEntity(Entity* stored_entity)
 	EngineTypes::ControledEntity::heat_box_vertexes_count_t intersections_count = 0;
 
 	ce_side.Set(point1, point2, true);
-	if (stored_entity->GetDistance(&ce_side) < radius)
+	if (stored_entity->GetDistance(&ce_side) < stored_entity->radius)
 	{
 		return true;
 	}
@@ -1696,7 +1726,7 @@ bool ControledEntity::IsColectEntity(Entity* stored_entity)
 		point1 = point2;
 		point2 = heat_box_vertexes_array[vertex] * model_matrix;
 		ce_side.Set(point1, point2, true);
-		if (stored_entity->GetDistance(&ce_side) < radius)
+		if (stored_entity->GetDistance(&ce_side) < stored_entity->radius)
 		{
 			return true;
 		}
@@ -1705,7 +1735,41 @@ bool ControledEntity::IsColectEntity(Entity* stored_entity)
 			intersections_count++;
 		}
 	}
-	return intersections_count % 2;
+	return (intersections_count & 1) ? true : false;
+
+}
+
+bool ControledEntity::IsColectEntity(DynamicEntity* stored_entity)
+{
+	if (IsCollision(stored_entity))
+	{
+		return true;
+	}
+	Segment ce_side;//side of the heatbox of the controled entity
+	Vec2F
+		point1 = heat_box_vertexes_array[heat_box_vertexes_array_length - 1] * model_matrix,
+		point2 = heat_box_vertexes_array[0] * model_matrix;
+
+	Beam test_beam;
+	test_beam.Set(stored_entity->GetPosition(), Vec2F(1.0f, 0.0f));
+	EngineTypes::ControledEntity::heat_box_vertexes_count_t intersections_count = 0;
+
+	ce_side.Set(point1, point2, true);
+	if (test_beam.IsIntersection(&ce_side))
+	{
+		intersections_count++;
+	}
+	for (EngineTypes::ControledEntity::heat_box_vertexes_count_t vertex = 1; vertex < heat_box_vertexes_array_length; vertex++)
+	{
+		point1 = point2;
+		point2 = heat_box_vertexes_array[vertex] * model_matrix;
+		ce_side.Set(point1, point2, true);
+		if (test_beam.IsIntersection(&ce_side))
+		{
+			intersections_count++;
+		}
+	}
+	return (intersections_count & 1) ? true : false;
 
 }
 
@@ -1720,7 +1784,6 @@ void ControledEntity::Set(ControledEntity* controled_entity)
 	angular_velocity = controled_entity->angular_velocity;
 	direction = controled_entity->direction;
 	exist = controled_entity->exist;
-	force = controled_entity->force;
 	force_collision_coeffisient = controled_entity->force_collision_coeffisient;
 	force_resistance_air_coefficient = controled_entity->force_resistance_air_coefficient;
 	heat_box_vertexes_array_length = controled_entity->heat_box_vertexes_array_length;
@@ -1746,7 +1809,6 @@ void ControledEntity::Set(Vec2F* position, Vec2F* velocity, float radius, GameTy
 	this->angular_velocity = angular_velocity;
 	UpdateDirection();
 	this->exist = exist;
-	this->force.Set(0.0f, 0.0f);
 	this->force_collision_coeffisient = force_collision_coeffisient;
 	this->force_resistance_air_coefficient = force_resistance_air_coefficient;
 	this->heat_box_vertexes_array_length = heat_box_vertexes_array_length;
@@ -1912,11 +1974,8 @@ Bullet Ship::CreateTriple(uint8_t bullet_number)
 
 Bullet Ship::CreateLoop(GameTypes::entities_count_t bullet_number)
 { 
-	float loc_angle = 2.0f * (float)M_PI / (float)SHIP_BULLETS_IN_LOOP * (float)bullet_number;
-	Vec2F bullet_velocity = direction.Rotate(loc_angle);
-	Vec2F bullet_position = position + bullet_velocity * (radius + BULLET_DEFAULT_RADIUS);
-	bullet_velocity = bullet_velocity * BULLET_DEFAULT_VELOCITY + velocity;
-	return Bullet(&bullet_position, &bullet_velocity, 
+	Vec2F bullet_velocity = velocity + Vec2F(0.0f, 1.0f).Rotate(2.0f * (float)M_PI / (float)SHIP_BULLETS_IN_LOOP * (float)bullet_number) * BULLET_DEFAULT_VELOCITY;
+	return Bullet(&position, &bullet_velocity, 
 		player_number, player_team_number, true,
 		0.0f, 0.0f, 
 		DEFAULT_FORCE_COLLISION_COEFFICIENT, BULLET_DEFAULT_RESISTANCE_AIR_COEFFICIENT / 2.0f, 
@@ -1954,8 +2013,9 @@ Knife Ship::CreateKnife(uint8_t knife_number)
 
 Pilot Ship::Destroy()
 {
-	Vec2F pilot_new_velocity = velocity * 1.5f;
-	return Pilot(&position, &pilot_new_velocity, player_number, player_team_number, rotate_input_value_pointer, shoot_input_value_pointer, PILOT_DEFAULT_RESPAWN_TIMER, nullptr, 0, angle);
+	Pilot new_pilot = Pilot(&position, &velocity, player_number, player_team_number, rotate_input_value_pointer, shoot_input_value_pointer, PILOT_DEFAULT_RESPAWN_TIMER, nullptr, 0, angle);
+	new_pilot.AddForce(velocity / 2.0f);
+	return new_pilot;
 }
 
 bool Ship::HaveBonus(EngineTypes::Bonus::inventory_t bonus)
@@ -1993,7 +2053,6 @@ void Ship::Set(Ship* ship)
 	burnout_input_value_pointer = ship->burnout_input_value_pointer;
 	direction = ship->direction;
 	exist = ship->exist;
-	force = ship->force;
 	force_collision_coeffisient = ship->force_collision_coeffisient;
 	force_resistance_air_coefficient = ship->force_resistance_air_coefficient;
 	heat_box_vertexes_array_length = ship->heat_box_vertexes_array_length;
@@ -2023,7 +2082,6 @@ void Ship::Set(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t play
 	this->burnout = burnout;
 	UpdateDirection();
 	this->exist = exist;
-	this->force.Set(0.0f, 0.0f);
 	this->force_collision_coeffisient = force_collision_coeffisient;
 	this->force_resistance_air_coefficient = force_resistance_air_coefficient;
 	this->heat_box_vertexes_array_length = heat_box_vertexes_array_length;
@@ -2226,12 +2284,11 @@ void Pilot::Set(Pilot* pilot)
 	direction = pilot->direction;
 	exist = pilot->exist;
 	force = pilot->force;
-	force_collision_coeffisient = pilot->force_collision_coeffisient;
-	force_resistance_air_coefficient = pilot->force_resistance_air_coefficient;
 	heat_box_vertexes_array_length = pilot->heat_box_vertexes_array_length;
 	player_number = pilot->player_number;
 	player_team_number = pilot->player_team_number;
 	position = pilot->position;
+	radius = pilot->radius;
 	respawn_timer = pilot->respawn_timer;
 	rotate_input_value_pointer = pilot->rotate_input_value_pointer;
 	shoot_input_value_pointer = pilot->shoot_input_value_pointer;
@@ -2269,8 +2326,6 @@ void Pilot::operator=(Pilot pilot)
 	direction = pilot.direction;
 	exist = pilot.exist;
 	force = pilot.force;
-	force_collision_coeffisient = pilot.force_collision_coeffisient;
-	force_resistance_air_coefficient = pilot.force_resistance_air_coefficient;
 	heat_box_vertexes_array_length = pilot.heat_box_vertexes_array_length;
 	player_number = pilot.player_number;
 	player_team_number = pilot.player_team_number;
@@ -2779,7 +2834,7 @@ MegaLaser::MegaLaser(Segment* segment, GameTypes::tic_t attack_dellay, GameTypes
 
 Segment MegaLaser::GetSegment()
 {
-	return Segment(position, direction);
+	return Segment(position, direction * radius);
 }
 
 void MegaLaser::Rotate(float angle)
@@ -2819,9 +2874,10 @@ void MegaLaser::Set(Segment* segment, GameTypes::tic_t attack_dellay, GameTypes:
 	direction *= radius;
 }
 
-bool MegaLaser::IsShooting()
+bool MegaLaser::IsShooting(GameTypes::tic_t current_tic)
 {
-	return active;
+	if (current_tic < attack_dellay) return false;
+	return ((current_tic - attack_dellay) % attack_period) > inactive_period;
 }
 
 void MegaLaser::operator=(MegaLaser mega_laser)
@@ -2963,21 +3019,21 @@ Laser::~Laser()
 
 Bullet::Bullet() :
 	KillerEntity(),
-	is_collision(BULLET_MUSTER_ONLY | BULLET_MUSTER_KNIFES),
+	is_ignore(BULLET_IGNORE_MUSTER | BULLET_IGNORE_KNIFES_OF_MASTER),
 	min_velocity(BULLET_DEFAULT_MIN_VELOCITY)
 {
 }
 
 Bullet::Bullet(const Bullet& bullet) :
 	KillerEntity(bullet),
-	is_collision(bullet.is_collision),
+	is_ignore(bullet.is_ignore),
 	min_velocity(bullet.min_velocity)
 {
 }
 
 Bullet::Bullet(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t player_master_number, GameTypes::players_count_t player_master_team_number, bool is_collision_master, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, float radius, float min_velocity, bool exist) :
 	KillerEntity(position, velocity, radius, player_master_number, player_master_team_number, angle, angular_velocity, force_collision_coeffisient, force_resistance_air_coefficient, exist),
-	is_collision((is_collision_master) ? BULLET_MUSTER_ONLY | BULLET_MUSTER_KNIFES : BULLET_MUSTER_NOTHING),
+	is_ignore((is_collision_master) ? (BULLET_IGNORE_MUSTER | BULLET_IGNORE_KNIFES_OF_MASTER) : BULLET_IGNORE_NOTHING),
 	min_velocity(min_velocity)
 {
 }
@@ -2988,10 +3044,9 @@ void Bullet::Set(Bullet* bullet)
 	angular_velocity = bullet->angular_velocity;
 	UpdateDirection();
 	exist = bullet->exist;
-	force = bullet->force;
 	force_collision_coeffisient = bullet->force_collision_coeffisient;
 	force_resistance_air_coefficient = bullet->force_resistance_air_coefficient;
-	is_collision = bullet->is_collision;
+	is_ignore = bullet->is_ignore;
 	min_velocity = bullet->min_velocity;
 	player_master_number = bullet->player_master_number;
 	player_master_team_number = bullet->player_master_team_number;
@@ -3006,10 +3061,9 @@ void Bullet::Set(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t pl
 	this->angular_velocity = angular_velocity;
 	UpdateDirection();
 	this->exist = exist;
-	this->force.Set(0.0f, 0.0f);
 	this->force_collision_coeffisient = force_collision_coeffisient;
 	this->force_resistance_air_coefficient = force_resistance_air_coefficient;
-	this->is_collision = is_collision_master;
+	this->is_ignore = (is_collision_master) ? (BULLET_IGNORE_MUSTER | BULLET_IGNORE_KNIFES_OF_MASTER) : BULLET_IGNORE_NOTHING;
 	this->min_velocity = min_velocity;
 	this->player_master_number = player_master_number;
 	this->player_master_team_number = player_master_team_number;
@@ -3036,7 +3090,7 @@ void Bullet::operator=(Bullet bullet)
 	force = bullet.force;
 	force_collision_coeffisient = bullet.force_collision_coeffisient;
 	force_resistance_air_coefficient = bullet.force_resistance_air_coefficient;
-	is_collision = bullet.is_collision;
+	is_ignore = bullet.is_ignore;
 	min_velocity = bullet.min_velocity;
 	player_master_number = bullet.player_master_number;
 	player_master_team_number = bullet.player_master_team_number;
@@ -3252,7 +3306,6 @@ void Bomb::Set(Bomb* bomb)
 	animation_tic = bomb->animation_tic;
 	direction = bomb->direction;
 	exist = bomb->exist;
-	force = bomb->force;
 	force_collision_coeffisient = bomb->force_collision_coeffisient;
 	force_resistance_air_coefficient = bomb->force_resistance_air_coefficient;
 	player_master_number = bomb->player_master_number;
@@ -3270,7 +3323,6 @@ void Bomb::Set(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t paye
 	this->animation_tic = animation_tic;
 	UpdateDirection();
 	this->exist = exist;
-	this->force.Set(0.0f, 0.0f);
 	this->force_collision_coeffisient = force_collision_coeffisient;
 	this->force_resistance_air_coefficient = force_resistance_air_coefficient;
 	this->player_master_number = player_master_number;

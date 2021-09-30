@@ -5,6 +5,8 @@
 
 #include "../Classes/GameEngine.h"
 
+#include <shared_mutex>
+
 class Game;
 class OpenGL;
 
@@ -95,6 +97,8 @@ public:
 	//This variable stores all the values of rules of ghe game. To change the values of rules of ghe game use |= and &=. To get the values of rules of the game use &.
 	GameTypes::game_rules_t game_rules;
 
+	GameTypes::thread_flags_t threads_statuses;
+
 	//game variables
 
 	//game lists
@@ -161,6 +165,43 @@ public:
 
 	//game objects
 
+	//game mutexes
+
+	std::shared_mutex asteroids_array_mtx;
+	std::shared_mutex bombs_array_mtx;
+	std::shared_mutex bonuses_array_mtx;
+	std::shared_mutex bullets_array_mtx;
+	std::shared_mutex camera_data_mtx;
+	std::shared_mutex deceler_areas_array_mtx;
+	std::shared_mutex grav_gens_array_mtx;
+	std::shared_mutex input_values_mtx;
+	std::shared_mutex knifes_array_mtx;
+	std::shared_mutex lasers_array_mtx;
+	std::shared_mutex log_data_mtx;
+	std::shared_mutex map_data_mtx;
+	std::shared_mutex mega_lasers_array_mtx;
+	std::shared_mutex particles_array_mtx;
+	std::shared_mutex pilots_array_mtx;
+	std::shared_mutex ships_array_mtx;
+	std::shared_mutex turels_array_mtx;
+
+	//The thread was locked before start first phase of the physics calculation.
+	std::shared_mutex threads_statuses_mtx;
+
+	std::shared_mutex thread_0_update;
+	std::shared_mutex thread_1_update;
+	std::shared_mutex thread_2_update;
+	std::shared_mutex thread_3_update;
+
+	//game mutexes
+
+	//phase flags
+
+	//Flags store information about completing first phase by current thread.
+	GameTypes::thread_flags_t thread_flags;
+
+	//phase flags
+
 	//menu objects
 
 	//Pointer to current active menu. This that pointer work all drawing functions.
@@ -211,6 +252,10 @@ public:
 	//Not checking nullprt!
 	void AddEntity(Particle new_particle);
 	//Function adds entity to array that store entities of the same type.
+	void AddEntity(Pilot new_particle);
+	//Function adds entity to array that store entities of the same type.
+	void AddEntity(Ship new_particle);
+	//Function adds entity to array that store entities of the same type.
 	//Not checking nullprt!
 	void AddEntity(Turel new_lazer);
 
@@ -248,72 +293,13 @@ public:
 	void RemoveEntity(Particle* deleting_particle);
 	//Function removes the specified entity from the array.
 	//Not checking nullprt!
+	void RemoveEntity(Pilot* deleting_particle);
+	//Function removes the specified entity from the array.
+	//Not checking nullprt!
+	void RemoveEntity(Ship* deleting_particle);
+	//Function removes the specified entity from the array.
+	//Not checking nullprt!
 	void RemoveEntity(Turel* deleting_turel);
-	
-
-//temp containers
-
-	//Memory space for temporary values.
-	Asteroid temp__asteroid;
-	//Memory space for temporary values.
-	Beam temp__beam;
-	//Memory space for temporary values.
-	Bomb temp__bomb;
-	//Memory space for temporary values.
-	Bonus temp__bonus;
-	//Memory space for temporary values.
-	Bullet temp__bullet;
-	//Memory space for temporary values.
-	Knife temp__knife;
-	//Memory space for temporary values.
-	Laser temp__lazer;
-	//Memory space for temporary values.
-	MegaLaser temp__mega_lazer;
-	//Memory space for temporary values.
-	DynamicEntity temp__particle;
-	//Memory space for temporary values.
-	Pilot temp__pilot;
-	//Memory space for temporary values.
-	Segment temp__segment;
-	//Memory space for temporary values.
-	Ship temp__ship;
-	//Memory space for temporary values.
-	Turel temp__turel;
-	//Memory space for temporary values.
-	Vec2F temp__vector;
-
-	//Memory space for temporary pointers.
-	Asteroid* temp__asteroid_p;
-	//Memory space for temporary pointers.
-	Beam* temp__beam_p;
-	//Memory space for temporary pointers.
-	Bomb* temp__bomb_p;
-	//Memory space for temporary pointers.
-	Bonus* temp__bonus_p;
-	//Memory space for temporary pointers.
-	Bullet* temp__bullet_p;
-	//Memory space for temporary pointers.
-	Knife* temp__knife_p;
-	//Memory space for temporary pointers.
-	Laser* temp__laser_p;
-	//Memory space for temporary pointers.
-	MegaLaser* temp__mega_lazer_p;
-	//Memory space for temporary pointers.
-	DynamicEntity* temp__particle_p;
-	//Memory space for temporary pointers.
-	Pilot* temp__pilot_p;
-	//Memory space for temporary pointers.
-	Segment* temp__segment_p;
-	//Memory space for temporary pointers.
-	Ship* temp__ship_p;
-	//Memory space for temporary pointers.
-	Turel* temp__turel_p;
-	//Memory space for temporary pointers.
-	Vec2F* temp__vector_p;
-
-	void* temp__pointer1;
-	void* temp__pointer2;
-	
 
 
 	
@@ -342,6 +328,7 @@ public:
 	void IncrementPlayersCountInTeam(GameTypes::players_count_t team_number);
 	void CheckEndMatch();
 
+	//mtx: camera -> ship -> map
 	void RoundResultsInit();
 	//The function show round results.
 	//The function block timer.
@@ -357,6 +344,10 @@ public:
 	void Event2();
 	//"Deceleration area"
 	void Event3();
+	//"Mega lasers"
+	void Event4();
+	//"Dynamical"
+	void Event5();
 
 	//"Test"
 	void CreateMap0(Vec2F* ships_positions, float* ships_angles);
@@ -366,6 +357,10 @@ public:
 	void CreateMap2(Vec2F* ships_positions, float* ships_angles);
 	//"Deceleration area"
 	void CreateMap3(Vec2F* ships_positions, float* ships_angles);
+	//"Mega lasers"
+	void CreateMap4(Vec2F* ships_positions, float* ships_angles);
+	//"Dynamical"
+	void CreateMap5(Vec2F* ships_positions, float* ships_angles);
 
 	//Memory functions
 
@@ -439,49 +434,507 @@ public:
 		EntityType* entities,
 		GameTypes::entities_count_t entities_count);
 
-	//The function calculates the influence of entities on other entities. Any entity can be destroyed. New entities can be created.
-	void UpdateAsteroids();
-	//The function calculates the influence of entities on other entities. Any entity can be destroyed. New entities can be created.
-	void UpdateBombs();
-	//The function calculates the influence of entities on other entities. Any entity can be destroyed. New entities can be created.
-	void UpdateBonuses();
-	//The function calculates the influence of entities on other entities. Any entity can be destroyed. New entities can be created.
-	void UpdateBullets();
-	//The function calculates the new camera's position and size.
-	void UpdateCamera();
-	//The function calculates the influence of entities on other entities. Any entity can be destroyed. New entities can be created.
-	void UpdateKnifes();
-	//The function calculates the influence of entities on other entities. Any entity can be destroyed. New entities can be created.
-	void UpdateLazers();
-	//The function calculates the influence of entities on other entities. Any entity can be destroyed. New entities can be created.
-	void UpdateMap();
-	//The function calculates the influence of entities on other entities. Any entity can be destroyed. New entities can be created.
-	void UpdateMegaLazers();
-	//The function calculates the influence of entities on other entities. Any entity can be destroyed. New entities can be created.
-	void UpdatePilots();
-	//The function calculates the influence of entities on other entities. Any entity can be destroyed. New entities can be created.
-	void UpdateShips();
-	//The function calculates the influence of entities on other entities. Any entity can be destroyed. New entities can be created.
-	void UpdateTurels();
+	//thread functions
 
-	//Update the position ans velocity of entity.
-	void TransportAsteroids();
-	//Update the position ans velocity of entity.
-	void TransportBombs();
-	//Update the position ans velocity of entity.
-	void TransportBonuses();
-	//Update the position ans velocity of entity.
-	void TransportBullets();
-	//Update the position ans velocity of entity.
-	void TransportKnifes();
-	//Update the position ans velocity of entity.
-	void TransportLasers();
-	//Update the position ans velocity of entity.
-	void TransportMegaLasers();
-	//Update the position ans velocity of entity.
-	void TransportPilots();
-	//Update the position ans velocity of entity.
-	void TransportShips();
+
+	//thread functions
+
+	/*
+	thread lock map phase 1
+
+	 0. deceler_area
+	 1. grav_gen
+	 2. camera
+	 3. ship
+	 4. pilot
+	 5. input_values
+	 6. mega_laser
+	 7. laser
+	 8. bomb
+	 9. knife
+	10. turel
+	11. bullet
+	12. asteroid
+	13. bonus
+	14. map
+	15. particle
+	16. log
+	
+	//deceler_area -> grav_gen -> camera -> ship -> pilot -> input_values ->  mega_laser -> laser ->  bomb -> knife -> turel -> bullet -> asteroid -> bonus -> map -> particle -> log
+
+	bomb										bomb chain reaction
+	bomb -> asteroid -> bonus					bomb destroys asteroid after that bonus spawns
+	bomb -> bonus								bomb destroys bonus
+	bomb -> bullet								bomb destroys bullet
+	bomb -> bullet								bomb was activated by bullet
+	bomb -> bullet								bomb was spawned by two anigilated bullets
+	bomb -> knife								bomb destroys knife
+	bomb -> turel								bomb destroys turel
+	bullet -> asteroid -> bonus					bullet destroys asteroid after that bonus spawns
+	bullet -> map								bullet destroys map
+	camera -> ship -> pilot						camera focused on ships and pilots
+	knife -> asteroid -> bonus					knife destroys asteroid after that bonus spawns
+	knife -> bullet								knife destroys bullet
+	knife -> map								knife destroys map
+	knife -> turel								knife destroys turel
+	laser										laser checks that it can be removed
+	laser -> asteroid -> bonus					laser destroys asteroid after that bonus spawns
+	laser -> bomb								laser detonates bomb
+	laser -> bonus								laser destroys bonus
+	laser -> bullet								laser destroys bullet
+	laser -> knife								laser destroys knife
+	laser -> map								laser destroys map
+	laser -> turel								laser destroys turel
+	mega_laser -> asteroid -> bonus				mega_laser destroys asteroid after that bonus spawns
+	mega_laser -> bomb							mega_laser detonates bomb
+	mega_laser -> bonus							mega_laser destroys bonus
+	mega_laser -> bullet						mega_laser destroys bullet
+	mega_laser -> knife							mega_laser destroys knife
+	mega_laser -> map							mega_laser destroys map
+	mega_laser -> turel							mega_laser destroys turel
+	pilot -> bomb -> log						pilot was destroed by bomb
+	pilot -> bullet -> log						pilot was destroed by bullet
+	pilot -> input_values						pilot cheks controled input values
+	pilot -> laser -> log						ship was destoroed by laser
+	pilot -> mega_laser -> log					pilot was destroed by mega_laser
+	ship -> bonus								ship influens to bonus or take it
+	ship -> input_values						ship chekes controled values
+	ship -> input_values -> 
+		laser -> bomb -> knife -> bullet		ship chekes controled values after that it shoots
+	ship -> pilot -> log						ship kill pilot
+	ship -> pilot								ship respawn pilot
+	ship -> pilot -> bomb ->
+					knife -> bonus -> log		ship was destroed by bomb after that ship's knifes destroed and pilot and bonus spawn
+	ship -> pilot -> knife -> bonus -> log		ship was destroed by knife after that ship's knifes destroed and pilot and bonus spawn
+	ship -> pilot -> bullet ->
+					knife -> bonus -> log		ship was destroed by bullet after that ship's knifes destroed and pilot and bonus spawn
+	ship -> pilot -> laser ->
+					knife -> bonus -> log		ship was destroed by laser after that ship's knifes destroed and pilot and bonus spawn
+	ship -> pilot -> mega_laser ->
+					knife -> bonus -> log		ship was destroed by mega_laser after that ship's knifes destroed and pilot and bonus spawn
+	turel -> bullet								turel create bullet
+	*/
+
+	//entity update events
+
+	//mtx: bomb
+	//t = (n - 1) / 2 * n
+	void BombsChainReaction();
+
+	//mtx: bomb -> asteroid -> bonus
+	//t = n * k
+	void BombsDestroyAsteroids();
+
+	//mtx: bomb -> bonus
+	//t = n * k
+	void BombsDestroyBonuses();
+
+	//mtx: bomb -> bullet
+	//t = n * k
+	void BombsCollisionsWithBullets();
+
+	//mtx: bomb -> bullet
+	//t = (n - 1) / 2 * n
+	void BombsSpawnedByBulletsAnigilation();
+
+	//mtx: boms -> knife
+	//t = n * k
+	void BombsDestroyKnifes();
+
+	//mtx: bomb -> turel
+	//t = n * k
+	void BombsDestroyTurels();
+
+	//mtx: bullet -> asteroid -> bonus
+	//t = n * k
+	void BulletsDestroyAsteroids();
+
+	//mtx: bullet -> map
+	//t = n * (m1 + m2 + m3)
+	void BulletsDestroedByMap();
+
+	//mtx: camera -> ship -> pilot
+	//t = s + p
+	void CameraFocusesOnPlayers();
+
+	//mtx: knife -> asteroid -> bonus
+	//t = n * k
+	void KnifesDestroyAsteroids();
+
+	//mtx: knife -> bullet
+	//t = n * k
+	void KnifesDestroyBullets();
+
+	//mtx: knife -> map
+	//t = n * (m1 + m2 + m3)
+ 	void KnifesDestroyMap();
+
+ 	//mtx: knife -> turel
+	//t = n * k
+ 	void KnifesDestroyTurels();
+
+	//mtx: laser -> asteroid -> bonus
+	//t = n * k
+	void LasersDestroyAsteroids();
+
+	//mtx: laser -> bonus
+	//t = n * k
+	void LasersDestroyBonuses();
+
+	//mtx: laser -> bomb
+	//t = n * k
+	void LasersDetonateBombs();
+
+	//mtx: laser -> bullet
+	//t = n * k
+	void LasersDestroyBullets();
+
+	//mtx: laser -> knife
+	//t = n * k
+	void LasersDestroyKnifes();
+
+	//mtx: laser -> map
+	//t = n * (m1 + m2 + m3)
+	void LasersDestroyMap();
+
+	//mtx: laser -> turel
+	//t = n * k
+	void LasersDestroyTurels();
+
+	//mtx: mega_laser -> asteroid -> bonus
+	//t = n * k
+	void MegaLasersDestroyAsteroids();
+
+	//mtx: mega_laser -> bonus
+	//t = n * k
+	void MegaLasersDestroyBonuses();
+
+	//mtx: mega_laser -> bomb
+	//t = n * k
+	void MegaLasersDetonateBombs();
+
+	//mtx: mega_laser -> bullet
+	//t = n * k
+	void MegaLasersDestroyBullets();
+
+	//mtx: mega_laser -> knife
+	//t = n * k
+	void MegaLasersDestroyKnifes();
+
+	//mtx: mega_laser -> map
+	//t = n * (m1 + m2 + m3)
+	void MegaLasersDestroyMap();
+
+	//mtx: mega_laser -> turel
+	//t = n * k
+	void MegaLasersDestroyTurels();
+
+	//mtx: pilot -> bomb -> log
+	//t = n * k
+	void PilotsKilledByBombs();
+
+	//mtx: pilot -> bullet -> log
+	//t = n * k
+	void PilotsKilledByBullet();
+
+	//mtx: pilot -> input_values
+	//t = n
+	void PilotsCheckInput();
+
+	//mtx: pilot -> knife -> log
+	//t = n * k
+	void PilotsKilledByKnifes();
+
+	//mtx: pilot -> laser -> log
+	//t = n * k
+	void PilotsKilledByLasers();
+
+	//mtx: pilot -> mega_laser -> log
+	//t = n * k
+	void PilotsKilledByMegaLaser();
+
+	//mtx: ship -> bonus
+	//t = n * k
+	void ShipsInfluenceToBonuses();
+
+	//mtx: ship -> input_values
+	//t = n
+	void ShipsCheckInput();
+
+	//mtx: ship -> input_values -> laser -> bomb -> knife -> bullet
+	//t = n
+	void ShipsShoot();
+
+	//mtx: ship -> pilot
+	//t = n * k
+	void ShipsRespawnOrDestroyPilots();
+
+	//mtx: ship -> pilot
+	//t = n
+	void PilotsRespawnAuto();
+
+	//mtx: ship -> pilot -> bomb -> knife -> bonus -> log
+	//t = n * k
+	void ShipsDestroedByBombsOrActivateBombs();
+
+	//mtx: ship -> pilot -> bullet -> knife -> bonus -> log
+	//t = n * k
+	void ShipsDestroedByBullets();
+
+	//mtx: ship -> pilot -> knife -> bonus -> log
+	//t = n * k
+	void ShipsDestroedByKnifes();
+
+	//mtx: ship -> pilot -> laser -> knife -> bonus -> log
+	//t = n * k
+	void ShipsDestroedByLasers();
+
+	//mtx: ship -> pilot -> mega_laser -> knife -> bonus -> log
+	//t = n * k
+	void ShipsDestroedByMegaLasers();
+
+	//mtx: turel -> bullet
+	//t = n
+	void TurelsShoot();
+
+
+	//entity update events
+
+	//Update last_position of all map's elements.
+	//mtx: map
+	//t = m1 + m2 + m3
+	void UpdateMapPhase2();
+
+	//Update the position and velocity of entity.
+	//mtx: asteroid
+	//t = n
+	void UpdateAsteroidsPhase2();
+
+	//Update the position and velocity of entity.
+	//mtx: bomb
+	//t = n
+	void UpdateBombsPhase2();
+
+	//Update the position and velocity of entity.
+	//mtx: bonus
+	//t = n
+	void UpdateBonusesPhase2();
+
+	//Update the position and velocity of entity.
+	//mtx: bullet
+	//t = n
+	void UpdateBulletsPhase2();
+
+	//Update the position and velocity of entity.
+	//mtx: deceler_area
+	//t = n
+	void UpdateDecelerAreasPhase2();
+
+	//Update the position and velocity of entity.
+	//mtx: grav_gen
+	//t = n
+	void UpdateGravGensPhase2();
+
+	//Update the position and velocity of entity.
+	//mtx: knife
+	//t = n
+	void UpdateKnifesPhase2();
+
+	//Update the position and velocity of entity.
+	//mtx: laser
+	//t = n
+	void UpdateLasersPhase2();
+
+	//Update the position and velocity of entity.
+	//mtx: mega_laser
+	//t = n
+	void UpdateMegaLasersPhase2();
+
+	//Update the position and velocity of entity.
+	//mtx: particle
+	//t = n
+	void UpdateParticlesPhase2();
+
+	//Update the position and velocity of entity.
+	//mtx: pilot
+	//t = n
+	void UpdatePilotsPhase2();
+
+	//Update the position and velocity of entity.
+	//mtx: ship
+	//t = n
+	void UpdateShipsPhase2();
+	
+	//Update the position and velocity of entity.
+	//mtx: turel
+	//t = n
+	void UpdateTurelsPhase2();
+
+	void MutexesLock();
+	void MutexesUnlock();
+
+
+	/*
+	* In first phase entities infulence to other entities
+	after that change their angular velosities and forces
+	but not changed linear velocities, positions and angles.
+	* In second phase entities not influence to other entities,
+	they convert their force and angular velocityes values
+	to new angle, velocity and position.
+	*/
+
+	/*
+	Updates functions list:
+
+	Firts phase functions:
+
+	+	-> position seted
+	++	-> position seted and function paste
+	#	-> functions sorted on position
+
+		FUNCTION								THREAD
+											
+		BombsChainReaction						0#
+
+		BombsDestroyAsteroids					1#
+
+		BombsDestroyBonuses						1#
+
+		BombsCollisionsWithBullets				2#
+
+		BombsSpawnedByBulletsAnigilation		2#
+
+		BombsDestroyKnifes						3#
+
+		BombsDestroyTurels						3#
+
+		BulletsDestroyAsteroids					0#
+
+		BulletsDestroedByMap					1#
+
+		CameraFocusesOnPlayers					2#
+
+		KnifesDestroyAsteroids					0#
+		
+		KnifesDestroyBullets					1#
+		
+		KnifesDestroyMap						2#
+		
+		KnifesDestroyTurels						3#
+		
+		LasersCheckRemove						0#
+		
+		LasersDestroyAsteroids					2#
+		
+		LasersDestroyBonuses					0#
+		
+		LasersDetonateBombs						1#
+		
+		LasersDestroyBullets					2#
+		
+		LasersDestroyKnifes						1#
+		
+		LasersDestroyMap						3#
+		
+		LasersDestroyTurels						3#
+		
+		MegaLasersDestroyAsteroids				0#
+		
+		MegaLasersDestroyBonuses				0#
+		
+		MegaLasersDetonateBombs					2#
+		
+		MegaLasersDestroyBullets				1#
+		
+		MegaLasersDestroyKnifes					3#
+		
+		MegaLasersDestroyMap					2#
+		
+		MegaLasersDestroyTurels					3#
+		
+		PilotsKilledByBombs						0#
+		
+		PilotKilledByBullet						1#
+		
+		PilotsCheckInput						2#
+		
+		PilotsKilledByKnifes					2#
+		
+		PilotsKilledByLasers					3#
+		
+		PilotsKilledByMegaLaser					3#
+
+		PilotsRespawnAuto						2#
+		
+		ShipsInfluenceToBonuses					0#
+		
+		ShipsCheckInput							1#
+		
+		ShipsShoot								1#
+		
+		ShipsRespawnOrDestroyPilots				0#
+		
+		ShipsDestroedByBombsOrActivateBombs		0#
+		
+		ShipsDestroedByBullets					2#
+		
+		ShipsDestroedByKnifes					2#
+		
+		ShipsDestroedByLasers					3#
+		
+		ShipsDestroedByMegaLasers				3#
+
+		TurelsShoot								2#
+
+	Second phase functions:
+
+		UpdateMapPhase2				0#
+
+		UpdateAsteroidsPhase2		3#
+		
+		UpdateBombsPhase2			3#
+		
+		UpdateBonusesPhase2			1#
+		
+		UpdateBulletsPhase2			1#
+
+		UpdateDecelerAreasPhase2	0#
+
+		UpdateGravGens				0#
+		
+		UpdateKnifesPhase2			2#
+		
+		UpdateLasersPhase2			2#
+		
+		UpdateMegaLasersPhase2		0#
+		
+		UpdateParticlesPhase2		2#
+		
+		UpdatePilotsPhase2			1#
+		
+		UpdateShipsPhase2			2#
+
+		UpdateTurelsPhase2			0#
+	*/
+
+	/*
+	The thread check map and match statuses.
+	The thread can end or pause raund.
+	The thread unpdate double click values.
+	The thread set phases to default.
+	The thread poll map's events.
+	*/
+	void PhysicThread0();
+	//The thread calculte entities only.
+	void PhysicThread1();
+	//The thread calculte entities only.
+	void PhysicThread2();
+	//The thread calculte entities only.
+	void PhysicThread3();
+
+	void WaitPhase1();
+	void WaitPhaseAllPhases();
+	void WaitPhaseNotAll();
 
 	void DestroyEntity(Bomb* destroyer, Asteroid* entity);
 	void DestroyEntity(Bomb* destroyer, Bonus* entity);
@@ -523,7 +976,8 @@ public:
 		
 	void DestroySupportEntitiesBy(ControledEntity* produser);
 	
-	//The function spawn the shep from the pilot.
+	//The function spawn the ship from the pilot by spawner.
+	//After that the function removes the pilot.
 	void SpawnEntity(Ship* spawner, Pilot* pilot);
 	void AddBonuses(Ship* spawner);
 		
@@ -542,17 +996,26 @@ public:
 	void ShipShoot_LaserKnife(Ship* ship);
 	void ShipShoot_LoopKnife(Ship* ship);
 	void ShipShoot_BombKnife(Ship* ship);
+
+	//mtx: knife
 	void ShipShoot_Knife(Ship* ship);
+
+	//mtx: bomb
 	void ShipShoot_Bomb(Ship* ship);
+
+	//mts: bullet
 	void ShipShoot_Loop(Ship* ship);
+
+	//mtx: laser
 	void ShipShoot_Laser(Ship* ship);
+
+	//mtx: bullet
 	void ShipShoot_NoBonus(Ship* ship);
 
 	void IncrementScore(GameTypes::players_count_t team_number);
 	void DecrementScore(GameTypes::players_count_t team_number);
 
-	//Function call every game tic.
-	void Update();
+	void DebugLog__CheckMutexeslLock();
 
 	//The function returns a random bonus type.
 	EngineTypes::Bonus::inventory_t GenerateRandomBonus();

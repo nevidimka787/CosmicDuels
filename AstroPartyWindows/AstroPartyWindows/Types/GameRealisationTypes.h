@@ -34,4 +34,6 @@ namespace GameTypes
 	typedef uint8_t objects_types_count_t;
 	//Size of element in bytes.
 	typedef uint16_t element_size_t;
+
+	typedef uint8_t thread_flags_t;
 }

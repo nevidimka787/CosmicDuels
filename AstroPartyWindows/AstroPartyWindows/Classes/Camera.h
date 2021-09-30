@@ -71,7 +71,8 @@ public:
 	void Focus(
 		Ship* ships_array,
 		Pilot* pilots_array,
-		GameTypes::players_count_t players_count = 0);
+		GameTypes::players_count_t ships_count,
+		GameTypes::players_count_t pilots_count);
 
 	void Set(Camera* camera);
 	void SetCoefficients(

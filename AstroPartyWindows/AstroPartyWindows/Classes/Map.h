@@ -65,11 +65,17 @@ public:
 	Segment GetRightSide();
 	Segment GetLeftSide();
 	void Move(Vec2F* move_vector);
+	//set point2 as down left point and point1 as up right point
+	void Normalise();
 	void Set(Rectangle* patent);
 	void Set(
 		Segment* diagonal,
 		bool unbreakable = true,
 		bool exist = true);
+	void SetCenterPosition(Vec2F position);
+	void SetCenterPosition(Vec2F* position);
+	void SetSizeFromCenter(Vec2F size);
+	void SetSizeFromCenter(Vec2F* size);
 
 	~Rectangle();
 };

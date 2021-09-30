@@ -124,7 +124,15 @@ public:
 	Vec2F Normalize();
 	void NormalizeThis();
 	//Return project of "projection_vector" to this vector.
+	Vec2F Project(Vec2F projection_vector);
+	//Return project of "projection_vector" to this vector.
 	Vec2F Project(Vec2F* projection_vector);
+	//Return project of "projection_vector" to this vector.
+	//If angle between "projection_vector" and this vector more then 90 degrees the function return zero vector.
+	Vec2F ProjectSign(Vec2F projection_vector);
+	//Return project of "projection_vector" to this vector.
+	//If angle between "projection_vector" and this vector more then 90 degrees the function return zero vector.
+	Vec2F ProjectSign(Vec2F* projection_vector);
 	Vec2F Perpendicular();
 	void PerpendicularThis();
 	//Clockwise is positive.

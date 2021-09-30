@@ -155,6 +155,37 @@ void Rectangle::Move(Vec2F* move_vector)
 	point2 += *move_vector;
 }
 
+void Rectangle::Normalise()
+{
+	//up right point
+	Vec2F temp_point1;
+
+	if (position.x > point2.x)
+	{
+		if (position.y > point2.y)
+		{
+			temp_point1 = Vec2F(position.x, position.y);
+			point2 = Vec2F(point2.x, point2.y);
+		}
+		else
+		{
+			temp_point1 = Vec2F(position.x, point2.y);
+			point2 = Vec2F(point2.x, position.y);
+		}
+	}
+	else if (position.y > point2.y)
+	{
+		temp_point1 = Vec2F(point2.x, position.y);
+		point2 = Vec2F(position.x, point2.y);
+	}
+	else
+	{
+		temp_point1 = Vec2F(point2.x, point2.y);
+		point2 = Vec2F(position.x, position.y);
+	}
+	position = temp_point1;
+}
+
 void Rectangle::Set(Rectangle* rectangle)
 {
 	exist = rectangle->exist;
@@ -170,6 +201,34 @@ void Rectangle::Set(Segment* diagonal, bool unbreakable, bool exist)
 	this->point2 = diagonal->point + diagonal->vector;
 	this->position = diagonal->point;
 	this->unbreakable = unbreakable;
+}
+
+void Rectangle::SetCenterPosition(Vec2F position)
+{
+	Vec2F point_to_position = (this->position - point2) / 2.0f;
+	this->position = position + point_to_position;
+	point2 = position - point_to_position;
+}
+
+void Rectangle::SetCenterPosition(Vec2F* position)
+{
+	Vec2F point_to_position = (this->position - point2) / 2.0f;
+	this->position = *position + point_to_position;
+	point2 = *position - point_to_position;
+}
+
+void Rectangle::SetSizeFromCenter(Vec2F size)
+{
+	Vec2F center = (this->position + point2) / 2.0f;
+	position = center - size;
+	point2 = center + size;
+}
+
+void Rectangle::SetSizeFromCenter(Vec2F* size)
+{
+	Vec2F center = (this->position + point2) / 2.0f;
+	position = center - *size;
+	point2 = center + *size;
 }
 
 Rectangle::~Rectangle()

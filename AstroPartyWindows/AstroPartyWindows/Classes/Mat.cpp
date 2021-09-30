@@ -487,9 +487,37 @@ void Vec2F::NormalizeThis()
 	*this /= GetLength();
 }
 
+Vec2F Vec2F::Project(Vec2F projecting_vector)
+{
+	Vec2F direction = Normalize();
+	return direction * projecting_vector.GetLength() * (direction * projecting_vector.Normalize());
+}
+
 Vec2F Vec2F::Project(Vec2F* projecting_vector)
 {
 	Vec2F direction = Normalize();
+	return direction * projecting_vector->GetLength() * (direction * projecting_vector->Normalize());
+}
+
+Vec2F Vec2F::ProjectSign(Vec2F projecting_vector)
+{
+	Vec2F direction;
+	if (*this * projecting_vector <= 0.0f)
+	{
+		return direction;
+	}
+	direction = Normalize();
+	return direction * projecting_vector.GetLength() * (direction * projecting_vector.Normalize());
+}
+
+Vec2F Vec2F::ProjectSign(Vec2F* projecting_vector)
+{
+	Vec2F direction;
+	if (*this * *projecting_vector <= 0.0f)
+	{
+		return direction;
+	}
+	direction = Normalize();
 	return direction * projecting_vector->GetLength() * (direction * projecting_vector->Normalize());
 }
 

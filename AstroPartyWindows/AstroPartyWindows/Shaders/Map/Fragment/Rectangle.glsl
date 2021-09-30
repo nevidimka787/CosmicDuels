@@ -4,6 +4,7 @@ out vec4 frag_color;
 
 in vec2 v_pos;
 in vec2 size;
+uniform int unbreakable;
 
 #define BORDER	0.04f
 
@@ -13,6 +14,12 @@ void main()
 	{
 		discard;
 	}
-
-	frag_color = vec4(vec3(0.1f), 1.0f);
+	if(unbreakable == 0)
+	{
+		frag_color = vec4(0.5f, 0.5f, 0.1f, 1.0f);
+	}
+	else
+	{
+		frag_color = vec4(vec3(0.1f), 1.0f);
+	}
 }

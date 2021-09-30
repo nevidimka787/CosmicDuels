@@ -1,5 +1,7 @@
 #pragma once
 
+#include <shared_mutex>
+
 #include "MenuFunctions.h"
 
 #include "../Classes/GameEngine.h"
@@ -248,6 +250,8 @@ public:
 	bool* game_p__flag_all_entities_initialisate;
 	bool* game_p__flag_round_results;
 
+	GameTypes::tic_t* game_p__global_timer;
+
 	//Count of asteroids on the map.
 	GameTypes::entities_count_t* game_p__asteroids_count;
 	//Count of bombs on the map.
@@ -324,6 +328,24 @@ public:
 	bool** game_p__shoot_flags;
 	int32_t** game_p__burnout_double_clk_timer;
 	bool** game_p__burnout_flag;
+
+	std::shared_mutex* game_p__asteroids_array_mtx;
+	std::shared_mutex* game_p__bombs_array_mtx;
+	std::shared_mutex* game_p__bonuses_array_mtx;
+	std::shared_mutex* game_p__bullets_array_mtx;
+	std::shared_mutex* game_p__camera_data_mtx;
+	std::shared_mutex* game_p__deceler_areas_array_mtx;
+	std::shared_mutex* game_p__grav_gens_array_mtx;
+	std::shared_mutex* game_p__input_values_mtx;
+	std::shared_mutex* game_p__knifes_array_mtx;
+	std::shared_mutex* game_p__lasers_array_mtx;
+	std::shared_mutex* game_p__log_data_mtx;
+	std::shared_mutex* game_p__map_data_mtx;
+	std::shared_mutex* game_p__mega_lasers_array_mtx;
+	std::shared_mutex* game_p__particles_array_mtx;
+	std::shared_mutex* game_p__pilots_array_mtx;
+	std::shared_mutex* game_p__ships_array_mtx;
+	std::shared_mutex* game_p__turels_array_mtx;
 
 
 	//menu functions pointers

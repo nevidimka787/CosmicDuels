@@ -60,8 +60,9 @@ float Camera::GetScale()
 	return scale;
 }
 
-void Camera::Focus(Ship* ships_array, Pilot* pilots_array, GameTypes::players_count_t players_count)
+void Camera::Focus(Ship* ships_array, Pilot* pilots_array, GameTypes::players_count_t ships_count, GameTypes::players_count_t pilots_count)
 {
+	GameTypes::players_count_t player1, found_players1, player2, found_players2;
 
 	temp_flag = true;
 
@@ -69,67 +70,73 @@ void Camera::Focus(Ship* ships_array, Pilot* pilots_array, GameTypes::players_co
 	Vec2F dist;
 
 	new_view_area_size_x = 0.0f;
-	for (GameTypes::players_count_t ship1 = 0; ship1 < players_count - 1; ship1++)
+	for (player1 = 0, found_players1 = 0; found_players1 < ships_count; player1++)
 	{
-		if (ships_array[ship1].exist)
+		if (ships_array[player1].exist)
 		{
-			for (GameTypes::players_count_t ship2 = ship1; ship2 < players_count; ship2++)
+			for (player2 = player1 + 1, found_players2 = found_players1 + 1; found_players2 < ships_count; player2++)
 			{
-				if (ships_array[ship2].exist)
+				if (ships_array[player2].exist)
 				{
-					max = ships_array[ship1].GetFrameSize(&ships_array[ship2], scale);
+					max = ships_array[player1].GetFrameSize(&ships_array[player2], scale);
 					if (max > new_view_area_size_x)
 					{
 						new_view_area_size_x = max;
 					}
-					temp_position = ships_array[ship2].GetPosition();
+					temp_position = ships_array[player2].GetPosition();
 					UpdateLimits();
+					found_players2++;
 				}
 			}
-			temp_position = ships_array[ship1].GetPosition();
+			temp_position = ships_array[player1].GetPosition();
 			UpdateLimits();
+			found_players1++;
 		}
 	}
-	for (GameTypes::players_count_t pilot1 = 0; pilot1 < players_count - 1; pilot1++)
+	for (player1 = 0, found_players1 = 0; found_players1 < pilots_count; player1++)
 	{
-		if (pilots_array[pilot1].exist)
+		if (pilots_array[player1].exist)
 		{
-			for (GameTypes::players_count_t pilot2 = pilot1; pilot2 < players_count; pilot2++)
+			for (player2 = player1, found_players2 = found_players1 + 1; found_players2 < pilots_count; player2++)
 			{
-				if (pilots_array[pilot2].exist)
+				if (pilots_array[player2].exist)
 				{
-					max = pilots_array[pilot1].GetFrameSize(&pilots_array[pilot2], scale);
+					max = pilots_array[player1].GetFrameSize(&pilots_array[player2], scale);
 					if (max > new_view_area_size_x)
 					{
 						new_view_area_size_x = max;
 					}
-					temp_position = pilots_array[pilot2].GetPosition();
+					temp_position = pilots_array[player2].GetPosition();
 					UpdateLimits();
+					found_players2++;
 				}
 			}
-			temp_position = pilots_array[pilot1].GetPosition();
+			temp_position = pilots_array[player1].GetPosition();
 			UpdateLimits();
+			found_players1++;
 		}
 	}
-	for (GameTypes::players_count_t ship = 0; ship < players_count; ship++)
+	for (player1 = 0, found_players1 = 0; found_players1 < ships_count; player1++)
 	{
-		if (ships_array[ship].exist == true)
+		if (ships_array[player1].exist == true)
 		{
-			for (GameTypes::players_count_t pilot = 0; pilot < players_count; pilot++)
+			for (player2 = 0, found_players2 = 0; found_players2 < pilots_count; player2++)
 			{
-				if (pilots_array[pilot].exist == true)
+				if (pilots_array[player2].exist == true)
 				{
-					max = ships_array[ship].GetFrameSize(&pilots_array[pilot], scale);
+					max = ships_array[player1].GetFrameSize(&pilots_array[player2], scale);
 					if (max > new_view_area_size_x)
 					{
 						new_view_area_size_x = max;
 					}
-					temp_position = pilots_array[pilot].GetPosition();
+					temp_position = pilots_array[player2].GetPosition();
 					UpdateLimits();
+					found_players2++;
 				}
 			}
-			temp_position = ships_array[ship].GetPosition();
+			temp_position = ships_array[player1].GetPosition();
 			UpdateLimits();
+			found_players1++;
 		}
 	}
 
