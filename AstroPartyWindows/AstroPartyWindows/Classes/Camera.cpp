@@ -97,7 +97,7 @@ void Camera::Focus(Ship* ships_array, Pilot* pilots_array, GameTypes::players_co
 	{
 		if (pilots_array[player1].exist)
 		{
-			for (player2 = player1, found_players2 = found_players1 + 1; found_players2 < pilots_count; player2++)
+			for (player2 = player1 + 1, found_players2 = found_players1 + 1; found_players2 < pilots_count; player2++)
 			{
 				if (pilots_array[player2].exist)
 				{

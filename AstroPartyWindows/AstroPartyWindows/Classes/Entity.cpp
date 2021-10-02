@@ -515,81 +515,34 @@ bool DynamicEntity::Collision(StaticEntity* entity)
 bool DynamicEntity::Collision(Rectangle* rectangle)
 {
 	Vec2F nearest_position1;
+	Vec2F collision_direction;
 	Vec2F rectangle_velocity = rectangle->GetVelocity();
 	float distance1;
 
 	if ((distance1 = rectangle->GetUpSide().GetDistance(&position, &nearest_position1)) < radius)
 	{
-		Vec2F nearest_position2;
-		Vec2F collision_direction;
-		float distance2;
-
 		collision_direction = nearest_position1 - position;
-		force -= collision_direction.Project(&velocity) / 2.0f;
+		force -= collision_direction.ProjectSign(&velocity) / 1.0f;
 		force -= collision_direction * (force_collision_coeffisient / distance1 * radius);
 		force += Vec2F(0.0f, 1.0f).ProjectSign(rectangle_velocity);
-
-		if ((distance2 = rectangle->GetRightSide().GetDistance(&position, &nearest_position2)) < radius)
-		{
-			collision_direction = nearest_position2 - position;
-			force -= collision_direction.Project(&velocity) / 2.0f;
-			force -= collision_direction * (force_collision_coeffisient / distance2 * radius);
-			force += Vec2F(1.0f, 0.0f).ProjectSign(rectangle_velocity);
-
-			return true;
-		}
-
-		if ((distance2 = rectangle->GetLeftSide().GetDistance(&position, &nearest_position2)) < radius)
-		{
-			collision_direction = nearest_position2 - position;
-			force -= collision_direction.Project(&velocity) / 2.0f;
-			force -= collision_direction * (force_collision_coeffisient / distance2 * radius);
-			force += Vec2F(-1.0f, 0.0f).ProjectSign(rectangle_velocity);
-
-			return true;
-		}
 
 		return true;
 	}
 
 	if ((distance1 = rectangle->GetDownSide().GetDistance(&position, &nearest_position1)) < radius)
 	{
-		Vec2F nearest_position2;
-		Vec2F collision_direction;
-		float distance2;
-
 		collision_direction = nearest_position1 - position;
-		force -= collision_direction.Project(&velocity) / 2.0f;
+		force -= collision_direction.ProjectSign(&velocity) / 1.0f;
 		force -= collision_direction * (force_collision_coeffisient / distance1 * radius);
 		force += Vec2F(0.0f, -1.0f).ProjectSign(rectangle_velocity);
-
-		if ((distance2 = rectangle->GetRightSide().GetDistance(&position, &nearest_position2)) < radius)
-		{
-			collision_direction = nearest_position2 - position;
-			force -= collision_direction.Project(&velocity) / 2.0f;
-			force -= collision_direction * (force_collision_coeffisient / distance2 * radius);
-			force += Vec2F(1.0f, 0.0f).ProjectSign(rectangle_velocity);
-
-			return true;
-		}
-
-		if ((distance2 = rectangle->GetLeftSide().GetDistance(&position, &nearest_position2)) < radius)
-		{
-			collision_direction = nearest_position2 - position;
-			force -= collision_direction.Project(&velocity) / 2.0f;
-			force -= collision_direction * (force_collision_coeffisient / distance2 * radius);
-			force += Vec2F(-1.0f, 0.0f).ProjectSign(rectangle_velocity);
-
-			return true;
-		}
 
 		return true;
 	}
 
 	if ((distance1 = rectangle->GetRightSide().GetDistance(&position, &nearest_position1)) < radius)
 	{
-		Vec2F collision_direction = nearest_position1 - position;
-		force -= collision_direction.Project(&velocity) / 2.0f;
+		collision_direction = nearest_position1 - position;
+		force -= collision_direction.ProjectSign(&velocity) / 1.0f;
 		force -= collision_direction * (force_collision_coeffisient / distance1 * radius);
 		force += Vec2F(1.0f, 0.0f).ProjectSign(rectangle_velocity);
 
@@ -598,8 +551,8 @@ bool DynamicEntity::Collision(Rectangle* rectangle)
 
 	if ((distance1 = rectangle->GetLeftSide().GetDistance(&position, &nearest_position1)) < radius)
 	{
-		Vec2F collision_direction = nearest_position1 - position;
-		force -= collision_direction.Project(&velocity) / 2.0f;
+		collision_direction = nearest_position1 - position;
+		force -= collision_direction.ProjectSign(&velocity) / 1.0f;
 		force -= collision_direction * (force_collision_coeffisient / distance1 * radius);
 		force += Vec2F(-1.0f, 0.0f).ProjectSign(rectangle_velocity);
 
@@ -1747,8 +1700,8 @@ bool ControledEntity::IsColectEntity(DynamicEntity* stored_entity)
 	}
 	Segment ce_side;//side of the heatbox of the controled entity
 	Vec2F
-		point1 = heat_box_vertexes_array[heat_box_vertexes_array_length - 1] * model_matrix,
-		point2 = heat_box_vertexes_array[0] * model_matrix;
+		point1 = heat_box_vertexes_array[heat_box_vertexes_array_length - 1] * 2.0f * model_matrix,
+		point2 = heat_box_vertexes_array[0] * 2.0f * model_matrix;
 
 	Beam test_beam;
 	test_beam.Set(stored_entity->GetPosition(), Vec2F(1.0f, 0.0f));
@@ -1762,7 +1715,7 @@ bool ControledEntity::IsColectEntity(DynamicEntity* stored_entity)
 	for (EngineTypes::ControledEntity::heat_box_vertexes_count_t vertex = 1; vertex < heat_box_vertexes_array_length; vertex++)
 	{
 		point1 = point2;
-		point2 = heat_box_vertexes_array[vertex] * model_matrix;
+		point2 = heat_box_vertexes_array[vertex] * 2.0f * model_matrix;
 		ce_side.Set(point1, point2, true);
 		if (test_beam.IsIntersection(&ce_side))
 		{
@@ -2013,8 +1966,9 @@ Knife Ship::CreateKnife(uint8_t knife_number)
 
 Pilot Ship::Destroy()
 {
-	Pilot new_pilot = Pilot(&position, &velocity, player_number, player_team_number, rotate_input_value_pointer, shoot_input_value_pointer, PILOT_DEFAULT_RESPAWN_TIMER, nullptr, 0, angle);
-	new_pilot.AddForce(velocity / 2.0f);
+	Vec2F zero_velocity;
+	Pilot new_pilot = Pilot(&position, &zero_velocity, player_number, player_team_number, rotate_input_value_pointer, shoot_input_value_pointer, PILOT_DEFAULT_RESPAWN_TIMER, nullptr, 0, angle);
+	new_pilot.AddForce(velocity * 1.5f);
 	return new_pilot;
 }
 

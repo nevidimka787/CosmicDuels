@@ -1606,22 +1606,34 @@ void Game::Event5()
 #define EVENT5__LEFT_RECTANGLE	4u
 
 #define EVENT5__PERIOD	1000lu
+#define EVENT5_PHASE	200lu
 
 	Vec2F position = Vec2F();
-	float local_position = (float)(global_timer % EVENT5__PERIOD) / (float)EVENT5__PERIOD * EVENT5__SQUARE_SIZE * 2.0f - EVENT5__SQUARE_SIZE;
+	float local_position;
+
+	local_position = (float)((global_timer + EVENT5_PHASE) % EVENT5__PERIOD) / (float)EVENT5__PERIOD * EVENT5__SQUARE_SIZE * 2.0f - EVENT5__SQUARE_SIZE;
 
 	map_data_mtx.lock();
 
 	Rectangle* rectangle_p = map.GetRectanglePointer(EVENT5__UP_RECTANGLE);
 	rectangle_p->SetCenterPosition(Vec2F(EVENT5__CENTER_POSITION + local_position, EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE));
 	rectangle_p = map.GetRectanglePointer(EVENT5__RIGHT_RECTANGLE);
-	rectangle_p->SetCenterPosition(Vec2F(EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE, EVENT5__CENTER_POSITION -local_position));
+	rectangle_p->SetCenterPosition(Vec2F(EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE, EVENT5__CENTER_POSITION - local_position));
 	rectangle_p = map.GetRectanglePointer(EVENT5__DONW_RECTANGLE);
-	rectangle_p->SetCenterPosition(Vec2F(EVENT5__CENTER_POSITION -local_position, EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE));
+	rectangle_p->SetCenterPosition(Vec2F(EVENT5__CENTER_POSITION - local_position, EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE));
 	rectangle_p = map.GetRectanglePointer(EVENT5__LEFT_RECTANGLE);
 	rectangle_p->SetCenterPosition(Vec2F(EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE, EVENT5__CENTER_POSITION + local_position));
 
 	map_data_mtx.unlock();
+
+	if (!(global_timer % EVENT5__PERIOD))
+	{
+		Vec2F position = Vec2F(EVENT5__CENTER_POSITION, EVENT5__CENTER_POSITION);
+		Vec2F zero_velosity;
+		asteroids_array_mtx.lock();
+		AddEntity(Asteroid(&position, &zero_velosity, GenerateRandomBonusAndRule()));
+		asteroids_array_mtx.unlock();
+	}
 }
 
 void Game::InitLevel()
@@ -2455,9 +2467,9 @@ void Game::IncrementPlayersCountInTeam(GameTypes::players_count_t team_number)
 
 void Game::CheckEndMatch()
 {
-	if (end_match_tik)
+	if (end_match_tic)
 	{
-		if (global_timer > end_match_tik)
+		if (global_timer > end_match_tic)
 		{
 			RoundResultsInit();
 			//NextLevel();
@@ -2479,7 +2491,7 @@ void Game::CheckEndMatch()
 				}
 			}
 		}
-		end_match_tik = global_timer + GAME_END_MATCH_DELLAY;
+		end_match_tic = global_timer + GAME_END_MATCH_DELLAY;
 		flag_update_end_match = false;
 	}
 }
@@ -2666,7 +2678,7 @@ void Game::MemoryLock()
 void Game::MemorySetDefault()
 {
 	global_timer = 0;
-	end_match_tik = 0;
+	end_match_tic = 0;
 
 	camera.SetCoefficients();
 	camera.SetHightLimits();
@@ -3264,29 +3276,29 @@ void Game::UpdateMapPhase2()
 
 void Game::BombsChainReaction()
 {
-	Bomb* temp__bomb_p;
+	Bomb* temp__bomb1_p;
 	Bomb* temp__bomb2_p;
 	GameTypes::entities_count_t second_bomb, found_second_bombs;
 
 	bombs_array_mtx.lock();
 	for (GameTypes::entities_count_t bomb = 0, found_bombs = 0; found_bombs < bombs_count; bomb++)
 	{
-		temp__bomb_p = &bombs[bomb];
-		if (temp__bomb_p->exist)
+		temp__bomb1_p = &bombs[bomb];
+		if (temp__bomb1_p->exist)
 		{
-			if (temp__bomb_p->CanRemove())
+			if (temp__bomb1_p->CanRemove())
 			{
-				RemoveEntity(temp__bomb_p);
+				RemoveEntity(temp__bomb1_p);
 				goto end_of_bomb_cycle;
 			}
-			if (temp__bomb_p->IsBoom())
+			if (temp__bomb1_p->IsBoom())
 			{
 				for (second_bomb = bomb + 1, found_second_bombs = found_bombs + 1; found_second_bombs < bombs_count; second_bomb++)
 				{
 					temp__bomb2_p = &bombs[second_bomb];
 					if (bombs[second_bomb].exist)
 					{
-						if (!temp__bomb2_p->IsBoom() && temp__bomb2_p->IsCollision(temp__bomb_p))
+						if (!temp__bomb2_p->IsBoom() && temp__bomb2_p->Entity::IsCollision(temp__bomb1_p))
 						{
 							temp__bomb2_p->Boom();
 						}
@@ -3443,7 +3455,7 @@ void Game::BombsSpawnedByBulletsAnigilation()
 						{
 							if (temp__bullet2_p->Entity::IsCollision(temp__bullet1_p))
 							{
-#define BOMB_BY_BULLET__BOOM_PERIOD	90
+#define BOMB_BY_BULLET__BOOM_PERIOD	75
 								Vec2F bomb_position = temp__bullet1_p->GetPosition();
 								Vec2F bomb_velocity = (temp__bullet1_p->GetVelocity() + temp__bullet2_p->GetVelocity()) / 2.0f;
 								AddEntity(
@@ -4309,6 +4321,7 @@ void Game::ShipsInfluenceToBonuses()
 								{
 									rotation_inverse = true;
 								}
+								rotate_inverse_chage_tic = global_timer;
 								temp__bonus_p->bonus_inventory &= BONUS_ALL - BONUS_RULE_REVERSE;
 							}
 							temp__ship_p->TakeBonus(temp__bonus_p, game_rules & GAME_RULE_TRIPLE_BONUSES);

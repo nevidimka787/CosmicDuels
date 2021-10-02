@@ -441,6 +441,12 @@ void OpenGL::DrawFrame()
             DrawBonuses();
         }
         game_p__bonuses_array_mtx->unlock();
+        game_p__mega_lasers_array_mtx->lock();
+        if (*game_p__mega_lasers_count > 0)
+        {
+            DrawMegaLasers();
+        }
+        game_p__mega_lasers_array_mtx->unlock();
         game_p__bullets_array_mtx->lock();
         if (*game_p__bullets_count > 0)
         {
@@ -459,12 +465,6 @@ void OpenGL::DrawFrame()
             DrawLasers();
         }
         game_p__lasers_array_mtx->unlock();
-        game_p__mega_lasers_array_mtx->lock();
-        if (*game_p__mega_lasers_count > 0)
-        {
-            DrawMegaLasers();
-        }
-        game_p__mega_lasers_array_mtx->unlock();
         game_p__asteroids_array_mtx->lock();
         if (*game_p__asteroids_count > 0)
         {
