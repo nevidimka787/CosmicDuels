@@ -19,7 +19,7 @@ public:
 	//Global tic value. Not use by functions.
 	GameTypes::tic_t global_timer;
 	//Global tic value when inverse flag was change value.
-	GameTypes::tic_t rotate_inverse_change_tic;
+	GameTypes::tic_t rotate_inverse_chage_tic;
 	//Global tic value for use in functions.
 	GameTypes::tic_t end_match_tic;
 
