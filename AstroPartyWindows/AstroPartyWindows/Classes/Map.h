@@ -24,19 +24,29 @@ public:
 	MapElement();
 	MapElement(const MapElement& map_element);
 	MapElement(
-		Vec2F* position,
+		Vec2F position,
+		bool unbreakable = true,
+		bool exist = true);
+	MapElement(
+		const Vec2F* position,
 		bool unbreakable = true,
 		bool exist = true);
 
 	Vec2F GetPosition();
 	Vec2F GetVelocity();
 	bool IsUnbreacable();
-	void Move(Vec2F* move_vector);
+	void Move(Vec2F move_vector);
+	void Move(const Vec2F* move_vector);
 	void Update();
-	void SetPosition(Vec2F* position);
-	void Set(MapElement* map_element);
+	void SetPosition(Vec2F position);
+	void SetPosition(const Vec2F* position);
+	void Set(const MapElement* map_element);
 	void Set(
-		Vec2F* position,
+		Vec2F position,
+		bool unbreakable = true,
+		bool exist = true);
+	void Set(
+		const Vec2F* position,
 		bool unbreakable = true,
 		bool exist = true);
 	void operator=(MapElement map_element);
@@ -52,7 +62,7 @@ public:
 	Rectangle();
 	Rectangle(const Rectangle& rectangle);
 	Rectangle(
-		Segment* diagonal,
+		const Segment* diagonal,
 		bool unbreakable = true,
 		bool exist = true);
 
@@ -64,18 +74,19 @@ public:
 	Segment GetDownSide();
 	Segment GetRightSide();
 	Segment GetLeftSide();
-	void Move(Vec2F* move_vector);
+	void Move(Vec2F move_vector);
+	void Move(const Vec2F* move_vector);
 	//set point2 as down left point and point1 as up right point
 	void Normalise();
-	void Set(Rectangle* patent);
+	void Set(const Rectangle* patent);
 	void Set(
-		Segment* diagonal,
+		const Segment* diagonal,
 		bool unbreakable = true,
 		bool exist = true);
 	void SetCenterPosition(Vec2F position);
-	void SetCenterPosition(Vec2F* position);
+	void SetCenterPosition(const Vec2F* position);
 	void SetSizeFromCenter(Vec2F size);
-	void SetSizeFromCenter(Vec2F* size);
+	void SetSizeFromCenter(const Vec2F* size);
 
 	~Rectangle();
 };
@@ -88,16 +99,26 @@ public:
 	Cyrcle();
 	Cyrcle(const Cyrcle& cyrcle);
 	Cyrcle(
-		Vec2F* position,
+		Vec2F position,
+		float radius = CYRCLE_DEFAULT_RADIUS,
+		bool unbreakable = true,
+		bool exist = true);
+	Cyrcle(
+		const Vec2F* position,
 		float radius = CYRCLE_DEFAULT_RADIUS,
 		bool unbreakable = true,
 		bool exist = true);
 
 	float GetRadius();
 	void SetRadius(float radius);
-	void Set(Cyrcle* cyrcle);
+	void Set(const Cyrcle* cyrcle);
 	void Set(
-		Vec2F* position,
+		Vec2F position,
+		float radius = CYRCLE_DEFAULT_RADIUS,
+		bool unbreakable = true,
+		bool exist = true);
+	void Set(
+		const Vec2F* position,
 		float radius = CYRCLE_DEFAULT_RADIUS,
 		bool unbreakable = true,
 		bool exist = true);
@@ -122,19 +143,35 @@ public:
 	Polygon();
 	Polygon(const Polygon& polygon);
 	Polygon(
-		Vec2F* position,
-		Vec2F* points_array,
+		Vec2F position,
+		const Vec2F* points_array,
+		EngineTypes::Polygon::points_array_length_t points_array_length,
+		bool unbreakable = true,
+		bool exist = true);
+	Polygon(
+		const Vec2F* position,
+		const Vec2F* points_array,
 		EngineTypes::Polygon::points_array_length_t points_array_length,
 		bool unbreakable = true,
 		bool exist = true);
 
-	void RotateGlobal(float angle, Vec2F* global_rotating_point);
-	void RotateLocal(float angle, Vec2F* local_rotating_point);
-	void Move(Vec2F* move_vector);
+	void RotateGlobal(float angle, Vec2F global_rotating_point);
+	void RotateGlobal(float angle, const Vec2F* global_rotating_point);
+	void RotateLocal(float angle, Vec2F local_rotating_point);
+	void RotateLocal(float angle, const Vec2F* local_rotating_point);
+	void Move(Vec2F move_vector);
+	void Move(const Vec2F* move_vector);
 	void ToDefault();
-	void Set(Polygon* parent);
-	void Set(Vec2F* position,
-		Vec2F* points_array,
+	void Set(const Polygon* parent);
+	void Set(
+		Vec2F position,
+		const Vec2F* points_array,
+		EngineTypes::Polygon::points_array_length_t points_array_length,
+		bool unbreakable = true,
+		bool exist = true);
+	void Set(
+		const Vec2F* position,
+		const Vec2F* points_array,
 		EngineTypes::Polygon::points_array_length_t points_array_length,
 		bool unbreakable = true,
 		bool exist = true);
@@ -161,11 +198,11 @@ public:
 
 	Map(const Map& map);
 	Map(
-		Rectangle* rectangles_array = nullptr,
+		const Rectangle* rectangles_array = nullptr,
 		EngineTypes::Map::elements_array_length_t rectangles_array_length = 0,
-		Cyrcle* cyrcles_array = nullptr,
+		const Cyrcle* cyrcles_array = nullptr,
 		EngineTypes::Map::elements_array_length_t cyrcles_array_length = 0,
-		Polygon* polygons_array = nullptr,
+		const Polygon* polygons_array = nullptr,
 		EngineTypes::Map::elements_array_length_t polygons_array_length = 0);
 
 	Rectangle GetRectangle(EngineTypes::Map::elements_array_length_t number);
@@ -174,13 +211,13 @@ public:
 	Rectangle* GetRectanglePointer(EngineTypes::Map::elements_array_length_t number);
 	Cyrcle* GetCyrclePointer(EngineTypes::Map::elements_array_length_t number);
 	Polygon* GetPolygonPointer(EngineTypes::Map::elements_array_length_t number);
-	void Set(Map* map);
+	void Set(const Map* map);
 	void Set(
-		Rectangle* rectangles_array = nullptr,
+		const Rectangle* rectangles_array = nullptr,
 		EngineTypes::Map::elements_array_length_t rectangles_array_length = 0,
-		Cyrcle* cyrcles_array = nullptr,
+		const Cyrcle* cyrcles_array = nullptr,
 		EngineTypes::Map::elements_array_length_t cyrcles_array_length = 0,
-		Polygon* polygons_array = nullptr,
+		const Polygon* polygons_array = nullptr,
 		EngineTypes::Map::elements_array_length_t polygons_array_length = 0);
 
 	~Map();

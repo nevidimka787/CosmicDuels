@@ -17,7 +17,15 @@ MapElement::MapElement(const MapElement& map_element) :
 {
 }
 
-MapElement::MapElement(Vec2F* position, bool unbreakable, bool exist) :
+MapElement::MapElement(Vec2F position, bool unbreakable, bool exist) :
+	position(position),
+	exist(exist),
+	last_position(position),
+	unbreakable(unbreakable)
+{
+}
+
+MapElement::MapElement(const Vec2F* position, bool unbreakable, bool exist) :
 	position(*position),
 	exist(exist),
 	last_position(*position),
@@ -40,7 +48,12 @@ bool MapElement::IsUnbreacable()
 	return unbreakable;
 }
 
-void MapElement::Move(Vec2F* move_vector)
+void MapElement::Move(Vec2F move_vector)
+{
+	position += move_vector;
+}
+
+void MapElement::Move(const Vec2F* move_vector)
 {
 	position += *move_vector;
 }
@@ -50,7 +63,7 @@ void MapElement::Update()
 	last_position = position;
 }
 
-void MapElement::Set(MapElement* map_element)
+void MapElement::Set(const MapElement* map_element)
 {
 	exist = map_element->exist;
 	position = map_element->position;
@@ -58,14 +71,26 @@ void MapElement::Set(MapElement* map_element)
 	unbreakable = map_element->unbreakable;
 }
 
-void MapElement::Set(Vec2F* position, bool unbreakable, bool exist)
+void MapElement::Set(Vec2F position, bool unbreakable, bool exist)
+{
+	this->exist = exist;
+	this->position = position;
+	this->unbreakable = unbreakable;
+}
+
+void MapElement::Set(const Vec2F* position, bool unbreakable, bool exist)
 {
 	this->exist = exist;
 	this->position = *position;
 	this->unbreakable = unbreakable;
 }
 
-void MapElement::SetPosition(Vec2F* position)
+void MapElement::SetPosition(Vec2F position)
+{
+	this->position = position;
+}
+
+void MapElement::SetPosition(const Vec2F* position)
 {
 	this->position = *position;
 }
@@ -95,7 +120,7 @@ Rectangle::Rectangle(const Rectangle& rectangle) :
 {
 }
 
-Rectangle::Rectangle(Segment* diagonal, bool unbreakable, bool exist) :
+Rectangle::Rectangle(const Segment* diagonal, bool unbreakable, bool exist) :
 	MapElement(&diagonal->point, unbreakable, exist),
 	point2(diagonal->point + diagonal->vector)
 {
@@ -149,7 +174,13 @@ Segment Rectangle::GetLeftSide()
 	return Segment(&temp, &point2, true);
 }
 
-void Rectangle::Move(Vec2F* move_vector)
+void Rectangle::Move(Vec2F move_vector)
+{
+	MapElement::Move(move_vector);
+	point2 += move_vector;
+}
+
+void Rectangle::Move(const Vec2F* move_vector)
 {
 	MapElement::Move(move_vector);
 	point2 += *move_vector;
@@ -186,7 +217,7 @@ void Rectangle::Normalise()
 	position = temp_point1;
 }
 
-void Rectangle::Set(Rectangle* rectangle)
+void Rectangle::Set(const Rectangle* rectangle)
 {
 	exist = rectangle->exist;
 	last_position = rectangle->last_position;
@@ -195,7 +226,7 @@ void Rectangle::Set(Rectangle* rectangle)
 	unbreakable = rectangle->unbreakable;
 }
 
-void Rectangle::Set(Segment* diagonal, bool unbreakable, bool exist)
+void Rectangle::Set(const Segment* diagonal, bool unbreakable, bool exist)
 {
 	this->exist = exist;
 	this->point2 = diagonal->point + diagonal->vector;
@@ -210,7 +241,7 @@ void Rectangle::SetCenterPosition(Vec2F position)
 	point2 = position - point_to_position;
 }
 
-void Rectangle::SetCenterPosition(Vec2F* position)
+void Rectangle::SetCenterPosition(const Vec2F* position)
 {
 	Vec2F point_to_position = (this->position - point2) / 2.0f;
 	this->position = *position + point_to_position;
@@ -224,7 +255,7 @@ void Rectangle::SetSizeFromCenter(Vec2F size)
 	point2 = center + size;
 }
 
-void Rectangle::SetSizeFromCenter(Vec2F* size)
+void Rectangle::SetSizeFromCenter(const Vec2F* size)
 {
 	Vec2F center = (this->position + point2) / 2.0f;
 	position = center - *size;
@@ -250,7 +281,13 @@ Cyrcle::Cyrcle(const Cyrcle& cyrcle) :
 {
 }
 
-Cyrcle::Cyrcle(Vec2F* position, float radius, bool unbreakable, bool exist) :
+Cyrcle::Cyrcle(Vec2F position, float radius, bool unbreakable, bool exist) :
+	MapElement(position, unbreakable, exist),
+	radius(radius)
+{
+}
+
+Cyrcle::Cyrcle(const Vec2F* position, float radius, bool unbreakable, bool exist) :
 	MapElement(position, unbreakable, exist),
 	radius(radius)
 {
@@ -266,7 +303,7 @@ void Cyrcle::SetRadius(float radius)
 	this->radius = radius;
 }
 
-void Cyrcle::Set(Cyrcle* cyrcle)
+void Cyrcle::Set(const Cyrcle* cyrcle)
 {
 	exist = cyrcle->exist;
 	last_position = cyrcle->last_position;
@@ -275,7 +312,15 @@ void Cyrcle::Set(Cyrcle* cyrcle)
 	unbreakable = cyrcle->unbreakable;
 }
 
-void Cyrcle::Set(Vec2F* position, float radius, bool unbreakable, bool exist)
+void Cyrcle::Set(Vec2F position, float radius, bool unbreakable, bool exist)
+{
+	this->exist = exist;
+	this->position = position;
+	this->radius = radius;
+	this->unbreakable = unbreakable;
+}
+
+void Cyrcle::Set(const Vec2F* position, float radius, bool unbreakable, bool exist)
 {
 	this->exist = exist;
 	this->position = *position;
@@ -321,7 +366,20 @@ Polygon::Polygon(const Polygon& polygon) :
 	}
 }
 
-Polygon::Polygon(Vec2F* position, Vec2F* points_array, EngineTypes::Polygon::points_array_length_t points_array_length, bool unbreakable, bool exist) :
+Polygon::Polygon(Vec2F position, const Vec2F* points_array, EngineTypes::Polygon::points_array_length_t points_array_length, bool unbreakable, bool exist) :
+	MapElement(position, unbreakable, exist),
+	points_array_length(points_array_length),
+	default_points_array(new Vec2F[points_array_length]),
+	points_array(new Vec2F[points_array_length])
+{
+	for (EngineTypes::Polygon::points_array_length_t i = 0; i < points_array_length; i++)
+	{
+		default_points_array[i] = points_array[i];
+		this->points_array[i] = default_points_array[i] + position;
+	}
+}
+
+Polygon::Polygon(const Vec2F* position, const Vec2F* points_array, EngineTypes::Polygon::points_array_length_t points_array_length, bool unbreakable, bool exist) :
 	MapElement(position, unbreakable, exist),
 	points_array_length(points_array_length),
 	default_points_array(new Vec2F[points_array_length]),
@@ -334,7 +392,21 @@ Polygon::Polygon(Vec2F* position, Vec2F* points_array, EngineTypes::Polygon::poi
 	}
 }
 
-void Polygon::RotateGlobal(float angle, Vec2F* global_rotating_point)
+void Polygon::RotateGlobal(float angle, Vec2F global_rotating_point)
+{
+	Vec2F rot_vec;
+	for (uint32_t i = 0; i < points_array_length - 1; i++)
+	{
+		rot_vec = points_array[i] - global_rotating_point;
+		rot_vec.RotateThis(angle);
+		points_array[i] = global_rotating_point + rot_vec;
+	}
+	rot_vec = position - global_rotating_point;
+	rot_vec.RotateThis(angle);
+	position = global_rotating_point + rot_vec;
+}
+
+void Polygon::RotateGlobal(float angle, const Vec2F* global_rotating_point)
 {
 	Vec2F rot_vec;
 	for (uint32_t i = 0; i < points_array_length - 1; i++)
@@ -348,8 +420,22 @@ void Polygon::RotateGlobal(float angle, Vec2F* global_rotating_point)
 	position = *global_rotating_point + rot_vec;
 }
 
+void Polygon::RotateLocal(float angle, Vec2F local_rotating_point)
+{
+	Vec2F global_rotating_point = local_rotating_point + position;
+	Vec2F rot_vec;
+	for (uint32_t i = 0; i < points_array_length - 1; i++)
+	{
+		rot_vec = points_array[i] - global_rotating_point;
+		rot_vec.RotateThis(angle);
+		points_array[i] = global_rotating_point + rot_vec;
+	}
+	rot_vec = position - global_rotating_point;
+	rot_vec.RotateThis(angle);
+	position = global_rotating_point + rot_vec;
+}
 
-void Polygon::RotateLocal(float angle, Vec2F* local_rotating_point)
+void Polygon::RotateLocal(float angle, const Vec2F* local_rotating_point)
 {
 	Vec2F global_rotating_point = *local_rotating_point + position;
 	Vec2F rot_vec;
@@ -364,7 +450,16 @@ void Polygon::RotateLocal(float angle, Vec2F* local_rotating_point)
 	position = global_rotating_point + rot_vec;
 }
 
-void Polygon::Move(Vec2F* move_vector)
+void Polygon::Move(Vec2F move_vector)
+{
+	for (uint32_t i = 0; i < points_array_length - 1; i++)
+	{
+		points_array[i] += move_vector;
+	}
+	MapElement::Move(move_vector);
+}
+
+void Polygon::Move(const Vec2F* move_vector)
 {
 	for (uint32_t i = 0; i < points_array_length - 1; i++)
 	{
@@ -382,7 +477,7 @@ void Polygon::ToDefault()
 	}
 }
 
-void Polygon::Set(Polygon* parent)
+void Polygon::Set(const Polygon* parent)
 {
 	delete[] points_array;
 	delete[] default_points_array;
@@ -401,7 +496,26 @@ void Polygon::Set(Polygon* parent)
 	}
 }
 
-void Polygon::Set(Vec2F* position, Vec2F* points_array, EngineTypes::Polygon::points_array_length_t points_array_length, bool unbreakable, bool exist)
+void Polygon::Set(Vec2F position, const Vec2F* points_array, EngineTypes::Polygon::points_array_length_t points_array_length, bool unbreakable, bool exist)
+{
+	delete[] this->points_array;
+	delete[] default_points_array;
+
+	default_points_array = new Vec2F[points_array_length];
+	this->exist = exist;
+	this->points_array = new Vec2F[points_array_length];
+	this->points_array_length = points_array_length;
+	this->position = position;
+	this->unbreakable = unbreakable;
+
+	for (uint32_t i = 1; i < points_array_length; i++)
+	{
+		default_points_array[i] = points_array[i];
+		this->points_array[i] = default_points_array[i] + position;
+	}
+}
+
+void Polygon::Set(const Vec2F* position, const Vec2F* points_array, EngineTypes::Polygon::points_array_length_t points_array_length, bool unbreakable, bool exist)
 {
 	delete[] this->points_array;
 	delete[] default_points_array;
@@ -471,7 +585,7 @@ Map::Map(const Map& map) :
 	}
 }
 
-Map::Map(Rectangle* rectangles_array, EngineTypes::Map::elements_array_length_t rectangles_array_length, Cyrcle* cyrcles_array, EngineTypes::Map::elements_array_length_t cyrcles_array_length, Polygon* polygons_array, EngineTypes::Map::elements_array_length_t polygons_array_length) :
+Map::Map(const Rectangle* rectangles_array, EngineTypes::Map::elements_array_length_t rectangles_array_length, const Cyrcle* cyrcles_array, EngineTypes::Map::elements_array_length_t cyrcles_array_length, const Polygon* polygons_array, EngineTypes::Map::elements_array_length_t polygons_array_length) :
 	cyrcles_array_length(cyrcles_array_length),
 	polygons_array_length(polygons_array_length),
 	rectangles_array_length(rectangles_array_length)
@@ -570,7 +684,7 @@ Polygon* Map::GetPolygonPointer(EngineTypes::Map::elements_array_length_t number
 	return &polygons_array[number];
 }
 
-void Map::Set(Map* map)
+void Map::Set(const Map* map)
 {
 	cyrcles_array_length = map->cyrcles_array_length;
 	polygons_array_length = map->polygons_array_length;
@@ -620,7 +734,7 @@ void Map::Set(Map* map)
 	}
 }
 
-void Map::Set(Rectangle* rectangles_array, EngineTypes::Map::elements_array_length_t rectangles_array_length, Cyrcle* cyrcles_array, EngineTypes::Map::elements_array_length_t cyrcles_array_length, Polygon* polygons_array, EngineTypes::Map::elements_array_length_t polygons_array_length)
+void Map::Set(const Rectangle* rectangles_array, EngineTypes::Map::elements_array_length_t rectangles_array_length, const Cyrcle* cyrcles_array, EngineTypes::Map::elements_array_length_t cyrcles_array_length, const Polygon* polygons_array, EngineTypes::Map::elements_array_length_t polygons_array_length)
 {
 	this->cyrcles_array_length = cyrcles_array_length;
 	this->polygons_array_length = polygons_array_length;

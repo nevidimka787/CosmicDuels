@@ -1605,24 +1605,47 @@ void Game::Event5()
 #define EVENT5__DONW_RECTANGLE	3u
 #define EVENT5__LEFT_RECTANGLE	4u
 
+#define EVENT5__RECTANGLE_SPEED	(0.01f * EVENT5__SQUARE_SIZE)
+
 #define EVENT5__PERIOD	1000lu
 #define EVENT5_PHASE	200lu
 
-	Vec2F position = Vec2F();
-	float local_position;
-
-	local_position = (float)((global_timer + EVENT5_PHASE) % EVENT5__PERIOD) / (float)EVENT5__PERIOD * EVENT5__SQUARE_SIZE * 2.0f - EVENT5__SQUARE_SIZE;
 
 	map_data_mtx.lock();
 
 	Rectangle* rectangle_p = map.GetRectanglePointer(EVENT5__UP_RECTANGLE);
-	rectangle_p->SetCenterPosition(Vec2F(EVENT5__CENTER_POSITION + local_position, EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE));
+	rectangle_p->Move(Vec2F(EVENT5__RECTANGLE_SPEED, 0.0f));
 	rectangle_p = map.GetRectanglePointer(EVENT5__RIGHT_RECTANGLE);
-	rectangle_p->SetCenterPosition(Vec2F(EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE, EVENT5__CENTER_POSITION - local_position));
+	rectangle_p->Move(Vec2F(0.0f, -EVENT5__RECTANGLE_SPEED));
 	rectangle_p = map.GetRectanglePointer(EVENT5__DONW_RECTANGLE);
-	rectangle_p->SetCenterPosition(Vec2F(EVENT5__CENTER_POSITION - local_position, EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE));
+	rectangle_p->Move(Vec2F(-EVENT5__RECTANGLE_SPEED, 0.0f));
 	rectangle_p = map.GetRectanglePointer(EVENT5__LEFT_RECTANGLE);
-	rectangle_p->SetCenterPosition(Vec2F(EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE, EVENT5__CENTER_POSITION + local_position));
+	rectangle_p->Move(Vec2F(0.0f, EVENT5__RECTANGLE_SPEED));
+
+	if (rotation_inverse && rectangle_p->GetPosition().y > EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE)
+	{
+		//left rctangle
+		rectangle_p->SetCenterPosition(Vec2F(EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE));
+
+		rectangle_p = map.GetRectanglePointer(EVENT5__UP_RECTANGLE);
+		rectangle_p->SetCenterPosition(Vec2F(EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE, EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE));
+		rectangle_p = map.GetRectanglePointer(EVENT5__RIGHT_RECTANGLE);
+		rectangle_p->SetCenterPosition(Vec2F(EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE));
+		rectangle_p = map.GetRectanglePointer(EVENT5__DONW_RECTANGLE);
+		rectangle_p->SetCenterPosition(Vec2F(EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE, EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE));
+	}
+	else if(!rotation_inverse && rectangle_p->GetPosition().y < EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE)
+	{
+		//left rctangle
+		rectangle_p->SetCenterPosition(Vec2F(EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE, EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE));
+
+		rectangle_p = map.GetRectanglePointer(EVENT5__UP_RECTANGLE);
+		rectangle_p->SetCenterPosition(Vec2F(EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE));
+		rectangle_p = map.GetRectanglePointer(EVENT5__RIGHT_RECTANGLE);
+		rectangle_p->SetCenterPosition(Vec2F(EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE, EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE));
+		rectangle_p = map.GetRectanglePointer(EVENT5__DONW_RECTANGLE);
+		rectangle_p->SetCenterPosition(Vec2F(EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE));
+	}
 
 	map_data_mtx.unlock();
 
@@ -4222,7 +4245,6 @@ void Game::PilotsKilledByLasers()
 void Game::PilotsRespawnAuto()
 {
 	GameTypes::players_count_t pilot, found_pilots;
-	Ship* temp__ship_p;
 	Pilot* temp__pilot_p;
 
 	ships_array_mtx.lock();

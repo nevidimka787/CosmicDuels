@@ -37,7 +37,7 @@ float Entity::GetAngle()
 
 float Entity::GetDistance(Beam* beam)
 {
-	return beam->GetDistance(&position) - radius, 0.0f;
+	return beam->Distance(&position) - radius, 0.0f;
 }
 
 float Entity::GetDistance(Cyrcle* cyrcle)
@@ -46,7 +46,7 @@ float Entity::GetDistance(Cyrcle* cyrcle)
 	float dist = GetDistance(&temp) - cyrcle->GetRadius();
 	if (dist < -2.0f * radius)
 	{
-		dist = cyrcle->GetRadius() - temp.GetDistance(&position) - 3.0f * radius;
+		dist = cyrcle->GetRadius() - temp.Distance(&position) - 3.0f * radius;
 	}
 	return dist;
 }
@@ -63,17 +63,17 @@ float Entity::GetDistance(DynamicEntity* entity)
 
 float Entity::GetDistance(Entity* entity)
 {
-	return entity->position.GetDistance(&position) - entity->radius - radius;
+	return entity->position.Distance(&position) - entity->radius - radius;
 }
 
 float Entity::GetDistance(Line* line)
 {
-	return line->GetDistance(&position) - radius;
+	return line->Distance(&position) - radius;
 }
 
 float Entity::GetDistance(Segment* segment)
 {
-	return segment->GetDistance(&position) - radius;
+	return segment->Distance(&position) - radius;
 }
 
 float Entity::GetDistance(StaticEntity* entity)
@@ -145,12 +145,12 @@ float Entity::GetDistance(Rectangle* rectangle)
 
 float Entity::GetDistance(Vec2F point)
 {
-	return point.GetDistance(&position) - radius;
+	return point.Distance(&position) - radius;
 }
 
 float Entity::GetDistance(Vec2F* point)
 {
-	return point->GetDistance(&position) - radius;
+	return point->Distance(&position) - radius;
 }
 
 Vec2F Entity::GetDirectionNotNormalize()
@@ -175,7 +175,7 @@ Vec2F Entity::GetPosition()
 
 bool Entity::IsCollision(Beam* beam)
 {
-	return beam->GetDistance(&position) <= radius;
+	return beam->Distance(&position) <= radius;
 }
 
 bool Entity::IsCollision(Cyrcle* cyrcle)
@@ -205,7 +205,7 @@ bool Entity::IsCollision(Entity* entity)
 
 bool Entity::IsCollision(Line* line)
 {
-	return line->GetDistance(&position) <= radius;
+	return line->Distance(&position) <= radius;
 }
 
 bool Entity::IsCollision(Map* map)
@@ -275,7 +275,7 @@ bool Entity::IsCollision(Rectangle* rectangle)
 
 bool Entity::IsCollision(Segment* segment)
 {
-	return segment->GetDistance(&position) <= radius;
+	return segment->Distance(&position) <= radius;
 }
 
 bool Entity::IsCollision(StaticEntity* static_entity)
@@ -452,7 +452,7 @@ void DynamicEntity::AddGravityForce(float gravity_coeffisient, Vec2F* forced_poi
 
 void DynamicEntity::AddGravityForce(float gravity_coeffisient, Vec2F forced_point)
 {
-	float distance = (forced_point - position).GetLength();
+	float distance = (forced_point - position).Length();
 	Vec2F grav_vec = (forced_point - position).Normalize();
 	grav_vec *= gravity_coeffisient / distance / distance;
 	force += grav_vec;// * *x_temp_coeff;
@@ -519,7 +519,7 @@ bool DynamicEntity::Collision(Rectangle* rectangle)
 	Vec2F rectangle_velocity = rectangle->GetVelocity();
 	float distance1;
 
-	if ((distance1 = rectangle->GetUpSide().GetDistance(&position, &nearest_position1)) < radius)
+	if ((distance1 = rectangle->GetUpSide().Distance(&position, &nearest_position1)) < radius)
 	{
 		collision_direction = nearest_position1 - position;
 		force -= collision_direction.ProjectSign(&velocity) / 1.0f;
@@ -529,7 +529,7 @@ bool DynamicEntity::Collision(Rectangle* rectangle)
 		return true;
 	}
 
-	if ((distance1 = rectangle->GetDownSide().GetDistance(&position, &nearest_position1)) < radius)
+	if ((distance1 = rectangle->GetDownSide().Distance(&position, &nearest_position1)) < radius)
 	{
 		collision_direction = nearest_position1 - position;
 		force -= collision_direction.ProjectSign(&velocity) / 1.0f;
@@ -539,7 +539,7 @@ bool DynamicEntity::Collision(Rectangle* rectangle)
 		return true;
 	}
 
-	if ((distance1 = rectangle->GetRightSide().GetDistance(&position, &nearest_position1)) < radius)
+	if ((distance1 = rectangle->GetRightSide().Distance(&position, &nearest_position1)) < radius)
 	{
 		collision_direction = nearest_position1 - position;
 		force -= collision_direction.ProjectSign(&velocity) / 1.0f;
@@ -549,7 +549,7 @@ bool DynamicEntity::Collision(Rectangle* rectangle)
 		return true;
 	}
 
-	if ((distance1 = rectangle->GetLeftSide().GetDistance(&position, &nearest_position1)) < radius)
+	if ((distance1 = rectangle->GetLeftSide().Distance(&position, &nearest_position1)) < radius)
 	{
 		collision_direction = nearest_position1 - position;
 		force -= collision_direction.ProjectSign(&velocity) / 1.0f;
@@ -654,73 +654,73 @@ Vec2F DynamicEntity::GetVelocity()
 
 bool DynamicEntity::IsCollision(Vec2F point)
 {
-	return Segment(position, -velocity).GetDistance(point) < radius;
+	return Segment(position, -velocity).Distance(point) < radius;
 }
 
 bool DynamicEntity::IsCollision(Vec2F* point)
 {
-	return Segment(position, -velocity).GetDistance(point) < radius;
+	return Segment(position, -velocity).Distance(point) < radius;
 }
 
 bool DynamicEntity::IsCollision(Line line)
 {
-	return Segment(position, -velocity).GetDistance(&line) < radius;
+	return Segment(position, -velocity).Distance(&line) < radius;
 }
 
 bool DynamicEntity::IsCollision(Line* line)
 {
-	return Segment(position, -velocity).GetDistance(line) < radius;
+	return Segment(position, -velocity).Distance(line) < radius;
 }
 
 bool DynamicEntity::IsCollision(Beam beam)
 {
-	return Segment(position, -velocity).GetDistance(&beam) < radius;
+	return Segment(position, -velocity).Distance(&beam) < radius;
 }
 
 bool DynamicEntity::IsCollision(Beam* beam)
 {
-	return Segment(position, -velocity).GetDistance(beam) < radius;
+	return Segment(position, -velocity).Distance(beam) < radius;
 }
 
 bool DynamicEntity::IsCollision(Segment segment)
 {
-	return Segment(position, -velocity).GetDistance(&segment) < radius;
+	return Segment(position, -velocity).Distance(&segment) < radius;
 }
 
 bool DynamicEntity::IsCollision(Segment* segment)
 {
-	return Segment(position, -velocity).GetDistance(segment) < radius;
+	return Segment(position, -velocity).Distance(segment) < radius;
 }
 
 bool DynamicEntity::IsCollision(DynamicEntity* entity)
 {
-	return Segment(position, -velocity).GetDistance(entity->GetPosition()) < radius + entity->radius;
+	return Segment(position, -velocity).Distance(entity->GetPosition()) < radius + entity->radius;
 }
 
 bool DynamicEntity::IsCollision(StaticEntity* entity)
 {
-	return Segment(position, -velocity).GetDistance(entity->GetPosition()) < radius + entity->radius;
+	return Segment(position, -velocity).Distance(entity->GetPosition()) < radius + entity->radius;
 }
 
 bool DynamicEntity::IsCollision(Rectangle* rectangle)
 {
 	Segment side = rectangle->GetUpSide();
-	if (Segment(position, -velocity).GetDistance(&side) < radius)
+	if (Segment(position, -velocity).Distance(&side) < radius)
 	{
 		return true;
 	}
 	side = rectangle->GetLeftSide();
-	if (Segment(position, -velocity).GetDistance(&side) < radius)
+	if (Segment(position, -velocity).Distance(&side) < radius)
 	{	
 		return true;
 	}
 	side = rectangle->GetDownSide();
-	if (Segment(position, -velocity).GetDistance(&side) < radius)
+	if (Segment(position, -velocity).Distance(&side) < radius)
 	{
 		return true;
 	}
 	side = rectangle->GetRightSide();
-	if (Segment(position, -velocity).GetDistance(&side) < radius)
+	if (Segment(position, -velocity).Distance(&side) < radius)
 	{
 		return true;
 	}
@@ -729,7 +729,7 @@ bool DynamicEntity::IsCollision(Rectangle* rectangle)
 
 bool DynamicEntity::IsCollision(Cyrcle* cyrcle)
 {
-	return Segment(position, -velocity).GetDistance(cyrcle->GetPosition()) < radius + cyrcle->GetRadius();
+	return Segment(position, -velocity).Distance(cyrcle->GetPosition()) < radius + cyrcle->GetRadius();
 }
 
 bool DynamicEntity::IsCollision(Polygon* polygon)
@@ -1443,7 +1443,7 @@ bool ControledEntity::IsCollision(Beam* beam)
 		point2 = heat_box_vertexes_array[0] * model_matrix;
 
 	ce_side.Set(point1, point2, true);
-	if (beam->GetDistance(&ce_side) < radius)
+	if (beam->Distance(&ce_side) < radius)
 	{
 		return true;
 	}
@@ -1452,7 +1452,7 @@ bool ControledEntity::IsCollision(Beam* beam)
 		point1 = point2;
 		point2 = heat_box_vertexes_array[vertex] * model_matrix;
 		ce_side.Set(point1, point2, true);
-		if (beam->GetDistance(&ce_side) < radius)
+		if (beam->Distance(&ce_side) < radius)
 		{
 			return true;
 		}
@@ -1471,7 +1471,7 @@ bool ControledEntity::IsCollision(Bomb* bomb)
 		point1 = heat_box_vertexes_array[heat_box_vertexes_array_length - 1] * model_matrix,
 		point2 = heat_box_vertexes_array[0] * model_matrix;
 	ce_side.Set(point1, point2, true);
-	if (segment.GetDistance(&ce_side) < bomb->radius)
+	if (segment.Distance(&ce_side) < bomb->radius)
 	{
 		return true;
 	}
@@ -1480,7 +1480,7 @@ bool ControledEntity::IsCollision(Bomb* bomb)
 		point1 = point2;
 		point2 = heat_box_vertexes_array[vertex] * model_matrix;
 		ce_side.Set(point1, point2, true);
-		if (segment.GetDistance(&ce_side) < bomb->radius)
+		if (segment.Distance(&ce_side) < bomb->radius)
 		{
 			return true;
 		}
@@ -1499,7 +1499,7 @@ bool ControledEntity::IsCollision(Bullet* bullet)
 		point1 = heat_box_vertexes_array[heat_box_vertexes_array_length - 1] * model_matrix,
 		point2 = heat_box_vertexes_array[0] * model_matrix;
 	ce_side.Set(point1, point2, true);
-	if (segment.GetDistance(&ce_side) < bullet->radius)
+	if (segment.Distance(&ce_side) < bullet->radius)
 	{
 		return true;
 	}
@@ -1508,7 +1508,7 @@ bool ControledEntity::IsCollision(Bullet* bullet)
 		point1 = point2;
 		point2 = heat_box_vertexes_array[vertex] * model_matrix;
 		ce_side.Set(point1, point2, true);
-		if (segment.GetDistance(&ce_side) < bullet->radius)
+		if (segment.Distance(&ce_side) < bullet->radius)
 		{
 			return true;
 		}
@@ -1527,7 +1527,7 @@ bool ControledEntity::IsCollision(DynamicEntity* dynamic_entity)
 		point1 = heat_box_vertexes_array[heat_box_vertexes_array_length - 1] * model_matrix,
 		point2 = heat_box_vertexes_array[0] * model_matrix;
 	ce_side.Set(point1, point2, true);
-	if (segment.GetDistance(&ce_side) < dynamic_entity->radius)
+	if (segment.Distance(&ce_side) < dynamic_entity->radius)
 	{
 		return true;
 	}
@@ -1536,7 +1536,7 @@ bool ControledEntity::IsCollision(DynamicEntity* dynamic_entity)
 		point1 = point2;
 		point2 = heat_box_vertexes_array[vertex] * model_matrix;
 		ce_side.Set(point1, point2, true);
-		if (segment.GetDistance(&ce_side) < dynamic_entity->radius)
+		if (segment.Distance(&ce_side) < dynamic_entity->radius)
 		{
 			return true;
 		}
@@ -1555,7 +1555,7 @@ bool ControledEntity::IsCollision(Knife* knife)
 		point2 = heat_box_vertexes_array[0] * model_matrix;
 
 	ce_side.Set(point1, point2);
-	if (segment.GetDistance(&ce_side) < radius)
+	if (segment.Distance(&ce_side) < radius)
 	{
 		return true;
 	}
@@ -1564,7 +1564,7 @@ bool ControledEntity::IsCollision(Knife* knife)
 		point1 = point2;
 		point2 = heat_box_vertexes_array[vertex] * model_matrix;
 		ce_side.Set(point1, point2);
-		if (segment.GetDistance(&ce_side) < radius)
+		if (segment.Distance(&ce_side) < radius)
 		{
 			return true;
 		}
@@ -1583,7 +1583,7 @@ bool ControledEntity::IsCollision(Laser* laser)
 		point2 = heat_box_vertexes_array[0] * model_matrix;
 
 	ce_side.Set(point1, point2, true);
-	if (beam.GetDistance(&ce_side) < radius)
+	if (beam.Distance(&ce_side) < radius)
 	{
 		return true;
 	}
@@ -1592,7 +1592,7 @@ bool ControledEntity::IsCollision(Laser* laser)
 		point1 = point2;
 		point2 = heat_box_vertexes_array[vertex] * model_matrix;
 		ce_side.Set(point1, point2, true);
-		if (beam.GetDistance(&ce_side) < radius)
+		if (beam.Distance(&ce_side) < radius)
 		{
 			return true;
 		}
@@ -1611,7 +1611,7 @@ bool ControledEntity::IsCollision(MegaLaser* mega_laser)
 		point2 = heat_box_vertexes_array[0] * model_matrix;
 
 	ce_side.Set(point1, point2, true);
-	if (segment.GetDistance(&ce_side) < radius)
+	if (segment.Distance(&ce_side) < radius)
 	{
 		return true;
 	}
@@ -1620,7 +1620,7 @@ bool ControledEntity::IsCollision(MegaLaser* mega_laser)
 		point1 = point2;
 		point2 = heat_box_vertexes_array[vertex] * model_matrix;
 		ce_side.Set(point1, point2, true);
-		if (segment.GetDistance(&ce_side) < radius)
+		if (segment.Distance(&ce_side) < radius)
 		{
 			return true;
 		}
@@ -1637,7 +1637,7 @@ bool ControledEntity::IsCollision(Segment* segment)
 		point2 = heat_box_vertexes_array[0] * model_matrix;
 
 	ce_side.Set(point1, point2, true);
-	if (segment->GetDistance(&ce_side) < radius)
+	if (segment->Distance(&ce_side) < radius)
 	{
 		return true;
 	}
@@ -1646,7 +1646,7 @@ bool ControledEntity::IsCollision(Segment* segment)
 		point1 = point2;
 		point2 = heat_box_vertexes_array[vertex] * model_matrix;
 		ce_side.Set(point1, point2, true);
-		if (segment->GetDistance(&ce_side) < radius)
+		if (segment->Distance(&ce_side) < radius)
 		{
 			return true;
 		}
@@ -2471,7 +2471,7 @@ void SupportEntity::Update()
 
 void SupportEntity::UpdateDirection()
 {
-	local_direction = Vec2F(direction.GetLength(), 0.0f).Rotate(local_angle);
+	local_direction = Vec2F(direction.Length(), 0.0f).Rotate(local_angle);
 }
 
 void SupportEntity::operator=(SupportEntity support_entity)
@@ -2781,7 +2781,7 @@ MegaLaser::MegaLaser(const MegaLaser& mega_laser) :
 }
 
 MegaLaser::MegaLaser(Segment* segment, GameTypes::tic_t attack_dellay, GameTypes::tic_t attack_period, GameTypes::tic_t inactive_period, EngineTypes::AgressiveEntity::shoots_count_t shoots_count, bool active, bool exist) :
-	AggressiveEntity(&segment->point, segment->vector.GetLength(), segment->vector.GetAbsoluteAngle(), attack_dellay, attack_period, inactive_period, shoots_count, exist),
+	AggressiveEntity(&segment->point, segment->vector.Length(), segment->vector.AbsoluteAngle(), attack_dellay, attack_period, inactive_period, shoots_count, exist),
 	active(active)
 {
 }
@@ -2822,7 +2822,7 @@ void MegaLaser::Set(Segment* segment, GameTypes::tic_t attack_dellay, GameTypes:
 	this->exist = exist;
 	this->inactive_period = inactive_period;
 	this->position = segment->point;
-	this->radius = segment->vector.GetLength();
+	this->radius = segment->vector.Length();
 	this->shoots_count = shoots_count;
 
 	direction *= radius;
@@ -2868,7 +2868,7 @@ Laser::Laser(const Laser& laser) :
 }
 
 Laser::Laser(ControledEntity* host, Beam* local_beam, GameTypes::tic_t shoot_time, bool exist) :
-	SupportEntity(host, &local_beam->point, 0.0f, local_beam->vector.GetAbsoluteAngle(), exist),
+	SupportEntity(host, &local_beam->point, 0.0f, local_beam->vector.AbsoluteAngle(), exist),
 	shoot_time(shoot_time)
 {
 }
@@ -2926,7 +2926,7 @@ void Laser::Set(ControledEntity* host, Beam* local_beam, GameTypes::tic_t shoot_
 	this->exist = exist;
 	this->host_number = host_number;
 	this->host_team = host_team;
-	local_angle = local_beam->vector.GetAbsoluteAngle();
+	local_angle = local_beam->vector.AbsoluteAngle();
 	local_position = local_beam->point;
 	shoot_time = shoot_time;
 	SupportEntity::Update();
@@ -3029,7 +3029,7 @@ void Bullet::Set(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t pl
 void Bullet::Update()
 {
 	DynamicEntity::Update();
-	if (velocity.GetLength() < min_velocity)
+	if (velocity.Length() < min_velocity)
 	{
 		velocity = velocity.Normalize() * min_velocity;
 	}
@@ -3073,7 +3073,7 @@ Knife::Knife(const Knife& knife) :
 }
 
 Knife::Knife(ControledEntity* host, Segment* local_segment, EngineTypes::Knife::knife_health_t health, bool exist) :
-	SupportEntity(host, &local_segment->point, local_segment->vector.GetLength(), local_segment->vector.GetAbsoluteAngle(), exist),
+	SupportEntity(host, &local_segment->point, local_segment->vector.Length(), local_segment->vector.AbsoluteAngle(), exist),
 	health(health)
 {
 }
@@ -3110,9 +3110,9 @@ void Knife::Set(ControledEntity* host, Segment* local_segment, EngineTypes::Knif
 	host_number = host->GetPlayerNumber();
 	host_team = host->GetTeamNumber();
 	local_direction = local_segment->vector;
-	local_angle = local_direction.GetAbsoluteAngle();
+	local_angle = local_direction.AbsoluteAngle();
 	local_position = local_segment->point;
-	radius = local_segment->vector.GetLength();
+	radius = local_segment->vector.Length();
 	SupportEntity::Update();
 }
 
