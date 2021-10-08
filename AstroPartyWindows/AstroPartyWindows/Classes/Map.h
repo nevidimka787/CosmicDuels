@@ -32,8 +32,8 @@ public:
 		bool unbreakable = true,
 		bool exist = true);
 
-	Vec2F GetPosition();
-	Vec2F GetVelocity();
+	Vec2F Position();
+	Vec2F Velocity();
 	bool IsUnbreacable();
 	void Move(Vec2F move_vector);
 	void Move(const Vec2F* move_vector);
@@ -56,6 +56,17 @@ public:
 
 class Rectangle : public MapElement
 {
+private:
+	Rectangle(
+		Vec2F point1, 
+		Vec2F point2,
+		bool unbreakable = true,
+		bool exist = true);
+	Rectangle(
+		const Vec2F* point1,
+		const Vec2F* point2,
+		bool unbreakable = true,
+		bool exist = true);
 protected:
 	Vec2F point2;//down left point
 public:
@@ -66,27 +77,30 @@ public:
 		bool unbreakable = true,
 		bool exist = true);
 
-	Vec2F GetUpRightPoint();
-	Vec2F GetDownRightPoint();
-	Vec2F GetDownLeftPoint();
-	Vec2F GetUpLeftPoint();
-	Segment GetUpSide();
-	Segment GetDownSide();
-	Segment GetRightSide();
-	Segment GetLeftSide();
+	Vec2F UpRightPoint() const;
+	Vec2F DownRightPoint() const;
+	Vec2F DownLeftPoint() const;
+	Vec2F UpLeftPoint() const;
+	Segment UpSide() const;
+	Segment DownSide() const;
+	Segment RightSide() const;
+	Segment LeftSide() const;
 	void Move(Vec2F move_vector);
 	void Move(const Vec2F* move_vector);
 	//set point2 as down left point and point1 as up right point
-	void Normalise();
+	Rectangle Normalise() const;
+	//set point2 as down left point and point1 as up right point
+	void NormaliseThis();
+	Vec2F Position() const;
 	void Set(const Rectangle* patent);
 	void Set(
 		const Segment* diagonal,
 		bool unbreakable = true,
 		bool exist = true);
-	void SetCenterPosition(Vec2F position);
-	void SetCenterPosition(const Vec2F* position);
-	void SetSizeFromCenter(Vec2F size);
-	void SetSizeFromCenter(const Vec2F* size);
+	void SetPosition(Vec2F position);
+	void SetPosition(const Vec2F* position);
+	void SetSize(Vec2F size);
+	void SetSize(const Vec2F* size);
 
 	~Rectangle();
 };
@@ -109,7 +123,7 @@ public:
 		bool unbreakable = true,
 		bool exist = true);
 
-	float GetRadius();
+	float Radius();
 	void SetRadius(float radius);
 	void Set(const Cyrcle* cyrcle);
 	void Set(

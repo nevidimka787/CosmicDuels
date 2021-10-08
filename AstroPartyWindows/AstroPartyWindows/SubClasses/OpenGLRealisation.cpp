@@ -774,8 +774,8 @@ void OpenGL::DrawObject(Rectangle* rectangle, bool update_shader)
         rectangle_shader.SetUniform("camera_size", temp__game__camera_size);
     }
     rectangle_shader.SetUniform("unbreakable", rectangle->IsUnbreacable());
-    rectangle_shader.SetUniform("position",rectangle->GetUpLeftPoint());
-    rectangle_shader.SetUniform("point2", rectangle->GetDownRightPoint());
+    rectangle_shader.SetUniform("position",rectangle->UpLeftPoint());
+    rectangle_shader.SetUniform("point2", rectangle->DownRightPoint());
     rectangle_buffer.Draw();
 }
 
@@ -788,8 +788,8 @@ void OpenGL::DrawObject(Cyrcle* cyrcle, bool update_shader)
         cyrcle_shader.SetUniform("camera_position", temp__game__camera_position);
         cyrcle_shader.SetUniform("camera_size", temp__game__camera_size);
     }
-    cyrcle_shader.SetUniform("position", cyrcle->GetPosition());
-    cyrcle_shader.SetUniform("size", cyrcle->GetRadius());
+    cyrcle_shader.SetUniform("position", cyrcle->Position());
+    cyrcle_shader.SetUniform("size", cyrcle->Radius());
     cyrcle_buffer.Draw();
 }
 

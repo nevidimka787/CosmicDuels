@@ -33,12 +33,12 @@ MapElement::MapElement(const Vec2F* position, bool unbreakable, bool exist) :
 {
 }
 
-Vec2F MapElement::GetPosition()
+Vec2F MapElement::Position()
 {
 	return position;
 }
 
-Vec2F MapElement::GetVelocity()
+Vec2F MapElement::Velocity()
 {
 	return position - last_position;
 }
@@ -126,48 +126,62 @@ Rectangle::Rectangle(const Segment* diagonal, bool unbreakable, bool exist) :
 {
 }
 
-Vec2F Rectangle::GetUpRightPoint()
+Rectangle::Rectangle(Vec2F point1, Vec2F point2, bool unbreakable, bool exist):
+	MapElement(point1, unbreakable, exist),
+	point2(point2)
+{
+
+}
+
+Rectangle::Rectangle(const Vec2F* point1, const Vec2F* point2, bool unbreakable, bool exist) :
+	MapElement(point1, unbreakable, exist),
+	point2(*point2)
+{
+
+}
+
+Vec2F Rectangle::UpRightPoint() const
 {
 	return position;
 }
 
-Vec2F Rectangle::GetDownRightPoint()
+Vec2F Rectangle::DownRightPoint() const
 {
 	return Vec2F(position.x, point2.y);
 }
 
-Vec2F Rectangle::GetDownLeftPoint()
+Vec2F Rectangle::DownLeftPoint() const
 {
 	return point2;
 }
 
-Vec2F Rectangle::GetUpLeftPoint()
+Vec2F Rectangle::UpLeftPoint() const
 {
 	return Vec2F(point2.x, position.y);
 }
 
-Segment Rectangle::GetUpSide()
+Segment Rectangle::UpSide() const
 {
 	Vec2F temp;
 	temp.Set(point2.x, position.y);
 	return Segment(&position, &temp, true);
 }
 
-Segment Rectangle::GetDownSide()
+Segment Rectangle::DownSide() const
 {
 	Vec2F temp;
 	temp.Set(position.x, point2.y);
 	return Segment(&temp, &point2, true);
 }
 
-Segment Rectangle::GetRightSide()
+Segment Rectangle::RightSide() const
 {
 	Vec2F temp;
 	temp.Set(position.x, point2.y);
 	return Segment(&position, &temp, true);
 }
 
-Segment Rectangle::GetLeftSide()
+Segment Rectangle::LeftSide() const
 {
 	Vec2F temp;
 	temp.Set(point2.x, position.y);
@@ -186,7 +200,36 @@ void Rectangle::Move(const Vec2F* move_vector)
 	point2 += *move_vector;
 }
 
-void Rectangle::Normalise()
+Rectangle Rectangle::Normalise() const
+{
+	//up right point
+	Vec2F temp_point1;
+
+
+	if (position.x > point2.x)
+	{
+		if (position.y > point2.y)
+		{
+			return Rectangle(
+				Vec2F(position.x, position.y),
+				Vec2F(point2.x, point2.y));
+		}
+		return Rectangle(
+			Vec2F(position.x, point2.y),
+			Vec2F(point2.x, position.y));
+	}
+	if (position.y > point2.y)
+	{
+		return Rectangle(
+			Vec2F(point2.x, position.y),
+			Vec2F(position.x, point2.y));
+	}
+	return Rectangle(
+		Vec2F(point2.x, point2.y),
+		Vec2F(position.x, position.y));
+}
+
+void Rectangle::NormaliseThis()
 {
 	//up right point
 	Vec2F temp_point1;
@@ -195,26 +238,31 @@ void Rectangle::Normalise()
 	{
 		if (position.y > point2.y)
 		{
-			temp_point1 = Vec2F(position.x, position.y);
-			point2 = Vec2F(point2.x, point2.y);
+			temp_point1.Set(position.x, position.y);
+			point2.Set(point2.x, point2.y);
 		}
 		else
 		{
-			temp_point1 = Vec2F(position.x, point2.y);
-			point2 = Vec2F(point2.x, position.y);
+			temp_point1.Set(position.x, point2.y);
+			point2.Set(point2.x, position.y);
 		}
 	}
 	else if (position.y > point2.y)
 	{
-		temp_point1 = Vec2F(point2.x, position.y);
-		point2 = Vec2F(position.x, point2.y);
+		temp_point1.Set(point2.x, position.y);
+		point2.Set(position.x, point2.y);
 	}
 	else
 	{
-		temp_point1 = Vec2F(point2.x, point2.y);
-		point2 = Vec2F(position.x, position.y);
+		temp_point1.Set(point2.x, point2.y);
+		point2.Set(position.x, position.y);
 	}
 	position = temp_point1;
+}
+
+Vec2F Rectangle::Position() const
+{
+	return (position + point2) / 2.0f;
 }
 
 void Rectangle::Set(const Rectangle* rectangle)
@@ -234,28 +282,28 @@ void Rectangle::Set(const Segment* diagonal, bool unbreakable, bool exist)
 	this->unbreakable = unbreakable;
 }
 
-void Rectangle::SetCenterPosition(Vec2F position)
+void Rectangle::SetPosition(Vec2F position)
 {
 	Vec2F point_to_position = (this->position - point2) / 2.0f;
 	this->position = position + point_to_position;
 	point2 = position - point_to_position;
 }
 
-void Rectangle::SetCenterPosition(const Vec2F* position)
+void Rectangle::SetPosition(const Vec2F* position)
 {
 	Vec2F point_to_position = (this->position - point2) / 2.0f;
 	this->position = *position + point_to_position;
 	point2 = *position - point_to_position;
 }
 
-void Rectangle::SetSizeFromCenter(Vec2F size)
+void Rectangle::SetSize(Vec2F size)
 {
 	Vec2F center = (this->position + point2) / 2.0f;
 	position = center - size;
 	point2 = center + size;
 }
 
-void Rectangle::SetSizeFromCenter(const Vec2F* size)
+void Rectangle::SetSize(const Vec2F* size)
 {
 	Vec2F center = (this->position + point2) / 2.0f;
 	position = center - *size;
@@ -293,7 +341,7 @@ Cyrcle::Cyrcle(const Vec2F* position, float radius, bool unbreakable, bool exist
 {
 }
 
-float Cyrcle::GetRadius()
+float Cyrcle::Radius()
 {
 	return radius;
 }
