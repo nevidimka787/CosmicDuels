@@ -533,7 +533,7 @@ void Vec2F::NormalizeThis()
 	*this /= Length();
 }
 
-Vec2F Vec2F::Project(Vec2F projecting_vector)  const
+Vec2F Vec2F::Project(Vec2F projecting_vector) const
 {
 	Vec2F direction = Normalize();
 	return direction * projecting_vector.Length() * (direction * projecting_vector.Normalize());
@@ -545,18 +545,17 @@ Vec2F Vec2F::Project(const Vec2F* projecting_vector)  const
 	return direction * projecting_vector->Length() * (direction * projecting_vector->Normalize());
 }
 
-Vec2F Vec2F::ProjectSign(Vec2F projecting_vector)  const
+Vec2F Vec2F::ProjectSign(Vec2F projecting_vector) const
 {
-	Vec2F direction;
 	if (*this * projecting_vector <= 0.0f)
 	{
-		return direction;
+		return Vec2F();
 	}
-	direction = Normalize();
+	Vec2F direction = Normalize();
 	return direction * projecting_vector.Length() * (direction * projecting_vector.Normalize());
 }
 
-Vec2F Vec2F::ProjectSign(const Vec2F* projecting_vector)  const
+Vec2F Vec2F::ProjectSign(const Vec2F* projecting_vector) const
 {
 	Vec2F direction;
 	if (*this * *projecting_vector <= 0.0f)

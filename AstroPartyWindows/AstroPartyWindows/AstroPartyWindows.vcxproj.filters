@@ -88,6 +88,12 @@
     <ClCompile Include="Classes\Logs.cpp">
       <Filter>Classes\Файлы ресурсов</Filter>
     </ClCompile>
+    <ClCompile Include="SubClasses\GameMemory.cpp">
+      <Filter>Classes\Файлы ресурсов</Filter>
+    </ClCompile>
+    <ClCompile Include="SubClasses\GamePhysic.cpp">
+      <Filter>Classes\Файлы ресурсов</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Objects\Fragment\Asteroid.glsl">

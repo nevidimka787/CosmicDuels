@@ -830,8 +830,8 @@ public:
 	Bomb(
 		Vec2F* position,
 		Vec2F* velocity,
-		GameTypes::players_count_t player_master_number,
-		GameTypes::players_count_t player_master_team_number,
+		GameTypes::players_count_t master1_team_number,
+		GameTypes::players_count_t master2_team_number,
 		GameTypes::tic_t animation_tic = BOMB_DEFAULT_BOOM_DELLAY,
 		float angle = 0.0f,
 		float angular_velocity = 0.0f,
@@ -958,7 +958,7 @@ public:
 		GameTypes::tic_t shoot_time = LASER_DEFAULT_SHOOT_TIME,
 		bool exist = true);
 
-	bool CanShoot();
+	bool IsActive();
 	bool CreatedBy(ControledEntity* controled_entity);
 	Beam GetBeam();
 	GameTypes::tic_t GetLifeTime();

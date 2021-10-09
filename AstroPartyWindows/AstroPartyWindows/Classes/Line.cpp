@@ -379,7 +379,7 @@ bool Beam::IsIntersection(const Segment* intersection_segment) const
 float Beam::Distance(Vec2F target) const
 {
 	Vec2F temp_vector2 = vector.Perpendicular();
-	Line temp_line1 = Line(&target, &temp_vector2);
+	Line temp_line1 = Line(target, temp_vector2);
 	if (Intersection(&temp_line1, &temp_vector2))
 	{
 		return temp_vector2.Distance(target);
@@ -459,11 +459,11 @@ float Beam::Distance(const Beam* target) const
 		if (target->Intersection(&temp_line1, &temp_vector2))
 		{
 			temp_float2 = point.Distance(&temp_vector2);
-		}
-
-		if (temp_float1 > temp_float2)
-		{
-			return temp_float2;
+			if (temp_float1 > temp_float2)
+			{
+				return temp_float2;
+			}
+			return temp_float1;
 		}
 		return temp_float1;
 	}

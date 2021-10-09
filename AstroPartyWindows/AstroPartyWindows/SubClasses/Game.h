@@ -226,37 +226,48 @@ public:
 	
 	//Function adds entity to array that store entities of the same type.
 	void AddEntity(Bonus new_bonus);
+	
 	//Function adds entity to array that store entities of the same type.
 	//Not checking nullprt!
 	void AddEntity(Asteroid new_asteroid);
+	
 	//Function adds entity to array that store entities of the same type.
 	//Not checking nullprt!
 	void AddEntity(Bullet new_bullet);
+	
 	//Function adds entity to array that store entities of the same type.
 	//Not checking nullprt!
 	void AddEntity(DecelerationArea new_deceleration_area);
+	
 	//Function adds entity to array that store entities of the same type.
 	//Not checking nullprt!
 	void AddEntity(GravGen new_grav_gen);
+	
 	//Function adds entity to array that store entities of the same type.
-	//Not checking nullprt!
 	void AddEntity(Knife new_knife);
+	
 	//Function adds entity to array that store entities of the same type.
 	//Not checking nullprt!
 	void AddEntity(Bomb new_bomb);
+	
 	//Function adds entity to array that store entities of the same type.
 	//Not checking nullprt!
 	void AddEntity(Laser new_lazsr);
+	
 	//Function adds entity to array that store entities of the same type.
 	//Not checking nullprt!
 	void AddEntity(MegaLaser new_laser);
+	
 	//Function adds entity to array that store entities of the same type.
 	//Not checking nullprt!
 	void AddEntity(Particle new_particle);
+	
 	//Function adds entity to array that store entities of the same type.
 	void AddEntity(Pilot new_particle);
+	
 	//Function adds entity to array that store entities of the same type.
 	void AddEntity(Ship new_particle);
+	
 	//Function adds entity to array that store entities of the same type.
 	//Not checking nullprt!
 	void AddEntity(Turel new_lazer);
@@ -266,39 +277,51 @@ public:
 	//Function removes the specified entity from the array.
 	//Not checking nullprt!
 	void RemoveEntity(Bonus* deleting_bonus);
+	
 	//Function removes the specified entity from the array.
 	//Not checking nullprt!
 	void RemoveEntity(Asteroid* deleting_asteroid);
+	
 	//Function removes the specified entity from the array.
 	//Not checking nullprt!
 	void RemoveEntity(Bomb* deleting_bomb);
+	
 	//Function removes the specified entity from the array.
 	//Not checking nullprt!
 	void RemoveEntity(Bullet* deleting_bullet);
+	
 	//Function adds entity to array that store entities of the same type.
 	//Not checking nullprt!
 	void RemoveEntity(DecelerationArea* new_deceleration_area);
+	
 	//Function adds entity to array that store entities of the same type.
 	//Not checking nullprt!
 	void RemoveEntity(GravGen* new_grav_gen);
+	
 	//Function removes the specified entity from the array.
 	//Not checking nullprt!
 	void RemoveEntity(Knife* deleting_knife);
+	
 	//Function removes the specified entity from the array.
 	//Not checking nullprt!
 	void RemoveEntity(Laser* deleting_laser);
+	
 	//Function removes the specified entity from the array.
 	//Not checking nullprt!
 	void RemoveEntity(MegaLaser* deleting_mega_laser);
+	
 	//Function removes the specified entity from the array.
 	//Not checking nullprt!
 	void RemoveEntity(Particle* deleting_particle);
+	
 	//Function removes the specified entity from the array.
 	//Not checking nullprt!
 	void RemoveEntity(Pilot* deleting_particle);
+	
 	//Function removes the specified entity from the array.
 	//Not checking nullprt!
 	void RemoveEntity(Ship* deleting_particle);
+	
 	//Function removes the specified entity from the array.
 	//Not checking nullprt!
 	void RemoveEntity(Turel* deleting_turel);
@@ -308,15 +331,19 @@ public:
 	//The function runs when the object created starts.
 	//The functions nitialisates all arrays this entities.
 	Game();
+	
 	//The function runs when the program starts.
 	//The functions nitialisates all arrays this entities.
 	void InitGame();
+	
 	//The function runs when the mach starts.
 	//The functions nitialisates all arrays this maps.
 	void InitMatch();
+	
 	//The function runs when the level initialisates.
 	//The function generates the map and spawning players.
 	void InitLevel();
+	
 	//The function runs when the program starts.
 	//The function creates all nemus objects.
 	void InitMenus();
@@ -326,41 +353,55 @@ public:
 
 	//Team's numbers start from 1.
 	void DecrementPlayersCountInTeam(GameTypes::players_count_t team_number);
+	
 	//Team's numbers start from 1.
 	void IncrementPlayersCountInTeam(GameTypes::players_count_t team_number);
+	
 	void CheckEndMatch();
 
 	//mtx: camera -> ship -> map
 	void RoundResultsInit();
+	
 	//The function show round results.
 	//The function block timer.
 	//If logs not empty, the function return true.
 	bool RoundResults();
 
 	void PollEvents();
+	
 	//"Test"
 	void Event0();
+	
 	//"Turel"
 	void Event1();
+	
 	//"Cyrcle"
 	void Event2();
+	
 	//"Deceleration area"
 	void Event3();
+	
 	//"Mega lasers"
 	void Event4();
+	
 	//"Dynamical"
 	void Event5();
 
 	//"Test"
 	void CreateMap0(Vec2F* ships_positions, float* ships_angles);
+	
 	//"Turel"
 	void CreateMap1(Vec2F* ships_positions, float* ships_angles);
+	
 	//"Cyrcle"
 	void CreateMap2(Vec2F* ships_positions, float* ships_angles);
+	
 	//"Deceleration area"
 	void CreateMap3(Vec2F* ships_positions, float* ships_angles);
+	
 	//"Mega lasers"
 	void CreateMap4(Vec2F* ships_positions, float* ships_angles);
+	
 	//"Dynamical"
 	void CreateMap5(Vec2F* ships_positions, float* ships_angles);
 
@@ -369,9 +410,11 @@ public:
 	//Get space from memory for arrays.
 	//Update values that was linking with arrays.
 	void MemoryLock();
+	
 	//Set pbjects in arrays default.
 	//Update values that was linking with arrays.
 	void MemorySetDefault();
+	
 	//Delete arrays.
 	//Update values that was linking with arrays.
 	void MemoryFree();
@@ -385,6 +428,7 @@ public:
 	void DynamicEntitiesCollisions(
 		EntityType* entities,
 		GameTypes::entities_count_t entities_count);
+	
 	//The function calculates forces of collisions between entities from two arrays.
 	//Use temp_p1 temp_p2
 	template<typename Entity1Type, typename Entity2Type>
@@ -393,6 +437,7 @@ public:
 		Entity2Type* entities2,
 		GameTypes::entities_count_t entities1_count, 
 		GameTypes::entities_count_t entities2_count);
+	
 	//The function calculates forces of collisions between entities in the array and elements of the map.
 	//Use temp_p1
 	template<typename EntityType>
@@ -400,11 +445,13 @@ public:
 		Map* map,
 		EntityType* entities,
 		GameTypes::entities_count_t entities_count);
+	
 	//The function calculates forces of collisions between entities in the array and elements of the map.
 	void DynamicEntitiesCollisions(
 		Map* map,
 		Bomb* entities,
 		GameTypes::entities_count_t entities_count);
+	
 	//The function adds the specified force to all entities in the array.
 	//Use temp_p1 temp_p2
 	template<typename EntityType>
@@ -412,6 +459,7 @@ public:
 		Vec2F* force,
 		EntityType* entities,
 		GameTypes::entities_count_t entities_count);
+	
 	//The function adds forces of the all gravity generators to all entities in the array.
 	//Use temp_p1 temp_p2
 	template<typename EntityType>
@@ -420,6 +468,7 @@ public:
 		GameTypes::map_elements_count_t grav_gens_count,
 		EntityType* entities,
 		GameTypes::entities_count_t entities_count);
+	
 	//The function adds forces of the all gravity generators to all entities in the array.
 	//Use temp_p1 temp_p2
 	void DynamicEntitiesAddForce(
@@ -427,6 +476,7 @@ public:
 		GameTypes::map_elements_count_t grav_gens_count,
 		Bomb* entities,
 		GameTypes::entities_count_t entities_count);
+	
 	//The function adds forces of the all gravity generators to all entities in the array.
 	//Use temp_p1 temp_p2
 	template<typename EntityType>

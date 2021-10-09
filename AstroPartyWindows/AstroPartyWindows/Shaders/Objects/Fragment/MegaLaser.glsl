@@ -6,7 +6,7 @@ uniform int is_active;
 
 void main()
 {
-	if(is_active)
+	if(is_active > 0)
 	{
 		frag_color = vec4(vec3(0.9f), 1.0f);
 	}

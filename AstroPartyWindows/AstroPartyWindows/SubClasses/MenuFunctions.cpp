@@ -128,8 +128,8 @@ void MenuFunctions::EndMatch()
 
 void MenuFunctions::SelectShip(GameTypes::players_count_t sheep_number, GameTypes::players_count_t team_number)
 {
-	ships_select_buttons[sheep_number - BUTTON_ID_SELECT_SHIP_1] = team_number;
-	(*game_p__teams)[sheep_number - BUTTON_ID_SELECT_SHIP_1] = team_number;
+	ships_select_buttons[sheep_number - BUTTON_ID__SELECT_SHIP_1] = team_number;
+	(*game_p__teams)[sheep_number - BUTTON_ID__SELECT_SHIP_1] = team_number;
 }
 
 void MenuFunctions::Exit()
@@ -187,7 +187,7 @@ void MenuFunctions::BonusPullSelectMenuFunction(Vec2F* clk_pos, uint8_t clk_stat
 				{
 					return;
 				}
-				EngineTypes::Button::id_t id = game_p__bonus_pull_select_menu->current_buttons[i].GetId() - BUTTON_ID_SELECT_BONUS;
+				EngineTypes::Button::id_t id = game_p__bonus_pull_select_menu->current_buttons[i].GetId() - BUTTON_ID__SELECT_BONUS;
 				if (id < GAME_BONUSES_COUNT)
 				{
 					if ((*game_p__bonus_pull_array)[id])
@@ -229,13 +229,13 @@ void MenuFunctions::MainMenuFunction(Vec2F* clk_pos, uint8_t clk_status)
 				current_button->SetStatus(BUTTON_STATUS_SELECT, false);
 				switch (current_button->GetId())
 				{
-				case BUTTON_ID_START_MATCH:
+				case BUTTON_ID__START_MATCH:
 					OpenSheepsSelectMenu();
 					return;
-				case BUTTON_ID_GO_TO_OPTINS_MENU:
+				case BUTTON_ID__GO_TO_OPTINS_MENU:
 					OpenOptionsMenu();
 					return;
-				case BUTTON_ID_EXIT:
+				case BUTTON_ID__EXIT:
 					Exit();
 				default:
 					return;
@@ -274,55 +274,55 @@ void MenuFunctions::OptionMenuFunction(Vec2F* clk_pos, uint8_t clk_status)
 				current_button->SetStatus(BUTTON_STATUS_SELECT, false);
 				switch (current_button->GetId())
 				{
-				case BUTTON_ID_SET_RANDOM_SPAWN:
+				case BUTTON_ID__SET_RANDOM_SPAWN:
 					current_button->SetStatus(BUTTON_STATUS_TRUE, ChangeOption(GAME_RULE_PLAYERS_SPAWN_POSITION_RANDOMIZE));
 					return;
-				case BUTTON_ID_SET_RANDOM_SPAWN_DIRECTION:
+				case BUTTON_ID__SET_RANDOM_SPAWN_DIRECTION:
 					current_button->SetStatus(BUTTON_STATUS_TRUE, ChangeOption(GAME_RULE_PLAYERS_SPAWN_DIRECTION_RANDOMIZE));
 					return;
-				case BUTTON_ID_SET_SPAWN_THIS_BONUS:
+				case BUTTON_ID__SET_SPAWN_THIS_BONUS:
 					option = ChangeOption(GAME_RULE_PLAYERS_SPAWN_THIS_BONUS);
 					current_button->SetStatus(BUTTON_STATUS_TRUE, option);
-					SetStatusToButton(game_p__option_menu, BUTTON_ID_SET_SPAWN_THIS_DIFFERENT_BONUSES, BUTTON_STATUS_ACTIVE, option);
-					SetStatusToButton(game_p__option_menu, BUTTON_ID_GO_TO_SELECT_BONUSES_MENU, BUTTON_STATUS_ACTIVE, option);
-					SetStatusToButton(game_p__option_menu, BUTTON_ID_SET_TRIPLE_BONUSES, BUTTON_STATUS_ACTIVE, option);
+					SetStatusToButton(game_p__option_menu, BUTTON_ID__SET_SPAWN_THIS_DIFFERENT_BONUSES, BUTTON_STATUS_ACTIVE, option);
+					SetStatusToButton(game_p__option_menu, BUTTON_ID__GO_TO_SELECT_BONUSES_MENU, BUTTON_STATUS_ACTIVE, option);
+					SetStatusToButton(game_p__option_menu, BUTTON_ID__SET_TRIPLE_BONUSES, BUTTON_STATUS_ACTIVE, option);
 					return;
-				case BUTTON_ID_SET_SPAWN_THIS_DIFFERENT_BONUSES:
+				case BUTTON_ID__SET_SPAWN_THIS_DIFFERENT_BONUSES:
 					current_button->SetStatus(BUTTON_STATUS_TRUE, ChangeOption(GAME_RULE_PLAYERS_SPAWN_THIS_DIFFERENT_BONUS));
 					return;
-				case BUTTON_ID_SET_TRIPLE_BONUSES:
+				case BUTTON_ID__SET_TRIPLE_BONUSES:
 					current_button->SetStatus(BUTTON_STATUS_TRUE, ChangeOption(GAME_RULE_TRIPLE_BONUSES));
 					return;
-				case BUTTON_ID_SET_SPAWN_THIS_TRIPLE_BAFF:
+				case BUTTON_ID__SET_SPAWN_THIS_TRIPLE_BAFF:
 					current_button->SetStatus(BUTTON_STATUS_TRUE, ChangeOption(GAME_RULE_PLAYERS_SPAWN_THIS_TRIPLE));
 					return;
-				case BUTTON_ID_SET_SPAWN_THIS_SHIELD_BAFF:
+				case BUTTON_ID__SET_SPAWN_THIS_SHIELD_BAFF:
 					current_button->SetStatus(BUTTON_STATUS_TRUE, ChangeOption(GAME_RULE_PLAYERS_SPAWN_THIS_SHIELD));
 					return;
-				case BUTTON_ID_SET_ACTIVE_BALANCE:
+				case BUTTON_ID__SET_ACTIVE_BALANCE:
 					current_button->SetStatus(BUTTON_STATUS_TRUE, ChangeOption(GAME_RULE_BALANCE_ACTIVE));
 					return;
-				case BUTTON_ID_SET_FRIEDLY_SHEEP_CAN_RESTORE:
+				case BUTTON_ID__SET_FRIEDLY_SHEEP_CAN_RESTORE:
 					current_button->SetStatus(BUTTON_STATUS_TRUE, ChangeOption(GAME_RULE_FRIEDNLY_SHEEP_CAN_RESTORE));
 					return;
-				case BUTTON_ID_SET_ACTIVE_FRIENDLY_FIRE:
+				case BUTTON_ID__SET_ACTIVE_FRIENDLY_FIRE:
 					current_button->SetStatus(BUTTON_STATUS_TRUE, ChangeOption(GAME_RULE_FRENDLY_FIRE));
 					return;
-				case BUTTON_ID_SET_NEED_KILL_PILOT:
+				case BUTTON_ID__SET_NEED_KILL_PILOT:
 					option = ChangeOption(GAME_RULE_NEED_KILL_PILOT);
 					current_button->SetStatus(BUTTON_STATUS_TRUE, option);
-					SetStatusToButton(game_p__option_menu, BUTTON_ID_SET_FRIEDLY_SHEEP_CAN_RESTORE, BUTTON_STATUS_ACTIVE, option);
+					SetStatusToButton(game_p__option_menu, BUTTON_ID__SET_FRIEDLY_SHEEP_CAN_RESTORE, BUTTON_STATUS_ACTIVE, option);
 					return;
-				case BUTTON_ID_SET_KNIFES_CAN_DESTROY_BULLETS:
+				case BUTTON_ID__SET_KNIFES_CAN_DESTROY_BULLETS:
 					current_button->SetStatus(BUTTON_STATUS_TRUE, ChangeOption(GAME_RULE_KNIFES_CAN_DESTROY_BULLETS));
 					return;
-				case BUTTON_ID_GO_TO_SELECT_MAP_MENU:
+				case BUTTON_ID__GO_TO_SELECT_MAP_MENU:
 					OpenMapPullSelectMenu();
 					return;
-				case BUTTON_ID_GO_TO_SELECT_BONUSES_MENU:
+				case BUTTON_ID__GO_TO_SELECT_BONUSES_MENU:
 					OpenBonusPullSelectMenu();
 					return;
-				case BUTTON_ID_GO_TO_SELECT_OBJECTS_MENU:
+				case BUTTON_ID__GO_TO_SELECT_OBJECTS_MENU:
 					OpenSpawnObjectsSelectMenu();
 					return;
 				default:
@@ -362,10 +362,10 @@ void MenuFunctions::PauseMenuFunction(Vec2F* clk_pos, uint8_t clk_status)
 				current_button->SetStatus(BUTTON_STATUS_SELECT, false);
 				switch (game_p__pause_menu->current_buttons[i].GetId())
 				{
-				case BUTTON_ID_GO_TO_MAIN_MENU:
+				case BUTTON_ID__GO_TO_MAIN_MENU:
 					EndMatch();
 					return;
-				case BUTTON_ID_RESUME_MATCH:
+				case BUTTON_ID__RESUME_MATCH:
 				default:
 					ResumeRaund();
 					return;
@@ -405,10 +405,10 @@ void MenuFunctions::ShipsSelectMenuFunction(Vec2F* clk_pos, uint8_t clk_status)
 				id = current_button->GetId();
 				switch (id)
 				{
-				case BUTTON_ID_SELECT_SHIP_1:
-				case BUTTON_ID_SELECT_SHIP_2:
-				case BUTTON_ID_SELECT_SHIP_3:
-				case BUTTON_ID_SELECT_SHIP_4:
+				case BUTTON_ID__SELECT_SHIP_1:
+				case BUTTON_ID__SELECT_SHIP_2:
+				case BUTTON_ID__SELECT_SHIP_3:
+				case BUTTON_ID__SELECT_SHIP_4:
 					switch (current_button->status & (BUTTON_STATUS_CUSTOM_RED | BUTTON_STATUS_CUSTOM_GREEN | BUTTON_STATUS_CUSTOM_BLUE | BUTTON_STATUS_CUSTOM_PURPURE))
 					{
 					case BUTTON_STATUS_FALSE:
@@ -438,7 +438,7 @@ void MenuFunctions::ShipsSelectMenuFunction(Vec2F* clk_pos, uint8_t clk_status)
 						//game_p__ships_select_menu->UpdateDefaultButtons();
 						return;
 					}
-				case BUTTON_ID_START_GAME:
+				case BUTTON_ID__START_GAME:
 					for (GameTypes::players_count_t i = 0; i < GAME_PLAYERS_MAX_COUNT; i++)
 					{
 						if  ((*game_p__teams)[i] != SHIPS_SELECT_BUTTONS_NO_TEAM)
@@ -448,7 +448,7 @@ void MenuFunctions::ShipsSelectMenuFunction(Vec2F* clk_pos, uint8_t clk_status)
 							return;
 						}
 					}
-					SelectShip(BUTTON_ID_SELECT_SHIP_1, SHIPS_SELECT_BUTTONS_TEAM_RED);
+					SelectShip(BUTTON_ID__SELECT_SHIP_1, SHIPS_SELECT_BUTTONS_TEAM_RED);
 					game_p__ships_select_menu->current_buttons[0].SetOnlyCustomStatus(BUTTON_STATUS_CUSTOM_RED);
 				default:
 					return;
@@ -484,7 +484,7 @@ void MenuFunctions::MapPullSelectMenuFunction(Vec2F* clk_pos, uint8_t clk_status
 				{
 					return;
 				}
-				EngineTypes::Button::id_t id = game_p__map_pull_select_menu->current_buttons[i].GetId() - BUTTON_ID_SELECT_MAP;
+				EngineTypes::Button::id_t id = game_p__map_pull_select_menu->current_buttons[i].GetId() - BUTTON_ID__SELECT_MAP;
 				if (id < GAME_MAPS_COUNT)
 				{
 					if ((*game_p__map_pull_array)[id])
@@ -529,7 +529,7 @@ void MenuFunctions::SpawnObjectsSelectMenuFunction(Vec2F* clk_pos, uint8_t clk_s
 				{
 					return;
 				}
-				EngineTypes::Button::id_t id = current_button->GetId() - BUTTON_ID_SELECT_OBJECT;
+				EngineTypes::Button::id_t id = current_button->GetId() - BUTTON_ID__SELECT_OBJECT;
 				if (id < GAME_OBJECTS_COUNT)
 				{
 					if ((*game_p__object_pull_array)[id])

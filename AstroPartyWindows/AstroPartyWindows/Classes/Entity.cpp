@@ -175,7 +175,7 @@ Vec2F Entity::GetPosition()
 
 bool Entity::IsCollision(Beam* beam)
 {
-	return beam->Distance(&position) <= radius;
+	return beam->Distance(position) <= radius;
 }
 
 bool Entity::IsCollision(Cyrcle* cyrcle)
@@ -522,9 +522,9 @@ bool DynamicEntity::Collision(Rectangle* rectangle)
 	if ((distance1 = rectangle->UpSide().Distance(&position, &nearest_position1)) < radius)
 	{
 		collision_direction = nearest_position1 - position;
-		force -= collision_direction.ProjectSign(&velocity) / 1.0f;
+		velocity -= collision_direction.ProjectSign(&velocity) / 1.0f;
 		force -= collision_direction * (force_collision_coeffisient / distance1 * radius);
-		force += Vec2F(0.0f, 1.0f).ProjectSign(rectangle_velocity);
+		velocity += Vec2F(0.0f, 1.0f).ProjectSign(rectangle_velocity - velocity);
 
 		return true;
 	}
@@ -532,9 +532,9 @@ bool DynamicEntity::Collision(Rectangle* rectangle)
 	if ((distance1 = rectangle->DownSide().Distance(&position, &nearest_position1)) < radius)
 	{
 		collision_direction = nearest_position1 - position;
-		force -= collision_direction.ProjectSign(&velocity) / 1.0f;
+		velocity -= collision_direction.ProjectSign(&velocity) / 1.0f;
 		force -= collision_direction * (force_collision_coeffisient / distance1 * radius);
-		force += Vec2F(0.0f, -1.0f).ProjectSign(rectangle_velocity);
+		velocity += Vec2F(0.0f, -1.0f).ProjectSign(rectangle_velocity - velocity);
 
 		return true;
 	}
@@ -542,9 +542,9 @@ bool DynamicEntity::Collision(Rectangle* rectangle)
 	if ((distance1 = rectangle->RightSide().Distance(&position, &nearest_position1)) < radius)
 	{
 		collision_direction = nearest_position1 - position;
-		force -= collision_direction.ProjectSign(&velocity) / 1.0f;
+		velocity -= collision_direction.ProjectSign(&velocity) / 1.0f;
 		force -= collision_direction * (force_collision_coeffisient / distance1 * radius);
-		force += Vec2F(1.0f, 0.0f).ProjectSign(rectangle_velocity);
+		velocity += Vec2F(1.0f, 0.0f).ProjectSign(rectangle_velocity - velocity) / 2.0f;
 
 		return true;
 	}
@@ -552,9 +552,9 @@ bool DynamicEntity::Collision(Rectangle* rectangle)
 	if ((distance1 = rectangle->LeftSide().Distance(&position, &nearest_position1)) < radius)
 	{
 		collision_direction = nearest_position1 - position;
-		force -= collision_direction.ProjectSign(&velocity) / 1.0f;
+		velocity -= collision_direction.ProjectSign(&velocity) / 1.0f;
 		force -= collision_direction * (force_collision_coeffisient / distance1 * radius);
-		force += Vec2F(-1.0f, 0.0f).ProjectSign(rectangle_velocity);
+		velocity += Vec2F(-1.0f, 0.0f).ProjectSign(rectangle_velocity - velocity);
 
 		return true;
 	}
@@ -570,9 +570,9 @@ bool DynamicEntity::Collision(Cyrcle* cyrcle)
 	}
 
 	Vec2F collision_direction = cyrcle->Position() - position;
-	force -= collision_direction.Project(&velocity) / 2.0f;
+	velocity -= collision_direction.Project(&velocity) / 2.0f;
 	force -= collision_direction * (force_collision_coeffisient / (distance + radius) * radius) / 10.0f;
-	force += collision_direction.ProjectSign(cyrcle->Velocity());
+	velocity += collision_direction.ProjectSign(cyrcle->Velocity() - velocity);
 	return true;
 }
 
@@ -1951,14 +1951,19 @@ Laser Ship::CreateLaser()
 Knife Ship::CreateKnife(uint8_t knife_number)
 {
 	Segment new_knife_segment;
+	Knife knife;
 	switch (knife_number)
 	{
 	case 0:
 		new_knife_segment = Segment(Vec2F(-0.25f, sqrt(3.0f) / 4.0f), Vec2F(0.75f, 0.0f));
-		return Knife(this, &new_knife_segment);
+		knife = Knife(this, &new_knife_segment);
+		knife.Update();
+		return knife;
 	case 1:
 		new_knife_segment = Segment(Vec2F(-0.25f, sqrt(3.0f) / -4.0f), Vec2F(0.75f, 0.0f));
-		return Knife(this, &new_knife_segment);
+		knife = Knife(this, &new_knife_segment);
+		knife.Update();
+		return knife;
 	default:
 		return Knife();
 	}
@@ -2873,7 +2878,7 @@ Laser::Laser(ControledEntity* host, Beam* local_beam, GameTypes::tic_t shoot_tim
 {
 }
 
-bool Laser::CanShoot()
+bool Laser::IsActive()
 {
 	return shoot_time > 0;
 }
