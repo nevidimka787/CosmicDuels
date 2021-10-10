@@ -387,6 +387,9 @@ public:
 	//"Dynamical"
 	void Event5();
 
+	//"Destroyable"
+	void Event6();
+
 	//"Test"
 	void CreateMap0(Vec2F* ships_positions, float* ships_angles);
 	
@@ -404,6 +407,9 @@ public:
 	
 	//"Dynamical"
 	void CreateMap5(Vec2F* ships_positions, float* ships_angles);
+
+	//"Destryable"
+	void CreateMap6(Vec2F* ships_positions, float* ships_angles);
 
 	//Memory functions
 

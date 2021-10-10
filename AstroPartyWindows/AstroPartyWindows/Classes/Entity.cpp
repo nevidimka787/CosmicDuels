@@ -2997,6 +2997,65 @@ Bullet::Bullet(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t play
 {
 }
 
+bool Bullet::Collision(Map* map)
+{
+	for (EngineTypes::Map::elements_array_length_t element = 0; element < map->rectangles_array_length; element++)
+	{
+		if (Collision(map->GetRectanglePointer(element)))
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+bool Bullet::Collision(Rectangle* rectangle)
+{
+	if (rectangle->exist == false)
+	{
+		return false;
+	}
+	Segment side;
+	side = rectangle->UpSide();
+	if (IsCollision(&side))
+	{
+		if (!rectangle->IsUnbreacable())
+		{
+			rectangle->exist = false;
+		}
+		return true;
+	}
+	side = rectangle->DownSide();
+	if (IsCollision(&side))
+	{
+		if (!rectangle->IsUnbreacable())
+		{
+			rectangle->exist = false;
+		}
+		return true;
+	}
+	side = rectangle->RightSide();
+	if (IsCollision(&side))
+	{
+		if (!rectangle->IsUnbreacable())
+		{
+			rectangle->exist = false;
+		}
+		return true;
+	}
+	side = rectangle->LeftSide();
+	if (IsCollision(&side))
+	{
+		if (!rectangle->IsUnbreacable())
+		{
+			rectangle->exist = false;
+		}
+		return true;
+	}
+	return false;
+
+}
+
 void Bullet::Set(Bullet* bullet)
 {
 	angle = bullet->angle;

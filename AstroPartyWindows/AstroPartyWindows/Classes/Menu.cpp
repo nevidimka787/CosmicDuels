@@ -138,11 +138,11 @@ Button::Button(const Button& button) :
 	}
 }
 
-Button::Button(EngineTypes::Button::id_t id, Vec2F* position, Vec2F* size, Area* area, const char* text, EngineTypes::Button::text_size_t text_size) :
+Button::Button(EngineTypes::Button::id_t id, Vec2F* position, Vec2F* size, Area* area, const char* text, EngineTypes::Button::text_size_t text_size, EngineTypes::Button::status_t status) :
 	id(id), 
 	position(*position), 
 	size(*size),
-	status(BUTTON_STATUS_FALSE),
+	status(status),
 	text_size(text_size)
 {
 	this->area.Set(area);

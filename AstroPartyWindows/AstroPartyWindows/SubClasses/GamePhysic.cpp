@@ -2,6 +2,8 @@
 
 #define M_PI	3.14159265358979323846
 
+
+
 void Game::ShipShoot(Ship* ship)
 {
 	if (ships_can_shoot_flags[ship->GetPlayerNumber()] > 0)
@@ -154,7 +156,7 @@ void Game::ShipShoot_LoopBomb(Ship* ship)
 	bombs_array_mtx.lock();
 	for (GameTypes::entities_count_t bomb = 0; bomb < SHIP_SUPER_BONUS__BOMBS_IN_LOOP; bomb++)
 	{
-		angle = (float)bomb / (float)SHIP_SUPER_BONUS__BOMBS_IN_LOOP * M_PI * 2.0f;
+		angle = (float)bomb / (float)SHIP_SUPER_BONUS__BOMBS_IN_LOOP * (float)M_PI * 2.0f;
 		bomb_velocity = velocity + Vec2F(SHIP_SUPER_BONUS__BOMBS_LOOP_VELOCITY, 0.0f).Rotate(angle);
 		AddEntity(Bomb(&position, &bomb_velocity, ship->GetTeamNumber(), ship->GetTeamNumber()));
 	}
@@ -455,13 +457,12 @@ void Game::UpdateMapPhase2()
 {
 	void* element_pointer;
 	map_data_mtx.lock();
-	for (EngineTypes::Map::elements_array_length_t element = 0, found_elements = 0; found_elements < map.rectangles_array_length; element++)
+	for (EngineTypes::Map::elements_array_length_t element = 0; element < map.rectangles_array_length; element++)
 	{
 		element_pointer = (void*)map.GetRectanglePointer(element);
 		if (((Rectangle*)element_pointer)->exist)
 		{
 			((Rectangle*)element_pointer)->Update();
-			found_elements++;
 		}
 	}
 	map_data_mtx.unlock();
@@ -802,7 +803,7 @@ void Game::BulletsDestroedByMap()
 		if (temp__bullet_p->exist)
 		{
 			map_data_mtx.lock();
-			if (temp__bullet_p->Entity::IsCollision(&map))
+			if (temp__bullet_p->Collision(&map))
 			{
 				map_data_mtx.unlock();
 				RemoveEntity(temp__bullet_p);

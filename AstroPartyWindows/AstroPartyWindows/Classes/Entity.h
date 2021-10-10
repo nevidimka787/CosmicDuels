@@ -897,6 +897,8 @@ public:
 		float radius = BULLET_DEFAULT_RADIUS,
 		float min_velocity = BULLET_DEFAULT_MIN_VELOCITY,
 		bool exist = true);
+	bool Collision(Map* map);
+	bool Collision(Rectangle* rectangle);
 	void Set(Bullet* bullet);
 	void Set(
 		Vec2F* position,

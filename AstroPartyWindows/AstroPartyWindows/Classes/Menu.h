@@ -56,7 +56,8 @@ public:
 		Vec2F* size,
 		Area* area,
 		const char* text = "",
-		EngineTypes::Button::text_size_t text_size = BUTTON_DEFAULT_TEXT_SIZE);
+		EngineTypes::Button::text_size_t text_size = BUTTON_DEFAULT_TEXT_SIZE,
+		EngineTypes::Button::status_t status = BUTTON_STATUS_FALSE);
 
 	EngineTypes::Button::id_t GetId();
 	Vec2F GetPosition();
