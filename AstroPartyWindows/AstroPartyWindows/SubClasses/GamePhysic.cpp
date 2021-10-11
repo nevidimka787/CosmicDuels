@@ -895,11 +895,11 @@ void Game::KnifesDestroyBullets()
 						bullets_array_mtx.unlock();
 						goto end_of_knife_cycle;
 					}
-					found_knifes++;
+					found_bullets++;
 				}
 			}
 			bullets_array_mtx.unlock();
-			found_bullets++;
+			found_knifes++;
 		}
 	end_of_knife_cycle:;
 	}
@@ -908,7 +908,27 @@ void Game::KnifesDestroyBullets()
 
 void Game::KnifesDestroyMap()
 {
+	Knife* temp__knife_p;
 
+	knifes_array_mtx.lock();
+	for (GameTypes::entities_count_t knife = 0, found_knifes = 0; found_knifes < knifes_count; knife++)
+	{
+		temp__knife_p = &knifes[knife];
+		if (temp__knife_p->exist)
+		{
+			map_data_mtx.lock();
+			temp__knife_p->Collision(&map);
+			map_data_mtx.unlock();
+			if (!temp__knife_p->exist)
+			{
+				knifes_count--;
+				goto end_of_knife_cycle;
+			}
+			found_knifes++;
+		}
+	end_of_knife_cycle:;
+	}
+	knifes_array_mtx.unlock();
 }
 
 void Game::KnifesDestroyTurels()
@@ -1135,7 +1155,21 @@ void Game::LasersDestroyKnifes()
 
 void Game::LasersDestroyMap()
 {
+	Laser* temp__laser_p;
 
+	knifes_array_mtx.lock();
+	for (GameTypes::entities_count_t laser = 0, found_lasers = 0; found_lasers < lasers_count; laser++)
+	{
+		temp__laser_p = &lasers[laser];
+		if (temp__laser_p->exist)
+		{
+			map_data_mtx.lock();
+			temp__laser_p->Collision(&map);
+			map_data_mtx.unlock();
+			found_lasers++;
+		}
+	}
+	knifes_array_mtx.unlock();
 }
 
 void Game::LasersDestroyTurels()

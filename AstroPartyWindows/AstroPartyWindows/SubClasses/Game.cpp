@@ -180,7 +180,7 @@ void Game::PhysicThread2()
 
 	BombsCollisionsWithBullets();
 	BombsSpawnedByBulletsAnigilation();
-	//KnifesDestroyMap(); -- not realisated
+	KnifesDestroyMap();
 	LasersDestroyAsteroids();
 	LasersDestroyBullets();
 
@@ -240,7 +240,7 @@ void Game::PhysicThread2()
 void Game::PhysicThread3()
 {
 	KnifesDestroyTurels();
-	//LasersDestroyMap(); -- not added
+	LasersDestroyMap();
 	LasersDestroyTurels();
 	MegaLasersDestroyKnifes();
 	MegaLasersDestroyTurels();

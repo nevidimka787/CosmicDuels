@@ -932,6 +932,10 @@ public:
 		Segment* local_segment,
 		EngineTypes::Knife::knife_health_t health = KNIFE_DEFAULT_HEALTH,
 		bool exist = true);
+	//The function checks collision between knife and all map's elemnts.
+	//If map element is destructable, this element completes existing.
+	//If after collision health of the knife is zero, the function set its parameter "exist" to false.
+	bool Collision(Map* map);
 	Segment GetSegment();
 	void Set(Knife* knife);
 	void Set(
@@ -939,7 +943,8 @@ public:
 		Segment* local_segment,
 		EngineTypes::Knife::knife_health_t health = KNIFE_DEFAULT_HEALTH,
 		bool exist = true);
-	//The function will return false when health is zero.
+	//If health is zero, the function returns false.
+	//Else the function decrements value of health.
 	bool LoseHealth();
 
 	void operator=(Knife knife);
@@ -960,6 +965,9 @@ public:
 		GameTypes::tic_t shoot_time = LASER_DEFAULT_SHOOT_TIME,
 		bool exist = true);
 
+	//The function checks collision between knife and all map's elemnts.
+	//If map element is destructable, this element completes existing.
+	bool Collision(Map* map);
 	bool IsActive();
 	bool CreatedBy(ControledEntity* controled_entity);
 	Beam GetBeam();

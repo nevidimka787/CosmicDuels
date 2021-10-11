@@ -85,6 +85,9 @@ public:
 	Segment DownSide() const;
 	Segment RightSide() const;
 	Segment LeftSide() const;
+	bool IsCollision(const Beam* beam);
+	bool IsCollision(const Line* line);
+	bool IsCollision(const Segment* segment);
 	void Move(Vec2F move_vector);
 	void Move(const Vec2F* move_vector);
 	//set point2 as down left point and point1 as up right point
@@ -123,6 +126,9 @@ public:
 		bool unbreakable = true,
 		bool exist = true);
 
+	bool IsCollision(const Beam* beam);
+	bool IsCollision(const Line* line);
+	bool IsCollision(const Segment* segment);
 	float Radius();
 	void SetRadius(float radius);
 	void Set(const Cyrcle* cyrcle);
@@ -169,6 +175,9 @@ public:
 		bool unbreakable = true,
 		bool exist = true);
 
+	bool IsCollision(const Beam* beam);
+	bool IsCollision(const Line* line);
+	bool IsCollision(const Segment* segment);
 	void RotateGlobal(float angle, Vec2F global_rotating_point);
 	void RotateGlobal(float angle, const Vec2F* global_rotating_point);
 	void RotateLocal(float angle, Vec2F local_rotating_point);

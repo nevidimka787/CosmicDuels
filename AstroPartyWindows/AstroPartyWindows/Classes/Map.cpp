@@ -188,6 +188,69 @@ Segment Rectangle::LeftSide() const
 	return Segment(&temp, &point2, true);
 }
 
+bool Rectangle::IsCollision(const Beam* beam)
+{
+	if (UpSide().IsIntersection(beam))
+	{
+		return true;
+	}
+	if (RightSide().IsIntersection(beam))
+	{
+		return true;
+	}
+	if (DownSide().IsIntersection(beam))
+	{
+		return true;
+	}
+	if (LeftSide().IsIntersection(beam))
+	{
+		return true;
+	}
+	return false;
+}
+
+bool Rectangle::IsCollision(const Line* line)
+{
+	if (UpSide().IsIntersection(line))
+	{
+		return true;
+	}
+	if (RightSide().IsIntersection(line))
+	{
+		return true;
+	}
+	if (DownSide().IsIntersection(line))
+	{
+		return true;
+	}
+	if (LeftSide().IsIntersection(line))
+	{
+		return true;
+	}
+	return false;
+}
+
+bool Rectangle::IsCollision(const Segment* segment)
+{
+	if (UpSide().IsIntersection(segment))
+	{
+		return true;
+	}
+	if (RightSide().IsIntersection(segment))
+	{
+		return true;
+	}
+	if (DownSide().IsIntersection(segment))
+	{
+		return true;
+	}
+	if (LeftSide().IsIntersection(segment))
+	{
+		return true;
+	}
+	return false;
+}
+
 void Rectangle::Move(Vec2F move_vector)
 {
 	MapElement::Move(move_vector);
@@ -341,6 +404,21 @@ Cyrcle::Cyrcle(const Vec2F* position, float radius, bool unbreakable, bool exist
 {
 }
 
+bool Cyrcle::IsCollision(const Beam* beam)
+{
+	return beam->Distance(position) < radius;
+}
+
+bool Cyrcle::IsCollision(const Line* line)
+{
+	return line->Distance(position) < radius;
+}
+
+bool Cyrcle::IsCollision(const Segment* segment)
+{
+	return segment->Distance(position) < radius;
+}
+
 float Cyrcle::Radius()
 {
 	return radius;
@@ -438,6 +516,21 @@ Polygon::Polygon(const Vec2F* position, const Vec2F* points_array, EngineTypes::
 		default_points_array[i] = points_array[i];
 		this->points_array[i] = default_points_array[i] + *position;
 	}
+}
+
+bool Polygon::IsCollision(const Beam* beam)
+{
+	return false;
+}
+
+bool Polygon::IsCollision(const Line* line)
+{
+	return false;
+}
+
+bool Polygon::IsCollision(const Segment* segment)
+{
+	return false;
 }
 
 void Polygon::RotateGlobal(float angle, Vec2F global_rotating_point)

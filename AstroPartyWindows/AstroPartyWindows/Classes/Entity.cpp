@@ -518,6 +518,7 @@ bool DynamicEntity::Collision(Rectangle* rectangle)
 	Vec2F collision_direction;
 	Vec2F rectangle_velocity = rectangle->Velocity();
 	float distance1;
+	bool collision = false;
 
 	if ((distance1 = rectangle->UpSide().Distance(&position, &nearest_position1)) < radius)
 	{
@@ -526,7 +527,7 @@ bool DynamicEntity::Collision(Rectangle* rectangle)
 		force -= collision_direction * (force_collision_coeffisient / distance1 * radius);
 		velocity += Vec2F(0.0f, 1.0f).ProjectSign(rectangle_velocity - velocity);
 
-		return true;
+		collision = true;
 	}
 
 	if ((distance1 = rectangle->DownSide().Distance(&position, &nearest_position1)) < radius)
@@ -536,7 +537,7 @@ bool DynamicEntity::Collision(Rectangle* rectangle)
 		force -= collision_direction * (force_collision_coeffisient / distance1 * radius);
 		velocity += Vec2F(0.0f, -1.0f).ProjectSign(rectangle_velocity - velocity);
 
-		return true;
+		collision = true;
 	}
 
 	if ((distance1 = rectangle->RightSide().Distance(&position, &nearest_position1)) < radius)
@@ -546,7 +547,7 @@ bool DynamicEntity::Collision(Rectangle* rectangle)
 		force -= collision_direction * (force_collision_coeffisient / distance1 * radius);
 		velocity += Vec2F(1.0f, 0.0f).ProjectSign(rectangle_velocity - velocity) / 2.0f;
 
-		return true;
+		collision = true;
 	}
 
 	if ((distance1 = rectangle->LeftSide().Distance(&position, &nearest_position1)) < radius)
@@ -556,9 +557,9 @@ bool DynamicEntity::Collision(Rectangle* rectangle)
 		force -= collision_direction * (force_collision_coeffisient / distance1 * radius);
 		velocity += Vec2F(-1.0f, 0.0f).ProjectSign(rectangle_velocity - velocity);
 
-		return true;
+		collision = true;
 	}
-	return false;
+	return collision;
 }
 
 bool DynamicEntity::Collision(Cyrcle* cyrcle)
@@ -2878,6 +2879,51 @@ Laser::Laser(ControledEntity* host, Beam* local_beam, GameTypes::tic_t shoot_tim
 {
 }
 
+bool Laser::Collision(Map* map)
+{
+	Beam beam = GetBeam();
+	bool collision = false;
+	void* element_p;
+	EngineTypes::Map::elements_array_length_t element;
+
+	for (element = 0; element < map->cyrcles_array_length; element++)
+	{
+		element_p = (void*)map->GetCyrclePointer(element);
+		if (((Cyrcle*)element_p)->exist &&
+			!((Cyrcle*)element_p)->IsUnbreacable() &&
+			((Cyrcle*)element_p)->IsCollision(&beam))
+		{
+			((Cyrcle*)element_p)->exist = false;
+			collision = true;
+		}
+	}
+
+	for (EngineTypes::Map::elements_array_length_t element = 0; element < map->polygons_array_length; element++)
+	{
+		element_p = (void*)map->GetPolygonPointer(element);
+		if (((Polygon*)element_p)->exist &&
+			!((Polygon*)element_p)->IsUnbreacable() &&
+			((Polygon*)element_p)->IsCollision(&beam))
+		{
+			((Polygon*)element_p)->exist = false;
+			collision = true;
+		}
+	}
+
+	for (EngineTypes::Map::elements_array_length_t element = 0; element < map->rectangles_array_length; element++)
+	{
+		element_p = (void*)map->GetRectanglePointer(element);
+		if (((Rectangle*)element_p)->exist &&
+			!((Rectangle*)element_p)->IsUnbreacable() &&
+			((Rectangle*)element_p)->IsCollision(&beam))
+		{
+			((Rectangle*)element_p)->exist = false;
+			collision = true;
+		}
+	}
+	return collision;
+}
+
 bool Laser::IsActive()
 {
 	return shoot_time > 0;
@@ -3140,6 +3186,74 @@ Knife::Knife(ControledEntity* host, Segment* local_segment, EngineTypes::Knife::
 	SupportEntity(host, &local_segment->point, local_segment->vector.Length(), local_segment->vector.AbsoluteAngle(), exist),
 	health(health)
 {
+}
+
+bool Knife::Collision(Map* map)
+{
+	if (health == 0)
+	{
+		exist = false;
+		return false;
+	}
+	Segment segment = GetSegment();
+	bool collision = false;
+	void* element_p;
+	EngineTypes::Map::elements_array_length_t element;
+
+	for (element = 0; element < map->cyrcles_array_length; element++)
+	{
+		element_p = (void*)map->GetCyrclePointer(element);
+		if (((Cyrcle*)element_p)->exist &&
+			!((Cyrcle*)element_p)->IsUnbreacable() &&
+			((Cyrcle*)element_p)->IsCollision(&segment))
+		{
+			((Cyrcle*)element_p)->exist = false;
+			health--;
+			if (health == 0)
+			{
+				exist = false;
+				return true;
+			}
+			collision = true;
+		}
+	}
+
+	for (EngineTypes::Map::elements_array_length_t element = 0; element < map->polygons_array_length; element++)
+	{
+		element_p = (void*)map->GetPolygonPointer(element);
+		if (((Polygon*)element_p)->exist &&
+			!((Polygon*)element_p)->IsUnbreacable() &&
+			((Polygon*)element_p)->IsCollision(&segment))
+		{
+			((Polygon*)element_p)->exist = false;
+			health--;
+			if (health == 0)
+			{
+				exist = false;
+				return true;
+			}
+			collision = true;
+		}
+	}
+
+	for (EngineTypes::Map::elements_array_length_t element = 0; element < map->rectangles_array_length; element++)
+	{
+		element_p = (void*)map->GetRectanglePointer(element);
+		if (((Rectangle*)element_p)->exist &&
+			!((Rectangle*)element_p)->IsUnbreacable() &&
+			((Rectangle*)element_p)->IsCollision(&segment))
+		{
+			((Rectangle*)element_p)->exist = false;
+			health--;
+			if (health == 0)
+			{
+				exist = false;
+				return true;
+			}
+			collision = true;
+		}
+	}
+	return collision;
 }
 
 Segment Knife::GetSegment()
