@@ -18,21 +18,22 @@ class MapElement
 protected:
 	Vec2F position;
 	Vec2F last_position;
-	bool unbreakable;
+	EngineTypes::Map::property_t properties;
 public:
 	bool exist;
 	MapElement();
 	MapElement(const MapElement& map_element);
 	MapElement(
 		Vec2F position,
-		bool unbreakable = true,
+		EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
 		bool exist = true);
 	MapElement(
 		const Vec2F* position,
-		bool unbreakable = true,
+		EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
 		bool exist = true);
 
 	Vec2F Position();
+	EngineTypes::Map::property_t Prorerties();
 	Vec2F Velocity();
 	bool IsUnbreacable();
 	void Move(Vec2F move_vector);
@@ -43,11 +44,11 @@ public:
 	void Set(const MapElement* map_element);
 	void Set(
 		Vec2F position,
-		bool unbreakable = true,
+		EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
 		bool exist = true);
 	void Set(
 		const Vec2F* position,
-		bool unbreakable = true,
+		EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
 		bool exist = true);
 	void operator=(MapElement map_element);
 
@@ -60,12 +61,12 @@ private:
 	Rectangle(
 		Vec2F point1, 
 		Vec2F point2,
-		bool unbreakable = true,
+		EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
 		bool exist = true);
 	Rectangle(
 		const Vec2F* point1,
 		const Vec2F* point2,
-		bool unbreakable = true,
+		EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
 		bool exist = true);
 protected:
 	Vec2F point2;//down left point
@@ -74,7 +75,7 @@ public:
 	Rectangle(const Rectangle& rectangle);
 	Rectangle(
 		const Segment* diagonal,
-		bool unbreakable = true,
+		EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
 		bool exist = true);
 
 	Vec2F UpRightPoint() const;
@@ -98,7 +99,7 @@ public:
 	void Set(const Rectangle* patent);
 	void Set(
 		const Segment* diagonal,
-		bool unbreakable = true,
+		EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
 		bool exist = true);
 	void SetPosition(Vec2F position);
 	void SetPosition(const Vec2F* position);
@@ -118,12 +119,12 @@ public:
 	Cyrcle(
 		Vec2F position,
 		float radius = CYRCLE_DEFAULT_RADIUS,
-		bool unbreakable = true,
+		EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
 		bool exist = true);
 	Cyrcle(
 		const Vec2F* position,
 		float radius = CYRCLE_DEFAULT_RADIUS,
-		bool unbreakable = true,
+		EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
 		bool exist = true);
 
 	bool IsCollision(const Beam* beam);
@@ -135,12 +136,12 @@ public:
 	void Set(
 		Vec2F position,
 		float radius = CYRCLE_DEFAULT_RADIUS,
-		bool unbreakable = true,
+		EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
 		bool exist = true);
 	void Set(
 		const Vec2F* position,
 		float radius = CYRCLE_DEFAULT_RADIUS,
-		bool unbreakable = true,
+		EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
 		bool exist = true);
 
 	void operator=(Cyrcle cyrcle);
@@ -166,13 +167,13 @@ public:
 		Vec2F position,
 		const Vec2F* points_array,
 		EngineTypes::Polygon::points_array_length_t points_array_length,
-		bool unbreakable = true,
+		EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
 		bool exist = true);
 	Polygon(
 		const Vec2F* position,
 		const Vec2F* points_array,
 		EngineTypes::Polygon::points_array_length_t points_array_length,
-		bool unbreakable = true,
+		EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
 		bool exist = true);
 
 	bool IsCollision(const Beam* beam);
@@ -190,13 +191,13 @@ public:
 		Vec2F position,
 		const Vec2F* points_array,
 		EngineTypes::Polygon::points_array_length_t points_array_length,
-		bool unbreakable = true,
+		EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
 		bool exist = true);
 	void Set(
 		const Vec2F* position,
 		const Vec2F* points_array,
 		EngineTypes::Polygon::points_array_length_t points_array_length,
-		bool unbreakable = true,
+		EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
 		bool exist = true);
 
 	void operator=(Polygon polygon)
@@ -215,33 +216,33 @@ protected:
 	Polygon* polygons_array;
 
 public:
-	EngineTypes::Map::elements_array_length_t rectangles_array_length;
-	EngineTypes::Map::elements_array_length_t cyrcles_array_length;
-	EngineTypes::Map::elements_array_length_t polygons_array_length;
+	EngineTypes::Map::array_length_t rectangles_array_length;
+	EngineTypes::Map::array_length_t cyrcles_array_length;
+	EngineTypes::Map::array_length_t polygons_array_length;
 
 	Map(const Map& map);
 	Map(
 		const Rectangle* rectangles_array = nullptr,
-		EngineTypes::Map::elements_array_length_t rectangles_array_length = 0,
+		EngineTypes::Map::array_length_t rectangles_array_length = 0,
 		const Cyrcle* cyrcles_array = nullptr,
-		EngineTypes::Map::elements_array_length_t cyrcles_array_length = 0,
+		EngineTypes::Map::array_length_t cyrcles_array_length = 0,
 		const Polygon* polygons_array = nullptr,
-		EngineTypes::Map::elements_array_length_t polygons_array_length = 0);
+		EngineTypes::Map::array_length_t polygons_array_length = 0);
 
-	Rectangle GetRectangle(EngineTypes::Map::elements_array_length_t number);
-	Cyrcle GetCyrcle(EngineTypes::Map::elements_array_length_t number);
-	Polygon GetPolygon(EngineTypes::Map::elements_array_length_t number);
-	Rectangle* GetRectanglePointer(EngineTypes::Map::elements_array_length_t number);
-	Cyrcle* GetCyrclePointer(EngineTypes::Map::elements_array_length_t number);
-	Polygon* GetPolygonPointer(EngineTypes::Map::elements_array_length_t number);
+	Rectangle GetRectangle(EngineTypes::Map::array_length_t number);
+	Cyrcle GetCyrcle(EngineTypes::Map::array_length_t number);
+	Polygon GetPolygon(EngineTypes::Map::array_length_t number);
+	Rectangle* GetRectanglePointer(EngineTypes::Map::array_length_t number);
+	Cyrcle* GetCyrclePointer(EngineTypes::Map::array_length_t number);
+	Polygon* GetPolygonPointer(EngineTypes::Map::array_length_t number);
 	void Set(const Map* map);
 	void Set(
 		const Rectangle* rectangles_array = nullptr,
-		EngineTypes::Map::elements_array_length_t rectangles_array_length = 0,
+		EngineTypes::Map::array_length_t rectangles_array_length = 0,
 		const Cyrcle* cyrcles_array = nullptr,
-		EngineTypes::Map::elements_array_length_t cyrcles_array_length = 0,
+		EngineTypes::Map::array_length_t cyrcles_array_length = 0,
 		const Polygon* polygons_array = nullptr,
-		EngineTypes::Map::elements_array_length_t polygons_array_length = 0);
+		EngineTypes::Map::array_length_t polygons_array_length = 0);
 
 	~Map();
 };

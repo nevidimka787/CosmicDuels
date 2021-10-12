@@ -4,8 +4,8 @@
 #pragma warning(disable : 6385)
 
 MapElement::MapElement() :
-	unbreakable(true),
-	exist(true)
+	exist(true),
+	properties(MAP_DEFAULT_PROPERTIES)
 {
 }
 
@@ -13,29 +13,34 @@ MapElement::MapElement(const MapElement& map_element) :
 	exist(map_element.exist),
 	position(map_element.position),
 	last_position(map_element.last_position),
-	unbreakable(map_element.unbreakable)
+	properties(MAP_DEFAULT_PROPERTIES)
 {
 }
 
-MapElement::MapElement(Vec2F position, bool unbreakable, bool exist) :
+MapElement::MapElement(Vec2F position, EngineTypes::Map::property_t properties, bool exist) :
 	position(position),
 	exist(exist),
 	last_position(position),
-	unbreakable(unbreakable)
+	properties(properties)
 {
 }
 
-MapElement::MapElement(const Vec2F* position, bool unbreakable, bool exist) :
+MapElement::MapElement(const Vec2F* position, EngineTypes::Map::property_t properties, bool exist) :
 	position(*position),
 	exist(exist),
 	last_position(*position),
-	unbreakable(unbreakable)
+	properties(properties)
 {
 }
 
 Vec2F MapElement::Position()
 {
 	return position;
+}
+
+EngineTypes::Map::property_t MapElement::Prorerties()
+{
+	return properties;
 }
 
 Vec2F MapElement::Velocity()
@@ -45,7 +50,7 @@ Vec2F MapElement::Velocity()
 
 bool MapElement::IsUnbreacable()
 {
-	return unbreakable;
+	return properties & MAP_PROPERTY_UNBREACABLE;
 }
 
 void MapElement::Move(Vec2F move_vector)
@@ -68,21 +73,21 @@ void MapElement::Set(const MapElement* map_element)
 	exist = map_element->exist;
 	position = map_element->position;
 	last_position = map_element->last_position;
-	unbreakable = map_element->unbreakable;
+	properties = map_element->properties;
 }
 
-void MapElement::Set(Vec2F position, bool unbreakable, bool exist)
+void MapElement::Set(Vec2F position, EngineTypes::Map::property_t properties, bool exist)
 {
 	this->exist = exist;
 	this->position = position;
-	this->unbreakable = unbreakable;
+	this->properties = properties;
 }
 
-void MapElement::Set(const Vec2F* position, bool unbreakable, bool exist)
+void MapElement::Set(const Vec2F* position, EngineTypes::Map::property_t properties, bool exist)
 {
 	this->exist = exist;
 	this->position = *position;
-	this->unbreakable = unbreakable;
+	this->properties = properties;
 }
 
 void MapElement::SetPosition(Vec2F position)
@@ -100,7 +105,7 @@ void MapElement::operator=(MapElement map_element)
 	exist = map_element.exist;
 	position = map_element.position;
 	last_position = map_element.last_position;
-	unbreakable = map_element.unbreakable;
+	properties = map_element.properties;
 }
 
 MapElement::~MapElement()
@@ -120,21 +125,21 @@ Rectangle::Rectangle(const Rectangle& rectangle) :
 {
 }
 
-Rectangle::Rectangle(const Segment* diagonal, bool unbreakable, bool exist) :
-	MapElement(&diagonal->point, unbreakable, exist),
+Rectangle::Rectangle(const Segment* diagonal, EngineTypes::Map::property_t properties, bool exist) :
+	MapElement(&diagonal->point, properties, exist),
 	point2(diagonal->point + diagonal->vector)
 {
 }
 
-Rectangle::Rectangle(Vec2F point1, Vec2F point2, bool unbreakable, bool exist):
-	MapElement(point1, unbreakable, exist),
+Rectangle::Rectangle(Vec2F point1, Vec2F point2, EngineTypes::Map::property_t properties, bool exist):
+	MapElement(point1, properties, exist),
 	point2(point2)
 {
 
 }
 
-Rectangle::Rectangle(const Vec2F* point1, const Vec2F* point2, bool unbreakable, bool exist) :
-	MapElement(point1, unbreakable, exist),
+Rectangle::Rectangle(const Vec2F* point1, const Vec2F* point2, EngineTypes::Map::property_t properties, bool exist) :
+	MapElement(point1, properties, exist),
 	point2(*point2)
 {
 
@@ -334,15 +339,15 @@ void Rectangle::Set(const Rectangle* rectangle)
 	last_position = rectangle->last_position;
 	point2 = rectangle->point2;
 	position = rectangle->position;
-	unbreakable = rectangle->unbreakable;
+	properties = rectangle->properties;
 }
 
-void Rectangle::Set(const Segment* diagonal, bool unbreakable, bool exist)
+void Rectangle::Set(const Segment* diagonal, EngineTypes::Map::property_t properties, bool exist)
 {
 	this->exist = exist;
 	this->point2 = diagonal->point + diagonal->vector;
 	this->position = diagonal->point;
-	this->unbreakable = unbreakable;
+	this->properties = properties;
 }
 
 void Rectangle::SetPosition(Vec2F position)
@@ -392,14 +397,14 @@ Cyrcle::Cyrcle(const Cyrcle& cyrcle) :
 {
 }
 
-Cyrcle::Cyrcle(Vec2F position, float radius, bool unbreakable, bool exist) :
-	MapElement(position, unbreakable, exist),
+Cyrcle::Cyrcle(Vec2F position, float radius, EngineTypes::Map::property_t properties, bool exist) :
+	MapElement(position, properties, exist),
 	radius(radius)
 {
 }
 
-Cyrcle::Cyrcle(const Vec2F* position, float radius, bool unbreakable, bool exist) :
-	MapElement(position, unbreakable, exist),
+Cyrcle::Cyrcle(const Vec2F* position, float radius, EngineTypes::Map::property_t properties, bool exist) :
+	MapElement(position, properties, exist),
 	radius(radius)
 {
 }
@@ -435,23 +440,23 @@ void Cyrcle::Set(const Cyrcle* cyrcle)
 	last_position = cyrcle->last_position;
 	position = cyrcle->position;
 	radius = cyrcle->radius;
-	unbreakable = cyrcle->unbreakable;
+	properties = cyrcle->properties;
 }
 
-void Cyrcle::Set(Vec2F position, float radius, bool unbreakable, bool exist)
+void Cyrcle::Set(Vec2F position, float radius, EngineTypes::Map::property_t properties, bool exist)
 {
 	this->exist = exist;
 	this->position = position;
 	this->radius = radius;
-	this->unbreakable = unbreakable;
+	this->properties = properties;
 }
 
-void Cyrcle::Set(const Vec2F* position, float radius, bool unbreakable, bool exist)
+void Cyrcle::Set(const Vec2F* position, float radius, EngineTypes::Map::property_t properties, bool exist)
 {
 	this->exist = exist;
 	this->position = *position;
 	this->radius = radius;
-	this->unbreakable = unbreakable;
+	this->properties = properties;
 }
 
 void Cyrcle::operator=(Cyrcle cyrcle)
@@ -460,7 +465,7 @@ void Cyrcle::operator=(Cyrcle cyrcle)
 	last_position = cyrcle.last_position;
 	position = cyrcle.position;
 	radius = cyrcle.radius;
-	unbreakable = cyrcle.unbreakable;
+	properties = cyrcle.properties;
 }
 
 Cyrcle::~Cyrcle()
@@ -492,8 +497,8 @@ Polygon::Polygon(const Polygon& polygon) :
 	}
 }
 
-Polygon::Polygon(Vec2F position, const Vec2F* points_array, EngineTypes::Polygon::points_array_length_t points_array_length, bool unbreakable, bool exist) :
-	MapElement(position, unbreakable, exist),
+Polygon::Polygon(Vec2F position, const Vec2F* points_array, EngineTypes::Polygon::points_array_length_t points_array_length, EngineTypes::Map::property_t properties, bool exist) :
+	MapElement(position, properties, exist),
 	points_array_length(points_array_length),
 	default_points_array(new Vec2F[points_array_length]),
 	points_array(new Vec2F[points_array_length])
@@ -505,8 +510,8 @@ Polygon::Polygon(Vec2F position, const Vec2F* points_array, EngineTypes::Polygon
 	}
 }
 
-Polygon::Polygon(const Vec2F* position, const Vec2F* points_array, EngineTypes::Polygon::points_array_length_t points_array_length, bool unbreakable, bool exist) :
-	MapElement(position, unbreakable, exist),
+Polygon::Polygon(const Vec2F* position, const Vec2F* points_array, EngineTypes::Polygon::points_array_length_t points_array_length, EngineTypes::Map::property_t properties, bool exist) :
+	MapElement(position, properties, exist),
 	points_array_length(points_array_length),
 	default_points_array(new Vec2F[points_array_length]),
 	points_array(new Vec2F[points_array_length])
@@ -628,7 +633,7 @@ void Polygon::Set(const Polygon* parent)
 	points_array = new Vec2F[points_array_length];
 	points_array_length = parent->points_array_length;
 	position = parent->position;
-	unbreakable = parent->unbreakable;
+	properties = parent->properties;
 
 	for (uint32_t i = 1; i < points_array_length; i++)
 	{
@@ -637,7 +642,7 @@ void Polygon::Set(const Polygon* parent)
 	}
 }
 
-void Polygon::Set(Vec2F position, const Vec2F* points_array, EngineTypes::Polygon::points_array_length_t points_array_length, bool unbreakable, bool exist)
+void Polygon::Set(Vec2F position, const Vec2F* points_array, EngineTypes::Polygon::points_array_length_t points_array_length, EngineTypes::Map::property_t properties, bool exist)
 {
 	delete[] this->points_array;
 	delete[] default_points_array;
@@ -647,7 +652,7 @@ void Polygon::Set(Vec2F position, const Vec2F* points_array, EngineTypes::Polygo
 	this->points_array = new Vec2F[points_array_length];
 	this->points_array_length = points_array_length;
 	this->position = position;
-	this->unbreakable = unbreakable;
+	this->properties = properties;
 
 	for (uint32_t i = 1; i < points_array_length; i++)
 	{
@@ -656,7 +661,7 @@ void Polygon::Set(Vec2F position, const Vec2F* points_array, EngineTypes::Polygo
 	}
 }
 
-void Polygon::Set(const Vec2F* position, const Vec2F* points_array, EngineTypes::Polygon::points_array_length_t points_array_length, bool unbreakable, bool exist)
+void Polygon::Set(const Vec2F* position, const Vec2F* points_array, EngineTypes::Polygon::points_array_length_t points_array_length, EngineTypes::Map::property_t properties, bool exist)
 {
 	delete[] this->points_array;
 	delete[] default_points_array;
@@ -666,7 +671,7 @@ void Polygon::Set(const Vec2F* position, const Vec2F* points_array, EngineTypes:
 	this->points_array = new Vec2F[points_array_length];
 	this->points_array_length = points_array_length;
 	this->position = *position;
-	this->unbreakable = unbreakable;
+	this->properties = properties;
 
 	for (uint32_t i = 1; i < points_array_length; i++)
 	{
@@ -691,7 +696,7 @@ Map::Map(const Map& map) :
 	if (cyrcles_array_length > 0)
 	{
 		cyrcles_array = new Cyrcle[cyrcles_array_length];
-		for (EngineTypes::Map::elements_array_length_t i = 0; i < cyrcles_array_length; i++)
+		for (EngineTypes::Map::array_length_t i = 0; i < cyrcles_array_length; i++)
 		{
 			cyrcles_array[i] = map.cyrcles_array[i];
 		}
@@ -703,7 +708,7 @@ Map::Map(const Map& map) :
 	if (polygons_array_length > 0)
 	{
 		polygons_array = new Polygon[polygons_array_length];
-		for (EngineTypes::Map::elements_array_length_t i = 0; i < polygons_array_length; i++)
+		for (EngineTypes::Map::array_length_t i = 0; i < polygons_array_length; i++)
 		{
 			polygons_array[i] = map.polygons_array[i];
 		}
@@ -715,7 +720,7 @@ Map::Map(const Map& map) :
 	if (rectangles_array_length > 0)
 	{
 		rectangles_array = new Rectangle[rectangles_array_length];
-		for (EngineTypes::Map::elements_array_length_t i = 0; i < rectangles_array_length; i++)
+		for (EngineTypes::Map::array_length_t i = 0; i < rectangles_array_length; i++)
 		{
 			rectangles_array[i] = map.rectangles_array[i];
 		}
@@ -726,7 +731,7 @@ Map::Map(const Map& map) :
 	}
 }
 
-Map::Map(const Rectangle* rectangles_array, EngineTypes::Map::elements_array_length_t rectangles_array_length, const Cyrcle* cyrcles_array, EngineTypes::Map::elements_array_length_t cyrcles_array_length, const Polygon* polygons_array, EngineTypes::Map::elements_array_length_t polygons_array_length) :
+Map::Map(const Rectangle* rectangles_array, EngineTypes::Map::array_length_t rectangles_array_length, const Cyrcle* cyrcles_array, EngineTypes::Map::array_length_t cyrcles_array_length, const Polygon* polygons_array, EngineTypes::Map::array_length_t polygons_array_length) :
 	cyrcles_array_length(cyrcles_array_length),
 	polygons_array_length(polygons_array_length),
 	rectangles_array_length(rectangles_array_length)
@@ -734,7 +739,7 @@ Map::Map(const Rectangle* rectangles_array, EngineTypes::Map::elements_array_len
 	if (cyrcles_array_length > 0)
 	{
 		this->cyrcles_array = new Cyrcle[cyrcles_array_length];
-		for (EngineTypes::Map::elements_array_length_t i = 0; i < cyrcles_array_length; i++)
+		for (EngineTypes::Map::array_length_t i = 0; i < cyrcles_array_length; i++)
 		{
 			this->cyrcles_array[i].Set(&cyrcles_array[i]);
 		}
@@ -747,7 +752,7 @@ Map::Map(const Rectangle* rectangles_array, EngineTypes::Map::elements_array_len
 	if (polygons_array_length > 0)
 	{
 		this->polygons_array = new Polygon[polygons_array_length];
-		for (EngineTypes::Map::elements_array_length_t i = 0; i < polygons_array_length; i++)
+		for (EngineTypes::Map::array_length_t i = 0; i < polygons_array_length; i++)
 		{
 			this->polygons_array[i].Set(&polygons_array[i]);
 		}
@@ -760,7 +765,7 @@ Map::Map(const Rectangle* rectangles_array, EngineTypes::Map::elements_array_len
 	if (rectangles_array_length > 0)
 	{
 		this->rectangles_array = new Rectangle[rectangles_array_length];
-		for (EngineTypes::Map::elements_array_length_t i = 0; i < rectangles_array_length; i++)
+		for (EngineTypes::Map::array_length_t i = 0; i < rectangles_array_length; i++)
 		{
 			this->rectangles_array[i].Set(&rectangles_array[i]);
 		}
@@ -771,7 +776,7 @@ Map::Map(const Rectangle* rectangles_array, EngineTypes::Map::elements_array_len
 	}
 }
 
-Rectangle Map::GetRectangle(EngineTypes::Map::elements_array_length_t number)
+Rectangle Map::GetRectangle(EngineTypes::Map::array_length_t number)
 {
 	if (number >= rectangles_array_length)
 	{
@@ -780,7 +785,7 @@ Rectangle Map::GetRectangle(EngineTypes::Map::elements_array_length_t number)
 	return rectangles_array[number];
 }
 
-Cyrcle Map::GetCyrcle(EngineTypes::Map::elements_array_length_t number)
+Cyrcle Map::GetCyrcle(EngineTypes::Map::array_length_t number)
 {
 	if (number >= cyrcles_array_length)
 	{
@@ -789,7 +794,7 @@ Cyrcle Map::GetCyrcle(EngineTypes::Map::elements_array_length_t number)
 	return cyrcles_array[number];
 }
 
-Polygon Map::GetPolygon(EngineTypes::Map::elements_array_length_t number)
+Polygon Map::GetPolygon(EngineTypes::Map::array_length_t number)
 {
 	if (number >= polygons_array_length)
 	{
@@ -798,7 +803,7 @@ Polygon Map::GetPolygon(EngineTypes::Map::elements_array_length_t number)
 	return polygons_array[number];
 }
 
-Rectangle* Map::GetRectanglePointer(EngineTypes::Map::elements_array_length_t number)
+Rectangle* Map::GetRectanglePointer(EngineTypes::Map::array_length_t number)
 {
 	if (number >= rectangles_array_length)
 	{
@@ -807,7 +812,7 @@ Rectangle* Map::GetRectanglePointer(EngineTypes::Map::elements_array_length_t nu
 	return &rectangles_array[number];
 }
 
-Cyrcle* Map::GetCyrclePointer(EngineTypes::Map::elements_array_length_t number)
+Cyrcle* Map::GetCyrclePointer(EngineTypes::Map::array_length_t number)
 {
 	if (number >= cyrcles_array_length)
 	{
@@ -816,7 +821,7 @@ Cyrcle* Map::GetCyrclePointer(EngineTypes::Map::elements_array_length_t number)
 	return &cyrcles_array[number];
 }
 
-Polygon* Map::GetPolygonPointer(EngineTypes::Map::elements_array_length_t number)
+Polygon* Map::GetPolygonPointer(EngineTypes::Map::array_length_t number)
 {
 	if (number >= polygons_array_length)
 	{
@@ -850,7 +855,7 @@ void Map::Set(const Map* map)
 	if (cyrcles_array_length > 0)
 	{
 		this->cyrcles_array = new Cyrcle[cyrcles_array_length];
-		for (EngineTypes::Map::elements_array_length_t i = 0; i < cyrcles_array_length; i++)
+		for (EngineTypes::Map::array_length_t i = 0; i < cyrcles_array_length; i++)
 		{
 			cyrcles_array[i].Set(&map->cyrcles_array[i]);
 		}
@@ -859,7 +864,7 @@ void Map::Set(const Map* map)
 	if (polygons_array_length > 0)
 	{
 		this->polygons_array = new Polygon[polygons_array_length];
-		for (EngineTypes::Map::elements_array_length_t i = 0; i < polygons_array_length; i++)
+		for (EngineTypes::Map::array_length_t i = 0; i < polygons_array_length; i++)
 		{
 			polygons_array[i].Set(&map->polygons_array[i]);
 		}
@@ -868,14 +873,14 @@ void Map::Set(const Map* map)
 	if (rectangles_array_length > 0)
 	{
 		rectangles_array = new Rectangle[rectangles_array_length];
-		for (EngineTypes::Map::elements_array_length_t i = 0; i < rectangles_array_length; i++)
+		for (EngineTypes::Map::array_length_t i = 0; i < rectangles_array_length; i++)
 		{
 			rectangles_array[i].Set(&map->rectangles_array[i]);
 		}
 	}
 }
 
-void Map::Set(const Rectangle* rectangles_array, EngineTypes::Map::elements_array_length_t rectangles_array_length, const Cyrcle* cyrcles_array, EngineTypes::Map::elements_array_length_t cyrcles_array_length, const Polygon* polygons_array, EngineTypes::Map::elements_array_length_t polygons_array_length)
+void Map::Set(const Rectangle* rectangles_array, EngineTypes::Map::array_length_t rectangles_array_length, const Cyrcle* cyrcles_array, EngineTypes::Map::array_length_t cyrcles_array_length, const Polygon* polygons_array, EngineTypes::Map::array_length_t polygons_array_length)
 {
 	this->cyrcles_array_length = cyrcles_array_length;
 	this->polygons_array_length = polygons_array_length;
@@ -900,7 +905,7 @@ void Map::Set(const Rectangle* rectangles_array, EngineTypes::Map::elements_arra
 	if (cyrcles_array_length > 0)
 	{
 		this->cyrcles_array = new Cyrcle[cyrcles_array_length];
-		for (EngineTypes::Map::elements_array_length_t i = 0; i < cyrcles_array_length; i++)
+		for (EngineTypes::Map::array_length_t i = 0; i < cyrcles_array_length; i++)
 		{
 			this->cyrcles_array[i].Set(&cyrcles_array[i]);
 		}
@@ -909,7 +914,7 @@ void Map::Set(const Rectangle* rectangles_array, EngineTypes::Map::elements_arra
 	if (polygons_array_length > 0)
 	{
 		this->polygons_array = new Polygon[polygons_array_length];
-		for (EngineTypes::Map::elements_array_length_t i = 0; i < polygons_array_length; i++)
+		for (EngineTypes::Map::array_length_t i = 0; i < polygons_array_length; i++)
 		{
 			this->polygons_array[i].Set(&polygons_array[i]);
 		}
@@ -918,7 +923,7 @@ void Map::Set(const Rectangle* rectangles_array, EngineTypes::Map::elements_arra
 	if (rectangles_array_length > 0)
 	{
 		this->rectangles_array = new Rectangle[rectangles_array_length];
-		for (EngineTypes::Map::elements_array_length_t i = 0; i < rectangles_array_length; i++)
+		for (EngineTypes::Map::array_length_t i = 0; i < rectangles_array_length; i++)
 		{
 			this->rectangles_array[i].Set(&rectangles_array[i]);
 		}

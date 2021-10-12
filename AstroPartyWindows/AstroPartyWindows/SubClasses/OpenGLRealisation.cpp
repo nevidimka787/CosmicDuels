@@ -256,9 +256,9 @@ void OpenGL::ProcessInput(GLFWwindow* window)
     }
 }
 
-
-
 //Callback functions
+
+
 
 //Initialisation functions
 
@@ -301,6 +301,16 @@ void OpenGL::InitBuffers()
     grav_gen_buffer.Initialisate(points, 6);
     rectangle_buffer.Initialisate(points, 6);
 
+    points[0].Set(1.0f, 1.0f);
+    points[1].Set(0.0f, 1.0f);
+    points[2].Set(1.0f, -1.0f);
+    points[3].Set(0.0f, -1.0f);
+    points[4].Set(0.0f, 1.0f);
+    points[5].Set(1.0f, -1.0f);
+
+    laser_buffer.Initialisate(points, 6);
+    mega_laser_buffer.Initialisate(points, 6);
+
     points[0].Set(2.0f, 2.0f);
     points[1].Set(-2.0f, 2.0f);
     points[2].Set(2.0f, -2.0f);
@@ -336,8 +346,6 @@ void OpenGL::InitBuffers()
     points[5].Set(1.0f,-0.02f);
 
     knife_buffer.Initialisate(points, 6);
-    laser_buffer.Initialisate(points, 6);
-    mega_laser_buffer.Initialisate(points, 6);
 
     points[0].Set(0.0f, 0.5f);
     points[1].Set(sqrt(3.0f) / 4.0f, -0.25f);
@@ -654,6 +662,7 @@ void OpenGL::DrawObject(Laser* laser, bool update_shader)
     }
     laser_shader.SetUniform("beam", laser->GetBeam());
     laser_shader.SetUniform("life", (float)laser->GetLifeTime() / (float)LASER_DEFAULT_SHOOT_TIME);
+    laser_shader.SetUniform("width", laser->width);
     laser_buffer.Draw();
 }
 
@@ -671,6 +680,7 @@ void OpenGL::DrawObject(MegaLaser* mega_laser, bool update_shader)
     mega_laser_shader.SetUniform("angle", mega_laser->GetDirectionNotNormalize().AbsoluteAngle());
     mega_laser_shader.SetUniform("position", mega_laser->GetPosition());
     mega_laser_shader.SetUniform("vector", mega_laser->GetDirectionNotNormalize() * mega_laser->radius);
+    mega_laser_shader.SetUniform("width", mega_laser->width);
     mega_laser_buffer.Draw();
 }
 
@@ -773,7 +783,7 @@ void OpenGL::DrawObject(Rectangle* rectangle, bool update_shader)
         rectangle_shader.SetUniform("camera_position", temp__game__camera_position);
         rectangle_shader.SetUniform("camera_size", temp__game__camera_size);
     }
-    rectangle_shader.SetUniform("unbreakable", rectangle->IsUnbreacable());
+    rectangle_shader.SetUniform("properties", rectangle->Prorerties());
     rectangle_shader.SetUniform("position",rectangle->UpLeftPoint());
     rectangle_shader.SetUniform("point2", rectangle->DownRightPoint());
     rectangle_buffer.Draw();
@@ -1104,7 +1114,7 @@ void OpenGL::DrawIndicatedMap(Map* map)
         rectangle_shader.SetUniform("scale", window_scale);
         rectangle_shader.SetUniform("camera_position", temp__game__camera_position);
         rectangle_shader.SetUniform("camera_size", temp__game__camera_size);
-        for (EngineTypes::Map::elements_array_length_t rectangle = 0; rectangle < map->rectangles_array_length; rectangle++)
+        for (EngineTypes::Map::array_length_t rectangle = 0; rectangle < map->rectangles_array_length; rectangle++)
         {
             map_element_p = (void*)map->GetRectanglePointer(rectangle);
             if (((Rectangle*)map_element_p)->exist == true)
@@ -1121,7 +1131,7 @@ void OpenGL::DrawIndicatedMap(Map* map)
         cyrcle_shader.SetUniform("scale", window_scale);
         cyrcle_shader.SetUniform("camera_position", temp__game__camera_position);
         cyrcle_shader.SetUniform("camera_size", temp__game__camera_size);
-        for (EngineTypes::Map::elements_array_length_t cyrcle = 0; cyrcle < map->cyrcles_array_length; cyrcle++)
+        for (EngineTypes::Map::array_length_t cyrcle = 0; cyrcle < map->cyrcles_array_length; cyrcle++)
         {
             map_element_p = (void*)map->GetCyrclePointer(cyrcle);
             if (((Cyrcle*)map_element_p)->exist)
@@ -1138,7 +1148,7 @@ void OpenGL::DrawIndicatedMap(Map* map)
         polygon_shader.SetUniform("scale", window_scale);
         polygon_shader.SetUniform("camera_position", temp__game__camera_position);
         polygon_shader.SetUniform("camera_size", temp__game__camera_size);
-        for (EngineTypes::Map::elements_array_length_t polygon = 0; polygon < map->polygons_array_length; polygon++)
+        for (EngineTypes::Map::array_length_t polygon = 0; polygon < map->polygons_array_length; polygon++)
         {
             map_element_p = (void*)map->GetPolygonPointer(polygon);
             if (((Polygon*)map->GetRectanglePointer(polygon))->exist == true)

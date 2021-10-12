@@ -761,7 +761,7 @@ public:
 	Turel(
 		Vec2F* position,
 		float angle = 0.0f,
-		GameTypes::tic_t attack_dellay = 0,
+		GameTypes::tic_t attack_dellay = AGGRESIVE_ENTITY_DEFAULT_ATTACK_DELLAY,
 		GameTypes::tic_t attack_period = AGGRESIVE_ENTITY_DEFAULT_ATTACK_PERIOD,
 		GameTypes::tic_t inactive_period = AGGRESIVE_ENTITY_DEFAULT_INACTIVE_PERIOD,
 		EngineTypes::AgressiveEntity::shoots_count_t shoots_count = AGGRESIVE_ENTITY_DEFAULT_SHOOTS_COUNT,
@@ -773,7 +773,7 @@ public:
 	void Set(
 		Vec2F* position,
 		float angle = 0.0f,
-		GameTypes::tic_t attack_dellay = 0,
+		GameTypes::tic_t attack_dellay = AGGRESIVE_ENTITY_DEFAULT_ATTACK_DELLAY,
 		GameTypes::tic_t attack_period = AGGRESIVE_ENTITY_DEFAULT_ATTACK_PERIOD,
 		GameTypes::tic_t inactive_period = AGGRESIVE_ENTITY_DEFAULT_INACTIVE_PERIOD,
 		EngineTypes::AgressiveEntity::shoots_count_t shoots_count = AGGRESIVE_ENTITY_DEFAULT_SHOOTS_COUNT,
@@ -790,11 +790,13 @@ class MegaLaser : public AggressiveEntity
 protected:
 	bool active;
 public:
+	float width;
 	MegaLaser();
 	MegaLaser(const MegaLaser& mega_laser);
 	MegaLaser(
 		Segment* segment,
-		GameTypes::tic_t attack_dellay = 0,
+		float width = MEGA_LASER_DEFAULT_WIDTH,
+		GameTypes::tic_t attack_dellay = AGGRESIVE_ENTITY_DEFAULT_ATTACK_DELLAY,
 		GameTypes::tic_t attack_period = AGGRESIVE_ENTITY_DEFAULT_ATTACK_PERIOD,
 		GameTypes::tic_t inactive_period = AGGRESIVE_ENTITY_DEFAULT_INACTIVE_PERIOD,
 		EngineTypes::AgressiveEntity::shoots_count_t shoots_count = AGGRESIVE_ENTITY_DEFAULT_SHOOTS_COUNT,
@@ -806,7 +808,8 @@ public:
 	void Set(MegaLaser* entity);
 	void Set(
 		Segment* segment,
-		GameTypes::tic_t attack_dellay = 0,
+		float width = MEGA_LASER_DEFAULT_WIDTH,
+		GameTypes::tic_t attack_dellay = AGGRESIVE_ENTITY_DEFAULT_ATTACK_DELLAY,
 		GameTypes::tic_t attack_period = AGGRESIVE_ENTITY_DEFAULT_ATTACK_PERIOD,
 		GameTypes::tic_t inactive_period = AGGRESIVE_ENTITY_DEFAULT_INACTIVE_PERIOD,
 		EngineTypes::AgressiveEntity::shoots_count_t shoots_count = AGGRESIVE_ENTITY_DEFAULT_SHOOTS_COUNT,
@@ -957,11 +960,14 @@ class Laser : public SupportEntity
 protected:
 	GameTypes::tic_t shoot_time;
 public:
+	float width;
+
 	Laser();
 	Laser(const Laser& laser);
 	Laser(
 		ControledEntity* host,
 		Beam* local_beam,
+		float width = LASER_DEFAULT_WIDTH,
 		GameTypes::tic_t shoot_time = LASER_DEFAULT_SHOOT_TIME,
 		bool exist = true);
 
@@ -978,6 +984,7 @@ public:
 	void Set(
 		ControledEntity* host,
 		Beam* local_beam,
+		float width = LASER_DEFAULT_WIDTH,
 		GameTypes::tic_t shoot_time = LASER_DEFAULT_SHOOT_TIME,
 		bool exist = true);
 	void Update();

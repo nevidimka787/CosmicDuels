@@ -4,6 +4,7 @@ layout (location = 0) in vec2 aPos;
 uniform float scale;
 
 uniform vec4 beam;
+uniform float width;
 
 uniform vec2 camera_position;
 uniform float camera_size;
@@ -20,7 +21,7 @@ vec3 _position;
 void main()
 {
     matrix = 
-        Scale(vec2(length(100.0f), 1.0f)) * 
+        Scale(vec2(length(100.0f), width)) * 
         SetByBeam(beam) * 
         Transport(-camera_position) *
         Scale(vec2(1.0f / camera_size)) *

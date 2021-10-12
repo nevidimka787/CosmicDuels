@@ -586,7 +586,7 @@ bool DynamicEntity::Collision(Map* map)
 {
 	bool collision = false;
 	void* map_element;
-	for (EngineTypes::Map::elements_array_length_t i = 0; i < map->cyrcles_array_length; i++)
+	for (EngineTypes::Map::array_length_t i = 0; i < map->cyrcles_array_length; i++)
 	{
 		map_element = (void*)map->GetCyrclePointer(i);
 		if (((Cyrcle*)map_element)->exist)
@@ -594,7 +594,7 @@ bool DynamicEntity::Collision(Map* map)
 			collision |= Collision((Cyrcle*)map_element);
 		}
 	}
-	for (EngineTypes::Map::elements_array_length_t i = 0; i < map->polygons_array_length; i++)
+	for (EngineTypes::Map::array_length_t i = 0; i < map->polygons_array_length; i++)
 	{
 		map_element = (void*)map->GetPolygonPointer(i);
 		if (((Polygon*)map_element)->exist)
@@ -602,7 +602,7 @@ bool DynamicEntity::Collision(Map* map)
 			collision |= Collision((Polygon*)map_element);
 		}
 	}
-	for (EngineTypes::Map::elements_array_length_t i = 0; i < map->rectangles_array_length; i++)
+	for (EngineTypes::Map::array_length_t i = 0; i < map->rectangles_array_length; i++)
 	{
 		map_element = (void*)map->GetRectanglePointer(i);
 		if (((Rectangle*)map_element)->exist)
@@ -743,7 +743,7 @@ bool DynamicEntity::IsCollision(Map* map)
 	void* element;
 	if (map->cyrcles_array_length > 0)
 	{
-		for (EngineTypes::Map::elements_array_length_t cyrcle = 0, found_cyrcle = 0; found_cyrcle < map->cyrcles_array_length; cyrcle++)
+		for (EngineTypes::Map::array_length_t cyrcle = 0, found_cyrcle = 0; found_cyrcle < map->cyrcles_array_length; cyrcle++)
 		{
 			if (((Cyrcle*)(element = (void*)map->GetCyrclePointer(cyrcle)))->exist)
 			{
@@ -757,7 +757,7 @@ bool DynamicEntity::IsCollision(Map* map)
 	}
 	if (map->polygons_array_length > 0)
 	{
-		for (EngineTypes::Map::elements_array_length_t polygon = 0, found_polygon = 0; found_polygon < map->polygons_array_length; polygon++)
+		for (EngineTypes::Map::array_length_t polygon = 0, found_polygon = 0; found_polygon < map->polygons_array_length; polygon++)
 		{
 			if (((Polygon*)(element = (void*)map->GetPolygonPointer(polygon)))->exist)
 			{
@@ -771,7 +771,7 @@ bool DynamicEntity::IsCollision(Map* map)
 	}
 	if (map->rectangles_array_length > 0)
 	{
-		for (EngineTypes::Map::elements_array_length_t rectangle = 0, found_rectangle = 0; found_rectangle < map->rectangles_array_length; rectangle++)
+		for (EngineTypes::Map::array_length_t rectangle = 0, found_rectangle = 0; found_rectangle < map->rectangles_array_length; rectangle++)
 		{
 			if (((Rectangle*)(element = (void*)map->GetRectanglePointer(rectangle)))->exist)
 			{
@@ -1584,7 +1584,7 @@ bool ControledEntity::IsCollision(Laser* laser)
 		point2 = heat_box_vertexes_array[0] * model_matrix;
 
 	ce_side.Set(point1, point2, true);
-	if (beam.Distance(&ce_side) < radius)
+	if (beam.Distance(&ce_side) < radius + laser->width)
 	{
 		return true;
 	}
@@ -1593,7 +1593,7 @@ bool ControledEntity::IsCollision(Laser* laser)
 		point1 = point2;
 		point2 = heat_box_vertexes_array[vertex] * model_matrix;
 		ce_side.Set(point1, point2, true);
-		if (beam.Distance(&ce_side) < radius)
+		if (beam.Distance(&ce_side) < radius + laser->width)
 		{
 			return true;
 		}
@@ -1612,7 +1612,7 @@ bool ControledEntity::IsCollision(MegaLaser* mega_laser)
 		point2 = heat_box_vertexes_array[0] * model_matrix;
 
 	ce_side.Set(point1, point2, true);
-	if (segment.Distance(&ce_side) < radius)
+	if (segment.Distance(&ce_side) < radius + mega_laser->width)
 	{
 		return true;
 	}
@@ -1621,7 +1621,7 @@ bool ControledEntity::IsCollision(MegaLaser* mega_laser)
 		point1 = point2;
 		point2 = heat_box_vertexes_array[vertex] * model_matrix;
 		ce_side.Set(point1, point2, true);
-		if (segment.Distance(&ce_side) < radius)
+		if (segment.Distance(&ce_side) < radius + mega_laser->width)
 		{
 			return true;
 		}
@@ -1946,7 +1946,9 @@ Laser Ship::CreateLaser()
 {
 	Beam laser_beam = Beam(Vec2F(0.5f, 0.0f), Vec2F(1.0f, 0.0f));
 	AddForceAlongDirection(-SHIP_SHOOT_FORCE * 4.0f);
-	return Laser(this, &laser_beam);
+	Laser laser = Laser(this, &laser_beam);
+	laser.Update();
+	return laser;
 }
 
 Knife Ship::CreateKnife(uint8_t knife_number)
@@ -2776,19 +2778,22 @@ GravGen::~GravGen()
 
 MegaLaser::MegaLaser() :
 	AggressiveEntity(),
-	active(false)
+	active(false),
+	width(0.0f)
 {
 }
 
 MegaLaser::MegaLaser(const MegaLaser& mega_laser) :
 	AggressiveEntity(mega_laser),
-	active(mega_laser.active)
+	active(mega_laser.active),
+	width(mega_laser.width)
 {
 }
 
-MegaLaser::MegaLaser(Segment* segment, GameTypes::tic_t attack_dellay, GameTypes::tic_t attack_period, GameTypes::tic_t inactive_period, EngineTypes::AgressiveEntity::shoots_count_t shoots_count, bool active, bool exist) :
+MegaLaser::MegaLaser(Segment* segment, float width, GameTypes::tic_t attack_dellay, GameTypes::tic_t attack_period, GameTypes::tic_t inactive_period, EngineTypes::AgressiveEntity::shoots_count_t shoots_count, bool active, bool exist) :
 	AggressiveEntity(&segment->point, segment->vector.Length(), segment->vector.AbsoluteAngle(), attack_dellay, attack_period, inactive_period, shoots_count, exist),
-	active(active)
+	active(active),
+	width(width)
 {
 }
 
@@ -2818,7 +2823,7 @@ void MegaLaser::Set(MegaLaser* mega_laser)
 	shoots_count = mega_laser->shoots_count;
 }
 
-void MegaLaser::Set(Segment* segment, GameTypes::tic_t attack_dellay, GameTypes::tic_t attack_period, GameTypes::tic_t inactive_period, EngineTypes::AgressiveEntity::shoots_count_t shoots_count, bool active, bool exist)
+void MegaLaser::Set(Segment* segment, float width, GameTypes::tic_t attack_dellay, GameTypes::tic_t attack_period, GameTypes::tic_t inactive_period, EngineTypes::AgressiveEntity::shoots_count_t shoots_count, bool active, bool exist)
 {
 	this->active = active;
 	this->attack_dellay = attack_dellay;
@@ -2830,6 +2835,7 @@ void MegaLaser::Set(Segment* segment, GameTypes::tic_t attack_dellay, GameTypes:
 	this->position = segment->point;
 	this->radius = segment->vector.Length();
 	this->shoots_count = shoots_count;
+	this->width = width;
 
 	direction *= radius;
 }
@@ -2853,6 +2859,7 @@ void MegaLaser::operator=(MegaLaser mega_laser)
 	position = mega_laser.position;
 	radius = mega_laser.radius;
 	shoots_count = mega_laser.shoots_count;
+	width = mega_laser.width;
 }
 
 MegaLaser::~MegaLaser()
@@ -2863,19 +2870,22 @@ MegaLaser::~MegaLaser()
 
 Laser::Laser() :
 	SupportEntity(),
-	shoot_time(0)
+	shoot_time(0),
+	width(0.0f)
 {
 }
 
 Laser::Laser(const Laser& laser) :
 	SupportEntity(laser),
-	shoot_time(laser.shoot_time)
+	shoot_time(laser.shoot_time),
+	width(laser.width)
 {
 }
 
-Laser::Laser(ControledEntity* host, Beam* local_beam, GameTypes::tic_t shoot_time, bool exist) :
+Laser::Laser(ControledEntity* host, Beam* local_beam, float width, GameTypes::tic_t shoot_time, bool exist) :
 	SupportEntity(host, &local_beam->point, 0.0f, local_beam->vector.AbsoluteAngle(), exist),
-	shoot_time(shoot_time)
+	shoot_time(shoot_time),
+	width(width)
 {
 }
 
@@ -2884,7 +2894,7 @@ bool Laser::Collision(Map* map)
 	Beam beam = GetBeam();
 	bool collision = false;
 	void* element_p;
-	EngineTypes::Map::elements_array_length_t element;
+	EngineTypes::Map::array_length_t element;
 
 	for (element = 0; element < map->cyrcles_array_length; element++)
 	{
@@ -2898,7 +2908,7 @@ bool Laser::Collision(Map* map)
 		}
 	}
 
-	for (EngineTypes::Map::elements_array_length_t element = 0; element < map->polygons_array_length; element++)
+	for (EngineTypes::Map::array_length_t element = 0; element < map->polygons_array_length; element++)
 	{
 		element_p = (void*)map->GetPolygonPointer(element);
 		if (((Polygon*)element_p)->exist &&
@@ -2910,7 +2920,7 @@ bool Laser::Collision(Map* map)
 		}
 	}
 
-	for (EngineTypes::Map::elements_array_length_t element = 0; element < map->rectangles_array_length; element++)
+	for (EngineTypes::Map::array_length_t element = 0; element < map->rectangles_array_length; element++)
 	{
 		element_p = (void*)map->GetRectanglePointer(element);
 		if (((Rectangle*)element_p)->exist &&
@@ -2969,9 +2979,10 @@ void Laser::Set(Laser* laser)
 	local_position = laser->local_position;
 	position = laser->position;
 	shoot_time = laser->shoot_time;
+	width = laser->width;
 }
 
-void Laser::Set(ControledEntity* host, Beam* local_beam, GameTypes::tic_t shoot_time, bool exist)
+void Laser::Set(ControledEntity* host, Beam* local_beam, float width, GameTypes::tic_t shoot_time, bool exist)
 {
 	UpdateDirection();
 	this->exist = exist;
@@ -2980,6 +2991,7 @@ void Laser::Set(ControledEntity* host, Beam* local_beam, GameTypes::tic_t shoot_
 	local_angle = local_beam->vector.AbsoluteAngle();
 	local_position = local_beam->point;
 	shoot_time = shoot_time;
+	this->width = width;
 	SupportEntity::Update();
 }
 
@@ -3014,6 +3026,8 @@ void Laser::operator=(Laser laser)
 	local_position = laser.local_position;
 	position = laser.position;
 	shoot_time = laser.shoot_time;
+	width = laser.width;
+
 }
 
 Laser::~Laser()
@@ -3045,7 +3059,7 @@ Bullet::Bullet(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t play
 
 bool Bullet::Collision(Map* map)
 {
-	for (EngineTypes::Map::elements_array_length_t element = 0; element < map->rectangles_array_length; element++)
+	for (EngineTypes::Map::array_length_t element = 0; element < map->rectangles_array_length; element++)
 	{
 		if (Collision(map->GetRectanglePointer(element)))
 		{
@@ -3198,7 +3212,7 @@ bool Knife::Collision(Map* map)
 	Segment segment = GetSegment();
 	bool collision = false;
 	void* element_p;
-	EngineTypes::Map::elements_array_length_t element;
+	EngineTypes::Map::array_length_t element;
 
 	for (element = 0; element < map->cyrcles_array_length; element++)
 	{
@@ -3218,7 +3232,7 @@ bool Knife::Collision(Map* map)
 		}
 	}
 
-	for (EngineTypes::Map::elements_array_length_t element = 0; element < map->polygons_array_length; element++)
+	for (EngineTypes::Map::array_length_t element = 0; element < map->polygons_array_length; element++)
 	{
 		element_p = (void*)map->GetPolygonPointer(element);
 		if (((Polygon*)element_p)->exist &&
@@ -3236,7 +3250,7 @@ bool Knife::Collision(Map* map)
 		}
 	}
 
-	for (EngineTypes::Map::elements_array_length_t element = 0; element < map->rectangles_array_length; element++)
+	for (EngineTypes::Map::array_length_t element = 0; element < map->rectangles_array_length; element++)
 	{
 		element_p = (void*)map->GetRectanglePointer(element);
 		if (((Rectangle*)element_p)->exist &&

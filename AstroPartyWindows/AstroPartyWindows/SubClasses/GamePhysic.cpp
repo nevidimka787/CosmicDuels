@@ -457,7 +457,7 @@ void Game::UpdateMapPhase2()
 {
 	void* element_pointer;
 	map_data_mtx.lock();
-	for (EngineTypes::Map::elements_array_length_t element = 0; element < map.rectangles_array_length; element++)
+	for (EngineTypes::Map::array_length_t element = 0; element < map.rectangles_array_length; element++)
 	{
 		element_pointer = (void*)map.GetRectanglePointer(element);
 		if (((Rectangle*)element_pointer)->exist)
@@ -1609,7 +1609,6 @@ void Game::PilotsKilledByKnifes()
 void Game::PilotsKilledByLasers()
 {
 	GameTypes::entities_count_t laser, found_lasers;
-	Beam temp__beam;
 	Laser* temp__laser_p;
 	Pilot* temp__pilot_p;
 
@@ -1625,9 +1624,8 @@ void Game::PilotsKilledByLasers()
 				temp__laser_p = &lasers[laser];
 				if (temp__laser_p->exist)
 				{
-					temp__beam = temp__laser_p->GetBeam();
 					if (!(game_rules & GAME_RULE_FRENDLY_FIRE && temp__laser_p->CreatedByTeam(temp__pilot_p)) &&
-						temp__pilot_p->IsCollision(&temp__beam))
+						temp__pilot_p->IsCollision(temp__laser_p))
 					{
 						log_data_mtx.lock();
 						DestroyEntity(temp__laser_p, temp__pilot_p);
@@ -1692,17 +1690,14 @@ void Game::PilotsKilledByMegaLaser()
 				temp__mega_laser_p = &mega_lasers[mega_laser];
 				if (temp__mega_laser_p->exist)
 				{
-					if (temp__mega_laser_p->IsShooting(global_timer))
+					if (temp__mega_laser_p->IsShooting(global_timer) &&
+						temp__pilot_p->IsCollision(temp__mega_laser_p))
 					{
-						temp__segment = temp__mega_laser_p->GetSegment();
-						if (temp__pilot_p->Entity::IsCollision(&temp__segment))
-						{
-							log_data_mtx.lock();
-							DestroyEntity(temp__mega_laser_p, temp__pilot_p);
-							log_data_mtx.unlock();
-							mega_lasers_array_mtx.unlock();
-							goto end_of_pilot_cycle;
-						}
+						log_data_mtx.lock();
+						DestroyEntity(temp__mega_laser_p, temp__pilot_p);
+						log_data_mtx.unlock();
+						mega_lasers_array_mtx.unlock();
+						goto end_of_pilot_cycle;
 					}
 					found_mega_lasers++;
 				}
@@ -2029,7 +2024,6 @@ void Game::ShipsDestroedByKnifes()
 void Game::ShipsDestroedByLasers()
 {
 	GameTypes::entities_count_t laser, found_lasers;
-	Beam temp__beam;
 	Laser* temp__laser_p;
 	Ship* temp__ship_p;
 
@@ -2046,11 +2040,10 @@ void Game::ShipsDestroedByLasers()
 				temp__laser_p = &lasers[laser];
 				if (temp__laser_p->exist)
 				{
-					temp__beam = temp__laser_p->GetBeam();
 					if (!(game_rules & GAME_RULE_FRENDLY_FIRE && temp__laser_p->CreatedByTeam(temp__ship_p)) &&
 						!temp__ship_p->IsUnbrakable() &&
 						!temp__laser_p->CreatedBy(temp__ship_p) &&
-						temp__ship_p->IsCollision(&temp__beam))
+						temp__ship_p->IsCollision(temp__laser_p))
 					{
 						bonuses_array_mtx.lock();
 						log_data_mtx.lock();
@@ -2078,7 +2071,6 @@ void Game::ShipsDestroedByMegaLasers()
 	GameTypes::entities_count_t mega_laser, found_mega_lasers;
 	MegaLaser* temp__mega_laser_p;
 	Ship* temp__ship_p;
-	Segment temp__segment;
 
 	ships_array_mtx.lock();
 	for (GameTypes::entities_count_t ship = 0, found_ships = 0; found_ships < ships_count; ship++)
@@ -2094,8 +2086,7 @@ void Game::ShipsDestroedByMegaLasers()
 				{
 					if (temp__mega_laser_p->IsShooting(global_timer))
 					{
-						temp__segment = temp__mega_laser_p->GetSegment();
-						if (temp__ship_p->IsCollision(&temp__segment))
+						if (temp__ship_p->IsCollision(temp__mega_laser_p))
 						{
 							bonuses_array_mtx.lock();
 							log_data_mtx.lock();

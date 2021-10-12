@@ -67,7 +67,8 @@ namespace EngineTypes
 
 	namespace Map
 	{
-		typedef uint8_t elements_array_length_t;
+		typedef uint8_t array_length_t;
+		typedef uint8_t property_t;
 	}
 
 	namespace Menu

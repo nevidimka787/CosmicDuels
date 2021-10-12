@@ -6,6 +6,7 @@ uniform float scale;
 uniform vec2 position;
 uniform vec2 vector;
 uniform float angle;
+uniform float width;
 
 uniform vec2 camera_position;
 uniform float camera_size;
@@ -21,7 +22,7 @@ vec3 _position;
 void main()
 {
     matrix = 
-        Scale(vec2(length(vector), 1.0f)) * 
+        Scale(vec2(length(vector), width)) * 
         Rotate(-angle) * 
         Transport(position) * 
         Transport(-camera_position) *
