@@ -769,11 +769,6 @@ void OpenGL::DrawObject(Turel* turel, bool update_shader)
     turel_buffer.Draw();
 }
 
-void OpenGL::DrawObject(MapElement* map_element, bool update_shader)
-{
-
-}
-
 void OpenGL::DrawObject(Rectangle* rectangle, bool update_shader)
 {
     if (update_shader)
@@ -1116,7 +1111,7 @@ void OpenGL::DrawIndicatedMap(Map* map)
         rectangle_shader.SetUniform("camera_size", temp__game__camera_size);
         for (EngineTypes::Map::array_length_t rectangle = 0; rectangle < map->rectangles_array_length; rectangle++)
         {
-            map_element_p = (void*)map->GetRectanglePointer(rectangle);
+            map_element_p = (void*)map->RectanglePointer(rectangle);
             if (((Rectangle*)map_element_p)->exist == true)
             {
                 DrawObject((Rectangle*)map_element_p);
@@ -1133,7 +1128,7 @@ void OpenGL::DrawIndicatedMap(Map* map)
         cyrcle_shader.SetUniform("camera_size", temp__game__camera_size);
         for (EngineTypes::Map::array_length_t cyrcle = 0; cyrcle < map->cyrcles_array_length; cyrcle++)
         {
-            map_element_p = (void*)map->GetCyrclePointer(cyrcle);
+            map_element_p = (void*)map->CyrclePointer(cyrcle);
             if (((Cyrcle*)map_element_p)->exist)
             {
                 DrawObject((Cyrcle*)map_element_p);
@@ -1150,8 +1145,8 @@ void OpenGL::DrawIndicatedMap(Map* map)
         polygon_shader.SetUniform("camera_size", temp__game__camera_size);
         for (EngineTypes::Map::array_length_t polygon = 0; polygon < map->polygons_array_length; polygon++)
         {
-            map_element_p = (void*)map->GetPolygonPointer(polygon);
-            if (((Polygon*)map->GetRectanglePointer(polygon))->exist == true)
+            map_element_p = (void*)map->PolygonPointer(polygon);
+            if (((Polygon*)map->RectanglePointer(polygon))->exist == true)
             {
                 DrawObject((Polygon*)map_element_p);
             }

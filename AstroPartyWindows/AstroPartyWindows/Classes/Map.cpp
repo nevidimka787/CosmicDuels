@@ -48,6 +48,16 @@ Vec2F MapElement::Velocity()
 	return position - last_position;
 }
 
+bool MapElement::IsAggressive()
+{
+	return properties & MAP_PROPERTY_AGRESSIVE;
+}
+
+bool MapElement::IsKiller()
+{
+	return properties & MAP_PROPERTY_KILLER;
+}
+
 bool MapElement::IsUnbreacable()
 {
 	return properties & MAP_PROPERTY_UNBREACABLE;
@@ -803,7 +813,7 @@ Polygon Map::GetPolygon(EngineTypes::Map::array_length_t number)
 	return polygons_array[number];
 }
 
-Rectangle* Map::GetRectanglePointer(EngineTypes::Map::array_length_t number)
+Rectangle* Map::RectanglePointer(EngineTypes::Map::array_length_t number)
 {
 	if (number >= rectangles_array_length)
 	{
@@ -812,7 +822,7 @@ Rectangle* Map::GetRectanglePointer(EngineTypes::Map::array_length_t number)
 	return &rectangles_array[number];
 }
 
-Cyrcle* Map::GetCyrclePointer(EngineTypes::Map::array_length_t number)
+Cyrcle* Map::CyrclePointer(EngineTypes::Map::array_length_t number)
 {
 	if (number >= cyrcles_array_length)
 	{
@@ -821,7 +831,7 @@ Cyrcle* Map::GetCyrclePointer(EngineTypes::Map::array_length_t number)
 	return &cyrcles_array[number];
 }
 
-Polygon* Map::GetPolygonPointer(EngineTypes::Map::array_length_t number)
+Polygon* Map::PolygonPointer(EngineTypes::Map::array_length_t number)
 {
 	if (number >= polygons_array_length)
 	{

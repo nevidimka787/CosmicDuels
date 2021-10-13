@@ -414,6 +414,7 @@ public:
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
 		bool exist = true);
+
 	Mat3x2F GetModelMatrix();
 	Mat3x2F* GetModelMatrixPointer();
 	GameTypes::players_count_t GetPlayerNumber();
@@ -436,6 +437,8 @@ public:
 	bool IsCollision(MegaLaser* mega_laser);
 	//Check collision this heat box.
 	bool IsCollision(Segment* segment);
+	//If map can destroy entity, the functuion return true.
+	bool Collision(Map* map);
 	bool IsColectEntity(Entity* stored_entity);
 	bool IsColectEntity(DynamicEntity* stored_entity);
 	bool SameTeams(ControledEntity* second_entity);

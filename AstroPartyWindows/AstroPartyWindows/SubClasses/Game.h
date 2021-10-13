@@ -390,6 +390,9 @@ public:
 	//"Destroyable"
 	void Event6();
 
+	//"Aggressive"
+	void Event7();
+
 	//"Test"
 	void CreateMap0(Vec2F* ships_positions, float* ships_angles);
 	
@@ -410,6 +413,9 @@ public:
 
 	//"Destryable"
 	void CreateMap6(Vec2F* ships_positions, float* ships_angles);
+
+	//"Aggressive"
+	void CreateMap7(Vec2F* ships_positions, float* ships_angles);
 
 	//Memory functions
 
@@ -1031,6 +1037,21 @@ public:
 	void DestroyEntity(MegaLaser* destroyer, Pilot* entity);
 
 	void DestroyEntity(Ship* destroyer, Pilot* entity);
+
+	//Destroy entity by map.
+	void DestroyEntity(Asteroid* entity);
+	//Destroy entity by map.
+	void DestroyEntity(Bonus* entity);
+	//Destroy entity by map.
+	void DestroyEntity(Bullet* entity);
+	//Destroy entity by map.
+	void DestroyEntity(Knife* entity);
+	//Destroy entity by map.
+	void DestroyEntity(Ship* entity);
+	//Destroy entity by map.
+	void DestroyEntity(Particle* entity);
+	//Destroy entity by map.
+	void DestroyEntity(Pilot* entity);
 		
 	void DestroySupportEntitiesBy(ControledEntity* produser);
 	

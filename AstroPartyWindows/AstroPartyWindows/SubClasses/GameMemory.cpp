@@ -762,6 +762,53 @@ void Game::DestroyEntity(Ship* destroyer, Pilot* entity)
 	RemoveEntity(entity);
 }
 
+void Game::DestroyEntity(Asteroid* entity)
+{
+	RemoveEntity(entity);
+}
+
+void Game::DestroyEntity(Bonus* entity)
+{
+	RemoveEntity(entity);
+}
+
+void Game::DestroyEntity(Bullet* entity)
+{
+	RemoveEntity(entity);
+}
+
+void Game::DestroyEntity(Knife* entity)
+{
+	RemoveEntity(entity);
+}
+
+void Game::DestroyEntity(Ship* entity)
+{
+	if (!(game_rules & GAME_RULE_NEED_KILL_PILOT))
+	{
+		DecrementScore(entity->GetTeamNumber());
+		DecrementPlayersCountInTeam(entity->GetTeamNumber());
+	}
+	AddEntity(entity->Destroy());
+	RemoveEntity(entity);
+}
+
+void Game::DestroyEntity(Particle* entity)
+{
+	RemoveEntity(entity);
+}
+
+void Game::DestroyEntity(Pilot* entity)
+{
+	entity->exist = false;
+	if (game_rules & GAME_RULE_NEED_KILL_PILOT)
+	{
+		DecrementScore(entity->GetTeamNumber());
+		DecrementPlayersCountInTeam(entity->GetTeamNumber());
+	}
+	pilots_count--;
+}
+
 void Game::DestroySupportEntitiesBy(ControledEntity* produser)
 {
 	for (GameTypes::entities_count_t laser = 0, found_lasers = 0; found_lasers < lasers_count; laser++)

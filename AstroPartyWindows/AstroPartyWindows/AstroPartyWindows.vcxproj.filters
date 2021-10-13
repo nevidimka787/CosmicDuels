@@ -94,6 +94,9 @@
     <ClCompile Include="SubClasses\GamePhysic.cpp">
       <Filter>Classes\Файлы ресурсов</Filter>
     </ClCompile>
+    <ClCompile Include="SubClasses\GameMap.cpp">
+      <Filter>Classes\Файлы ресурсов</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Objects\Fragment\Asteroid.glsl">

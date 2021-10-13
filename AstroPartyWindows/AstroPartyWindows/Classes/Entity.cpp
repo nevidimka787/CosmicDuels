@@ -212,21 +212,21 @@ bool Entity::IsCollision(Map* map)
 {
 	for (uint8_t i = 0; i < map->rectangles_array_length; i++)
 	{
-		if (IsCollision(map->GetRectanglePointer(i)))
+		if (IsCollision(map->RectanglePointer(i)))
 		{
 			return true;
 		}
 	}
 	for (uint8_t i = 0; i < map->cyrcles_array_length; i++)
 	{
-		if (IsCollision(map->GetCyrclePointer(i)))
+		if (IsCollision(map->CyrclePointer(i)))
 		{
 			return true;
 		}
 	}
 	for (uint8_t i = 0; i < map->polygons_array_length; i++)
 	{
-		if (IsCollision(map->GetPolygonPointer(i)))
+		if (IsCollision(map->PolygonPointer(i)))
 		{
 			return true;
 		}
@@ -520,6 +520,8 @@ bool DynamicEntity::Collision(Rectangle* rectangle)
 	float distance1;
 	bool collision = false;
 
+	int i = 0;
+
 	if ((distance1 = rectangle->UpSide().Distance(&position, &nearest_position1)) < radius)
 	{
 		collision_direction = nearest_position1 - position;
@@ -588,7 +590,7 @@ bool DynamicEntity::Collision(Map* map)
 	void* map_element;
 	for (EngineTypes::Map::array_length_t i = 0; i < map->cyrcles_array_length; i++)
 	{
-		map_element = (void*)map->GetCyrclePointer(i);
+		map_element = (void*)map->CyrclePointer(i);
 		if (((Cyrcle*)map_element)->exist)
 		{
 			collision |= Collision((Cyrcle*)map_element);
@@ -596,7 +598,7 @@ bool DynamicEntity::Collision(Map* map)
 	}
 	for (EngineTypes::Map::array_length_t i = 0; i < map->polygons_array_length; i++)
 	{
-		map_element = (void*)map->GetPolygonPointer(i);
+		map_element = (void*)map->PolygonPointer(i);
 		if (((Polygon*)map_element)->exist)
 		{
 			collision |= Collision((Polygon*)map_element);
@@ -604,7 +606,7 @@ bool DynamicEntity::Collision(Map* map)
 	}
 	for (EngineTypes::Map::array_length_t i = 0; i < map->rectangles_array_length; i++)
 	{
-		map_element = (void*)map->GetRectanglePointer(i);
+		map_element = (void*)map->RectanglePointer(i);
 		if (((Rectangle*)map_element)->exist)
 		{
 			collision |= Collision((Rectangle*)map_element);
@@ -745,7 +747,7 @@ bool DynamicEntity::IsCollision(Map* map)
 	{
 		for (EngineTypes::Map::array_length_t cyrcle = 0, found_cyrcle = 0; found_cyrcle < map->cyrcles_array_length; cyrcle++)
 		{
-			if (((Cyrcle*)(element = (void*)map->GetCyrclePointer(cyrcle)))->exist)
+			if (((Cyrcle*)(element = (void*)map->CyrclePointer(cyrcle)))->exist)
 			{
 				if (IsCollision((Cyrcle*)element))
 				{
@@ -759,7 +761,7 @@ bool DynamicEntity::IsCollision(Map* map)
 	{
 		for (EngineTypes::Map::array_length_t polygon = 0, found_polygon = 0; found_polygon < map->polygons_array_length; polygon++)
 		{
-			if (((Polygon*)(element = (void*)map->GetPolygonPointer(polygon)))->exist)
+			if (((Polygon*)(element = (void*)map->PolygonPointer(polygon)))->exist)
 			{
 				if (IsCollision((Polygon*)element))
 				{
@@ -773,7 +775,7 @@ bool DynamicEntity::IsCollision(Map* map)
 	{
 		for (EngineTypes::Map::array_length_t rectangle = 0, found_rectangle = 0; found_rectangle < map->rectangles_array_length; rectangle++)
 		{
-			if (((Rectangle*)(element = (void*)map->GetRectanglePointer(rectangle)))->exist)
+			if (((Rectangle*)(element = (void*)map->RectanglePointer(rectangle)))->exist)
 			{
 				if (IsCollision((Rectangle*)element))
 				{
@@ -1403,6 +1405,52 @@ ControledEntity::ControledEntity(Vec2F* position, Vec2F* velocity, float radius,
 	{
 		this->heat_box_vertexes_array[vertex] = heat_box_vertexes_array[vertex];
 	}
+}
+
+bool ControledEntity::Collision(Map* map)
+{
+	bool collision = false;
+	void* element_p;
+	for (uint8_t i = 0; i < map->rectangles_array_length; i++)
+	{
+		element_p = (void*)map->RectanglePointer(i);
+		if (((Rectangle*)element_p)->exist && DynamicEntity::Collision(((Rectangle*)element_p)))
+		{
+			if (((Rectangle*)element_p)->IsKiller())
+			{
+				exist = false;
+				return true;
+			}
+			collision = true;
+		}
+	}
+	for (uint8_t i = 0; i < map->cyrcles_array_length; i++)
+	{
+		element_p = (void*)map->CyrclePointer(i);
+		if (((Cyrcle*)element_p)->exist && DynamicEntity::Collision(((Cyrcle*)element_p)))
+		{
+			if (((Cyrcle*)element_p)->IsKiller())
+			{
+				exist = false;
+				return true;
+			}
+			collision = true;
+		}
+	}
+	for (uint8_t i = 0; i < map->polygons_array_length; i++)
+	{
+		element_p = (void*)map->PolygonPointer(i);
+		if (((Polygon*)element_p)->exist && DynamicEntity::Collision(((Polygon*)element_p)))
+		{
+			if (((Rectangle*)element_p)->IsKiller())
+			{
+				exist = false;
+				return true;
+			}
+			collision = true;
+		}
+	}
+	return collision;
 }
 
 Mat3x2F ControledEntity::GetModelMatrix()
@@ -2898,7 +2946,7 @@ bool Laser::Collision(Map* map)
 
 	for (element = 0; element < map->cyrcles_array_length; element++)
 	{
-		element_p = (void*)map->GetCyrclePointer(element);
+		element_p = (void*)map->CyrclePointer(element);
 		if (((Cyrcle*)element_p)->exist &&
 			!((Cyrcle*)element_p)->IsUnbreacable() &&
 			((Cyrcle*)element_p)->IsCollision(&beam))
@@ -2910,7 +2958,7 @@ bool Laser::Collision(Map* map)
 
 	for (EngineTypes::Map::array_length_t element = 0; element < map->polygons_array_length; element++)
 	{
-		element_p = (void*)map->GetPolygonPointer(element);
+		element_p = (void*)map->PolygonPointer(element);
 		if (((Polygon*)element_p)->exist &&
 			!((Polygon*)element_p)->IsUnbreacable() &&
 			((Polygon*)element_p)->IsCollision(&beam))
@@ -2922,7 +2970,7 @@ bool Laser::Collision(Map* map)
 
 	for (EngineTypes::Map::array_length_t element = 0; element < map->rectangles_array_length; element++)
 	{
-		element_p = (void*)map->GetRectanglePointer(element);
+		element_p = (void*)map->RectanglePointer(element);
 		if (((Rectangle*)element_p)->exist &&
 			!((Rectangle*)element_p)->IsUnbreacable() &&
 			((Rectangle*)element_p)->IsCollision(&beam))
@@ -3061,7 +3109,7 @@ bool Bullet::Collision(Map* map)
 {
 	for (EngineTypes::Map::array_length_t element = 0; element < map->rectangles_array_length; element++)
 	{
-		if (Collision(map->GetRectanglePointer(element)))
+		if (Collision(map->RectanglePointer(element)))
 		{
 			return true;
 		}
@@ -3216,7 +3264,7 @@ bool Knife::Collision(Map* map)
 
 	for (element = 0; element < map->cyrcles_array_length; element++)
 	{
-		element_p = (void*)map->GetCyrclePointer(element);
+		element_p = (void*)map->CyrclePointer(element);
 		if (((Cyrcle*)element_p)->exist &&
 			!((Cyrcle*)element_p)->IsUnbreacable() &&
 			((Cyrcle*)element_p)->IsCollision(&segment))
@@ -3234,7 +3282,7 @@ bool Knife::Collision(Map* map)
 
 	for (EngineTypes::Map::array_length_t element = 0; element < map->polygons_array_length; element++)
 	{
-		element_p = (void*)map->GetPolygonPointer(element);
+		element_p = (void*)map->PolygonPointer(element);
 		if (((Polygon*)element_p)->exist &&
 			!((Polygon*)element_p)->IsUnbreacable() &&
 			((Polygon*)element_p)->IsCollision(&segment))
@@ -3252,7 +3300,7 @@ bool Knife::Collision(Map* map)
 
 	for (EngineTypes::Map::array_length_t element = 0; element < map->rectangles_array_length; element++)
 	{
-		element_p = (void*)map->GetRectanglePointer(element);
+		element_p = (void*)map->RectanglePointer(element);
 		if (((Rectangle*)element_p)->exist &&
 			!((Rectangle*)element_p)->IsUnbreacable() &&
 			((Rectangle*)element_p)->IsCollision(&segment))

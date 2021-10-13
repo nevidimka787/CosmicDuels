@@ -83,6 +83,7 @@ Asteroid
 #define MAP_MEGA_LASERS			4u
 #define MAP_DYNAMICAL			5u
 #define MAP_DESTROYABLE			6u
+#define MAP_AGGRESSIVE			7u
 
 	//map pull
 
@@ -119,7 +120,7 @@ Asteroid
 	//match rules
 
 #define GAME_RANDOM_ITERATIONS_COUNT			8u
-#define GAME_MAPS_COUNT							7u
+#define GAME_MAPS_COUNT							8u
 #define GAME_OBJECTS_COUNT						1u
 #define GAME_BONUSES_COUNT						4u
 #define GAME_BALANCE_ACTIVATE_DIFFERENCE_SCORES	3u
@@ -212,6 +213,7 @@ Asteroid
 #define BUTTON_ID__SELECT_MAP_4	(BUTTON_ID__SELECT_MAP + MAP_MEGA_LASERS)
 #define BUTTON_ID__SELECT_MAP_5	(BUTTON_ID__SELECT_MAP + MAP_DYNAMICAL)
 #define BUTTON_ID__SELECT_MAP_6	(BUTTON_ID__SELECT_MAP + MAP_DESTROYABLE)
+#define BUTTON_ID__SELECT_MAP_7	(BUTTON_ID__SELECT_MAP + MAP_AGGRESSIVE)
 
 	//select map pull menu
 

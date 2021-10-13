@@ -459,7 +459,7 @@ void Game::UpdateMapPhase2()
 	map_data_mtx.lock();
 	for (EngineTypes::Map::array_length_t element = 0; element < map.rectangles_array_length; element++)
 	{
-		element_pointer = (void*)map.GetRectanglePointer(element);
+		element_pointer = (void*)map.RectanglePointer(element);
 		if (((Rectangle*)element_pointer)->exist)
 		{
 			((Rectangle*)element_pointer)->Update();

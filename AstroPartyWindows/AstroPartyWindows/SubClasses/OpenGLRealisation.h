@@ -172,8 +172,6 @@ public:
 	//The function draw turel.
 	void DrawObject(Turel* turel, bool update_shader = false);
 
-	//The function draw map element as vague object.
-	void DrawObject(MapElement* map_element, bool update_shader = false);
 	//The function draw map's rectangle.
 	void DrawObject(Rectangle* rectangle, bool update_shader = false);
 	//The function draw map's cyrcle.

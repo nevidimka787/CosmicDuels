@@ -35,6 +35,8 @@ public:
 	Vec2F Position();
 	EngineTypes::Map::property_t Prorerties();
 	Vec2F Velocity();
+	bool IsKiller();
+	bool IsAggressive();
 	bool IsUnbreacable();
 	void Move(Vec2F move_vector);
 	void Move(const Vec2F* move_vector);
@@ -232,9 +234,9 @@ public:
 	Rectangle GetRectangle(EngineTypes::Map::array_length_t number);
 	Cyrcle GetCyrcle(EngineTypes::Map::array_length_t number);
 	Polygon GetPolygon(EngineTypes::Map::array_length_t number);
-	Rectangle* GetRectanglePointer(EngineTypes::Map::array_length_t number);
-	Cyrcle* GetCyrclePointer(EngineTypes::Map::array_length_t number);
-	Polygon* GetPolygonPointer(EngineTypes::Map::array_length_t number);
+	Rectangle* RectanglePointer(EngineTypes::Map::array_length_t number);
+	Cyrcle* CyrclePointer(EngineTypes::Map::array_length_t number);
+	Polygon* PolygonPointer(EngineTypes::Map::array_length_t number);
 	void Set(const Map* map);
 	void Set(
 		const Rectangle* rectangles_array = nullptr,
