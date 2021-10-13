@@ -130,6 +130,8 @@ protected:
 	Vec2F velocity;
 	//This variable set only by force functions.
 	Vec2F force;
+
+	bool CollisionSide(Vec2F* p1, Vec2F* p2);
 public:
 	float force_collision_coeffisient;
 	float force_resistance_air_coefficient;

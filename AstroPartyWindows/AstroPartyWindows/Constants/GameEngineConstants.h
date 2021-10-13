@@ -138,12 +138,13 @@
 #define LOG_DATA_TEAM			8 //collect info about team number
 
 
-#define MAP_PROPERTY_NO_PROPERTY	0x00 //map is breakable and passive
-#define MAP_PROPERTY_UNBREACABLE	0x01 //map is unbreakable
-#define MAP_PROPERTY_KILLER			0x02 //map can destroy players
-#define MAP_PROPERTY_AGRESSIVE		0x04 //map can destroy entities with out players
+#define MAP_PROPERTY_NO_PROPERTY	0x00 //element is breakable and passive
+#define MAP_PROPERTY_UNBREACABLE	0x01 //element is unbreakable
+#define MAP_PROPERTY_KILLER			0x02 //element can destroy players
+#define MAP_PROPERTY_AGRESSIVE		0x04 //element can destroy entities with out players
+#define MAP_PROPERTY_CLOSED			0x08 //element is polygon, else element is broren line
 
-#define MAP_DEFAULT_PROPERTIES	(MAP_PROPERTY_UNBREACABLE)
+#define MAP_DEFAULT_PROPERTIES		(MAP_PROPERTY_UNBREACABLE)
 
 
 #define MEGA_LASER_DEFAULT_WIDTH	0.05f

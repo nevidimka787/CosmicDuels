@@ -800,6 +800,30 @@ void OpenGL::DrawObject(Cyrcle* cyrcle, bool update_shader)
 
 void OpenGL::DrawObject(Polygon* polygon, bool update_shader)
 {
+    if (update_shader)
+    {
+        polygon_buffer.Use();
+        polygon_shader.Use();
+        polygon_shader.SetUniform("scale", window_scale);
+        polygon_shader.SetUniform("camera_position", temp__game__camera_position);
+        polygon_shader.SetUniform("camera_size", temp__game__camera_size);
+    }
+    EngineTypes::Map::array_length_t p_count = polygon->PointsCount();
+    if (p_count <= 1)
+    {
+        return;
+    }
+    polygon_shader.SetUniform("properties", polygon->Prorerties());
+    if (p_count > 2 && polygon->IsClosed())
+    {
+        polygon_shader.SetUniform("side", Segment(polygon->points_array[p_count - 1], polygon->points_array[0], true));
+        polygon_buffer.Draw();
+    }
+    for (EngineTypes::Map::array_length_t p = 1; p < p_count; p++)
+    {
+        polygon_shader.SetUniform("side", Segment(polygon->points_array[p - 1], polygon->points_array[p], true));
+        polygon_buffer.Draw();
+    }
 }
 
 
@@ -1135,7 +1159,7 @@ void OpenGL::DrawIndicatedMap(Map* map)
             }
         }
     }
-
+    
     if (map->polygons_array_length > 0)
     {
         polygon_shader.Use();

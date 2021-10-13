@@ -2,7 +2,30 @@
 
 out vec4 frag_color;
 
+uniform int properties;
+
+#define UBBREAKABLE_COLOR	vec4(0.4f, 0.4f, 0.1f, 1.0f)
+#define KILLER_COLLOR		vec4(0.0f, 0.5f, 0.1f, 1.0f)
+#define AGGRESSIVE_COLOR	vec4(0.0f, 0.0f, 0.8f, 1.0f)
+
+#define UNBREAKABLE		0x01
+#define KILLER			0x02
+#define AGGRESSIVE		0x04
+
 void main()
 {
-	frag_color = vec4(vec3(0.5f), 1.0f);
+	frag_color = vec4(vec3(0.1f), 1.0f);
+	
+	if((properties & UNBREAKABLE) == 0)
+	{
+		frag_color += UBBREAKABLE_COLOR;
+	}
+	if((properties & KILLER) != 0)
+	{
+		frag_color += KILLER_COLLOR;
+	}
+	if((properties & AGGRESSIVE) != 0)
+	{
+		frag_color += AGGRESSIVE_COLOR;
+	}
 }

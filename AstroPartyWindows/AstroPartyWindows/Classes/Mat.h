@@ -139,7 +139,9 @@ public:
 	//Return project of "projection_vector" to this vector.
 	//If angle between "projection_vector" and this vector more then 90 degrees the function return zero vector.
 	Vec2F ProjectSign(const Vec2F* projection_vector) const;
+	//The function return perpendiculat to clockwise.
 	Vec2F Perpendicular() const;
+	//The function rotate vector to clockwise on 90 degrees.
 	void PerpendicularThis();
 	//Clockwise is positive.
 	Vec2F Rotate(float angle) const;

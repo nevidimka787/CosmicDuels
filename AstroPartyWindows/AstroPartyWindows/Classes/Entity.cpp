@@ -236,9 +236,30 @@ bool Entity::IsCollision(Map* map)
 
 bool Entity::IsCollision(Polygon* polygon)
 {
-	if (polygon->exist == false)
+	if (!polygon->exist)
 	{
 		return false;
+	}
+	EngineTypes::Map::array_length_t p_count = polygon->PointsCount();
+	if (p_count < 2)
+	{
+		return false;
+	}
+	Segment side = Segment(polygon->points_array[p_count - 1], polygon->points_array[0], true);
+	if (p_count > 2 && polygon->IsClosed())
+	{
+		if (side.Distance(position) < radius)
+		{
+			return true;
+		}
+	}
+	for (EngineTypes::Map::array_length_t p = 1; p < p_count; p++)
+	{
+		side.Set(polygon->points_array[p - 1], polygon->points_array[p], true);
+		if (side.Distance(position) < radius)
+		{
+			return true;
+		}
 	}
 	return false;
 }
@@ -581,6 +602,48 @@ bool DynamicEntity::Collision(Cyrcle* cyrcle)
 
 bool DynamicEntity::Collision(Polygon* polygon)
 {
+	if (!polygon->exist)
+	{
+		return false;
+	}
+	EngineTypes::Map::array_length_t p_count = polygon->PointsCount();
+	if (p_count < 2)
+	{
+		return false;
+	}
+
+	Segment side = Segment(polygon->points_array[p_count - 1], polygon->points_array[0], true);
+	bool collision = false;
+	Vec2F collision_direction;//direction from position to collision point
+	float distance;
+
+	if (p_count > 2 && polygon->IsClosed())
+	{
+		distance = side.Distance(position, &collision_direction);
+		if (distance < radius)
+		{
+			collision_direction -= position;
+			velocity -= collision_direction.ProjectSign(velocity);
+			force -= collision_direction * (force_collision_coeffisient / distance * radius);
+			velocity += Vec2F(-collision_direction).ProjectSign(polygon->Velocity(collision_direction + position) - velocity) / 2.0f;
+
+			collision = true;
+		}
+	}
+
+	for (EngineTypes::Map::array_length_t p = 1; p < p_count; p++)
+	{
+		distance = side.Distance(position, &collision_direction);
+		if (distance < radius)
+		{
+			collision_direction -= position;
+			velocity -= collision_direction.ProjectSign(velocity);
+			force -= collision_direction * (force_collision_coeffisient / distance * radius);
+			velocity += Vec2F(-collision_direction).ProjectSign(polygon->Velocity(collision_direction + position) - velocity) / 2.0f;
+
+			collision = true;
+		}
+	}
 	return false;
 }
 

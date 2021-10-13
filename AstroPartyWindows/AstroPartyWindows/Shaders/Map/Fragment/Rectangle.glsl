@@ -37,5 +37,4 @@ void main()
 	{
 		frag_color += AGGRESSIVE_COLOR;
 	}
-	
 }

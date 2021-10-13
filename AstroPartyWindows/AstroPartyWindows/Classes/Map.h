@@ -40,7 +40,6 @@ public:
 	bool IsUnbreacable();
 	void Move(Vec2F move_vector);
 	void Move(const Vec2F* move_vector);
-	void Update();
 	void SetPosition(Vec2F position);
 	void SetPosition(const Vec2F* position);
 	void Set(const MapElement* map_element);
@@ -52,6 +51,8 @@ public:
 		const Vec2F* position,
 		EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
 		bool exist = true);
+	void Update();
+
 	void operator=(MapElement map_element);
 
 	~MapElement();
@@ -157,55 +158,84 @@ public:
 class Polygon : public MapElement
 {
 protected:
-	Vec2F* points_array;
-	Vec2F* default_points_array;
-	EngineTypes::Polygon::points_array_length_t points_array_length;
+	bool need_update;
+
+	Vec2F last_position;
+	Vec2F last_size;
+	float last_angle;
+
+	Vec2F* local_points_array;
+	EngineTypes::Polygon::points_array_length_t points_count;
 
 public:
-	bool closed;
+	Vec2F* points_array;
+	float angle;
+	Vec2F size;
+
 	Polygon();
 	Polygon(const Polygon& polygon);
 	Polygon(
 		Vec2F position,
+		float angle,
+		Vec2F size,
 		const Vec2F* points_array,
 		EngineTypes::Polygon::points_array_length_t points_array_length,
-		EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
+		EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES | MAP_PROPERTY_CLOSED,
 		bool exist = true);
 	Polygon(
 		const Vec2F* position,
+		float angle,
+		const Vec2F* size,
 		const Vec2F* points_array,
 		EngineTypes::Polygon::points_array_length_t points_array_length,
 		EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
 		bool exist = true);
 
+	bool IsClosed();
 	bool IsCollision(const Beam* beam);
 	bool IsCollision(const Line* line);
 	bool IsCollision(const Segment* segment);
-	void RotateGlobal(float angle, Vec2F global_rotating_point);
-	void RotateGlobal(float angle, const Vec2F* global_rotating_point);
-	void RotateLocal(float angle, Vec2F local_rotating_point);
-	void RotateLocal(float angle, const Vec2F* local_rotating_point);
-	void Move(Vec2F move_vector);
-	void Move(const Vec2F* move_vector);
-	void ToDefault();
+	bool IsNeedUpdate();
+	//The function return resize velocity.
+	Vec2F DynamicalProperties();
+	void DynamicalProperties(float* angular_velocty);
+	void DynamicalProperties(Vec2F* velocity);
+	void DynamicalProperties(float* angular_velocty, Vec2F* resize_velocity);
+	void DynamicalProperties(Vec2F* velocity, Vec2F* resize_velocity);
+	void DynamicalProperties(Vec2F* velocity, float* angular_velocty);
+	void DynamicalProperties(Vec2F* velocity, float* angular_velocty, Vec2F* resize_velocity);
+	EngineTypes::Polygon::points_array_length_t PointsCount();
 	void Set(const Polygon* parent);
 	void Set(
 		Vec2F position,
+		float angle,
+		Vec2F size,
 		const Vec2F* points_array,
 		EngineTypes::Polygon::points_array_length_t points_array_length,
 		EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
 		bool exist = true);
 	void Set(
 		const Vec2F* position,
+		float angle,
+		const Vec2F* size,
 		const Vec2F* points_array,
 		EngineTypes::Polygon::points_array_length_t points_array_length,
 		EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
 		bool exist = true);
+	void ToDefault();
+	//The function set local_points by global points, position and angle.
+	void UpdatePoints();
+	void Update();
+	//The function return velocity of point in the polygon.
+	Vec2F Velocity(Vec2F point);
+	//The function return velocity of point in the polygon.
+	Vec2F Velocity(const Vec2F* point);
+	//The function return velocity of point in the polygon.
+	Vec2F VelocityLocal(Vec2F point);
+	//The function return velocity of point in the polygon.
+	Vec2F VelocityLocal(const Vec2F* point);
 
-	void operator=(Polygon polygon)
-	{
-
-	}
+	void operator=(Polygon polygon);
 
 	~Polygon();
 };
