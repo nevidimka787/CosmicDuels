@@ -678,8 +678,9 @@ void Game::PollEvents()
 	case MAP_DECELERATION_AREA:	Event3();	return;
 	case MAP_MEGA_LASERS:		Event4();	return;
 	case MAP_DYNAMICAL:			Event5();	return;
-	case MAP_DESTROYABLE:		Event5();	return;
-	case MAP_AGGRESSIVE:		Event6();	return;
+	case MAP_DESTROYABLE:		Event6();	return;
+	case MAP_AGGRESSIVE:		Event7();	return;
+	case MAP_BROKEN:			Event8();	return;
 	}
 }
 
@@ -708,6 +709,9 @@ void Game::InitLevel()
 	
 	switch (current_map_id)
 	{
+	case MAP_BROKEN:
+		CreateMap8(ships_positions, ships_angles);
+		break;
 	case MAP_AGGRESSIVE:
 		CreateMap7(ships_positions, ships_angles);
 		break;
@@ -943,11 +947,12 @@ void Game::InitMenus()
 	delete[] buttons;
 
 	//maps select menu
-#define GAME_PULL_MENU_UP_Y		0.9f
-#define GAME_PULL_MENU_RIGHT_BORDER	0.55f
-#define GAME_PULL_MENU_DOWN_BORDER	0.3f
+#define GAME_PULL_MENU_UP_Y				0.9f
+#define GAME_PULL_MENU_RIGHT_BORDER		0.55f
+#define GAME_PULL_MENU_DOWN_BORDER		0.3f
+#define GAME_PULL_MENU_BUTTON_SIZE_Y	-0.25f
 	buttons = new Button[GAME_MAPS_COUNT];
-	size.Set(0.5f, -0.25f);
+	size.Set(0.5f, GAME_PULL_MENU_BUTTON_SIZE_Y);
 	for (uint8_t i = 0; i < GAME_MAPS_COUNT; i++)
 	{
 		position.Set(-0.5f + (float)(i % 2) * GAME_PULL_MENU_RIGHT_BORDER, GAME_PULL_MENU_UP_Y - (float)(i / 2) * GAME_PULL_MENU_DOWN_BORDER);
@@ -966,8 +971,9 @@ void Game::InitMenus()
 	buttons[MAP_DESTROYABLE].text_size = 4u;
 	buttons[MAP_AGGRESSIVE].SetText("Aggressive");
 	buttons[MAP_AGGRESSIVE].text_size = 4u;
+	buttons[MAP_BROKEN].SetText("Broken");
 	position.Set(0.0f, 0.0f);
-	size.Set(1.0f, GAME_PULL_MENU_RIGHT_BORDER * (float)(((GAME_MAPS_COUNT + 1) / 2) + 1));
+	size.Set(1.0f, -GAME_PULL_MENU_DOWN_BORDER * (float)(((GAME_MAPS_COUNT + 1) / 2) + 1));
 	map_pull_select_menu.Set(&position, &size, buttons, GAME_MAPS_COUNT);
 	delete[] buttons;
 

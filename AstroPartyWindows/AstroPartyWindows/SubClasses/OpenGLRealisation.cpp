@@ -310,6 +310,7 @@ void OpenGL::InitBuffers()
 
     laser_buffer.Initialisate(points, 6);
     mega_laser_buffer.Initialisate(points, 6);
+    polygon_buffer.Initialisate(points, 6);
 
     points[0].Set(2.0f, 2.0f);
     points[1].Set(-2.0f, 2.0f);
@@ -1136,7 +1137,7 @@ void OpenGL::DrawIndicatedMap(Map* map)
         for (EngineTypes::Map::array_length_t rectangle = 0; rectangle < map->rectangles_array_length; rectangle++)
         {
             map_element_p = (void*)map->RectanglePointer(rectangle);
-            if (((Rectangle*)map_element_p)->exist == true)
+            if (((Rectangle*)map_element_p)->exist)
             {
                 DrawObject((Rectangle*)map_element_p);
             }
@@ -1162,7 +1163,7 @@ void OpenGL::DrawIndicatedMap(Map* map)
     
     if (map->polygons_array_length > 0)
     {
-        polygon_shader.Use();
+        polygon_buffer.Use();
         polygon_shader.Use();
         polygon_shader.SetUniform("scale", window_scale);
         polygon_shader.SetUniform("camera_position", temp__game__camera_position);
@@ -1170,7 +1171,7 @@ void OpenGL::DrawIndicatedMap(Map* map)
         for (EngineTypes::Map::array_length_t polygon = 0; polygon < map->polygons_array_length; polygon++)
         {
             map_element_p = (void*)map->PolygonPointer(polygon);
-            if (((Polygon*)map->RectanglePointer(polygon))->exist == true)
+            if (((Polygon*)map_element_p)->exist)
             {
                 DrawObject((Polygon*)map_element_p);
             }

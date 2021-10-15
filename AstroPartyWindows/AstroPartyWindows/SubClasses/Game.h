@@ -393,6 +393,9 @@ public:
 	//"Aggressive"
 	void Event7();
 
+	//"Broken"
+	void Event8();
+
 	//"Test"
 	void CreateMap0(Vec2F* ships_positions, float* ships_angles);
 	
@@ -416,6 +419,9 @@ public:
 
 	//"Aggressive"
 	void CreateMap7(Vec2F* ships_positions, float* ships_angles);
+
+	//"Broken"
+	void CreateMap8(Vec2F* ships_positions, float* ships_angles);
 
 	//Memory functions
 

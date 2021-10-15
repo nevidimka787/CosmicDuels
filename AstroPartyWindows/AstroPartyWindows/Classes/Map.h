@@ -130,10 +130,10 @@ public:
 		EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
 		bool exist = true);
 
-	bool IsCollision(const Beam* beam);
-	bool IsCollision(const Line* line);
-	bool IsCollision(const Segment* segment);
-	float Radius();
+	bool IsCollision(const Beam* beam) const;
+	bool IsCollision(const Line* line) const;
+	bool IsCollision(const Segment* segment) const;
+	float Radius() const;
 	void SetRadius(float radius);
 	void Set(const Cyrcle* cyrcle);
 	void Set(
@@ -191,20 +191,21 @@ public:
 		EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
 		bool exist = true);
 
-	bool IsClosed();
-	bool IsCollision(const Beam* beam);
-	bool IsCollision(const Line* line);
-	bool IsCollision(const Segment* segment);
-	bool IsNeedUpdate();
+	bool IsClosed() const;
+	bool IsCollision(const Beam* beam) const;
+	bool IsCollision(const Line* line) const;
+	bool IsCollision(const Segment* segment) const;
+	bool IsNeedUpdate() const;
+	void NeedUpdate();
 	//The function return resize velocity.
-	Vec2F DynamicalProperties();
-	void DynamicalProperties(float* angular_velocty);
-	void DynamicalProperties(Vec2F* velocity);
-	void DynamicalProperties(float* angular_velocty, Vec2F* resize_velocity);
-	void DynamicalProperties(Vec2F* velocity, Vec2F* resize_velocity);
-	void DynamicalProperties(Vec2F* velocity, float* angular_velocty);
-	void DynamicalProperties(Vec2F* velocity, float* angular_velocty, Vec2F* resize_velocity);
-	EngineTypes::Polygon::points_array_length_t PointsCount();
+	Vec2F DynamicalProperties() const;
+	void DynamicalProperties(float* angular_velocty) const;
+	void DynamicalProperties(Vec2F* velocity) const;
+	void DynamicalProperties(float* angular_velocty, Vec2F* resize_velocity) const;
+	void DynamicalProperties(Vec2F* velocity, Vec2F* resize_velocity) const;
+	void DynamicalProperties(Vec2F* velocity, float* angular_velocty) const;
+	void DynamicalProperties(Vec2F* velocity, float* angular_velocty, Vec2F* resize_velocity) const;
+	EngineTypes::Polygon::points_array_length_t PointsCount() const;
 	void Set(const Polygon* parent);
 	void Set(
 		Vec2F position,
@@ -227,13 +228,13 @@ public:
 	void UpdatePoints();
 	void Update();
 	//The function return velocity of point in the polygon.
-	Vec2F Velocity(Vec2F point);
+	Vec2F Velocity(Vec2F point) const;
 	//The function return velocity of point in the polygon.
-	Vec2F Velocity(const Vec2F* point);
+	Vec2F Velocity(const Vec2F* point) const;
 	//The function return velocity of point in the polygon.
-	Vec2F VelocityLocal(Vec2F point);
+	Vec2F VelocityLocal(Vec2F point) const;
 	//The function return velocity of point in the polygon.
-	Vec2F VelocityLocal(const Vec2F* point);
+	Vec2F VelocityLocal(const Vec2F* point) const;
 
 	void operator=(Polygon polygon);
 
@@ -261,12 +262,12 @@ public:
 		const Polygon* polygons_array = nullptr,
 		EngineTypes::Map::array_length_t polygons_array_length = 0);
 
-	Rectangle GetRectangle(EngineTypes::Map::array_length_t number);
-	Cyrcle GetCyrcle(EngineTypes::Map::array_length_t number);
-	Polygon GetPolygon(EngineTypes::Map::array_length_t number);
-	Rectangle* RectanglePointer(EngineTypes::Map::array_length_t number);
-	Cyrcle* CyrclePointer(EngineTypes::Map::array_length_t number);
-	Polygon* PolygonPointer(EngineTypes::Map::array_length_t number);
+	Rectangle GetRectangle(EngineTypes::Map::array_length_t number) const;
+	Cyrcle GetCyrcle(EngineTypes::Map::array_length_t number) const;
+	Polygon GetPolygon(EngineTypes::Map::array_length_t number) const;
+	Rectangle* RectanglePointer(EngineTypes::Map::array_length_t number) const;
+	Cyrcle* CyrclePointer(EngineTypes::Map::array_length_t number) const;
+	Polygon* PolygonPointer(EngineTypes::Map::array_length_t number) const;
 	void Set(const Map* map);
 	void Set(
 		const Rectangle* rectangles_array = nullptr,

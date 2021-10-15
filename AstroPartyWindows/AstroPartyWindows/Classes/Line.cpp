@@ -158,19 +158,47 @@ float Line::Distance(const Beam* target) const
 	return Distance(&target->point);
 }
 
+float Line::Distance(const Beam* target, Vec2F* nearest_point) const
+{
+	if (Intersection(target, nearest_point))
+	{
+		return 0.0;
+	}
+
+	return Distance(&target->point, nearest_point);
+}
+
 float Line::Distance(const Segment* target) const
 {
 	if (IsIntersection(target))
 	{
 		return 0.0;
 	}
-	
+
 	float temp_float1 = Distance(&target->point);
 	float temp_float2 = Distance(target->point + target->vector);
 	if (temp_float1 > temp_float2)
 	{
 		return temp_float2;
 	}
+	return temp_float1;
+}
+
+float Line::Distance(const Segment* target, Vec2F* nearest_point) const
+{
+	if (Intersection(target, nearest_point))
+	{
+		return 0.0;
+	}
+	
+	Vec2F near1;
+	float temp_float1 = Distance(&target->point, &near1);
+	float temp_float2 = Distance(target->point + target->vector, nearest_point);
+	if (temp_float1 > temp_float2)
+	{
+		return temp_float2;
+	}
+	*nearest_point = near1;
 	return temp_float1;
 }
 
@@ -357,7 +385,7 @@ bool Beam::IsIntersection(const Segment* intersection_segment) const
 
 float Beam::Distance(Vec2F target) const
 {
-	Vec2F temp_vector2 = vector.Perpendicular();
+	Vec2F temp_vector2 = vector.PerpendicularClockwise();
 	Line temp_line1 = Line(target, temp_vector2);
 	if (Intersection(&temp_line1, &temp_vector2))
 	{
@@ -369,7 +397,7 @@ float Beam::Distance(Vec2F target) const
 
 float Beam::Distance(const Vec2F* target) const
 {
-	Vec2F temp_vector2 = vector.Perpendicular();
+	Vec2F temp_vector2 = vector.PerpendicularClockwise();
 	Line temp_line1 = Line(target, &temp_vector2);
 	if (Intersection(&temp_line1, &temp_vector2))
 	{
@@ -381,7 +409,7 @@ float Beam::Distance(const Vec2F* target) const
 
 float Beam::Distance(Vec2F target, Vec2F* nearest_point) const
 {
-	Vec2F temp_vector2 = vector.Perpendicular();
+	Vec2F temp_vector2 = vector.PerpendicularClockwise();
 	Line temp_line1 = Line(&target, &temp_vector2);
 	if (Intersection(&temp_line1, &temp_vector2))
 	{
@@ -395,7 +423,7 @@ float Beam::Distance(Vec2F target, Vec2F* nearest_point) const
 
 float Beam::Distance(const Vec2F* target, Vec2F* nearest_point) const
 {
-	Vec2F temp_vector2 = vector.Perpendicular();
+	Vec2F temp_vector2 = vector.PerpendicularClockwise();
 	Line temp_line1 = Line(target, &temp_vector2);
 	if (Intersection(&temp_line1, &temp_vector2))
 	{
@@ -417,6 +445,16 @@ float Beam::Distance(const Line* target) const
 	return target->Distance(point);
 }
 
+float Beam::Distance(const Line* target, Vec2F* nearest_point) const
+{
+	if (Intersection(target, nearest_point))
+	{
+		return 0.0;
+	}
+
+	return target->Distance(point, nearest_point);
+}
+
 float Beam::Distance(const Beam* target) const
 {
 	if (IsIntersection(target))
@@ -427,13 +465,13 @@ float Beam::Distance(const Beam* target) const
 	float temp_float1;
 	float temp_float2;
 
-	Vec2F temp_vector2 = target->vector.Perpendicular();
+	Vec2F temp_vector2 = target->vector.PerpendicularClockwise();
 	Line temp_line1 = Line(&target->point, &temp_vector2);
 	if (Intersection(&temp_line1, &temp_vector2))
 	{
 		temp_float1 = target->point.Distance(&temp_vector2);
 		
-		temp_vector2 = vector.Perpendicular();
+		temp_vector2 = vector.PerpendicularClockwise();
 		temp_line1.Set(&point, &temp_vector2);
 		if (target->Intersection(&temp_line1, &temp_vector2))
 		{
@@ -447,7 +485,50 @@ float Beam::Distance(const Beam* target) const
 		return temp_float1;
 	}
 
-	temp_vector2 = vector.Perpendicular();
+	temp_vector2 = vector.PerpendicularClockwise();
+	temp_line1.Set(&point, &temp_vector2);
+	if (target->Intersection(&temp_line1, &temp_vector2))
+	{
+		return point.Distance(&temp_vector2);
+	}
+
+	return point.Distance(target->point);
+}
+
+float Beam::Distance(const Beam* target, Vec2F* nearest_point) const
+{
+	if (IsIntersection(target))
+	{
+		return 0.0;
+	}
+
+	float temp_float1;
+	float temp_float2;
+
+	Vec2F temp_vector2 = target->vector.PerpendicularClockwise();
+	Line temp_line1 = Line(&target->point, &temp_vector2);
+	if (Intersection(&temp_line1, &temp_vector2))
+	{
+		temp_float1 = target->point.Distance(&temp_vector2);
+		*nearest_point = temp_vector2;
+
+		temp_vector2 = vector.PerpendicularClockwise();
+		temp_line1.Set(&point, &temp_vector2);
+		if (target->Intersection(&temp_line1, &temp_vector2))
+		{
+			temp_float2 = point.Distance(&temp_vector2);
+			if (temp_float1 > temp_float2)
+			{
+				*nearest_point = point;
+				return temp_float2;
+			}
+			return temp_float1;
+		}
+		return temp_float1;
+	}
+	*nearest_point = point;
+
+	temp_vector2 = vector.PerpendicularClockwise();
 	temp_line1.Set(&point, &temp_vector2);
 	if (target->Intersection(&temp_line1, &temp_vector2))
 	{
@@ -469,21 +550,21 @@ float Beam::Distance(const Segment* target) const
 
 	//Get distance between line and point
 
-	Vec2F temp_vector2 = target->vector.Perpendicular();
+	Vec2F temp_vector2 = target->vector.PerpendicularClockwise();
 	Line temp_line1 = Line(&target->point, &temp_vector2);
 	//dist from target->point to this 
 	if (Intersection(&temp_line1, &temp_vector2))
 	{
 		temp_float1 = target->point.Distance(temp_vector2);
 		
-		temp_vector2 = target->vector.Perpendicular();
+		temp_vector2 = target->vector.PerpendicularClockwise();
 		temp_line1.Set(target->point + target->vector, temp_vector2);
 		//dist from target->point2 to this 
 		if (Intersection(&temp_line1, &temp_vector2))
 		{
 			temp_float2 = target->point.Distance(temp_vector2);
 
-			temp_vector2 = vector.Perpendicular();
+			temp_vector2 = vector.PerpendicularClockwise();
 			temp_line1.Set(&point, &temp_vector2);
 			//dist from this->point to target
 			if (target->Intersection(&temp_line1, &temp_vector2))
@@ -505,7 +586,7 @@ float Beam::Distance(const Segment* target) const
 			}
 			return temp_float2;
 		}
-		temp_vector2 = vector.Perpendicular();
+		temp_vector2 = vector.PerpendicularClockwise();
 		temp_line1.Set(&point, &temp_vector2);
 		//dist from this->point to target
 		if (target->Intersection(&temp_line1, &temp_vector2))
@@ -521,14 +602,14 @@ float Beam::Distance(const Segment* target) const
 		return temp_float1;
 	}
 
-	temp_vector2 = target->vector.Perpendicular();
+	temp_vector2 = target->vector.PerpendicularClockwise();
 	temp_line1.Set(target->point + target->vector, temp_vector2);
 	//dist from target->point2 to this 
 	if (Intersection(&temp_line1, &temp_vector2))
 	{
 		temp_float1 = target->point.Distance(temp_vector2);
 
-		temp_vector2 = vector.Perpendicular();
+		temp_vector2 = vector.PerpendicularClockwise();
 		temp_line1.Set(&point, &temp_vector2);
 		//dist from this->point to target
 		if (target->Intersection(&temp_line1, &temp_vector2))
@@ -544,7 +625,7 @@ float Beam::Distance(const Segment* target) const
 		return temp_float1;
 	}
 
-	temp_vector2 = vector.Perpendicular();
+	temp_vector2 = vector.PerpendicularClockwise();
 	temp_line1.Set(&point, &temp_vector2);
 	//dist from this->point to target
 	if (target->Intersection(&temp_line1, &temp_vector2))
@@ -552,6 +633,125 @@ float Beam::Distance(const Segment* target) const
 		return point.Distance(temp_vector2);
 	}
 	
+	//Get distance between points
+
+	temp_float1 = target->point.Distance(&point);
+	temp_float2 = (target->point + target->vector).Distance(&point);
+
+	if (temp_float1 > temp_float2)
+	{
+		return temp_float2;
+	}
+	return temp_float1;
+}
+
+float Beam::Distance(const Segment* target, Vec2F* nearest_point) const
+{
+	if (IsIntersection(target))
+	{
+		return 0.0;
+	}
+
+	float temp_float1;
+	float temp_float2;
+
+	//Get distance between line and point
+
+	Vec2F temp_vector2 = target->vector.PerpendicularClockwise();
+	Line temp_line1 = Line(&target->point, &temp_vector2);
+	//dist from target->point to this 
+	if (Intersection(&temp_line1, &temp_vector2))
+	{
+		temp_float1 = target->point.Distance(temp_vector2);
+		Vec2F near1 = temp_vector2;
+
+		temp_vector2 = target->vector.PerpendicularClockwise();
+		temp_line1.Set(target->point + target->vector, temp_vector2);
+		//dist from target->point2 to this 
+		if (Intersection(&temp_line1, &temp_vector2))
+		{
+			temp_float2 = target->point.Distance(temp_vector2);
+			*nearest_point = temp_vector2;
+
+			temp_vector2 = vector.PerpendicularClockwise();
+			temp_line1.Set(&point, &temp_vector2);
+			//dist from this->point to target
+			if (target->Intersection(&temp_line1, &temp_vector2))
+			{
+				if (temp_float1 > temp_float2)
+				{
+					temp_float1 = point.Distance(temp_vector2);
+					near1 = point;
+				}
+				else
+				{
+					temp_float2 = point.Distance(temp_vector2);
+					*nearest_point = point;
+				}
+
+				if (temp_float1 > temp_float2)
+				{
+					return temp_float2;
+				}
+				*nearest_point = near1;
+				return temp_float1;
+			}
+			return temp_float2;
+		}
+		temp_vector2 = vector.PerpendicularClockwise();
+		temp_line1.Set(&point, &temp_vector2);
+		//dist from this->point to target
+		if (target->Intersection(&temp_line1, &temp_vector2))
+		{
+			temp_float2 = point.Distance(temp_vector2);
+			*nearest_point = point;
+
+			if (temp_float1 > temp_float2)
+			{
+				return temp_float2;
+			}
+			*nearest_point = near1;
+			return temp_float1;
+		}
+		*nearest_point = near1;
+		return temp_float1;
+	}
+
+	temp_vector2 = target->vector.PerpendicularClockwise();
+	temp_line1.Set(target->point + target->vector, temp_vector2);
+	//dist from target->point2 to this 
+	if (Intersection(&temp_line1, &temp_vector2))
+	{
+		temp_float1 = target->point.Distance(temp_vector2);
+		*nearest_point = temp_vector2;
+
+		temp_vector2 = vector.PerpendicularClockwise();
+		temp_line1.Set(&point, &temp_vector2);
+		//dist from this->point to target
+		if (target->Intersection(&temp_line1, &temp_vector2))
+		{
+			temp_float2 = point.Distance(temp_vector2);
+
+			if (temp_float1 > temp_float2)
+			{
+				*nearest_point = point;
+				return temp_float2;
+			}
+			return temp_float1;
+		}
+		return temp_float1;
+	}
+
+	*nearest_point = point;
+
+	temp_vector2 = vector.PerpendicularClockwise();
+	temp_line1.Set(&point, &temp_vector2);
+	//dist from this->point to target
+	if (target->Intersection(&temp_line1, &temp_vector2))
+	{
+		return point.Distance(temp_vector2);
+	}
+
 	//Get distance between points
 
 	temp_float1 = target->point.Distance(&point);
@@ -749,7 +949,7 @@ bool Segment::IsIntersection(const Segment* intersection_segment) const
 
 float Segment::Distance(Vec2F target) const
 {
-	Vec2F temp_vector1 = vector.Perpendicular();
+	Vec2F temp_vector1 = vector.PerpendicularClockwise();
 	Line temp_line1 = Line(&target, &temp_vector1);
 	if (Intersection(&temp_line1, &temp_vector1))
 	{
@@ -769,7 +969,7 @@ float Segment::Distance(Vec2F target) const
 
 float Segment::Distance(const Vec2F* target) const
 {
-	Vec2F temp_vector1 = vector.Perpendicular();
+	Vec2F temp_vector1 = vector.PerpendicularClockwise();
 	Line temp_line1 = Line(target, &temp_vector1);
 	if (Intersection(&temp_line1, &temp_vector1))
 	{
@@ -789,7 +989,7 @@ float Segment::Distance(const Vec2F* target) const
 
 float Segment::Distance(Vec2F target, Vec2F* nearest_point) const
 {
-	Vec2F temp_vector1 = vector.Perpendicular();
+	Vec2F temp_vector1 = vector.PerpendicularClockwise();
 	Line temp_line1 = Line(&target, &temp_vector1);
 	if (Intersection(&temp_line1, &temp_vector1))
 	{
@@ -812,7 +1012,7 @@ float Segment::Distance(Vec2F target, Vec2F* nearest_point) const
 
 float Segment::Distance(const Vec2F* target, Vec2F* nearest_point) const
 {
-	Vec2F temp_vector1 = vector.Perpendicular();
+	Vec2F temp_vector1 = vector.PerpendicularClockwise();
 	Line temp_line1 = Line(target, &temp_vector1);
 	if (Intersection(&temp_line1, &temp_vector1))
 	{
@@ -850,6 +1050,25 @@ float Segment::Distance(const Line* target) const
 	return temp_float1;
 }
 
+float Segment::Distance(const Line* target, Vec2F* nearest_point) const
+{
+	if (Intersection(target, nearest_point))
+	{
+		return 0.0;
+	}
+
+	float temp_float1 = target->Distance(point);
+	float temp_float2 = target->Distance(point + vector);
+
+	if (temp_float1 > temp_float2)
+	{
+		*nearest_point = point + vector;
+		return temp_float2;
+	}
+	*nearest_point = point;
+	return temp_float1;
+}
+
 float Segment::Distance(const Beam* target) const
 {
 	if (IsIntersection(target))
@@ -862,7 +1081,7 @@ float Segment::Distance(const Beam* target) const
 
 	//Get distance between line and point
 
-	Vec2F temp_vector2 = vector.Perpendicular();
+	Vec2F temp_vector2 = vector.PerpendicularClockwise();
 	Line temp_line1 = Line(&point, &temp_vector2);
 	//dist from this->point to target 
 	if (target->Intersection(&temp_line1, &temp_vector2))
@@ -875,7 +1094,7 @@ float Segment::Distance(const Beam* target) const
 		{
 			temp_float2 = point.Distance(temp_vector2);
 
-			temp_vector2 = target->vector.Perpendicular();
+			temp_vector2 = target->vector.PerpendicularClockwise();
 			temp_line1.Set(&target->point, &temp_vector2);
 			//dist from target->point to this
 			if (Intersection(&temp_line1, &temp_vector2))
@@ -897,7 +1116,7 @@ float Segment::Distance(const Beam* target) const
 			}
 			return temp_float2;
 		}
-		temp_vector2 = target->vector.Perpendicular();
+		temp_vector2 = target->vector.PerpendicularClockwise();
 		temp_line1.Set(&target->point, &temp_vector2);
 		//dist from target->point to this
 		if (Intersection(&temp_line1, &temp_vector2))
@@ -913,14 +1132,14 @@ float Segment::Distance(const Beam* target) const
 		return temp_float1;
 	}
 
-	temp_vector2 = vector.Perpendicular();
+	temp_vector2 = vector.PerpendicularClockwise();
 	temp_line1.Set(point + vector, temp_vector2);
 	//dist from this->point2 to target 
 	if (target->Intersection(&temp_line1, &temp_vector2))
 	{
 		temp_float1 = point.Distance(temp_vector2);
 
-		temp_vector2 = target->vector.Perpendicular();
+		temp_vector2 = target->vector.PerpendicularClockwise();
 		temp_line1.Set(&target->point, &temp_vector2);
 		//dist from target->point to this
 		if (Intersection(&temp_line1, &temp_vector2))
@@ -936,7 +1155,7 @@ float Segment::Distance(const Beam* target) const
 		return temp_float1;
 	}
 
-	temp_vector2 = target->vector.Perpendicular();
+	temp_vector2 = target->vector.PerpendicularClockwise();
 	temp_line1.Set(&target->point, &temp_vector2);
 	//dist from target->point to this
 	if (Intersection(&temp_line1, &temp_vector2))
@@ -954,6 +1173,123 @@ float Segment::Distance(const Beam* target) const
 	return temp_float1;
 }
 
+float Segment::Distance(const Beam* target, Vec2F* nearest_point) const
+{
+	if (Intersection(target, nearest_point))
+	{
+		return 0.0;
+	}
+
+	float temp_float1;
+	float temp_float2;
+
+	//Get distance between line and point
+
+	Vec2F temp_vector2 = vector.PerpendicularClockwise();
+	Line temp_line1 = Line(&point, &temp_vector2);
+	//dist from this->point to target 
+	if (target->Intersection(&temp_line1, &temp_vector2))
+	{
+		temp_float1 = point.Distance(temp_vector2);
+		Vec2F near1 = point;
+
+		temp_line1.Set(point + vector, temp_vector2);
+		//dist from this->point2 to target 
+		if (target->Intersection(&temp_line1, &temp_vector2))
+		{
+			temp_float2 = point.Distance(temp_vector2);
+			*nearest_point = point;
+
+			temp_vector2 = target->vector.PerpendicularClockwise();
+			temp_line1.Set(&target->point, &temp_vector2);
+			//dist from target->point to this
+			if (Intersection(&temp_line1, &temp_vector2))
+			{
+				if (temp_float1 > temp_float2)
+				{
+					temp_float1 = target->point.Distance(temp_vector2);
+					near1 = temp_vector2;
+				}
+				else
+				{
+					temp_float2 = target->point.Distance(temp_vector2);
+					*nearest_point = temp_vector2;
+				}
+
+				if (temp_float1 > temp_float2)
+				{
+					return temp_float2;
+				}
+				*nearest_point = near1;
+				return temp_float1;
+			}
+			return temp_float2;
+		}
+		temp_vector2 = target->vector.PerpendicularClockwise();
+		temp_line1.Set(&target->point, &temp_vector2);
+		//dist from target->point to this
+		if (Intersection(&temp_line1, &temp_vector2))
+		{
+			temp_float2 = target->point.Distance(temp_vector2);
+			*nearest_point = temp_vector2;
+
+			if (temp_float1 > temp_float2)
+			{
+				return temp_float2;
+			}
+			*nearest_point = near1;
+			return temp_float1;
+		}
+		*nearest_point = near1;
+		return temp_float1;
+	}
+
+	temp_vector2 = vector.PerpendicularClockwise();
+	temp_line1.Set(point + vector, temp_vector2);
+	//dist from this->point2 to target 
+	if (target->Intersection(&temp_line1, &temp_vector2))
+	{
+		temp_float1 = point.Distance(temp_vector2);
+		*nearest_point = point;
+
+		temp_vector2 = target->vector.PerpendicularClockwise();
+		temp_line1.Set(&target->point, &temp_vector2);
+		//dist from target->point to this
+		if (Intersection(&temp_line1, &temp_vector2))
+		{
+			temp_float2 = target->point.Distance(temp_vector2);
+
+			if (temp_float1 > temp_float2)
+			{
+				*nearest_point = temp_vector2;
+				return temp_float2;
+			}
+			return temp_float1;
+		}
+		return temp_float1;
+	}
+
+	temp_vector2 = target->vector.PerpendicularClockwise();
+	temp_line1.Set(&target->point, &temp_vector2);
+	//dist from target->point to this
+	if (Intersection(&temp_line1, &temp_vector2))
+	{
+		*nearest_point = temp_vector2;
+		return target->point.Distance(temp_vector2);
+	}
+
+	temp_float1 = point.Distance(target->point);
+	temp_float2 = (point + vector).Distance(target->point);
+
+	if (temp_float1 > temp_float2)
+	{
+		*nearest_point = point + vector;
+		return temp_float2;
+	}
+	*nearest_point = point;
+	return temp_float1;
+}
+
 float Segment::Distance(const Segment* target) const
 {
 	if (IsIntersection(target))
@@ -966,21 +1302,21 @@ float Segment::Distance(const Segment* target) const
 
 	//Get distance between point and line.
 
-	Vec2F temp_vector2 = target->vector.Perpendicular();
+	Vec2F temp_vector2 = target->vector.PerpendicularClockwise();
 	Line temp_line1 = Line(&target->point, &temp_vector2);
 	//dist from target->point to this
 	if (Intersection(&temp_line1, &temp_vector2))
 	{
 		temp_float1 = target->point.Distance(&temp_vector2);
 
-		temp_vector2 = target->vector.Perpendicular();
+		temp_vector2 = target->vector.PerpendicularClockwise();
 		temp_line1.Set(target->point + target->vector, temp_vector2);
 		//dist from target->point2 to this
 		if (Intersection(&temp_line1, &temp_vector2))
 		{
 			temp_float2 = (target->point + target->vector).Distance(&temp_vector2);
 
-			temp_vector2 = vector.Perpendicular();
+			temp_vector2 = vector.PerpendicularClockwise();
 			temp_line1.Set(&point, &temp_vector2);
 			//dist from this->point to target
 			if (target->Intersection(&temp_line1, &temp_vector2))
@@ -995,7 +1331,7 @@ float Segment::Distance(const Segment* target) const
 				}
 			}
 
-			temp_vector2 = vector.Perpendicular();
+			temp_vector2 = vector.PerpendicularClockwise();
 			temp_line1.Set(point + vector, temp_vector2);
 			//dist from this->point2 to target
 			if (target->Intersection(&temp_line1, &temp_vector2))
@@ -1017,14 +1353,14 @@ float Segment::Distance(const Segment* target) const
 			return temp_float1;
 		}
 
-		temp_vector2 = vector.Perpendicular();
+		temp_vector2 = vector.PerpendicularClockwise();
 		temp_line1.Set(&point, &temp_vector2);
 		//dist from this->point to target
 		if (target->Intersection(&temp_line1, &temp_vector2))
 		{
 			temp_float2 = point.Distance(&temp_vector2);
 
-			temp_vector2 = vector.Perpendicular();
+			temp_vector2 = vector.PerpendicularClockwise();
 			temp_line1.Set(point + vector, temp_vector2);
 			//dist from this->point2 to target
 			if (target->Intersection(&temp_line1, &temp_vector2))
@@ -1046,7 +1382,7 @@ float Segment::Distance(const Segment* target) const
 			return temp_float1;
 		}
 
-		temp_vector2 = vector.Perpendicular();
+		temp_vector2 = vector.PerpendicularClockwise();
 		temp_line1.Set(point + vector, temp_vector2);
 		//dist from this->point2 to target
 		if (target->Intersection(&temp_line1, &temp_vector2))
@@ -1063,21 +1399,21 @@ float Segment::Distance(const Segment* target) const
 		return temp_float1;
 	}
 
-	temp_vector2 = target->vector.Perpendicular();
+	temp_vector2 = target->vector.PerpendicularClockwise();
 	temp_line1.Set(target->point + target->vector, temp_vector2);
 	//dist from target->point2 to this
 	if (Intersection(&temp_line1, &temp_vector2))
 	{
 		temp_float1 = (target->point + target->vector).Distance(&temp_vector2);
 
-		temp_vector2 = vector.Perpendicular();
+		temp_vector2 = vector.PerpendicularClockwise();
 		temp_line1.Set(&point, &temp_vector2);
 		//dist from this->point to target
 		if (target->Intersection(&temp_line1, &temp_vector2))
 		{
 			temp_float2 = point.Distance(&temp_vector2);
 
-			temp_vector2 = vector.Perpendicular();
+			temp_vector2 = vector.PerpendicularClockwise();
 			temp_line1.Set(point + vector, temp_vector2);
 			//dist from this->point2 to target
 			if (target->Intersection(&temp_line1, &temp_vector2))
@@ -1101,14 +1437,14 @@ float Segment::Distance(const Segment* target) const
 		return temp_float1;
 	}
 
-	temp_vector2 = vector.Perpendicular();
+	temp_vector2 = vector.PerpendicularClockwise();
 	temp_line1.Set(&point, &temp_vector2);
 	//dist from this->point to target
 	if (target->Intersection(&temp_line1, &temp_vector2))
 	{
 		temp_float1 = point.Distance(&temp_vector2);
 
-		temp_vector2 = vector.Perpendicular();
+		temp_vector2 = vector.PerpendicularClockwise();
 		temp_line1.Set(point + vector, temp_vector2);
 		//dist from this->point2 to target
 		if (target->Intersection(&temp_line1, &temp_vector2))
@@ -1126,7 +1462,7 @@ float Segment::Distance(const Segment* target) const
 	}
 
 
-	temp_vector2 = vector.Perpendicular();
+	temp_vector2 = vector.PerpendicularClockwise();
 	temp_line1.Set(point + vector, temp_vector2);
 	//dist from this->point2 to target
 	if (target->Intersection(&temp_line1, &temp_vector2))
@@ -1161,6 +1497,247 @@ float Segment::Distance(const Segment* target) const
 	{
 		return temp_float2;
 	}
+	return temp_float1;
+}
+
+float Segment::Distance(const Segment* target, Vec2F* nearest_point) const
+{
+	if (Intersection(target, nearest_point))
+	{
+		return 0.0;
+	}
+
+	float temp_float1;
+	float temp_float2;
+
+	//Get distance between point and line.
+
+	Vec2F temp_vector2 = target->vector.PerpendicularClockwise();
+	Line temp_line1 = Line(&target->point, &temp_vector2);
+	//dist from target->point to this
+	if (Intersection(&temp_line1, &temp_vector2))
+	{
+		temp_float1 = target->point.Distance(&temp_vector2);
+		Vec2F near1 = temp_vector2;
+
+		temp_vector2 = target->vector.PerpendicularClockwise();
+		temp_line1.Set(target->point + target->vector, temp_vector2);
+		//dist from target->point2 to this
+		if (Intersection(&temp_line1, &temp_vector2))
+		{
+			temp_float2 = (target->point + target->vector).Distance(&temp_vector2);
+			*nearest_point = temp_vector2;
+
+			temp_vector2 = vector.PerpendicularClockwise();
+			temp_line1.Set(&point, &temp_vector2);
+			//dist from this->point to target
+			if (target->Intersection(&temp_line1, &temp_vector2))
+			{
+				if (temp_float1 > temp_float2)
+				{
+					temp_float1 = point.Distance(&temp_vector2);
+					near1 = point;
+				}
+				else
+				{
+					temp_float2 = point.Distance(&temp_vector2);
+					*nearest_point = point;
+				}
+			}
+
+			temp_vector2 = vector.PerpendicularClockwise();
+			temp_line1.Set(point + vector, temp_vector2);
+			//dist from this->point2 to target
+			if (target->Intersection(&temp_line1, &temp_vector2))
+			{
+				if (temp_float1 > temp_float2)
+				{
+					temp_float1 = (point + vector).Distance(&temp_vector2);
+					near1 = point + vector;
+				}
+				else
+				{
+					temp_float2 = (point + vector).Distance(&temp_vector2);
+					*nearest_point = point + vector;
+				}
+			}
+
+			if (temp_float1 > temp_float2)
+			{
+				return temp_float2;
+			}
+			*nearest_point = near1;
+			return temp_float1;
+		}
+
+		temp_vector2 = vector.PerpendicularClockwise();
+		temp_line1.Set(&point, &temp_vector2);
+		//dist from this->point to target
+		if (target->Intersection(&temp_line1, &temp_vector2))
+		{
+			temp_float2 = point.Distance(&temp_vector2);
+			*nearest_point = point;
+
+			temp_vector2 = vector.PerpendicularClockwise();
+			temp_line1.Set(point + vector, temp_vector2);
+			//dist from this->point2 to target
+			if (target->Intersection(&temp_line1, &temp_vector2))
+			{
+				if (temp_float1 > temp_float2)
+				{
+					temp_float1 = (point + vector).Distance(&temp_vector2);
+					near1 = point + vector;
+				}
+				else
+				{
+					temp_float2 = (point + vector).Distance(&temp_vector2);
+					*nearest_point = point + vector;
+				}
+			}
+
+			if (temp_float1 > temp_float2)
+			{
+				return temp_float2;
+			}
+			*nearest_point = near1;
+			return temp_float1;
+		}
+
+		temp_vector2 = vector.PerpendicularClockwise();
+		temp_line1.Set(point + vector, temp_vector2);
+		//dist from this->point2 to target
+		if (target->Intersection(&temp_line1, &temp_vector2))
+		{
+			temp_float2 = (point + vector).Distance(&temp_vector2);
+			*nearest_point = point + vector;
+
+			if (temp_float1 > temp_float2)
+			{
+				return temp_float2;
+			}
+			*nearest_point = near1;
+			return temp_float1;
+		}
+
+		*nearest_point = near1;
+		return temp_float1;
+	}
+
+	temp_vector2 = target->vector.PerpendicularClockwise();
+	temp_line1.Set(target->point + target->vector, temp_vector2);
+	//dist from target->point2 to this
+	if (Intersection(&temp_line1, &temp_vector2))
+	{
+		temp_float1 = (target->point + target->vector).Distance(&temp_vector2);
+		Vec2F near1 = temp_vector2;
+
+		temp_vector2 = vector.PerpendicularClockwise();
+		temp_line1.Set(&point, &temp_vector2);
+		//dist from this->point to target
+		if (target->Intersection(&temp_line1, &temp_vector2))
+		{
+			temp_float2 = point.Distance(&temp_vector2);
+			*nearest_point = point;
+
+			temp_vector2 = vector.PerpendicularClockwise();
+			temp_line1.Set(point + vector, temp_vector2);
+			//dist from this->point2 to target
+			if (target->Intersection(&temp_line1, &temp_vector2))
+			{
+				if (temp_float1 > temp_float2)
+				{
+					temp_float1 = (point + vector).Distance(&temp_vector2);
+					near1 = point + vector;
+				}
+				else
+				{
+					temp_float2 = (point + vector).Distance(&temp_vector2);
+					*nearest_point = point + vector;
+				}
+			}
+
+			if (temp_float1 > temp_float2)
+			{
+				return temp_float2;
+			}
+			*nearest_point = near1;
+			return temp_float1;
+		}
+		*nearest_point = near1;
+		return temp_float1;
+	}
+
+	temp_vector2 = vector.PerpendicularClockwise();
+	temp_line1.Set(&point, &temp_vector2);
+	//dist from this->point to target
+	if (target->Intersection(&temp_line1, &temp_vector2))
+	{
+		temp_float1 = point.Distance(&temp_vector2);
+		*nearest_point = point;
+
+		temp_vector2 = vector.PerpendicularClockwise();
+		temp_line1.Set(point + vector, temp_vector2);
+		//dist from this->point2 to target
+		if (target->Intersection(&temp_line1, &temp_vector2))
+		{
+			temp_float2 = (point + vector).Distance(&temp_vector2);
+
+			if (temp_float1 > temp_float2)
+			{
+				*nearest_point = point + vector;
+				return temp_float2;
+			}
+			return temp_float1;
+		}
+
+		return temp_float1;
+	}
+
+
+	temp_vector2 = vector.PerpendicularClockwise();
+	temp_line1.Set(point + vector, temp_vector2);
+	//dist from this->point2 to target
+	if (target->Intersection(&temp_line1, &temp_vector2))
+	{
+		*nearest_point = point + vector;
+		return (point + vector).Distance(&temp_vector2);
+	}
+
+	//Get distance between points.
+
+	temp_float1 = point.Distance(target->point);
+	temp_float2 = point.Distance(target->point + target->vector);
+
+	Vec2F near1 = point;
+	*nearest_point = point;
+
+	if (temp_float1 > temp_float2)
+	{
+		temp_float1 = (point + vector).Distance(target->point);
+		near1 = point + vector;
+	}
+	else
+	{
+		temp_float2 = (point + vector).Distance(target->point);
+		*nearest_point = point + vector;
+	}
+
+	if (temp_float1 > temp_float2)
+	{
+		temp_float1 = (point + vector).Distance(target->point + target->vector);
+		near1 = point + vector;
+	}
+	else
+	{
+		temp_float2 = (point + vector).Distance(target->point + target->vector);
+		*nearest_point = point + vector;
+	}
+
+	if (temp_float1 > temp_float2)
+	{
+		return temp_float2;
+	}
+	*nearest_point = near1;
 	return temp_float1;
 }
 

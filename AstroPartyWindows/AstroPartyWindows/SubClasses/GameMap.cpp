@@ -4,7 +4,7 @@
 #define M_PI_2	1.5707796326794897		// pi/2
 #define M_PI_4  0.785398163397448309616	// pi/4
 
-
+#pragma warning(disable : 26451)
 
 void Game::Event0()
 {
@@ -203,6 +203,30 @@ void Game::Event7()
 
 }
 
+void Game::Event8()
+{
+#define EVENT8__POLYGONS_COUNT	4u
+#define EVENT8__PERIOD			1000u
+#define EVENT8__MAX_SIZE		1.5f
+#define EVENT8__MIN_SIZE		0.5f
+
+	Polygon* temp__polygon_p;
+	float temp__angle = (float)(global_timer % EVENT8__PERIOD) / (float)EVENT8__PERIOD * (float)M_PI * 2.0f;
+	float temp__size = (sinf(temp__angle * 4.0f) / 2.0f + 0.5f) * (EVENT8__MAX_SIZE - EVENT8__MIN_SIZE);
+
+	for (EngineTypes::Map::array_length_t polygon = 0; polygon < EVENT8__POLYGONS_COUNT; polygon++)
+	{
+		temp__polygon_p = map.PolygonPointer(polygon);
+		if (temp__polygon_p->exist)
+		{
+			temp__polygon_p->angle = temp__angle;
+			temp__polygon_p->size.Set(EVENT8__MIN_SIZE + temp__size, EVENT8__MAX_SIZE - temp__size);
+			temp__polygon_p->NeedUpdate();
+			temp__angle -= M_PI / (float)EVENT8__POLYGONS_COUNT;
+		}
+	}
+}
+
 void Game::CreateMap0(Vec2F* ships_positions, float* ships_angles)
 {
 	Vec2F new_position;
@@ -333,7 +357,7 @@ void Game::CreateMap1(Vec2F* ships_positions, float* ships_angles)
 void Game::CreateMap2(Vec2F* ships_positions, float* ships_angles)
 {
 	Vec2F new_position;
-	Segment new_segment;
+	Segment diagonal;
 
 #define MAP_CYRCLE_ON_CENTER__RECTANGLES_COUNT	5
 #define MAP_CYRCLE_ON_CENTER__CYRCLES_COUNT		1
@@ -349,35 +373,35 @@ void Game::CreateMap2(Vec2F* ships_positions, float* ships_angles)
 	Rectangle* rectangles = new Rectangle[MAP_CYRCLE_ON_CENTER__RECTANGLES_COUNT];
 	Cyrcle* cyrcles = new Cyrcle[MAP_CYRCLE_ON_CENTER__CYRCLES_COUNT];
 
-	new_segment.Set(
+	diagonal.Set(
 		Vec2F(-MAP_CYRCLE_ON_CENTER__FRAME_SIZE, -MAP_CYRCLE_ON_CENTER__FRAME_SIZE),
 		Vec2F(MAP_CYRCLE_ON_CENTER__FRAME_SIZE, MAP_CYRCLE_ON_CENTER__FRAME_SIZE),
 		true);
-	rectangles[0].Set(&new_segment);
+	rectangles[0].Set(&diagonal);
 
-	new_segment.Set(
+	diagonal.Set(
 		Vec2F(-MAP_CYRCLE_ON_CENTER__SQUARE_POSITION, -MAP_CYRCLE_ON_CENTER__SQUARE_POSITION),
 		Vec2F(MAP_CYRCLE_ON_CENTER__SQUARE_SIZE, MAP_CYRCLE_ON_CENTER__SQUARE_SIZE));
-	rectangles[1].Set(&new_segment);
+	rectangles[1].Set(&diagonal);
 
-	new_segment.Set(
+	diagonal.Set(
 		Vec2F(MAP_CYRCLE_ON_CENTER__SQUARE_POSITION, MAP_CYRCLE_ON_CENTER__SQUARE_POSITION),
 		Vec2F(-MAP_CYRCLE_ON_CENTER__SQUARE_SIZE, -MAP_CYRCLE_ON_CENTER__SQUARE_SIZE));
-	rectangles[2].Set(&new_segment);
+	rectangles[2].Set(&diagonal);
 
-	new_segment.Set(
+	diagonal.Set(
 		Vec2F(-MAP_CYRCLE_ON_CENTER__SQUARE_POSITION, MAP_CYRCLE_ON_CENTER__SQUARE_POSITION),
 		Vec2F(MAP_CYRCLE_ON_CENTER__SQUARE_SIZE, -MAP_CYRCLE_ON_CENTER__SQUARE_SIZE));
-	rectangles[3].Set(&new_segment);
+	rectangles[3].Set(&diagonal);
 
-	new_segment.Set(
+	diagonal.Set(
 		Vec2F(MAP_CYRCLE_ON_CENTER__SQUARE_POSITION, -MAP_CYRCLE_ON_CENTER__SQUARE_POSITION),
 		Vec2F(-MAP_CYRCLE_ON_CENTER__SQUARE_SIZE, MAP_CYRCLE_ON_CENTER__SQUARE_SIZE));
-	rectangles[4].Set(&new_segment);
+	rectangles[4].Set(&diagonal);
 
 
 	new_position.Set(MAP_CYRCLE_ON_CENTER__CENTER, MAP_CYRCLE_ON_CENTER__CENTER);
-	cyrcles[0].Set(&new_position, MAP_CYRCLE_ON_CENTER__CYRCLE_SIZE);
+	cyrcles[0].Set(&new_position, MAP_CYRCLE_ON_CENTER__CYRCLE_SIZE, MAP_PROPERTY_UNBREACABLE);
 
 	map.Set(rectangles, MAP_CYRCLE_ON_CENTER__RECTANGLES_COUNT, cyrcles, MAP_CYRCLE_ON_CENTER__CYRCLES_COUNT);
 
@@ -1035,9 +1059,113 @@ void Game::CreateMap7(Vec2F* ships_positions, float* ships_angles)
 
 	map.Set(rectangles, MAP_AGGRESSIVE__RECTANGLES_COUNT);
 
-	std::cout << "Map \"Aggressive\" was crated." << std::endl;
+	delete[] rectangles;
+
+	/* Spawn entities */
+
+	ships_positions[0].Set(MAP_DYNAMICAL__CENTER_POSITION - 1.85f, MAP_DYNAMICAL__CENTER_POSITION + 1.9f);
+	ships_positions[1].Set(MAP_DYNAMICAL__CENTER_POSITION + 1.9f, MAP_DYNAMICAL__CENTER_POSITION + 1.85f);
+	ships_positions[2].Set(MAP_DYNAMICAL__CENTER_POSITION + 1.85f, MAP_DYNAMICAL__CENTER_POSITION - 1.9f);
+	ships_positions[3].Set(MAP_DYNAMICAL__CENTER_POSITION - 1.9f, MAP_DYNAMICAL__CENTER_POSITION - 1.85f);
+
+	ships_angles[0] = -(float)M_PI_4;
+	ships_angles[1] = -(float)M_PI_2 - (float)M_PI_4;
+	ships_angles[2] = (float)M_PI_2 + (float)M_PI_4;
+	ships_angles[3] = (float)M_PI_4;
+
+	camera.SetHightLimits(
+		MAP_DYNAMICAL__CENTER_POSITION - CAMERA_DEFAULT_HIGH_LIMITS,
+		MAP_DYNAMICAL__CENTER_POSITION - CAMERA_DEFAULT_HIGH_LIMITS,
+		MAP_DYNAMICAL__CENTER_POSITION + CAMERA_DEFAULT_HIGH_LIMITS,
+		MAP_DYNAMICAL__CENTER_POSITION + CAMERA_DEFAULT_HIGH_LIMITS);
+	camera.SetPosition(Vec2F(MAP_DYNAMICAL__CENTER_POSITION, MAP_DYNAMICAL__CENTER_POSITION));
+	camera.SetSize(MAP_DYNAMICAL__CAMERA_SIZE);
+}
+
+void Game::CreateMap8(Vec2F* ships_positions, float* ships_angles)
+{
+#define MAP_BROKEN__CENTER_POSITION		6.0f
+#define MAP_BROKEN__FRAME_SIZE			2.0f
+#define MAP_BROKEN__STAR_RAY_SIZE		0.4f
+#define MAP_BROKEN__STAR_CENTER_SIZE	0.1f
+#define MAP_BROKEN__STAR_POSITION		0.7f
+
+#define MAP_BROKEN__RECTANGLES_COUNT	1u
+#define MAP_BROKEN__FRAME_RECTANGLE		0u
+
+#define MAP_BROKEN__POLYGONS_COUNT			EVENT8__POLYGONS_COUNT
+#define MAP_BROKEN__UP_RIGHT_STAR_POLYGON	0u
+#define MAP_BROKEN__DOWN_RIGHT_STAR_POLYGON	1u
+#define MAP_BROKEN__DOWN_LEFT_STAR_POLYGON	2u
+#define MAP_BROKEN__UP_LEFT_STAR_POLYGON	3u
+
+#define MAP_BROKEN__STAR_POLYGON__POINTS_COUNT		8u
+#define MAP_BROKEN__STAR_POLYGON__UP_POINT			0u
+#define MAP_BROKEN__STAR_POLYGON__RIGHT_POINT		2u
+#define MAP_BROKEN__STAR_POLYGON__DOWN_POINT		4u
+#define MAP_BROKEN__STAR_POLYGON__LEFT_POINT		6u
+#define MAP_BROKEN__STAR_POLYGON__UP_RIGHT_POINT	1u
+#define MAP_BROKEN__STAR_POLYGON__DOWN_RIGHT_POINT	3u
+#define MAP_BROKEN__STAR_POLYGON__DOWN_LEFT_POINT	5u
+#define MAP_BROKEN__STAR_POLYGON__UP_LEFT_POINT		7u
+
+	Rectangle* rectangles = new Rectangle[MAP_BROKEN__RECTANGLES_COUNT];
+	Polygon* polygons = new Polygon[MAP_BROKEN__POLYGONS_COUNT];
+	Vec2F* points = new Vec2F[MAP_BROKEN__STAR_POLYGON__POINTS_COUNT];
+
+	Segment diagonal = Segment(
+		Vec2F(MAP_BROKEN__CENTER_POSITION + MAP_BROKEN__FRAME_SIZE),
+		Vec2F(MAP_BROKEN__CENTER_POSITION - MAP_BROKEN__FRAME_SIZE),
+		true);
+	rectangles[MAP_BROKEN__FRAME_RECTANGLE].Set(&diagonal);
+
+	points[MAP_BROKEN__STAR_POLYGON__UP_POINT].Set(0.0f, MAP_BROKEN__STAR_RAY_SIZE);
+	points[MAP_BROKEN__STAR_POLYGON__RIGHT_POINT].Set(MAP_BROKEN__STAR_RAY_SIZE, 0.0f);
+	points[MAP_BROKEN__STAR_POLYGON__DOWN_POINT].Set(0.0f, -MAP_BROKEN__STAR_RAY_SIZE);
+	points[MAP_BROKEN__STAR_POLYGON__LEFT_POINT].Set(-MAP_BROKEN__STAR_RAY_SIZE, 0.0f);
+	points[MAP_BROKEN__STAR_POLYGON__UP_RIGHT_POINT].Set(MAP_BROKEN__STAR_CENTER_SIZE, MAP_BROKEN__STAR_CENTER_SIZE);
+	points[MAP_BROKEN__STAR_POLYGON__DOWN_RIGHT_POINT].Set(MAP_BROKEN__STAR_CENTER_SIZE, -MAP_BROKEN__STAR_CENTER_SIZE);
+	points[MAP_BROKEN__STAR_POLYGON__DOWN_LEFT_POINT].Set(-MAP_BROKEN__STAR_CENTER_SIZE, -MAP_BROKEN__STAR_CENTER_SIZE);
+	points[MAP_BROKEN__STAR_POLYGON__UP_LEFT_POINT].Set(-MAP_BROKEN__STAR_CENTER_SIZE, MAP_BROKEN__STAR_CENTER_SIZE);
+
+	polygons[MAP_BROKEN__UP_RIGHT_STAR_POLYGON].Set(
+		Vec2F(MAP_BROKEN__CENTER_POSITION + MAP_BROKEN__STAR_POSITION, MAP_BROKEN__CENTER_POSITION + MAP_BROKEN__STAR_POSITION),
+		0.0f,
+		Vec2F(1.0f),
+		points,
+		MAP_BROKEN__STAR_POLYGON__POINTS_COUNT,
+		MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_CLOSED);
+	
+	polygons[MAP_BROKEN__DOWN_RIGHT_STAR_POLYGON].Set(
+		Vec2F(MAP_BROKEN__CENTER_POSITION + MAP_BROKEN__STAR_POSITION, MAP_BROKEN__CENTER_POSITION - MAP_BROKEN__STAR_POSITION),
+		0.0f,
+		Vec2F(1.0f),
+		points,
+		MAP_BROKEN__STAR_POLYGON__POINTS_COUNT,
+		MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_CLOSED);
+
+	polygons[MAP_BROKEN__DOWN_LEFT_STAR_POLYGON].Set(
+		Vec2F(MAP_BROKEN__CENTER_POSITION - MAP_BROKEN__STAR_POSITION, MAP_BROKEN__CENTER_POSITION - MAP_BROKEN__STAR_POSITION),
+		0.0f,
+		Vec2F(1.0f),
+		points,
+		MAP_BROKEN__STAR_POLYGON__POINTS_COUNT,
+		MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_CLOSED);
+
+	polygons[MAP_BROKEN__UP_LEFT_STAR_POLYGON].Set(
+		Vec2F(MAP_BROKEN__CENTER_POSITION - MAP_BROKEN__STAR_POSITION, MAP_BROKEN__CENTER_POSITION + MAP_BROKEN__STAR_POSITION),
+		0.0f,
+		Vec2F(1.0f),
+		points,
+		MAP_BROKEN__STAR_POLYGON__POINTS_COUNT,
+		MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_CLOSED);
+	
+	delete[] points;
+
+	map.Set(rectangles, MAP_BROKEN__RECTANGLES_COUNT, nullptr, 0, polygons, MAP_BROKEN__POLYGONS_COUNT);
 
 	delete[] rectangles;
+	delete[] polygons;
 
 	/* Spawn entities */
 

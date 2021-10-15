@@ -15,7 +15,7 @@ mat3 SetBySegment(vec4 _segment);
 
 mat3 matrix;
 
-#define BORDER  0.02f
+#define BORDER  0.015f
 
 vec3 _position;
 void main()

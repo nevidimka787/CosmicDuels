@@ -568,10 +568,22 @@ Vec2F Vec2F::ProjectSign(const Vec2F* projecting_vector) const
 
 Vec2F Vec2F::Perpendicular() const
 {
-	return Vec2F(y, -x);
+	return Vec2F(-y, x);
 }
 
 void Vec2F::PerpendicularThis()
+{
+	float temp = x;
+	x = -y;
+	y = temp;
+}
+
+Vec2F Vec2F::PerpendicularClockwise() const
+{
+	return Vec2F(y, -x);
+}
+
+void Vec2F::PerpendicularClockwiseThis()
 {
 	float temp = -x;
 	x = y;

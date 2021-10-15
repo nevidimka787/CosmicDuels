@@ -542,8 +542,9 @@ bool DynamicEntity::Collision(Rectangle* rectangle)
 	bool collision = false;
 
 	int i = 0;
+	Segment side = rectangle->UpSide();
 
-	if ((distance1 = rectangle->UpSide().Distance(&position, &nearest_position1)) < radius)
+	if ((distance1 = side.Distance(&position, &nearest_position1)) < radius || GetTreck().IsIntersection(&side))
 	{
 		collision_direction = nearest_position1 - position;
 		velocity -= collision_direction.ProjectSign(&velocity) / 1.0f;
@@ -553,7 +554,8 @@ bool DynamicEntity::Collision(Rectangle* rectangle)
 		collision = true;
 	}
 
-	if ((distance1 = rectangle->DownSide().Distance(&position, &nearest_position1)) < radius)
+	side = rectangle->DownSide();
+	if ((distance1 = side.Distance(&position, &nearest_position1)) < radius || GetTreck().IsIntersection(&side))
 	{
 		collision_direction = nearest_position1 - position;
 		velocity -= collision_direction.ProjectSign(&velocity) / 1.0f;
@@ -563,7 +565,8 @@ bool DynamicEntity::Collision(Rectangle* rectangle)
 		collision = true;
 	}
 
-	if ((distance1 = rectangle->RightSide().Distance(&position, &nearest_position1)) < radius)
+	side = rectangle->RightSide();
+	if ((distance1 = side.Distance(&position, &nearest_position1)) < radius || GetTreck().IsIntersection(&side))
 	{
 		collision_direction = nearest_position1 - position;
 		velocity -= collision_direction.ProjectSign(&velocity) / 1.0f;
@@ -573,7 +576,8 @@ bool DynamicEntity::Collision(Rectangle* rectangle)
 		collision = true;
 	}
 
-	if ((distance1 = rectangle->LeftSide().Distance(&position, &nearest_position1)) < radius)
+	side = rectangle->LeftSide();
+	if ((distance1 = side.Distance(&position, &nearest_position1)) < radius || GetTreck().IsIntersection(&side))
 	{
 		collision_direction = nearest_position1 - position;
 		velocity -= collision_direction.ProjectSign(&velocity) / 1.0f;
@@ -611,7 +615,7 @@ bool DynamicEntity::Collision(Polygon* polygon)
 	{
 		return false;
 	}
-
+	Segment treck = GetLastTreck();
 	Segment side = Segment(polygon->points_array[p_count - 1], polygon->points_array[0], true);
 	bool collision = false;
 	Vec2F collision_direction;//direction from position to collision point
@@ -620,12 +624,12 @@ bool DynamicEntity::Collision(Polygon* polygon)
 	if (p_count > 2 && polygon->IsClosed())
 	{
 		distance = side.Distance(position, &collision_direction);
-		if (distance < radius)
+		if (distance < radius || side.IsIntersection(&treck))
 		{
 			collision_direction -= position;
 			velocity -= collision_direction.ProjectSign(velocity);
 			force -= collision_direction * (force_collision_coeffisient / distance * radius);
-			velocity += Vec2F(-collision_direction).ProjectSign(polygon->Velocity(collision_direction + position) - velocity) / 2.0f;
+			velocity += (-collision_direction).ProjectSign(polygon->Velocity(collision_direction + position) - velocity);
 
 			collision = true;
 		}
@@ -633,13 +637,15 @@ bool DynamicEntity::Collision(Polygon* polygon)
 
 	for (EngineTypes::Map::array_length_t p = 1; p < p_count; p++)
 	{
+		side.Set(polygon->points_array[p - 1], polygon->points_array[p], true);
+
 		distance = side.Distance(position, &collision_direction);
-		if (distance < radius)
+		if (distance < radius || side.IsIntersection(&treck))
 		{
 			collision_direction -= position;
 			velocity -= collision_direction.ProjectSign(velocity);
 			force -= collision_direction * (force_collision_coeffisient / distance * radius);
-			velocity += Vec2F(-collision_direction).ProjectSign(polygon->Velocity(collision_direction + position) - velocity) / 2.0f;
+			velocity += (-collision_direction).ProjectSign(polygon->Velocity(collision_direction + position) - velocity);
 
 			collision = true;
 		}
@@ -800,6 +806,34 @@ bool DynamicEntity::IsCollision(Cyrcle* cyrcle)
 
 bool DynamicEntity::IsCollision(Polygon* polygon)
 {
+	if (!polygon->exist)
+	{
+		return false;
+	}
+	EngineTypes::Map::array_length_t p_count = polygon->PointsCount();
+	if (p_count < 2)
+	{
+		return false;
+	}
+	Segment treck = GetTreck();
+	Segment side = Segment(polygon->points_array[p_count - 1], polygon->points_array[0], true);
+
+	if (p_count > 2 && polygon->IsClosed())
+	{
+		if (side.Distance(&treck) < radius)
+		{
+			return true;
+		}
+	}
+
+	for (EngineTypes::Map::array_length_t p = 1; p < p_count; p++)
+	{
+		side.Set(polygon->points_array[p - 1], polygon->points_array[p], true);
+		if (side.Distance(&treck) < radius)
+		{
+			return true;
+		}
+	}
 	return false;
 }
 
@@ -1995,12 +2029,12 @@ void Ship::Burnout(float power, bool rotate_clockwise, GameTypes::tic_t burnout_
 {
 	if (rotate_clockwise)
 	{
-		force -= direction.Perpendicular().Normalize() * power;
+		force -= direction.PerpendicularClockwise().Normalize() * power;
 		angle += (float)M_PI / 2.0f;
 	}
 	else
 	{
-		force += direction.Perpendicular().Normalize() * power;
+		force += direction.PerpendicularClockwise().Normalize() * power;
 		angle += -(float)M_PI / 2.0f;
 	}
 	UpdateDirection();
@@ -2010,7 +2044,7 @@ void Ship::Burnout(float power, bool rotate_clockwise, GameTypes::tic_t burnout_
 Bullet Ship::CreateBullet()
 {
 	Vec2F bullet_position = position +  direction.Normalize() * radius;
-	Vec2F bullet_velosity = direction * BULLET_DEFAULT_VELOCITY + velocity - direction.Perpendicular() * angular_velocity * radius;
+	Vec2F bullet_velosity = direction * BULLET_DEFAULT_VELOCITY + velocity - direction.PerpendicularClockwise() * angular_velocity * radius;
 	AddForceAlongDirection(-SHIP_SHOOT_FORCE);
 	return Bullet(&bullet_position, &bullet_velosity, player_number, player_team_number);
 }
@@ -2025,11 +2059,11 @@ Bullet Ship::CreateTriple(uint8_t bullet_number)
 		bullet_velocity = direction * BULLET_DEFAULT_VELOCITY + velocity;
 		return Bullet(&bullet_position, &bullet_velocity, player_number, player_team_number);
 	case 1:
-		bullet_position = position - direction.Perpendicular() * radius;
+		bullet_position = position - direction.PerpendicularClockwise() * radius;
 		bullet_velocity = direction * BULLET_DEFAULT_VELOCITY + velocity;
 		return Bullet(&bullet_position, &bullet_velocity, player_number, player_team_number);
 	case 2:
-		bullet_position = position + direction.Perpendicular() * radius;
+		bullet_position = position + direction.PerpendicularClockwise() * radius;
 		bullet_velocity = direction * BULLET_DEFAULT_VELOCITY + velocity;
 		return Bullet(&bullet_position, &bullet_velocity, player_number, player_team_number);
 	default:
@@ -3170,61 +3204,45 @@ Bullet::Bullet(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t play
 
 bool Bullet::Collision(Map* map)
 {
-	for (EngineTypes::Map::array_length_t element = 0; element < map->rectangles_array_length; element++)
+	void* element_p;
+	EngineTypes::Map::array_length_t element;
+	for (element = 0; element < map->cyrcles_array_length; element++)
 	{
-		if (Collision(map->RectanglePointer(element)))
+		element_p = (void*)map->CyrclePointer(element);
+		if (DynamicEntity::IsCollision((Cyrcle*)element_p))
 		{
+			if (!((Cyrcle*)element_p)->IsUnbreacable())
+			{
+				((Cyrcle*)element_p)->exist = false;
+			}
+			return true;
+		}
+	}
+	for (element = 0; element < map->polygons_array_length; element++)
+	{
+		element_p = (void*)map->PolygonPointer(element);
+		if (DynamicEntity::IsCollision((Polygon*)element_p))
+		{
+			if (!((Polygon*)element_p)->IsUnbreacable())
+			{
+				((Polygon*)element_p)->exist = false;
+			}
+			return true;
+		}
+	}
+	for (element = 0; element < map->rectangles_array_length; element++)
+	{
+		element_p = (void*)map->RectanglePointer(element);
+		if (DynamicEntity::IsCollision((Rectangle*)element_p))
+		{
+			if (!((Rectangle*)element_p)->IsUnbreacable())
+			{
+				((Rectangle*)element_p)->exist = false;
+			}
 			return true;
 		}
 	}
 	return false;
-}
-
-bool Bullet::Collision(Rectangle* rectangle)
-{
-	if (rectangle->exist == false)
-	{
-		return false;
-	}
-	Segment side;
-	side = rectangle->UpSide();
-	if (IsCollision(&side))
-	{
-		if (!rectangle->IsUnbreacable())
-		{
-			rectangle->exist = false;
-		}
-		return true;
-	}
-	side = rectangle->DownSide();
-	if (IsCollision(&side))
-	{
-		if (!rectangle->IsUnbreacable())
-		{
-			rectangle->exist = false;
-		}
-		return true;
-	}
-	side = rectangle->RightSide();
-	if (IsCollision(&side))
-	{
-		if (!rectangle->IsUnbreacable())
-		{
-			rectangle->exist = false;
-		}
-		return true;
-	}
-	side = rectangle->LeftSide();
-	if (IsCollision(&side))
-	{
-		if (!rectangle->IsUnbreacable())
-		{
-			rectangle->exist = false;
-		}
-		return true;
-	}
-	return false;
-
 }
 
 void Bullet::Set(Bullet* bullet)

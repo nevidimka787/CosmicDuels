@@ -465,6 +465,22 @@ void Game::UpdateMapPhase2()
 			((Rectangle*)element_pointer)->Update();
 		}
 	}
+	for (EngineTypes::Map::array_length_t element = 0; element < map.cyrcles_array_length; element++)
+	{
+		element_pointer = (void*)map.CyrclePointer(element);
+		if (((Cyrcle*)element_pointer)->exist)
+		{
+			((Cyrcle*)element_pointer)->Update();
+		}
+	}
+	for (EngineTypes::Map::array_length_t element = 0; element < map.polygons_array_length; element++)
+	{
+		element_pointer = (void*)map.PolygonPointer(element);
+		if (((Polygon*)element_pointer)->exist)
+		{
+			((Polygon*)element_pointer)->Update();
+		}
+	}
 	map_data_mtx.unlock();
 }
 

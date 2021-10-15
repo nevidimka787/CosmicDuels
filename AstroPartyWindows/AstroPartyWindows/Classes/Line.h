@@ -53,8 +53,12 @@ public:
 	float Distance(const Line* target) const;
 	
 	float Distance(const Beam* target) const;
+
+	float Distance(const Beam* target, Vec2F* nearest_point) const;
 	
 	float Distance(const Segment* target) const;
+
+	float Distance(const Segment* target, Vec2F* nearest_point) const;
 
 	void Set(const Line* line);
 	
@@ -109,9 +113,15 @@ public:
 
 	float Distance(const Beam* target) const;
 
+	float Distance(const Beam* target, Vec2F* nearest_point) const;
+
 	float Distance(const Line* target) const;
 
+	float Distance(const Line* target, Vec2F* nearest_point) const;
+
 	float Distance(const Segment* target) const;
+
+	float Distance(const Segment* target, Vec2F* nearest_point) const;
 
 	float Distance(const Vec2F* target) const;
 
@@ -180,9 +190,15 @@ public:
 
 	float Distance(const Beam* target) const;
 
+	float Distance(const Beam* target, Vec2F* nearest_point) const;
+
 	float Distance(const Line* target) const;
 
+	float Distance(const Line* target, Vec2F* nearest_point) const;
+
 	float Distance(const Segment* target) const;
+
+	float Distance(const Segment* target, Vec2F* nearest_point) const;
 
 	float Distance(Vec2F target) const;
 

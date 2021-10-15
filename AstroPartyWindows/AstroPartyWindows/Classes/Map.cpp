@@ -419,22 +419,22 @@ Cyrcle::Cyrcle(const Vec2F* position, float radius, EngineTypes::Map::property_t
 {
 }
 
-bool Cyrcle::IsCollision(const Beam* beam)
+bool Cyrcle::IsCollision(const Beam* beam) const
 {
 	return beam->Distance(position) < radius;
 }
 
-bool Cyrcle::IsCollision(const Line* line)
+bool Cyrcle::IsCollision(const Line* line) const
 {
 	return line->Distance(position) < radius;
 }
 
-bool Cyrcle::IsCollision(const Segment* segment)
+bool Cyrcle::IsCollision(const Segment* segment) const
 {
 	return segment->Distance(position) < radius;
 }
 
-float Cyrcle::Radius()
+float Cyrcle::Radius() const
 {
 	return radius;
 }
@@ -574,12 +574,12 @@ Polygon::Polygon(const Vec2F* position, float angle, const Vec2F* size, const Ve
 	}
 }
 
-bool Polygon::IsClosed()
+bool Polygon::IsClosed() const
 {
 	return properties & MAP_PROPERTY_CLOSED;
 }
 
-bool Polygon::IsCollision(const Beam* beam)
+bool Polygon::IsCollision(const Beam* beam) const
 {
 	if (points_count <= 1)
 	{
@@ -610,7 +610,7 @@ bool Polygon::IsCollision(const Beam* beam)
 	return false;
 }
 
-bool Polygon::IsCollision(const Line* line)
+bool Polygon::IsCollision(const Line* line) const
 {
 	if (points_count <= 1)
 	{
@@ -641,7 +641,7 @@ bool Polygon::IsCollision(const Line* line)
 	return false;
 }
 
-bool Polygon::IsCollision(const Segment* segment)
+bool Polygon::IsCollision(const Segment* segment) const
 {
 	if (points_count <= 1)
 	{
@@ -672,45 +672,50 @@ bool Polygon::IsCollision(const Segment* segment)
 	return false;
 }
 
-bool Polygon::IsNeedUpdate()
+bool Polygon::IsNeedUpdate() const
 {
 	return need_update;
 }
 
-Vec2F Polygon::DynamicalProperties()
+void Polygon::NeedUpdate()
+{
+	need_update = true;
+}
+
+Vec2F Polygon::DynamicalProperties() const
 {
 	return size - last_size;
 }
 
-void Polygon::DynamicalProperties(float* angular_velocity)
+void Polygon::DynamicalProperties(float* angular_velocity) const
 {
 	*angular_velocity = angle - last_angle;
 }
 
-void Polygon::DynamicalProperties(Vec2F* velocity)
+void Polygon::DynamicalProperties(Vec2F* velocity) const
 {
 	*velocity = position - last_position;
 }
 
-void Polygon::DynamicalProperties(float* angular_velocity, Vec2F* resize_velocity)
+void Polygon::DynamicalProperties(float* angular_velocity, Vec2F* resize_velocity) const
 {
 	*angular_velocity = angle - last_angle;
 	*resize_velocity = size - last_size;
 }
 
-void Polygon::DynamicalProperties(Vec2F* velocity, float* angular_velocity)
+void Polygon::DynamicalProperties(Vec2F* velocity, float* angular_velocity) const
 {
 	*angular_velocity = angle - last_angle;
 	*velocity = position - last_position;
 }
 
-void Polygon::DynamicalProperties(Vec2F* velocity, Vec2F* resize_velocity)
+void Polygon::DynamicalProperties(Vec2F* velocity, Vec2F* resize_velocity) const
 {
 	*velocity = position - last_position;
 	*resize_velocity = size - last_size;
 }
 
-void Polygon::DynamicalProperties(Vec2F* velocity, float* angular_velocity, Vec2F* resize_velocity)
+void Polygon::DynamicalProperties(Vec2F* velocity, float* angular_velocity, Vec2F* resize_velocity) const
 {
 	*angular_velocity = angle - last_angle;
 	*velocity = position - last_position;
@@ -721,21 +726,25 @@ void Polygon::ToDefault()
 {
 	position.Set(0.0f, 0.0f);
 	angle = 0.0f;
+	size.Set(1.0f, 1.0f);
 	for (EngineTypes::Map::array_length_t i = 0; i < points_count - 1; i++)
 	{
 		points_array[i] = local_points_array[i];
 	}
 }
 
-EngineTypes::Polygon::points_array_length_t Polygon::PointsCount()
+EngineTypes::Polygon::points_array_length_t Polygon::PointsCount() const
 {
 	return points_count;
 }
 
 void Polygon::Set(const Polygon* parent)
 {
-	delete[] points_array;
-	delete[] local_points_array;
+	if (points_count > 0)
+	{
+		delete[] points_array;
+		delete[] local_points_array;
+	}
 
 	angle = parent->angle;
 	exist = parent->exist;
@@ -753,7 +762,7 @@ void Polygon::Set(const Polygon* parent)
 	{
 		local_points_array = new Vec2F[points_count];
 		points_array = new Vec2F[points_count];
-		for (EngineTypes::Map::array_length_t i = 1; i < points_count; i++)
+		for (EngineTypes::Map::array_length_t i = 0; i < points_count; i++)
 		{
 			local_points_array[i] = parent->local_points_array[i];
 		}
@@ -762,8 +771,11 @@ void Polygon::Set(const Polygon* parent)
 
 void Polygon::Set(Vec2F position, float angle, Vec2F size, const Vec2F* points_array, EngineTypes::Polygon::points_array_length_t points_array_length, EngineTypes::Map::property_t properties, bool exist)
 {
-	delete[] this->points_array;
-	delete[] local_points_array;
+	if (this->points_count > 0)
+	{
+		delete[] this->points_array;
+		delete[] local_points_array;
+	}
 
 	this->angle = angle;
 	this->exist = exist;
@@ -775,10 +787,10 @@ void Polygon::Set(Vec2F position, float angle, Vec2F size, const Vec2F* points_a
 	this->properties = properties;
 	this->size = size;
 
-	need_update = true;
-
 	if (points_array_length > 0)
 	{
+		need_update = true;
+
 		local_points_array = new Vec2F[points_array_length];
 		this->points_array = new Vec2F[points_array_length];
 
@@ -791,8 +803,11 @@ void Polygon::Set(Vec2F position, float angle, Vec2F size, const Vec2F* points_a
 
 void Polygon::Set(const Vec2F* position, float angle, const Vec2F* size, const Vec2F* points_array, EngineTypes::Polygon::points_array_length_t points_array_length, EngineTypes::Map::property_t properties, bool exist)
 {
-	delete[] this->points_array;
-	delete[] local_points_array;
+	if (this->points_count > 0)
+	{
+		delete[] this->points_array;
+		delete[] local_points_array;
+	}
 
 	this->angle = angle;
 	this->exist = exist;
@@ -810,7 +825,7 @@ void Polygon::Set(const Vec2F* position, float angle, const Vec2F* size, const V
 	{
 		this->points_array = new Vec2F[points_array_length];
 		this->local_points_array = new Vec2F[points_array_length];
-		for (EngineTypes::Map::array_length_t i = 1; i < points_array_length; i++)
+		for (EngineTypes::Map::array_length_t i = 0; i < points_array_length; i++)
 		{
 			local_points_array[i] = points_array[i];
 		}
@@ -819,14 +834,15 @@ void Polygon::Set(const Vec2F* position, float angle, const Vec2F* size, const V
 
 void Polygon::Update()
 {
-	MapElement::Update();
-	last_angle = angle;
-	last_size = size;
-
 	if (need_update)
 	{
 		UpdatePoints();
+		need_update = false;
 	}
+
+	MapElement::Update();
+	last_angle = angle;
+	last_size = size;
 }
 
 void Polygon::UpdatePoints()
@@ -836,15 +852,15 @@ void Polygon::UpdatePoints()
 		return;
 	}
 
+	//std::cout << "AngV: " << angle - last_angle << " NorV: " << position - last_position << " ResV: " << size - last_size << std::endl;
+
 	for (EngineTypes::Map::array_length_t p = 0; p < points_count; p++)
 	{
 		points_array[p] = local_points_array[p].Scale(size).Rotate(angle) + position;
 	}
-
-	need_update = false;
 }
 
-Vec2F Polygon::Velocity(Vec2F point)
+Vec2F Polygon::Velocity(Vec2F point) const
 {
 	Vec2F local = (point - position).Rotate(-angle).Scale(Vec2F(1.0f / size.x, 1.0f / size.y));
 	return
@@ -853,7 +869,7 @@ Vec2F Polygon::Velocity(Vec2F point)
 		position - last_position;
 }
 
-Vec2F Polygon::Velocity(const Vec2F* point)
+Vec2F Polygon::Velocity(const Vec2F* point) const
 {
 	Vec2F local = (*point - position).Rotate(-angle).Scale(Vec2F(1.0f / size.x, 1.0f / size.y));
 	return
@@ -862,7 +878,7 @@ Vec2F Polygon::Velocity(const Vec2F* point)
 		position - last_position;
 }
 
-Vec2F Polygon::VelocityLocal(Vec2F point)
+Vec2F Polygon::VelocityLocal(Vec2F point) const
 {
 	return
 		Vec2F((size.x - last_size.x) * point.x, (size.y - last_size.y) * point.y) +
@@ -870,7 +886,7 @@ Vec2F Polygon::VelocityLocal(Vec2F point)
 		position - last_position;
 }
 
-Vec2F Polygon::VelocityLocal(const Vec2F* point)
+Vec2F Polygon::VelocityLocal(const Vec2F* point) const
 {
 	return
 		Vec2F((size.x - last_size.x) * point->x, (size.y - last_size.y) * point->y) +
@@ -880,8 +896,11 @@ Vec2F Polygon::VelocityLocal(const Vec2F* point)
 
 void Polygon::operator=(Polygon polygon)
 {
-	delete[] this->points_array;
-	delete[] local_points_array;
+	if (points_count > 0)
+	{
+		delete[] points_array;
+		delete[] local_points_array;
+	}
 
 	angle = polygon.angle;
 	exist = polygon.exist;
@@ -930,6 +949,7 @@ Map::Map(const Map& map) :
 	{
 		cyrcles_array = nullptr;
 	}
+
 	if (polygons_array_length > 0)
 	{
 		polygons_array = new Polygon[polygons_array_length];
@@ -942,6 +962,7 @@ Map::Map(const Map& map) :
 	{
 		polygons_array = nullptr;
 	}
+
 	if (rectangles_array_length > 0)
 	{
 		rectangles_array = new Rectangle[rectangles_array_length];
@@ -954,6 +975,7 @@ Map::Map(const Map& map) :
 	{
 		rectangles_array = nullptr;
 	}
+
 }
 
 Map::Map(const Rectangle* rectangles_array, EngineTypes::Map::array_length_t rectangles_array_length, const Cyrcle* cyrcles_array, EngineTypes::Map::array_length_t cyrcles_array_length, const Polygon* polygons_array, EngineTypes::Map::array_length_t polygons_array_length) :
@@ -1001,7 +1023,7 @@ Map::Map(const Rectangle* rectangles_array, EngineTypes::Map::array_length_t rec
 	}
 }
 
-Rectangle Map::GetRectangle(EngineTypes::Map::array_length_t number)
+Rectangle Map::GetRectangle(EngineTypes::Map::array_length_t number) const
 {
 	if (number >= rectangles_array_length)
 	{
@@ -1010,7 +1032,7 @@ Rectangle Map::GetRectangle(EngineTypes::Map::array_length_t number)
 	return rectangles_array[number];
 }
 
-Cyrcle Map::GetCyrcle(EngineTypes::Map::array_length_t number)
+Cyrcle Map::GetCyrcle(EngineTypes::Map::array_length_t number) const
 {
 	if (number >= cyrcles_array_length)
 	{
@@ -1019,7 +1041,7 @@ Cyrcle Map::GetCyrcle(EngineTypes::Map::array_length_t number)
 	return cyrcles_array[number];
 }
 
-Polygon Map::GetPolygon(EngineTypes::Map::array_length_t number)
+Polygon Map::GetPolygon(EngineTypes::Map::array_length_t number) const
 {
 	if (number >= polygons_array_length)
 	{
@@ -1028,7 +1050,7 @@ Polygon Map::GetPolygon(EngineTypes::Map::array_length_t number)
 	return polygons_array[number];
 }
 
-Rectangle* Map::RectanglePointer(EngineTypes::Map::array_length_t number)
+Rectangle* Map::RectanglePointer(EngineTypes::Map::array_length_t number) const
 {
 	if (number >= rectangles_array_length)
 	{
@@ -1037,7 +1059,7 @@ Rectangle* Map::RectanglePointer(EngineTypes::Map::array_length_t number)
 	return &rectangles_array[number];
 }
 
-Cyrcle* Map::CyrclePointer(EngineTypes::Map::array_length_t number)
+Cyrcle* Map::CyrclePointer(EngineTypes::Map::array_length_t number) const
 {
 	if (number >= cyrcles_array_length)
 	{
@@ -1046,7 +1068,7 @@ Cyrcle* Map::CyrclePointer(EngineTypes::Map::array_length_t number)
 	return &cyrcles_array[number];
 }
 
-Polygon* Map::PolygonPointer(EngineTypes::Map::array_length_t number)
+Polygon* Map::PolygonPointer(EngineTypes::Map::array_length_t number) const
 {
 	if (number >= polygons_array_length)
 	{
@@ -1057,25 +1079,22 @@ Polygon* Map::PolygonPointer(EngineTypes::Map::array_length_t number)
 
 void Map::Set(const Map* map)
 {
+	if (cyrcles_array_length > 0)
+	{
+		delete[] cyrcles_array;
+	}
+	if (polygons_array_length > 0)
+	{
+		delete[] polygons_array;
+	}
+	if (rectangles_array_length > 0)
+	{
+		delete[] rectangles_array;
+	}
+
 	cyrcles_array_length = map->cyrcles_array_length;
 	polygons_array_length = map->polygons_array_length;
 	rectangles_array_length = map->rectangles_array_length;
-
-	if (cyrcles_array != nullptr)
-	{
-		delete[] cyrcles_array;
-		cyrcles_array = nullptr;
-	}
-	if (polygons_array != nullptr)
-	{
-		delete[] polygons_array;
-		polygons_array = nullptr;
-	}
-	if (rectangles_array != nullptr)
-	{
-		delete[] rectangles_array;
-		rectangles_array = nullptr;
-	}
 
 	if (cyrcles_array_length > 0)
 	{
@@ -1107,25 +1126,22 @@ void Map::Set(const Map* map)
 
 void Map::Set(const Rectangle* rectangles_array, EngineTypes::Map::array_length_t rectangles_array_length, const Cyrcle* cyrcles_array, EngineTypes::Map::array_length_t cyrcles_array_length, const Polygon* polygons_array, EngineTypes::Map::array_length_t polygons_array_length)
 {
+	if (this->cyrcles_array_length > 0)
+	{
+		delete[] this->cyrcles_array;
+	}
+	if (this->polygons_array_length > 0)
+	{
+		delete[] this->polygons_array;
+	}
+	if (this->rectangles_array_length > 0)
+	{
+		delete[] this->rectangles_array;
+	}
+
 	this->cyrcles_array_length = cyrcles_array_length;
 	this->polygons_array_length = polygons_array_length;
 	this->rectangles_array_length = rectangles_array_length;
-
-	if (this->cyrcles_array != nullptr)
-	{
-		delete[] this->cyrcles_array;
-		this->cyrcles_array = nullptr;
-	}
-	if (this->polygons_array != nullptr)
-	{
-		delete[] this->polygons_array;
-		this->polygons_array = nullptr;
-	}
-	if (this->rectangles_array != nullptr)
-	{
-		delete[] this->rectangles_array;
-		this->rectangles_array = nullptr;
-	}
 
 	if (cyrcles_array_length > 0)
 	{
@@ -1157,7 +1173,16 @@ void Map::Set(const Rectangle* rectangles_array, EngineTypes::Map::array_length_
 
 Map::~Map()
 {
-	delete[] rectangles_array;
-	delete[] cyrcles_array;
-	delete[] polygons_array;
+	if (cyrcles_array_length > 0)
+	{
+		delete[] cyrcles_array;
+	}
+	if (polygons_array_length > 0)
+	{
+		delete[] polygons_array;
+	}
+	if (rectangles_array_length > 0)
+	{
+		delete[] rectangles_array;
+	}
 }
