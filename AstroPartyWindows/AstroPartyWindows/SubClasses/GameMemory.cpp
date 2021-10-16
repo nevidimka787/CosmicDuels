@@ -789,6 +789,7 @@ void Game::DestroyEntity(Ship* entity)
 		DecrementScore(entity->GetTeamNumber());
 		DecrementPlayersCountInTeam(entity->GetTeamNumber());
 	}
+	DestroySupportEntitiesBy(entity);
 	AddEntity(entity->Destroy());
 	RemoveEntity(entity);
 }

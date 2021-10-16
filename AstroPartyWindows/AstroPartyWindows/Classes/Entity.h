@@ -84,6 +84,8 @@ public:
 	bool IsCollision(Entity* entity);
 	//If distance between two objects is less then zero, the function return true.
 	bool IsCollision(Line* line);
+	bool IsCollision(Laser* laser);
+	bool IsCollision(MegaLaser* mega_laser);
 	//If distance between two objects is less then zero, the function return true.
 	bool IsCollision(Map* map);
 	//If distance between two objects is less then zero, the function return true.
@@ -189,6 +191,8 @@ public:
 	bool IsCollision(Segment* segment);
 	bool IsCollision(DynamicEntity* entity);
 	bool IsCollision(StaticEntity* entity);
+	bool IsCollision(Laser* laser);
+	bool IsCollision(MegaLaser* mega_laser);
 	bool IsCollision(Rectangle* rectangle);
 	bool IsCollision(Cyrcle* cyrcle);
 	bool IsCollision(Polygon* polygon);
@@ -809,6 +813,9 @@ public:
 		bool exist = true);
 
 	Segment GetSegment();
+	bool IsCollision(Beam* beam);
+	bool IsCollision(Line* line);
+	bool IsCollision(Segment* segment);
 	void Rotate(float angle);
 	void Set(MegaLaser* entity);
 	void Set(
@@ -984,6 +991,9 @@ public:
 	GameTypes::tic_t GetLifeTime();
 	GameTypes::players_count_t GetPlayerMasterNumber();
 	GameTypes::players_count_t GetPlayerMasterTeamNumber();
+	bool IsCollision(Beam* beam);
+	bool IsCollision(Line* line);
+	bool IsCollision(Segment* segment);
 	void Set(Laser* laser);
 	void Set(
 		ControledEntity* host,

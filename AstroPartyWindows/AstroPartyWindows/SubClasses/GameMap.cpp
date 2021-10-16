@@ -135,6 +135,18 @@ void Game::Event5()
 	if (rotation_inverse)
 	{
 		Rectangle* rectangle_p = map.RectanglePointer(EVENT5__UP_RECTANGLE);
+		if (rectangle_p->Position().x < EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE)
+		{
+			//up rectangle
+			rectangle_p->SetPosition(Vec2F(EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE));
+			rectangle_p = map.RectanglePointer(EVENT5__RIGHT_RECTANGLE);
+			rectangle_p->SetPosition(Vec2F(EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE, EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE));
+			rectangle_p = map.RectanglePointer(EVENT5__DONW_RECTANGLE);
+			rectangle_p->SetPosition(Vec2F(EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE));
+			rectangle_p = map.RectanglePointer(EVENT5__LEFT_RECTANGLE);
+			rectangle_p->SetPosition(Vec2F(EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE, EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE));
+		}
+
 		rectangle_p->Move(Vec2F(-EVENT5__RECTANGLE_SPEED, 0.0f));
 		rectangle_p = map.RectanglePointer(EVENT5__RIGHT_RECTANGLE);
 		rectangle_p->Move(Vec2F(0.0f, EVENT5__RECTANGLE_SPEED));
@@ -142,23 +154,23 @@ void Game::Event5()
 		rectangle_p->Move(Vec2F(EVENT5__RECTANGLE_SPEED, 0.0f));
 		rectangle_p = map.RectanglePointer(EVENT5__LEFT_RECTANGLE);
 		rectangle_p->Move(Vec2F(0.0f, -EVENT5__RECTANGLE_SPEED));
-
-		if (rectangle_p->Position().y < EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE)
-		{
-			//left rctangle
-			rectangle_p->SetPosition(Vec2F(EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE, EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE));
-
-			rectangle_p = map.RectanglePointer(EVENT5__UP_RECTANGLE);
-			rectangle_p->SetPosition(Vec2F(EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE));
-			rectangle_p = map.RectanglePointer(EVENT5__RIGHT_RECTANGLE);
-			rectangle_p->SetPosition(Vec2F(EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE, EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE));
-			rectangle_p = map.RectanglePointer(EVENT5__DONW_RECTANGLE);
-			rectangle_p->SetPosition(Vec2F(EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE));
-		}
 	}
 	else
 	{
 		Rectangle* rectangle_p = map.RectanglePointer(EVENT5__UP_RECTANGLE);
+
+		if (rectangle_p->Position().x > EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE)
+		{
+			//up rctangle
+			rectangle_p->SetPosition(Vec2F(EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE, EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE));
+			rectangle_p = map.RectanglePointer(EVENT5__RIGHT_RECTANGLE);
+			rectangle_p->SetPosition(Vec2F(EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE));
+			rectangle_p = map.RectanglePointer(EVENT5__DONW_RECTANGLE);
+			rectangle_p->SetPosition(Vec2F(EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE, EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE));
+			rectangle_p = map.RectanglePointer(EVENT5__LEFT_RECTANGLE);
+			rectangle_p->SetPosition(Vec2F(EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE));
+		}
+
 		rectangle_p->Move(Vec2F(EVENT5__RECTANGLE_SPEED, 0.0f));
 		rectangle_p = map.RectanglePointer(EVENT5__RIGHT_RECTANGLE);
 		rectangle_p->Move(Vec2F(0.0f, -EVENT5__RECTANGLE_SPEED));
@@ -166,19 +178,6 @@ void Game::Event5()
 		rectangle_p->Move(Vec2F(-EVENT5__RECTANGLE_SPEED, 0.0f));
 		rectangle_p = map.RectanglePointer(EVENT5__LEFT_RECTANGLE);
 		rectangle_p->Move(Vec2F(0.0f, EVENT5__RECTANGLE_SPEED));
-
-		if (rectangle_p->Position().y > EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE)
-		{
-			//left rctangle
-			rectangle_p->SetPosition(Vec2F(EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE));
-
-			rectangle_p = map.RectanglePointer(EVENT5__UP_RECTANGLE);
-			rectangle_p->SetPosition(Vec2F(EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE, EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE));
-			rectangle_p = map.RectanglePointer(EVENT5__RIGHT_RECTANGLE);
-			rectangle_p->SetPosition(Vec2F(EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE));
-			rectangle_p = map.RectanglePointer(EVENT5__DONW_RECTANGLE);
-			rectangle_p->SetPosition(Vec2F(EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE, EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE));
-		}
 	}
 
 	map_data_mtx.unlock();
@@ -222,7 +221,7 @@ void Game::Event8()
 			temp__polygon_p->angle = temp__angle;
 			temp__polygon_p->size.Set(EVENT8__MIN_SIZE + temp__size, EVENT8__MAX_SIZE - temp__size);
 			temp__polygon_p->NeedUpdate();
-			temp__angle -= M_PI / (float)EVENT8__POLYGONS_COUNT;
+			temp__angle -= (float)M_PI / (float)EVENT8__POLYGONS_COUNT;
 		}
 	}
 }

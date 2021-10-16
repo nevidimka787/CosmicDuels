@@ -989,7 +989,6 @@ void Game::LasersDestroyAsteroids()
 {
 	GameTypes::entities_count_t asteroid, found_asteroids;
 	Asteroid* temp__asteroid_p;
-	Beam temp__beam;
 	Laser* temp__laser_p;
 
 	lasers_array_mtx.lock();
@@ -1004,8 +1003,7 @@ void Game::LasersDestroyAsteroids()
 				temp__asteroid_p = &asteroids[asteroid];
 				if (temp__asteroid_p->exist)
 				{
-					temp__beam = temp__laser_p->GetBeam();
-					if (temp__asteroid_p->Entity::IsCollision(&temp__beam))
+					if (temp__asteroid_p->Entity::IsCollision(temp__laser_p))
 					{
 						bonuses_array_mtx.lock();
 						DestroyEntity(temp__laser_p, temp__asteroid_p);
@@ -1027,7 +1025,6 @@ void Game::LasersDestroyBonuses()
 {
 	GameTypes::entities_count_t bonus, found_bonuses;
 	Bonus* temp__bonus_p;
-	Beam temp__beam;
 	Laser* temp__laser_p;
 
 	lasers_array_mtx.lock();
@@ -1042,7 +1039,7 @@ void Game::LasersDestroyBonuses()
 				temp__bonus_p = &bonuses[bonus];
 				if (temp__bonus_p->exist)
 				{
-					if (temp__bonus_p->Entity::IsCollision(&temp__beam))
+					if (temp__bonus_p->IsCollision(temp__laser_p))
 					{
 						DestroyEntity(temp__laser_p, temp__bonus_p);
 						goto end_of_bonus_cycle;
@@ -1079,7 +1076,7 @@ void Game::LasersDetonateBombs()
 					temp__bomb_p = &bombs[bomb];
 					if (temp__bomb_p->exist)
 					{
-						if (!temp__bomb_p->IsBoom() && temp__bomb_p->IsCollision(temp__laser_p->GetBeam()))
+						if (!temp__bomb_p->IsBoom() && temp__bomb_p->Entity::IsCollision(temp__laser_p))
 						{
 							temp__bomb_p->Boom();
 						}
@@ -1099,7 +1096,6 @@ void Game::LasersDestroyBullets()
 {
 	GameTypes::entities_count_t bullet, found_bullets;
 	Bullet* temp__bullet_p;
-	Beam temp__beam;
 	Laser* temp__laser_p;
 
 	lasers_array_mtx.lock();
@@ -1114,7 +1110,7 @@ void Game::LasersDestroyBullets()
 				temp__bullet_p = &bullets[bullet];
 				if (temp__bullet_p->exist)
 				{
-					if (temp__bullet_p->Entity::IsCollision(&temp__beam))
+					if (temp__bullet_p->DynamicEntity::IsCollision(temp__laser_p))
 					{
 						DestroyEntity(temp__laser_p, temp__bullet_p);
 						goto end_of_bullet_cycle;
@@ -1135,7 +1131,7 @@ void Game::LasersDestroyKnifes()
 	GameTypes::entities_count_t knife, found_knifes;
 	Knife* temp__knife_p;
 	Laser* temp__laser_p;
-	Beam temp__beam;
+	Segment temp__segment;
 
 	lasers_array_mtx.lock();
 	for (GameTypes::entities_count_t laser = 0, found_lasers = 0; found_lasers < lasers_count; laser++)
@@ -1151,8 +1147,8 @@ void Game::LasersDestroyKnifes()
 					temp__knife_p = &knifes[knife];
 					if (temp__knife_p->exist)
 					{
-						temp__beam = temp__laser_p->GetBeam();
-						if (temp__knife_p->GetSegment().IsIntersection(&temp__beam))
+						temp__segment = temp__knife_p->GetSegment();
+						if (temp__laser_p->IsCollision(&temp__segment))
 						{
 							RemoveEntity(temp__knife_p);
 							goto end_of_knife_cycle;
@@ -1191,7 +1187,6 @@ void Game::LasersDestroyMap()
 void Game::LasersDestroyTurels()
 {
 	GameTypes::entities_count_t turel, found_turels;
-	Beam temp__beam;
 	Laser* temp__laser_p;
 	Turel* temp__turel_p;
 
@@ -1207,8 +1202,7 @@ void Game::LasersDestroyTurels()
 				temp__turel_p = &turels[turel];
 				if (temp__turel_p->exist)
 				{
-					temp__beam = temp__laser_p->GetBeam();
-					if (temp__turel_p->IsCollision(&temp__beam))
+					if (temp__turel_p->IsCollision(temp__laser_p))
 					{
 						std::cout << "Remove turel." << std::endl;
 						RemoveEntity(temp__turel_p);
@@ -1230,7 +1224,6 @@ void Game::MegaLasersDestroyAsteroids()
 	GameTypes::entities_count_t asteroid, found_asteroids;
 	Asteroid* temp__asteroid_p;
 	MegaLaser* temp__mega_laser_p;
-	Segment temp__segment;
 
 	mega_lasers_array_mtx.lock();
 	for (GameTypes::entities_count_t mega_laser = 0, found_mega_lasers = 0; found_mega_lasers < mega_lasers_count; mega_laser++)
@@ -1246,7 +1239,7 @@ void Game::MegaLasersDestroyAsteroids()
 					temp__asteroid_p = &asteroids[asteroid];
 					if (temp__asteroid_p->exist)
 					{
-						if (temp__asteroid_p->IsCollision(&temp__segment))
+						if (temp__asteroid_p->Entity::IsCollision(temp__mega_laser_p))
 						{
 							bonuses_array_mtx.lock();
 							DestroyEntity(temp__mega_laser_p, temp__asteroid_p);
@@ -1270,7 +1263,6 @@ void Game::MegaLasersDestroyBonuses()
 	GameTypes::entities_count_t bonus, found_bonuses;
 	Bonus* temp__bonus_p;
 	MegaLaser* temp__mega_laser_p;
-	Segment temp__segment;
 
 	mega_lasers_array_mtx.lock();
 	for (GameTypes::entities_count_t mega_laser = 0, found_mega_lasers = 0; found_mega_lasers < mega_lasers_count; mega_laser++)
@@ -1286,7 +1278,7 @@ void Game::MegaLasersDestroyBonuses()
 					temp__bonus_p = &bonuses[bonus];
 					if (temp__bonus_p->exist)
 					{
-						if (temp__bonus_p->IsCollision(&temp__segment))
+						if (temp__bonus_p->IsCollision(temp__mega_laser_p))
 						{
 							DestroyEntity(temp__mega_laser_p, temp__bonus_p);
 							goto end_of_bonus_cycle;
@@ -1360,7 +1352,7 @@ void Game::MegaLasersDestroyBullets()
 					temp__bullet_p = &bullets[bullet];
 					if (temp__bullet_p->exist)
 					{
-						if (temp__bullet_p->IsCollision(temp__mega_laser_p->GetSegment()))
+						if (temp__bullet_p->IsCollision(temp__mega_laser_p))
 						{
 							DestroyEntity(temp__mega_laser_p, temp__bullet_p);
 							goto end_of_bullet_cycle;
@@ -1399,7 +1391,7 @@ void Game::MegaLasersDestroyKnifes()
 					if (temp__knife_p->exist)
 					{
 						temp__segment = temp__knife_p->GetSegment();
-						if (temp__mega_laser_p->GetSegment().IsIntersection(&temp__segment))
+						if (temp__mega_laser_p->IsCollision(&temp__segment))
 						{
 							DestroyEntity(temp__mega_laser_p, temp__knife_p);
 							goto end_of_knife_cycle;
@@ -1426,7 +1418,6 @@ void Game::MegaLasersDestroyTurels()
 	GameTypes::entities_count_t turel, found_turels;
 	Turel* temp__turel_p;
 	MegaLaser* temp__mega_laser_p;
-	Segment temp__segment;
 
 	mega_lasers_array_mtx.lock();
 	for (GameTypes::map_elements_count_t mega_laser = 0, found_mega_lasers = 0; found_mega_lasers < mega_lasers_count; mega_laser++)
@@ -1442,8 +1433,7 @@ void Game::MegaLasersDestroyTurels()
 					temp__turel_p = &turels[turel];
 					if (temp__turel_p->exist)
 					{
-						temp__segment = temp__mega_laser_p->GetSegment();
-						if (temp__turel_p->IsCollision(&temp__segment))
+						if (temp__turel_p->IsCollision(temp__mega_laser_p))
 						{
 							RemoveEntity(temp__turel_p);
 							goto end_of_turel_cycle;
