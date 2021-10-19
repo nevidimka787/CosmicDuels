@@ -54,5 +54,5 @@ void main()
 		color = vec3(1.0f);
 		break;
 	}
-	frag_color = vec4(color * (1.0f - life) + 0.5f * life, 1.0f);
+	frag_color = vec4(color, 1.0f - life / 2.0f);
 }

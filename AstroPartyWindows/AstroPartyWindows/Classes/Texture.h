@@ -25,6 +25,7 @@ public:
 		GLint min_filter_parameter = GL_NEAREST,
 		GLint mag_filter_parameter = GL_NEAREST);
 	void Use();
+	void Use(GLuint as_texture_number);
 
 	~Texture2D();
 };

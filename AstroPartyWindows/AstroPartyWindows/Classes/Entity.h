@@ -38,6 +38,11 @@ public:
 	Entity();
 	Entity(const Entity& entity);
 	Entity(
+		Vec2F position,
+		float radius,
+		float angle = 0.0f,
+		bool exist = true);
+	Entity(
 		Vec2F* position,
 		float radius,
 		float angle = 0.0f,
@@ -132,8 +137,6 @@ protected:
 	Vec2F velocity;
 	//This variable set only by force functions.
 	Vec2F force;
-
-	bool CollisionSide(Vec2F* p1, Vec2F* p2);
 public:
 	float force_collision_coeffisient;
 	float force_resistance_air_coefficient;
@@ -246,19 +249,68 @@ public:
 	~StaticEntity();
 };
 
-class Particle : public DynamicEntity
+class Particle : public Entity
 {
+protected:
+	bool active = false;
+	GameTypes::tic_t spawn_tic;
+	GameTypes::tic_t animation_period;
+	GameTypes::tic_t animation_postpone;
+	GameTypes::tic_t finish_tic;
+	EngineTypes::Particle::type_t type;
+
+	void SetAutoPeriod(EngineTypes::Particle::type_t type);
+	void SetAutoPostpone(EngineTypes::Particle::type_t type);
 public:
-	GameTypes::tic_t life_time;
+	float animation = 0.0f;
+	Entity* pointer_to_entity;
 
 	Particle();
+	Particle(
+		GameTypes::tic_t current_tic,
+		EngineTypes::Particle::type_t type,
+		const Entity* pointer_to_host,
+		GameTypes::tic_t animation_period = PARTICLE_PROPERTY_AUTO,
+		GameTypes::tic_t animation_postpone = PARTICLE_PROPERTY_AUTO,
+		GameTypes::tic_t finish_tic = PARTICLE_PROPERTY_AUTO,
+		bool exist = true);
+	Particle(
+		GameTypes::tic_t current_tic,
+		Vec2F position,
+		float angle,
+		float radius,
+		EngineTypes::Particle::type_t type,
+		GameTypes::tic_t animation_period,
+		GameTypes::tic_t animation_postpone,
+		GameTypes::tic_t finish_tic,
+		bool exist = true);
+	Particle(
+		GameTypes::tic_t current_tic,
+		const Vec2F* position,
+		float angle,
+		float radius,
+		EngineTypes::Particle::type_t type,
+		GameTypes::tic_t animation_period,
+		GameTypes::tic_t animation_postpone,
+		GameTypes::tic_t finish_tic,
+		bool exist = true);
+
+	//If particle active or can be active, then function return true.
+	void Activate(GameTypes::tic_t current_tic);
+	bool CanRemove(GameTypes::tic_t current_tic);
+	EngineTypes::Particle::type_t GetType();
+	bool IsActive();
+	void Link(Entity* new_pointer);
+	void Unlink();
+	void Update(GameTypes::tic_t current_tic);
+
+	void operator=(Particle particle);
 
 	~Particle();
 };
 
 class Bonus : public DynamicEntity
 {
-
 protected:
 public:
 	EngineTypes::Bonus::inventory_t bonus_inventory;

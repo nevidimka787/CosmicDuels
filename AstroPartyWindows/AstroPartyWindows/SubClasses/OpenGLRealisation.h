@@ -31,6 +31,7 @@ public:
 	StaticBuffer knife_buffer;
 	StaticBuffer laser_buffer;
 	StaticBuffer mega_laser_buffer;
+	StaticBuffer particle_buffer;
 	StaticBuffer pilot_buffer;
 	StaticBuffer ship_buffer;
 	StaticBuffer turel_buffer;
@@ -87,6 +88,8 @@ public:
 	Shader laser_shader;
 	//The shader use for draw mega lasers.
 	Shader mega_laser_shader;
+	//The use for particles.
+	Shader particle_shader;
 	//The shader use for draw pilots.
 	Shader pilot_shader;
 	//The shader use for draw shipd.
@@ -166,6 +169,8 @@ public:
 	//The function draw mega laser.
 	void DrawObject(MegaLaser* mega_laser, bool update_shader = false);
 	//The function draw pilot.
+	void DrawObject(Particle* pilot, bool update_shader = false);
+	//The function draw pilot.
 	void DrawObject(Pilot* pilot, bool update_shader = false);
 	//The function draw ship.
 	void DrawObject(Ship* ship, bool update_shader = false);
@@ -204,6 +209,7 @@ public:
 	void DrawLasers();
 	//The function draw all mega lasers on the map.
 	void DrawMegaLasers();
+	void DrawParticles();
 	//The function draw all pilots on the map.
 	void DrawPilots();
 	//The function draw all ships on the map.

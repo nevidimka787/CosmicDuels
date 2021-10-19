@@ -3,7 +3,6 @@
 Texture2D::Texture2D() :
     id(0)
 {
-
 }
 
 bool Texture2D::Initialisate(const char* texture_file_name, GLint format, GLint internal_format, GLint wrap_s_rule, GLint wrap_t_rule, GLint min_filter_parameter, GLint mag_filter_parameter)
@@ -41,6 +40,13 @@ bool Texture2D::Initialisate(const char* texture_file_name, GLint format, GLint 
 
 void Texture2D::Use()
 {
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, id);
+}
+
+void Texture2D::Use(GLuint as_texture_number)
+{
+    glActiveTexture(GL_TEXTURE0 + as_texture_number);
     glBindTexture(GL_TEXTURE_2D, id);
 }
 

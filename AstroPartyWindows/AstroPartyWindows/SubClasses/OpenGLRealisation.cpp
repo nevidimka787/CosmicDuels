@@ -15,6 +15,9 @@ OpenGL::OpenGL(int width, int height, const char* title, GLFWmonitor* monitor, G
     InitBuffers();
     InitShaders();
     InitTextures();
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 //Callback functions
@@ -296,10 +299,13 @@ void OpenGL::InitBuffers()
     bomb_buffer.Initialisate(points, 6);
     bonus_buffer.Initialisate(points, 6);
     bullet_buffer.Initialisate(points, 6);
+
     cyrcle_buffer.Initialisate(points, 6);
     deceler_area_buffer.Initialisate(points, 6);
     grav_gen_buffer.Initialisate(points, 6);
     rectangle_buffer.Initialisate(points, 6);
+
+    particle_buffer.Initialisate(points, 6);
 
     points[0].Set(1.0f, 1.0f);
     points[1].Set(0.0f, 1.0f);
@@ -376,25 +382,26 @@ void OpenGL::InitOpenGL()
 
 void OpenGL::InitShaders()
 {
-    asteroid_shader.Initialisate("Shaders/Objects/Vertex/Asteroid.glsl", "Shaders/Objects/Fragment/Asteroid.glsl");
-    bomb_shader.Initialisate("Shaders/Objects/Vertex/Bomb.glsl", "Shaders/Objects/Fragment/Bomb.glsl");
-    bonus_shader.Initialisate("Shaders/Objects/Vertex/Bonus.glsl", "Shaders/Objects/Fragment/Bonus.glsl");
-    bullet_shader.Initialisate("Shaders/Objects/Vertex/Bullet.glsl", "Shaders/Objects/Fragment/Bullet.glsl");
-    deceler_area_shader.Initialisate("Shaders/Objects/Vertex/Deceler.glsl", "Shaders/Objects/Fragment/Deceler.glsl");
-    grav_gen_shader.Initialisate("Shaders/Objects/Vertex/GravGen.glsl", "Shaders/Objects/Fragment/GravGen.glsl");
-    knife_shader.Initialisate("Shaders/Objects/Vertex/Knife.glsl", "Shaders/Objects/Fragment/Knife.glsl");
-    laser_shader.Initialisate("Shaders/Objects/Vertex/Laser.glsl", "Shaders/Objects/Fragment/Laser.glsl");
-    mega_laser_shader.Initialisate("Shaders/Objects/Vertex/MegaLaser.glsl", "Shaders/Objects/Fragment/MegaLaser.glsl");
-    pilot_shader.Initialisate("Shaders/Objects/Vertex/Pilot.glsl", "Shaders/Objects/Fragment/Pilot.glsl");
-    ship_shader.Initialisate("Shaders/Objects/Vertex/Ship.glsl", "Shaders/Objects/Fragment/Ship.glsl");
-    turel_shader.Initialisate("Shaders/Objects/Vertex/Turel.glsl", "Shaders/Objects/Fragment/Turel.glsl");
+    asteroid_shader.Initialisate(       "Shaders/Objects/Vertex/Asteroid.glsl"  ,   "Shaders/Objects/Fragment/Asteroid.glsl");
+    bomb_shader.Initialisate(           "Shaders/Objects/Vertex/Bomb.glsl"      ,   "Shaders/Objects/Fragment/Bomb.glsl");
+    bonus_shader.Initialisate(          "Shaders/Objects/Vertex/Bonus.glsl"     ,   "Shaders/Objects/Fragment/Bonus.glsl");
+    bullet_shader.Initialisate(         "Shaders/Objects/Vertex/Bullet.glsl"    ,   "Shaders/Objects/Fragment/Bullet.glsl");
+    deceler_area_shader.Initialisate(   "Shaders/Objects/Vertex/Deceler.glsl"   ,   "Shaders/Objects/Fragment/Deceler.glsl");
+    grav_gen_shader.Initialisate(       "Shaders/Objects/Vertex/GravGen.glsl"   ,   "Shaders/Objects/Fragment/GravGen.glsl");
+    knife_shader.Initialisate(          "Shaders/Objects/Vertex/Knife.glsl"     ,   "Shaders/Objects/Fragment/Knife.glsl");
+    laser_shader.Initialisate(          "Shaders/Objects/Vertex/Laser.glsl"     ,   "Shaders/Objects/Fragment/Laser.glsl");
+    mega_laser_shader.Initialisate(     "Shaders/Objects/Vertex/MegaLaser.glsl" ,   "Shaders/Objects/Fragment/MegaLaser.glsl");
+    particle_shader.Initialisate(       "Shaders/Objects/Vertex/Particle.glsl"  ,   "Shaders/Objects/Fragment/Particle.glsl");
+    pilot_shader.Initialisate(          "Shaders/Objects/Vertex/Pilot.glsl"     ,   "Shaders/Objects/Fragment/Pilot.glsl");
+    ship_shader.Initialisate(           "Shaders/Objects/Vertex/Ship.glsl"      ,   "Shaders/Objects/Fragment/Ship.glsl");
+    turel_shader.Initialisate(          "Shaders/Objects/Vertex/Turel.glsl"     ,   "Shaders/Objects/Fragment/Turel.glsl");
     
-    rectangle_shader.Initialisate("Shaders/Map/Vertex/Rectangle.glsl", "Shaders/Map/Fragment/Rectangle.glsl");
-    cyrcle_shader.Initialisate("Shaders/Map/Vertex/Cyrcle.glsl", "Shaders/Map/Fragment/Cyrcle.glsl");
-    polygon_shader.Initialisate("Shaders/Map/Vertex/Polygon.glsl", "Shaders/Map/Fragment/Polygon.glsl");
+    rectangle_shader.Initialisate(      "Shaders/Map/Vertex/Rectangle.glsl"     ,   "Shaders/Map/Fragment/Rectangle.glsl");
+    cyrcle_shader.Initialisate(         "Shaders/Map/Vertex/Cyrcle.glsl"        ,   "Shaders/Map/Fragment/Cyrcle.glsl");
+    polygon_shader.Initialisate(        "Shaders/Map/Vertex/Polygon.glsl"       ,   "Shaders/Map/Fragment/Polygon.glsl");
     
-    button_shader.Initialisate("Shaders/Menu/Vertex/Button.glsl", "Shaders/Menu/Fragment/Button.glsl");
-    controler_shader.Initialisate("Shaders/Menu/Vertex/Controler.glsl", "Shaders/Menu/Fragment/Controler.glsl");
+    button_shader.Initialisate(         "Shaders/Menu/Vertex/Button.glsl"       ,   "Shaders/Menu/Fragment/Button.glsl");
+    controler_shader.Initialisate(      "Shaders/Menu/Vertex/Controler.glsl"    ,   "Shaders/Menu/Fragment/Controler.glsl");
 }
 
 void OpenGL::InitTextures()
@@ -416,12 +423,12 @@ void OpenGL::DrawFrame()
         temp__game__camera_size = game_p__camera->GetSize();
         game_p__camera_data_mtx->unlock();
 
-        game_p__deceler_areas_array_mtx->lock();
-        if (*game_p__deceler_areas_count > 0)
+        game_p__particles_array_mtx->lock();
+        if (*game_p__particles_count > 0)
         {
-            DrawDecelerationAreas();
+            DrawParticles();
         }
-        game_p__deceler_areas_array_mtx->unlock();
+        game_p__particles_array_mtx->unlock();
         game_p__map_data_mtx->lock();
         DrawCurrentMap();
         game_p__map_data_mtx->unlock();
@@ -493,6 +500,12 @@ void OpenGL::DrawFrame()
             DrawShips();
         }
         game_p__ships_array_mtx->unlock();
+        game_p__deceler_areas_array_mtx->lock();
+        if (*game_p__deceler_areas_count > 0)
+        {
+            DrawDecelerationAreas();
+        }
+        game_p__deceler_areas_array_mtx->unlock();
     }
     else if (*game_p__flag_round_results == true)
     {
@@ -683,6 +696,25 @@ void OpenGL::DrawObject(MegaLaser* mega_laser, bool update_shader)
     mega_laser_shader.SetUniform("vector", mega_laser->GetDirectionNotNormalize() * mega_laser->radius);
     mega_laser_shader.SetUniform("width", mega_laser->width);
     mega_laser_buffer.Draw();
+}
+
+void OpenGL::DrawObject(Particle* particle, bool update_shader)
+{
+    if (update_shader)
+    {
+        particle_buffer.Use();
+        particle_shader.Use();
+        particle_shader.SetUniform("scale", window_scale);
+        particle_shader.SetUniform("camera_position", temp__game__camera_position);
+        particle_shader.SetUniform("camera_size", temp__game__camera_size);
+    }
+
+    particle_shader.SetUniform("position", particle->GetPosition());
+    particle_shader.SetUniform("angle", particle->GetAngle());
+    particle_shader.SetUniform("radius", particle->radius);
+    particle_shader.SetUniform("type", (int)particle->GetType());
+    particle_shader.SetUniform("animation", particle->animation);
+    particle_buffer.Draw();
 }
 
 void OpenGL::DrawObject(Pilot* pilot, bool update_shader)
@@ -1054,6 +1086,26 @@ void OpenGL::DrawMegaLasers()
         {
             found_mega_lasers++;
             DrawObject(&(*game_p__mega_lasers)[mega_laser]);
+        }
+    }
+}
+
+void OpenGL::DrawParticles()
+{
+    particle_buffer.Use();
+    particle_shader.Use();
+    particle_shader.SetUniform("scale", window_scale);
+    particle_shader.SetUniform("camera_position", temp__game__camera_position);
+    particle_shader.SetUniform("camera_size", temp__game__camera_size);
+    for (GameTypes::entities_count_t particle = 0, found_particles = 0; found_particles < *game_p__particles_count; particle++)
+    {
+        if ((*game_p__particles)[particle].exist)
+        {
+            found_particles++;
+            if ((*game_p__particles)[particle].IsActive())
+            {
+                DrawObject(&(*game_p__particles)[particle]);
+            }
         }
     }
 }

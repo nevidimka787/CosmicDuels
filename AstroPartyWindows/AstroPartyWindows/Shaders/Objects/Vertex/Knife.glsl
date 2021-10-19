@@ -1,6 +1,8 @@
 #version 330 core
 layout (location = 0) in vec2 aPos;
 
+out float pixel_position;
+
 uniform float scale;
 
 uniform vec4 beam;
@@ -15,9 +17,9 @@ mat3 SetByBeam(vec4 _beam);
 
 mat3 matrix;
 
-vec3 _position;
 void main()
 {
+    pixel_position = aPos.y;
     matrix =
         Scale(vec2(1.1f, 0.5f)) * 
         SetByBeam(beam) * 

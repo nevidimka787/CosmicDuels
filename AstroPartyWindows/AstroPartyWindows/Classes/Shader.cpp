@@ -25,6 +25,7 @@ bool Shader::Initialisate(const char* vertex_file_name, const char* fragment_fil
 	{
 		std::cout << "ERROR::SHADER_CONSTRUCTOR::VERTEX::File not found." << std::endl
 			<< "File: " << vertex_file_name << std::endl << std::endl;
+		return false;
 	}
 	else
 	{
@@ -47,6 +48,8 @@ bool Shader::Initialisate(const char* vertex_file_name, const char* fragment_fil
 	{
 		std::cout << "ERROR::SHADER_CONSTRUCTOR::FRAGMENT::File not found." << std::endl
 			<< "File: " << fragment_file_name << std::endl << std::endl;
+		free(vertex_code);
+		return false;
 	}
 	else
 	{
@@ -82,6 +85,7 @@ bool Shader::Initialisate(const char* vertex_file_name, const char* fragment_fil
 			<< "File: " << fragment_file_name << std::endl
 			<< "Logs:\n" << info_log << std::endl
 			<< "-----------------------------------------------------------------------" << std::endl << std::endl;
+		succses_flag = false;
 	}
 
 	fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -95,6 +99,7 @@ bool Shader::Initialisate(const char* vertex_file_name, const char* fragment_fil
 			<< "File: " << fragment_file_name << std::endl
 			<< "Logs:\n" << info_log << std::endl
 			<< "-----------------------------------------------------------------------" << std::endl << std::endl;
+		succses_flag = false;
 	}
 
 	id = glCreateProgram();
@@ -110,6 +115,7 @@ bool Shader::Initialisate(const char* vertex_file_name, const char* fragment_fil
 			<< "Fragment file: " << fragment_file_name << std::endl
 			<< "Logs:\n" << info_log << std::endl
 			<< "-----------------------------------------------------------------------" << std::endl << std::endl;
+		succses_flag = false;
 	}
 
 	glDeleteShader(vertex_shader);

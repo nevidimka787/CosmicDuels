@@ -20,8 +20,6 @@
 
 void Game::PhysicThread0()
 {
-	global_timer++;
-
 	BombsChainReaction();
 	BulletsDestroyAsteroids();
 	KnifesDestroyAsteroids();
@@ -96,6 +94,8 @@ void Game::PhysicThread0()
 	thread_1_update.unlock();
 	thread_2_update.unlock();
 	thread_3_update.unlock();
+
+	global_timer++;
 }
 
 void Game::PhysicThread1()
@@ -219,7 +219,7 @@ void Game::PhysicThread2()
 		grav_gens_array_mtx.unlock();
 	}
 
-	//UpdateParticlesPhase2();
+	UpdateParticlesPhase2();
 	UpdateShipsPhase2();
 	UpdateKnifesPhase2();
 	UpdateLasersPhase2();
@@ -739,6 +739,18 @@ void Game::InitLevel()
 		CreateMap0(ships_positions, ships_angles);
 		break;
 	}
+
+	AddEntity(
+		Particle(
+			0,								//current tic
+			Vec2F(0.0f),					//position
+			0.0f,							//angle
+			100.0f,							//radius
+			PARTICLE_PERIOD_BACKGROUND,		//type
+			1000,							//period
+			0,								//postpone
+			PARTICLE_ANIMATION_NOT_FINISH)	//finish tic
+	);
 
 	/* Spawn players */
 

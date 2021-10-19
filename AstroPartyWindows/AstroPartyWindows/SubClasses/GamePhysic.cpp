@@ -397,9 +397,16 @@ void Game::UpdateParticlesPhase2()
 		temp__particle_p = &particles[particle];
 		if (temp__particle_p->exist)
 		{
-			temp__particle_p->Update();
+			if (temp__particle_p->CanRemove(global_timer))
+			{
+				RemoveEntity(temp__particle_p);
+				goto end_of_particle_cycle;
+			}
+			temp__particle_p->Activate(global_timer);
+			temp__particle_p->Update(global_timer);
 			found_particles++;
 		}
+	end_of_particle_cycle:;
 	}
 	particles_array_mtx.unlock();
 }

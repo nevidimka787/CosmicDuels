@@ -76,6 +76,11 @@ namespace EngineTypes
 		typedef uint8_t buttons_count_t;
 	}
 
+	namespace Particle
+	{
+		typedef uint8_t type_t;
+	}
+
 	namespace Polygon
 	{
 		typedef uint32_t points_array_length_t;

@@ -28,7 +28,7 @@ void main()
 	}
 	if((player & SHIELD) != 0x0000)
 	{
-		frag_color = vec4(0.5f, 0.5f, 1.0f, 1.0f);
+		frag_color = vec4(0.5f, 0.5f, 1.0f, 0.6f);
 		return;
 	}
 
@@ -70,8 +70,8 @@ void main()
 	}
 	if((player & UNBRAKABLE) != 0x0000)
 	{
-		color *= 0.7f;
-		color += 0.3f;
+		frag_color = vec4(color * 0.7 + 0.3, 0.7f);
+		return;
 	}
 	frag_color = vec4(color, 1.0f);
 }
