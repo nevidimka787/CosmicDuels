@@ -413,8 +413,11 @@ void OpenGL::InitTextures()
 
 void OpenGL::DrawFrame()
 {
-    glClearColor(0.1f, 0.1f, 0.5f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    if (*game_p__flag_all_entities_initialisate == false || *game_p__flag_round_results == true)
+    {
+        glClearColor(0.1f, 0.1f, 0.5f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+    }
 
     if (*game_p__flag_all_entities_initialisate == true && *game_p__flag_round_results == false)
     {
@@ -710,7 +713,7 @@ void OpenGL::DrawObject(Particle* particle, bool update_shader)
     }
 
     particle_shader.SetUniform("position", particle->GetPosition());
-    particle_shader.SetUniform("angle", particle->GetAngle());
+    particle_shader.SetUniform("angle", (particle->GetType() == PARTICLE_TYPE_BACKGROUND) ? (float)*game_p__stuning_timer / (float)GAME_BOMB_STUNING_TIME : particle->GetAngle());
     particle_shader.SetUniform("radius", particle->radius);
     particle_shader.SetUniform("type", (int)particle->GetType());
     particle_shader.SetUniform("animation", particle->animation);
@@ -826,6 +829,7 @@ void OpenGL::DrawObject(Cyrcle* cyrcle, bool update_shader)
         cyrcle_shader.SetUniform("camera_position", temp__game__camera_position);
         cyrcle_shader.SetUniform("camera_size", temp__game__camera_size);
     }
+    cyrcle_shader.SetUniform("properties", cyrcle->Prorerties());
     cyrcle_shader.SetUniform("position", cyrcle->Position());
     cyrcle_shader.SetUniform("size", cyrcle->Radius());
     cyrcle_buffer.Draw();

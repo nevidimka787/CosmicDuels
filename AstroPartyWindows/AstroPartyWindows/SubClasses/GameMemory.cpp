@@ -908,6 +908,7 @@ void Game::MemoryLock()
 void Game::MemorySetDefault()
 {
 	global_timer = 0;
+	stuning_timer = 0;
 	end_match_tic = 0;
 
 	camera.SetCoefficients();

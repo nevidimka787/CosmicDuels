@@ -96,6 +96,10 @@ void Game::PhysicThread0()
 	thread_3_update.unlock();
 
 	global_timer++;
+	if (stuning_timer > 0)
+	{
+		stuning_timer--;
+	}
 }
 
 void Game::PhysicThread1()
@@ -743,9 +747,33 @@ void Game::InitLevel()
 	AddEntity(
 		Particle(
 			0,								//current tic
-			Vec2F(0.0f),					//position
+			Vec2F(0.5f),					//position
 			0.0f,							//angle
-			100.0f,							//radius
+			101.0f,							//radius
+			PARTICLE_PERIOD_BACKGROUND,		//type
+			1000,							//period
+			0,								//postpone
+			PARTICLE_ANIMATION_NOT_FINISH)	//finish tic
+	);
+
+	AddEntity(
+		Particle(
+			0,								//current tic
+			Vec2F(-0.5f),					//position
+			0.0f,							//angle
+			21.0f,							//radius
+			PARTICLE_PERIOD_BACKGROUND,		//type
+			1000,							//period
+			0,								//postpone
+			PARTICLE_ANIMATION_NOT_FINISH)	//finish tic
+	);
+
+	AddEntity(
+		Particle(
+			0,								//current tic
+			Vec2F(-0.5f),					//position
+			0.0f,							//angle
+			7.0f,							//radius
 			PARTICLE_PERIOD_BACKGROUND,		//type
 			1000,							//period
 			0,								//postpone

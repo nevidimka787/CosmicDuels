@@ -255,6 +255,7 @@ public:
 	bool* game_p__flag_round_results;
 
 	GameTypes::tic_t* game_p__global_timer;
+	GameTypes::tic_t* game_p__stuning_timer;
 
 	//Count of asteroids on the map.
 	GameTypes::entities_count_t* game_p__asteroids_count;

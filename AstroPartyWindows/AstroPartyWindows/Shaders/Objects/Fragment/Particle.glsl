@@ -4,8 +4,16 @@ out vec4 frag_color;
 
 in vec2 pixel_position;
 
+#define STARS_COUNT	6
+
 uniform int type;
 uniform float animation;
+
+uniform float angle;
+uniform vec2 camera_position;
+uniform float camera_size;
+uniform float radius;
+uniform float scale;
 
 void Background();
 void ExaustEngine();
@@ -69,15 +77,50 @@ void main()
 	}
 }
 
+float Rand(float _value)
+{
+	return fract((sin(6438593.3489 * _value) + 0.234) * 3297.2352);
+}
+
+float RandF(vec2 _value)
+{
+	return fract(sin(dot(_value, vec2(45.4622, 78.90342))) * 70053.2345);
+}
+
+vec2 Rand(vec2 _value)
+{
+	return fract(vec2(sin(dot(_value, vec2(98.4544, 12.1298))), sin(dot(_value, vec2(23.23222, 79.7543)))) * 73146.3433);
+}
+
+vec3 Rand(vec3 _value)
+{
+	return fract(vec3(sin(dot(_value.xy, vec2(98.4544, 12.1298))) * 43983.3453, sin(dot(_value.yz, vec2(23.23222, 79.7543))) * 37462.457, sin(dot(_value.xz, vec2(30.4833, 87.2433))) * 28733.534));
+}
+
 void Background()
 {
-	vec2 _position = vec2(animation * 0.01f, 0.0f);
-	float _radius = 0.001f;
-	if(length(_position - pixel_position) > _radius)
+#define SIZE	1.0f
+	vec2 _star_pos;
+	float _star_r;
+	for(int _star = 0; _star < STARS_COUNT; _star++)
+	{
+		_star_pos = Rand(vec2(_star * (trunc(pixel_position) + 1.0f))) * 0.92f + 0.04f;
+		_star_r = RandF(_star_pos) * 0.02f + 0.01f;
+		float _temp = Rand(_star_r);
+
+		if(length(fract(pixel_position / SIZE) - _star_pos) < _star_r / SIZE)
+		{
+			frag_color = vec4(vec3(1.0f), 1.0f - angle);
+			return;
+		}
+	}
+	if(radius < 100.0f)
 	{
 		discard;
 	}
-	frag_color = vec4(1.0f);
+	
+	frag_color = vec4(0.03f, 0.12f, 0.35f, 1.0f - angle);
+
 }
 
 void ExaustEngine()

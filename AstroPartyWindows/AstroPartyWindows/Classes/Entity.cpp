@@ -804,7 +804,8 @@ bool DynamicEntity::IsCollision(StaticEntity* entity)
 
 bool DynamicEntity::IsCollision(Laser* laser)
 {
-	Segment last = GetLastTreck();
+	Segment last = GetTreck();
+	std::cout << "Dist: " << laser->GetBeam().Distance(&last) << std::endl;
 	return laser->GetBeam().Distance(&last) < radius + laser->width;
 }
 
@@ -3535,7 +3536,7 @@ bool Bullet::Collision(Map* map)
 	for (element = 0; element < map->cyrcles_array_length; element++)
 	{
 		element_p = (void*)map->CyrclePointer(element);
-		if (DynamicEntity::IsCollision((Cyrcle*)element_p))
+		if (((Cyrcle*)element_p)->exist && DynamicEntity::IsCollision((Cyrcle*)element_p))
 		{
 			if (!((Cyrcle*)element_p)->IsUnbreacable())
 			{
@@ -3547,7 +3548,7 @@ bool Bullet::Collision(Map* map)
 	for (element = 0; element < map->polygons_array_length; element++)
 	{
 		element_p = (void*)map->PolygonPointer(element);
-		if (DynamicEntity::IsCollision((Polygon*)element_p))
+		if (((Polygon*)element_p)->exist && DynamicEntity::IsCollision((Polygon*)element_p))
 		{
 			if (!((Polygon*)element_p)->IsUnbreacable())
 			{
@@ -3559,7 +3560,7 @@ bool Bullet::Collision(Map* map)
 	for (element = 0; element < map->rectangles_array_length; element++)
 	{
 		element_p = (void*)map->RectanglePointer(element);
-		if (DynamicEntity::IsCollision((Rectangle*)element_p))
+		if (((Rectangle*)element_p)->exist && DynamicEntity::IsCollision((Rectangle*)element_p))
 		{
 			if (!((Rectangle*)element_p)->IsUnbreacable())
 			{

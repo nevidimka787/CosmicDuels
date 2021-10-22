@@ -518,6 +518,8 @@ void Game::BombsChainReaction()
 						if (!temp__bomb2_p->IsBoom() && temp__bomb2_p->Entity::IsCollision(temp__bomb1_p))
 						{
 							temp__bomb2_p->Boom();
+							//std::cout << "Chain BOOM: " << (unsigned)bomb << " " << (unsigned)second_bomb << std::endl;
+							stuning_timer = GAME_BOMB_STUNING_TIME;
 						}
 						found_second_bombs++;
 					}
@@ -1070,7 +1072,7 @@ void Game::LasersDetonateBombs()
 
 	lasers_array_mtx.lock();
 
-	for (GameTypes::map_elements_count_t laser = 0, found_lasers = 0; found_lasers < mega_lasers_count; laser++)
+	for (GameTypes::map_elements_count_t laser = 0, found_lasers = 0; found_lasers < lasers_count; laser++)
 	{
 		temp__laser_p = &lasers[laser];
 		if (temp__laser_p->exist)
@@ -1083,9 +1085,10 @@ void Game::LasersDetonateBombs()
 					temp__bomb_p = &bombs[bomb];
 					if (temp__bomb_p->exist)
 					{
-						if (!temp__bomb_p->IsBoom() && temp__bomb_p->Entity::IsCollision(temp__laser_p))
+						if (!temp__bomb_p->IsBoom() && temp__bomb_p->IsCollision(temp__laser_p))
 						{
 							temp__bomb_p->Boom();
+							stuning_timer = GAME_BOMB_STUNING_TIME;
 						}
 						found_bombs++;
 					}
@@ -1326,6 +1329,7 @@ void Game::MegaLasersDetonateBombs()
 						if (!temp__bomb_p->IsBoom() && temp__bomb_p->IsCollision(temp__mega_laser_p->GetSegment()))
 						{
 							temp__bomb_p->Boom();
+							stuning_timer = GAME_BOMB_STUNING_TIME;
 						}
 						found_bombs++;
 					}

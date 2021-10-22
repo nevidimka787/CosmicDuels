@@ -96,6 +96,7 @@ Linker::Linker(Game* game_object, MenuFunctions* menu_functions_object, OpenGL* 
 	open_gl_object->game_p__ships_count = &game_object->ships_count;
 	open_gl_object->game_p__ships_select_menu = &game_object->ships_select_menu;
 	open_gl_object->game_p__shoot_flags = &game_object->shoot_flags;
+	open_gl_object->game_p__stuning_timer = &game_object->stuning_timer;
 	open_gl_object->game_p__play_match = &game_object->play_match;
 	open_gl_object->game_p__play_round = &game_object->play_round;
 	open_gl_object->game_p__spawning_objects_select_menu = &game_object->spawning_objects_select_menu;

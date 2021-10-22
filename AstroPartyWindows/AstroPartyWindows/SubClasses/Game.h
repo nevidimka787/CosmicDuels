@@ -22,6 +22,7 @@ public:
 	GameTypes::tic_t rotate_inverse_chage_tic;
 	//Global tic value for use in functions.
 	GameTypes::tic_t end_match_tic;
+	GameTypes::tic_t stuning_timer;
 
 	//Game status true = The game is on. false = The game stops.
 	bool play_round;

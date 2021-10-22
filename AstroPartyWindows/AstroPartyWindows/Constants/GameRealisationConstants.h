@@ -4,6 +4,7 @@
 
 #define GAME_DOUBLE_CLK_TIME	10
 #define GAME_BURNOUT_COULDOWN	50
+#define GAME_BOMB_STUNING_TIME	1000
 
 /*
 asteroids, bombs, bonuses, bullets,

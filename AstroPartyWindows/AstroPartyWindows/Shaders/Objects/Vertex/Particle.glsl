@@ -19,20 +19,27 @@ mat3 matrix;
 #define BACKGROUND	0x01
 
 out vec2 pixel_position;
+
 void main()
 {
-    pixel_position = aPos;
 
-    matrix = 
-        Rotate(angle) * 
-        Scale(vec2(radius)) * 
-        Transport(position);
-        if(type != BACKGROUND)
-        {
-            matrix *= Transport(-camera_position) *
-                Scale(vec2(1.0f / camera_size));
-        }
-    matrix *= Scale(vec2(1.0f, scale));
+    if(type != BACKGROUND)
+    {
+    pixel_position = aPos;
+        matrix =
+            Rotate(angle) *
+            Scale(vec2(radius)) * 
+            Transport(position) *
+            Transport(-camera_position) *
+            Scale(vec2(1.0f / camera_size)) *
+            Scale(vec2(1.0f, scale));
+    }
+    else
+    {
+        pixel_position = vec2(aPos.x, aPos.y / scale) * camera_size + camera_position / radius + position + radius;
+   
+        matrix = mat3(1.0f);
+    }
  
     gl_Position = vec4(vec3(aPos, 1.0f) * matrix, 1.0f);
 }
