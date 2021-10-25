@@ -838,12 +838,20 @@ void Game::InitLevel()
 				start_bonus &= BONUS_ALL - BONUS_BONUS;
 				start_bonus |= GenerateRandomBonus();
 			}
-			ships[player].Set(
-				&ships_positions[player], &zero_velocity,
-				player, teams[player],
-				(void*)&rotate_flags[player], (void*)&burnout_flags[player], (void*)&shoot_flags[player],
-				nullptr, 0,
-				ships_angles[player], start_bonus);
+
+			AddEntity(
+				Ship(
+					&ships_positions[player],		//position
+					&zero_velocity,					//velocity
+					player,							//player number
+					teams[player],					//team number
+					(void*)&rotate_flags[player],	//nothing
+					(void*)&burnout_flags[player],	//nothing
+					(void*)&shoot_flags[player],	//nothing
+					nullptr,						//heatbox vertexs array
+					0,								//heatbox vertexs count
+					ships_angles[player],			//angle
+					start_bonus));					//bonus inventory
 
 			players_count++;
 			IncrementPlayersCountInTeam(teams[player]);

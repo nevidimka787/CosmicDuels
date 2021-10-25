@@ -39,17 +39,17 @@ Entity::Entity(const Entity& entity) :
 
 }
 
-float Entity::GetAngle()
+float Entity::GetAngle() const
 {
 	return angle;
 }
 
-float Entity::GetDistance(Beam* beam)
+float Entity::GetDistance(Beam* beam) const
 {
 	return beam->Distance(&position) - radius, 0.0f;
 }
 
-float Entity::GetDistance(Cyrcle* cyrcle)
+float Entity::GetDistance(Cyrcle* cyrcle) const
 {
 	Vec2F temp = cyrcle->Position();
 	float dist = GetDistance(&temp) - cyrcle->Radius();
@@ -60,42 +60,42 @@ float Entity::GetDistance(Cyrcle* cyrcle)
 	return dist;
 }
 
-float Entity::GetDistance(DecelerationArea* deceler_area)
+float Entity::GetDistance(DecelerationArea* deceler_area) const
 {
 	return deceler_area->GetDistance(position) - radius;
 }
 
-float Entity::GetDistance(DynamicEntity* entity)
+float Entity::GetDistance(DynamicEntity* entity) const
 {
 	return entity->GetDistance(&position) - radius;
 }
 
-float Entity::GetDistance(Entity* entity)
+float Entity::GetDistance(Entity* entity) const
 {
 	return entity->position.Distance(&position) - entity->radius - radius;
 }
 
-float Entity::GetDistance(Line* line)
+float Entity::GetDistance(Line* line) const
 {
 	return line->Distance(&position) - radius;
 }
 
-float Entity::GetDistance(Segment* segment)
+float Entity::GetDistance(Segment* segment) const
 {
 	return segment->Distance(&position) - radius;
 }
 
-float Entity::GetDistance(StaticEntity* entity)
+float Entity::GetDistance(StaticEntity* entity) const
 {
 	return entity->GetDistance(&position) - radius;
 }
 
-float Entity::GetDistance(Polygon* polygon)
+float Entity::GetDistance(Polygon* polygon) const
 {
 	return 0.0;
 }
 
-float Entity::GetDistance(Rectangle* rectangle)
+float Entity::GetDistance(Rectangle* rectangle) const
 {
 	Segment temp = rectangle->UpSide();
 	float dist1 = GetDistance(&temp);
@@ -152,42 +152,42 @@ float Entity::GetDistance(Rectangle* rectangle)
 	return dist4;
 }
 
-float Entity::GetDistance(Vec2F point)
+float Entity::GetDistance(Vec2F point) const
 {
 	return point.Distance(&position) - radius;
 }
 
-float Entity::GetDistance(Vec2F* point)
+float Entity::GetDistance(const Vec2F* point) const
 {
 	return point->Distance(&position) - radius;
 }
 
-Vec2F Entity::GetDirectionNotNormalize()
+Vec2F Entity::GetDirectionNotNormalize() const
 {
 	return direction;
 }
 
-float Entity::GetFrameSize(Entity* entity, float scale)
+float Entity::GetFrameSize(Entity* entity, float scale) const
 {
 	return fmaxf(fabs((entity->position - position).x), fabs((entity->position - position).y * scale)) + radius + entity->radius;
 }
 
-Vec2F Entity::GetDirection()
+Vec2F Entity::GetDirection() const
 {
 	return direction.Normalize();
 }
 
-Vec2F Entity::GetPosition()
+Vec2F Entity::GetPosition() const
 {
 	return position;
 }
 
-bool Entity::IsCollision(Beam* beam)
+bool Entity::IsCollision(Beam* beam) const
 {
 	return beam->Distance(position) <= radius;
 }
 
-bool Entity::IsCollision(Cyrcle* cyrcle)
+bool Entity::IsCollision(Cyrcle* cyrcle) const
 {
 	if (cyrcle->exist == false)
 	{
@@ -197,32 +197,32 @@ bool Entity::IsCollision(Cyrcle* cyrcle)
 	return GetDistance(&temp) < radius + cyrcle->Radius();
 }
 
-bool Entity::IsCollision(DecelerationArea* deceler_area)
+bool Entity::IsCollision(DecelerationArea* deceler_area) const
 {
 	return GetDistance(deceler_area) <= 0.0f;
 }
 
-bool Entity::IsCollision(DynamicEntity* dynamic_entity)
+bool Entity::IsCollision(DynamicEntity* dynamic_entity) const
 {
 	return GetDistance(&dynamic_entity->position) <= dynamic_entity->radius;
 }
 
-bool Entity::IsCollision(Entity* entity)
+bool Entity::IsCollision(Entity* entity) const
 {
 	return GetDistance(&entity->position) <= entity->radius;
 }
 
-bool Entity::IsCollision(Line* line)
+bool Entity::IsCollision(Line* line) const
 {
 	return line->Distance(&position) <= radius;
 }
 
-bool Entity::IsCollision(Laser* laser)
+bool Entity::IsCollision(Laser* laser) const
 {
 	return laser->GetBeam().Distance(position) < radius + laser->width;
 }
 
-bool Entity::IsCollision(MegaLaser* mega_laser)
+bool Entity::IsCollision(MegaLaser* mega_laser) const
 {
 	Line perpendicular = Line(position, mega_laser->GetDirection().Perpendicular());
 	Segment segment = mega_laser->GetSegment();
@@ -236,7 +236,7 @@ bool Entity::IsCollision(MegaLaser* mega_laser)
 		Segment(start.point + segment.vector, start.vector).Distance(position) < radius;
 }
 
-bool Entity::IsCollision(Map* map)
+bool Entity::IsCollision(Map* map) const
 {
 	for (uint8_t i = 0; i < map->rectangles_array_length; i++)
 	{
@@ -262,7 +262,7 @@ bool Entity::IsCollision(Map* map)
 	return false;
 }
 
-bool Entity::IsCollision(Polygon* polygon)
+bool Entity::IsCollision(Polygon* polygon) const
 {
 	if (!polygon->exist)
 	{
@@ -292,7 +292,7 @@ bool Entity::IsCollision(Polygon* polygon)
 	return false;
 }
 
-bool Entity::IsCollision(Rectangle* rectangle)
+bool Entity::IsCollision(Rectangle* rectangle) const
 {
 	if (rectangle->exist == false)
 	{
@@ -322,22 +322,22 @@ bool Entity::IsCollision(Rectangle* rectangle)
 	return false;
 }
 
-bool Entity::IsCollision(Segment* segment)
+bool Entity::IsCollision(Segment* segment) const
 {
 	return segment->Distance(&position) <= radius;
 }
 
-bool Entity::IsCollision(StaticEntity* static_entity)
+bool Entity::IsCollision(StaticEntity* static_entity) const
 {
 	return GetDistance(static_entity->GetPosition()) <= static_entity->radius;
 }
 
-bool Entity::IsCollision(Vec2F point)
+bool Entity::IsCollision(Vec2F point) const
 {
 	return GetDistance(point) <= 0.0f;
 }
 
-bool Entity::IsCollision(Vec2F* point)
+bool Entity::IsCollision(Vec2F* point) const
 {
 	return GetDistance(point) <= 0.0f;
 }
@@ -805,7 +805,6 @@ bool DynamicEntity::IsCollision(StaticEntity* entity)
 bool DynamicEntity::IsCollision(Laser* laser)
 {
 	Segment last = GetTreck();
-	std::cout << "Dist: " << laser->GetBeam().Distance(&last) << std::endl;
 	return laser->GetBeam().Distance(&last) < radius + laser->width;
 }
 
@@ -1085,6 +1084,7 @@ Particle::Particle() :
 	animation_period(PARTICLE_PROPERTY_AUTO),
 	animation_postpone(PARTICLE_PROPERTY_AUTO),
 	finish_tic(PARTICLE_PROPERTY_AUTO),
+	linked(false),
 	pointer_to_entity(nullptr),
 	spawn_tic(0)
 {
@@ -1093,7 +1093,8 @@ Particle::Particle() :
 Particle::Particle(GameTypes::tic_t current_tic, EngineTypes::Particle::type_t type, const Entity* pointer_to_host, GameTypes::tic_t animation_period, GameTypes::tic_t animation_postpone, GameTypes::tic_t finish_tic, bool exist) :
 	Entity(*pointer_to_host),
 	finish_tic(finish_tic),
-	pointer_to_entity(pointer_to_entity),
+	linked(true),
+	pointer_to_entity(pointer_to_host),
 	spawn_tic(current_tic),
 	type(type)
 {
@@ -1122,6 +1123,7 @@ Particle::Particle(GameTypes::tic_t current_tic, Vec2F position, float angle, fl
 	animation_period(animation_period),
 	animation_postpone(animation_postpone),
 	finish_tic(finish_tic),
+	linked(false),
 	pointer_to_entity(nullptr),
 	spawn_tic(current_tic)
 {
@@ -1133,6 +1135,7 @@ Particle::Particle(GameTypes::tic_t current_tic, const Vec2F* position, float an
 	animation_period(animation_period),
 	animation_postpone(animation_postpone),
 	finish_tic(finish_tic),
+	linked(false),
 	pointer_to_entity(nullptr),
 	spawn_tic(current_tic)
 {
@@ -1148,6 +1151,10 @@ void Particle::Activate(GameTypes::tic_t current_tic)
 
 bool Particle::CanRemove(GameTypes::tic_t current_tic)
 {
+	if (linked)
+	{
+		return !pointer_to_entity->exist || finish_tic != PARTICLE_ANIMATION_NOT_FINISH && current_tic == finish_tic;
+	}
 	return finish_tic != PARTICLE_ANIMATION_NOT_FINISH && current_tic == finish_tic;
 }
 
@@ -1164,6 +1171,7 @@ bool Particle::IsActive()
 void Particle::Link(Entity* new_pointer)
 {
 	pointer_to_entity = new_pointer;
+	linked = true;
 }
 
 void Particle::SetAutoPeriod(EngineTypes::Particle::type_t type)
@@ -1250,6 +1258,7 @@ void Particle::SetAutoPostpone(EngineTypes::Particle::type_t type)
 
 void Particle::Unlink()
 {
+	linked = false;
 	pointer_to_entity = nullptr;
 }
 
@@ -1277,11 +1286,14 @@ void Particle::operator=(Particle particle)
 	animation_postpone = particle.animation_postpone;
 	exist = particle.exist;
 	finish_tic = particle.finish_tic;
+	linked = particle.linked;
 	pointer_to_entity = particle.pointer_to_entity;
 	position = particle.position;
 	radius = particle.radius;
 	spawn_tic = particle.spawn_tic;
 	type = particle.type;
+
+	std::cout << "Particle=::linked:" << linked << std::endl;
 }
 
 Particle::~Particle()

@@ -183,6 +183,13 @@ void Game::AddEntity(Ship new_ship)
 	{
 		ships[ship_number] = new_ship;
 		ships_count++;
+		AddEntity(
+			Particle(
+				global_timer,
+				PARTICLE_TYPE_EXAUST_ENGINE,
+				&ships[ship_number],
+				PARTICLE_PERIOD_EXAUST_ENGINE,
+				PARTICLE_POSTPONE_EXAUST_ENGINE));
 	}
 }
 

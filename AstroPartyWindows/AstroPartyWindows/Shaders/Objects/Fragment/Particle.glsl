@@ -4,7 +4,7 @@ out vec4 frag_color;
 
 in vec2 pixel_position;
 
-#define STARS_COUNT	6
+#define STARS_COUNT	5
 
 uniform int type;
 uniform float animation;
@@ -99,18 +99,34 @@ vec3 Rand(vec3 _value)
 
 void Background()
 {
-#define SIZE	1.0f
+#define SIZE		1.0f
+#define BG_COLOR	vec3(67.0f / 256.0f, 50.0f / 256.0f, 103.0f / 256.0f)
+#define STAR_ALPHA	0.4f
 	vec2 _star_pos;
 	float _star_r;
 	for(int _star = 0; _star < STARS_COUNT; _star++)
 	{
-		_star_pos = Rand(vec2(_star * (trunc(pixel_position) + 1.0f))) * 0.92f + 0.04f;
+		_star_pos = Rand(vec2((_star + 1) * (trunc(pixel_position) + 1.0f))) * 0.92f + 0.04f;
 		_star_r = RandF(_star_pos) * 0.02f + 0.01f;
 		float _temp = Rand(_star_r);
 
 		if(length(fract(pixel_position / SIZE) - _star_pos) < _star_r / SIZE)
 		{
-			frag_color = vec4(vec3(1.0f), 1.0f - angle);
+			if(radius < 100.0f)
+			{
+				frag_color = vec4(
+					max(min(3.0f * (1.0f - abs((_temp * 2.0f - 1.0f) * 1.5f + 2.0f / 3.0f)), 1.0f), 0.0f),
+					max(min(3.0f * (1.0f - abs((_temp * 2.0f - 1.0f) * 1.5f)), 1.0f), 0.0f),
+					max(min(3.0f * (1.0f - abs((_temp * 2.0f - 1.0f) * 1.5f - 2.0f / 3.0f)), 1.0f), 0.0f),
+					(1.0f - angle) * STAR_ALPHA);
+				return;
+			}
+			frag_color = vec4(
+				vec3(
+					max(min(3.0f * (1.0f - abs((_temp * 2.0f - 1.0f) * 1.5f + 2.0f / 3.0f)), 1.0f), 0.0f),
+					max(min(3.0f * (1.0f - abs((_temp * 2.0f - 1.0f) * 1.5f)), 1.0f), 0.0f),
+					max(min(3.0f * (1.0f - abs((_temp * 2.0f - 1.0f) * 1.5f - 2.0f / 3.0f)), 1.0f), 0.0f)
+					) * STAR_ALPHA + BG_COLOR * (1.0f - STAR_ALPHA), 1.0f - angle);
 			return;
 		}
 	}
@@ -119,13 +135,81 @@ void Background()
 		discard;
 	}
 	
-	frag_color = vec4(0.03f, 0.12f, 0.35f, 1.0f - angle);
+	frag_color = vec4(BG_COLOR, 1.0f - angle);
 
+}
+
+bool PositionInQuare(vec2 _position, float _quare_side)
+{
+	return _position.x > -_quare_side && _position.y > -_quare_side && _position.x < _quare_side && _position.y < _quare_side;
 }
 
 void ExaustEngine()
 {
-	
+#define JET_WIDTH	0.5f
+#define POS0 (vec2(0.24072422f, 0.49338662f) * JET_WIDTH - JET_WIDTH + 0.5f)
+#define POS1 (vec2(0.98175764f, 0.22186973f) * JET_WIDTH - JET_WIDTH + 0.5f)
+#define POS2 (vec2(0.47484369f, 0.70038374f) * JET_WIDTH - JET_WIDTH + 0.5f)
+#define POS3 (vec2(0.43450010f, 0.82839354f) * JET_WIDTH - JET_WIDTH + 0.5f)
+#define POS4 (-vec2(0.24072422f, 0.49338662f) * JET_WIDTH + JET_WIDTH - 0.5f)
+#define POS5 (-vec2(0.98175764f, 0.22186973f) * JET_WIDTH + JET_WIDTH - 0.5f)
+#define POS6 (-vec2(0.47484369f, 0.70038374f) * JET_WIDTH + JET_WIDTH - 0.5f)
+#define POS7 (-vec2(0.43450010f, 0.82839354f) * JET_WIDTH + JET_WIDTH - 0.5f)
+#define QUARE_SIDE	0.2f
+
+	vec2 _l_pix_pos = pixel_position + vec2(2.0f * animation, 0.0f);
+	float alpha = pixel_position.x * 0.5f + 1.0f;
+	alpha *= alpha * alpha;
+	if(_l_pix_pos.x > 1.0f)
+	{
+		_l_pix_pos.x -= 2.0f;
+	}
+	else if(_l_pix_pos.x < -1.0f)
+	{
+		_l_pix_pos.x += 2.0f;
+	}
+
+	if(PositionInQuare(_l_pix_pos - POS0, QUARE_SIDE))
+	{
+		frag_color = vec4(1.0f, 1.0f, 1.0f, alpha);
+		return;
+	}
+	if(PositionInQuare(_l_pix_pos - POS1, QUARE_SIDE))
+	{
+		frag_color = vec4(1.0f, 1.0f, 1.0f, alpha);
+		return;
+	}
+	if(PositionInQuare(_l_pix_pos - POS2, QUARE_SIDE))
+	{
+		frag_color = vec4(1.0f, 1.0f, 1.0f, alpha);
+		return;
+	}
+	if(PositionInQuare(_l_pix_pos - POS3, QUARE_SIDE))
+	{
+		frag_color = vec4(1.0f, 1.0f, 1.0f, alpha);
+		return;
+	}
+	if(PositionInQuare(_l_pix_pos - POS4, QUARE_SIDE))
+	{
+		frag_color = vec4(1.0f, 1.0f, 1.0f, alpha);
+		return;
+	}
+	if(PositionInQuare(_l_pix_pos - POS5, QUARE_SIDE))
+	{
+		frag_color = vec4(1.0f, 1.0f, 1.0f, alpha);
+		return;
+	}
+	if(PositionInQuare(_l_pix_pos - POS6, QUARE_SIDE))
+	{
+		frag_color = vec4(1.0f, 1.0f, 1.0f, alpha);
+		return;
+	}
+	if(PositionInQuare(_l_pix_pos - POS7, QUARE_SIDE))
+	{
+		frag_color = vec4(1.0f, 1.0f, 1.0f, alpha);
+		return;
+	}
+	discard;
 }
 
 void ExaustShoot()

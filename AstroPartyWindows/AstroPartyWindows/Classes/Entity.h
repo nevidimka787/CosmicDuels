@@ -48,63 +48,63 @@ public:
 		float angle = 0.0f,
 		bool exist = true);
 
-	float GetAngle();
-	Vec2F GetDirectionNotNormalize();
+	float GetAngle() const;
+	Vec2F GetDirectionNotNormalize() const;
 	//Getting the distance between two closest points of objects.
-	float GetDistance(Beam* beam);
+	float GetDistance(Beam* beam) const;
 	//Getting the distance between two closest points of objects.
-	float GetDistance(Cyrcle* cyrcle);
+	float GetDistance(Cyrcle* cyrcle) const;
 	//Getting the distance between two closest points of objects.
-	float GetDistance(DecelerationArea* deceler_area);
+	float GetDistance(DecelerationArea* deceler_area) const;
 	//Getting the distance between two closest points of objects.
-	float GetDistance(DynamicEntity* entity);
+	float GetDistance(DynamicEntity* entity) const;
 	//Getting the distance between two closest points of objects.
-	float GetDistance(Entity* entity);
+	float GetDistance(Entity* entity) const;
 	//Getting the distance between two closest points of objects.
-	float GetDistance(Line* line);
+	float GetDistance(Line* line) const;
 	//Getting the distance between two closest points of objects.
-	float GetDistance(Polygon* polygon);
+	float GetDistance(Polygon* polygon) const;
 	//Getting the distance between two closest points of objects.
-	float GetDistance(Rectangle* rectangle);
+	float GetDistance(Rectangle* rectangle) const;
 	//Getting the distance between two closest points of objects.
-	float GetDistance(Segment* segment);
+	float GetDistance(Segment* segment) const;
 	//Getting the distance between two closest points of objects.
-	float GetDistance(StaticEntity* entity);
+	float GetDistance(StaticEntity* entity) const;
 	//Getting the distance between two closest points of objects.
-	float GetDistance(Vec2F point);
+	float GetDistance(Vec2F point) const;
 	//Getting the distance between two closest points of objects.
-	float GetDistance(Vec2F* point);
-	float GetFrameSize(Entity* entity, float scale);
-	Vec2F GetDirection();
-	Vec2F GetPosition();
+	float GetDistance(const Vec2F* point) const;
+	float GetFrameSize(Entity* entity, float scale) const;
+	Vec2F GetDirection() const;
+	Vec2F GetPosition() const;
 	//If distance between two objects is less then zero, the function return true.
-	bool IsCollision(Beam* beam);
+	bool IsCollision(Beam* beam) const;
 	//If distance between two objects is less then zero, the function return true.
-	bool IsCollision(Cyrcle* cyrcle);
+	bool IsCollision(Cyrcle* cyrcle) const;
 	//If distance between two objects is less then zero, the function return true.
-	bool IsCollision(DecelerationArea* deceler_area);
+	bool IsCollision(DecelerationArea* deceler_area) const;
 	//If distance between two objects is less then zero, the function return true.
-	bool IsCollision(DynamicEntity* entity);
+	bool IsCollision(DynamicEntity* entity) const;
 	//If distance between two objects is less then zero, the function return true.
-	bool IsCollision(Entity* entity);
+	bool IsCollision(Entity* entity) const;
 	//If distance between two objects is less then zero, the function return true.
-	bool IsCollision(Line* line);
-	bool IsCollision(Laser* laser);
-	bool IsCollision(MegaLaser* mega_laser);
+	bool IsCollision(Line* line) const;
+	bool IsCollision(Laser* laser) const;
+	bool IsCollision(MegaLaser* mega_laser) const;
 	//If distance between two objects is less then zero, the function return true.
-	bool IsCollision(Map* map);
+	bool IsCollision(Map* map) const;
 	//If distance between two objects is less then zero, the function return true.
-	bool IsCollision(Polygon* polygon);
+	bool IsCollision(Polygon* polygon) const;
 	//If distance between two objects is less then zero, the function return true.
-	bool IsCollision(Rectangle* rectangle);
+	bool IsCollision(Rectangle* rectangle) const;
 	//If distance between two objects is less then zero, the function return true.
-	bool IsCollision(Segment* segment);
+	bool IsCollision(Segment* segment) const;
 	//If distance between two objects is less then zero, the function return true.
-	bool IsCollision(StaticEntity* entity);
+	bool IsCollision(StaticEntity* entity) const;
 	//If distance between two objects is less then zero, the function return true.
-	bool IsCollision(Vec2F point);
+	bool IsCollision(Vec2F point) const;
 	//If distance between two objects is less then zero, the function return true.
-	bool IsCollision(Vec2F* point);
+	bool IsCollision(Vec2F* point) const;
 	void Rotate(float angle);
 	void Set(Entity* entity);
 	void Set(
@@ -258,12 +258,13 @@ protected:
 	GameTypes::tic_t animation_postpone;
 	GameTypes::tic_t finish_tic;
 	EngineTypes::Particle::type_t type;
+	bool linked;
 
 	void SetAutoPeriod(EngineTypes::Particle::type_t type);
 	void SetAutoPostpone(EngineTypes::Particle::type_t type);
 public:
 	float animation = 0.0f;
-	Entity* pointer_to_entity;
+	const Entity* pointer_to_entity;
 
 	Particle();
 	Particle(
