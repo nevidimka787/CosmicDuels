@@ -27,6 +27,7 @@ public:
 	StaticBuffer bonus_buffer;
 	StaticBuffer bullet_buffer;
 	StaticBuffer deceler_area_buffer;
+	StaticBuffer dynamic_particle_buffer;
 	StaticBuffer grav_gen_buffer;
 	StaticBuffer knife_buffer;
 	StaticBuffer laser_buffer;
@@ -80,6 +81,8 @@ public:
 	Shader bullet_shader;
 	//The shader use for draw deceleration areas.
 	Shader deceler_area_shader;
+	//The shader use for draw dynamic particles.
+	Shader dynamic_particle_shader;
 	//The shader use for draw gravity generators.
 	Shader grav_gen_shader;
 	//The shader use for draw knifes.
@@ -88,7 +91,7 @@ public:
 	Shader laser_shader;
 	//The shader use for draw mega lasers.
 	Shader mega_laser_shader;
-	//The use for particles.
+	//The shader use for draw particles.
 	Shader particle_shader;
 	//The shader use for draw pilots.
 	Shader pilot_shader;
@@ -160,6 +163,8 @@ public:
 	void DrawObject(Bullet* bullet, bool update_shader = false);
 	//The function draw deceleration area.
 	void DrawObject(DecelerationArea* deceler_area, bool update_shader = false);
+	//The function draw dynamic particle.
+	void DrawObject(DynamicParticle* dynamic_particle, bool update_shader = false);
 	//The function draw gravity generator.
 	void DrawObject(GravGen* grav_gen, bool update_shader = false);
 	//The function draw knife.
@@ -203,12 +208,15 @@ public:
 	void DrawGravityGenerators();
 	//The function draw all deceleration areas on the map.
 	void DrawDecelerationAreas();
+	//The function draw all dynamic particles on the map.
+	void DrawDynamicParticles();
 	//The function draw all knifes on the map.
 	void DrawKnifes();
 	//The function draw all lasers on the map.
 	void DrawLasers();
 	//The function draw all mega lasers on the map.
 	void DrawMegaLasers();
+	//The function draw all particles on the map.
 	void DrawParticles();
 	//The function draw all pilots on the map.
 	void DrawPilots();
@@ -267,6 +275,8 @@ public:
 	GameTypes::entities_count_t* game_p__bullets_count;
 	//Count of deceleration areas on the map.
 	GameTypes::map_elements_count_t* game_p__deceler_areas_count;
+	//Count of particles on the map.
+	GameTypes::entities_count_t* game_p__dynamic_particles_count;
 	//Count of gravity generators on the map.
 	GameTypes::map_elements_count_t* game_p__grav_gens_count;
 	//Count of knifes on the map.
@@ -294,6 +304,8 @@ public:
 	Bonus** game_p__bonuses;
 	//Array of bullets.
 	Bullet** game_p__bullets;
+	//Array of particles.
+	DynamicParticle** game_p__dynamic_particles;
 	//Array of knifes.
 	Knife** game_p__knifes;
 	//Array of lazers.
@@ -340,6 +352,7 @@ public:
 	std::shared_mutex* game_p__bullets_array_mtx;
 	std::shared_mutex* game_p__camera_data_mtx;
 	std::shared_mutex* game_p__deceler_areas_array_mtx;
+	std::shared_mutex* game_p__dynamic_particles_array_mtx;
 	std::shared_mutex* game_p__grav_gens_array_mtx;
 	std::shared_mutex* game_p__input_values_mtx;
 	std::shared_mutex* game_p__knifes_array_mtx;

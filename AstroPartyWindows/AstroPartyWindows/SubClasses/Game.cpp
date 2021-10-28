@@ -118,6 +118,7 @@ void Game::PhysicThread1()
 	LasersDetonateBombs();
 	LasersDestroyKnifes();
 	MegaLasersDestroyBullets();
+	ShipsCreateExaust();
 
 	threads_statuses_mtx.lock();
 	threads_statuses |= THREAD_COMPLETE << THREAD_PHASE_1 << THREAD_1;
@@ -285,6 +286,7 @@ void Game::PhysicThread3()
 
 	UpdateBombsPhase2();
 	UpdateAsteroidsPhase2();
+	UpdateDynamicParticlesPhase2();
 
 	thread_3_update.lock();
 
@@ -1319,6 +1321,7 @@ void Game::MutexesLock()
 	bonuses_array_mtx.lock();
 	map_data_mtx.lock();
 	particles_array_mtx.lock();
+	dynamic_particles_array_mtx.lock();
 	log_data_mtx.lock();
 }
 
@@ -1341,6 +1344,7 @@ void Game::MutexesUnlock()
 	bonuses_array_mtx.unlock();
 	map_data_mtx.unlock();
 	particles_array_mtx.unlock();
+	dynamic_particles_array_mtx.unlock();
 	log_data_mtx.unlock();
 }
 
@@ -1480,6 +1484,13 @@ void Th_10(std::shared_mutex* mtx_p, bool* return_data)
 	*return_data = false;
 }
 
+void Th_11(std::shared_mutex* mtx_p, bool* return_data)
+{
+	mtx_p->lock();
+	mtx_p->unlock();
+	*return_data = false;
+}
+
 void Game::DebugLog__CheckMutexeslLock()
 {
 	std::shared_mutex* mtx_00 = &deceler_areas_array_mtx;
@@ -1498,31 +1509,33 @@ void Game::DebugLog__CheckMutexeslLock()
 	std::shared_mutex* mtx_0D = &bonuses_array_mtx;
 	std::shared_mutex* mtx_0E = &map_data_mtx;
 	std::shared_mutex* mtx_0F = &particles_array_mtx;
-	std::shared_mutex* mtx_10 = &log_data_mtx;
+	std::shared_mutex* mtx_10 = &dynamic_particles_array_mtx;
+	std::shared_mutex* mtx_11 = &log_data_mtx;
 
-	bool data[17];
-	for (uint8_t i = 0; i < 17; i++)
+	bool data[18];
+	for (uint8_t i = 0; i < 18; i++)
 	{
 		data[i] = true;
 	}
 
-	std::thread th_00(Th_00, mtx_00, &data[0x00]);
-	std::thread th_01(Th_01, mtx_01, &data[0x01]);
-	std::thread th_02(Th_02, mtx_02, &data[0x02]);
-	std::thread th_03(Th_03, mtx_03, &data[0x03]);
-	std::thread th_04(Th_04, mtx_04, &data[0x04]);
-	std::thread th_05(Th_05, mtx_05, &data[0x05]);
-	std::thread th_06(Th_06, mtx_06, &data[0x06]);
-	std::thread th_07(Th_07, mtx_07, &data[0x07]);
-	std::thread th_08(Th_08, mtx_08, &data[0x08]);
-	std::thread th_09(Th_09, mtx_09, &data[0x09]);
-	std::thread th_0A(Th_0A, mtx_0A, &data[0x0A]);
-	std::thread th_0B(Th_0B, mtx_0B, &data[0x0B]);
-	std::thread th_0C(Th_0C, mtx_0C, &data[0x0C]);
-	std::thread th_0D(Th_0D, mtx_0D, &data[0x0D]);
-	std::thread th_0E(Th_0E, mtx_0E, &data[0x0E]);
-	std::thread th_0F(Th_0F, mtx_0F, &data[0x0F]);
-	std::thread th_10(Th_10, mtx_10, &data[0x10]);
+	std::thread th_00(Th_00, mtx_00, &data[0x00]);//deceler area
+	std::thread th_01(Th_01, mtx_01, &data[0x01]);//grav gen
+	std::thread th_02(Th_02, mtx_02, &data[0x02]);//camera
+	std::thread th_03(Th_03, mtx_03, &data[0x03]);//ship
+	std::thread th_04(Th_04, mtx_04, &data[0x04]);//pilot
+	std::thread th_05(Th_05, mtx_05, &data[0x05]);//input
+	std::thread th_06(Th_06, mtx_06, &data[0x06]);//mega laser
+	std::thread th_07(Th_07, mtx_07, &data[0x07]);//laser
+	std::thread th_08(Th_08, mtx_08, &data[0x08]);//bomb
+	std::thread th_09(Th_09, mtx_09, &data[0x09]);//knife
+	std::thread th_0A(Th_0A, mtx_0A, &data[0x0A]);//turel
+	std::thread th_0B(Th_0B, mtx_0B, &data[0x0B]);//bullet
+	std::thread th_0C(Th_0C, mtx_0C, &data[0x0C]);//asteroid
+	std::thread th_0D(Th_0D, mtx_0D, &data[0x0D]);//bonus
+	std::thread th_0E(Th_0E, mtx_0E, &data[0x0E]);//map
+	std::thread th_0F(Th_0F, mtx_0F, &data[0x0F]);//particle
+	std::thread th_10(Th_10, mtx_10, &data[0x10]);//dynamic particle
+	std::thread th_11(Th_11, mtx_11, &data[0x11]);//log
 
 	std::this_thread::sleep_for(std::chrono::seconds(1));
 
@@ -1557,6 +1570,7 @@ end_of_cycle:
 		th_0E.join();
 		th_0F.join();
 		th_10.join();
+		th_11.join();
 
 		std::cout << "All mutexes are not locked." << std::endl;
 		return;
@@ -1706,8 +1720,17 @@ end_of_cycle:
 	{
 		printf("unlock\n");
 	}
-	printf("16. Logs:          ");
+	printf("16. Dynam part-es: ");
 	if (data[0x10])
+	{
+		printf("lock\n");
+	}
+	else
+	{
+		printf("unlock\n");
+	}
+	printf("17. Logs:          ");
+	if (data[0x11])
 	{
 		printf("lock\n");
 	}
@@ -1733,4 +1756,5 @@ end_of_cycle:
 	th_0E.join();
 	th_0F.join();
 	th_10.join();
+	th_11.join();
 }

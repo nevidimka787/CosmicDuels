@@ -92,6 +92,8 @@ public:
 	//Count of bullets on the map.
 	GameTypes::entities_count_t bullets_count;
 	//Count of particles on the map.
+	GameTypes::entities_count_t dynamic_particles_count;
+	//Count of particles on the map.
 	GameTypes::entities_count_t particles_count;
 
 	//Bonus in all ships at the start of the game.
@@ -146,6 +148,8 @@ public:
 	Bomb* bombs;
 	//Array of bullets.
 	Bullet* bullets;
+	//Array of dynamic particles.
+	DynamicParticle* dynamic_particles;
 	//Array of knifes.
 	Knife* knifes;
 	//Array of lazers.
@@ -176,6 +180,7 @@ public:
 	std::shared_mutex bullets_array_mtx;
 	std::shared_mutex camera_data_mtx;
 	std::shared_mutex deceler_areas_array_mtx;
+	std::shared_mutex dynamic_particles_array_mtx;
 	std::shared_mutex grav_gens_array_mtx;
 	std::shared_mutex input_values_mtx;
 	std::shared_mutex knifes_array_mtx;
@@ -239,6 +244,10 @@ public:
 	//Function adds entity to array that store entities of the same type.
 	//Not checking nullprt!
 	void AddEntity(DecelerationArea new_deceleration_area);
+
+	//Function adds entity to array that store entities of the same type.
+	//Not checking nullprt!
+	void AddEntity(DynamicParticle new_particle);
 	
 	//Function adds entity to array that store entities of the same type.
 	//Not checking nullprt!
@@ -294,6 +303,10 @@ public:
 	//Function adds entity to array that store entities of the same type.
 	//Not checking nullprt!
 	void RemoveEntity(DecelerationArea* new_deceleration_area);
+
+	//Function adds entity to array that store entities of the same type.
+	//Not checking nullprt!
+	void RemoveEntity(DynamicParticle* new_deceleration_area);
 	
 	//Function adds entity to array that store entities of the same type.
 	//Not checking nullprt!
@@ -531,7 +544,7 @@ public:
 	15. particle
 	16. log
 	
-	//deceler_area -> grav_gen -> camera -> ship -> pilot -> input_values ->  mega_laser -> laser ->  bomb -> knife -> turel -> bullet -> asteroid -> bonus -> map -> particle -> log
+	//deceler_area -> grav_gen -> camera -> ship -> pilot -> input_values ->  mega_laser -> laser ->  bomb -> knife -> turel -> bullet -> asteroid -> bonus -> map -> particle -> dynamic_particle -> log
 
 	bomb										bomb chain reaction
 	bomb -> asteroid -> bonus					bomb destroys asteroid after that bonus spawns
@@ -744,23 +757,27 @@ public:
 	//t = n
 	void PilotsRespawnAuto();
 
-	//mtx: ship -> pilot -> bomb -> knife -> bonus -> log
+	//mtx: ship -> dynamic_particle
+	//t = n * k
+	void ShipsCreateExaust();
+
+	//mtx: ship -> pilot -> bomb -> knife -> bonus -> dynamic_entity -> log
 	//t = n * k
 	void ShipsDestroedByBombsOrActivateBombs();
 
-	//mtx: ship -> pilot -> bullet -> knife -> bonus -> log
+	//mtx: ship -> pilot -> bullet -> knife -> bonus -> dynamic_entity -> log
 	//t = n * k
 	void ShipsDestroedByBullets();
 
-	//mtx: ship -> pilot -> knife -> bonus -> log
+	//mtx: ship -> pilot -> knife -> bonus -> dynamic_entity -> log
 	//t = n * k
 	void ShipsDestroedByKnifes();
 
-	//mtx: ship -> pilot -> laser -> knife -> bonus -> log
+	//mtx: ship -> pilot -> laser -> knife -> bonus -> dynamic_entity -> log
 	//t = n * k
 	void ShipsDestroedByLasers();
 
-	//mtx: ship -> pilot -> mega_laser -> knife -> bonus -> log
+	//mtx: ship -> pilot -> mega_laser -> knife -> bonus -> dynamic_entity -> log
 	//t = n * k
 	void ShipsDestroedByMegaLasers();
 
@@ -800,6 +817,11 @@ public:
 	//mtx: deceler_area
 	//t = n
 	void UpdateDecelerAreasPhase2();
+
+	//Update the position and velocity of entity.
+	//mtx: particle
+	//t = n
+	void UpdateDynamicParticlesPhase2();
 
 	//Update the position and velocity of entity.
 	//mtx: grav_gen
@@ -944,6 +966,8 @@ public:
 		ShipsShoot								1#
 		
 		ShipsRespawnOrDestroyPilots				0#
+
+		ShipsCreateExaust						?
 		
 		ShipsDestroedByBombsOrActivateBombs		0#
 		
@@ -969,7 +993,9 @@ public:
 		
 		UpdateBulletsPhase2			1#
 
-		UpdateDecelerAreasPhase2	0#
+		UpdateDecelerAreasPhase2	0#`
+
+		UpdateDynamicParticlesPhase2 3#
 
 		UpdateGravGens				0#
 		

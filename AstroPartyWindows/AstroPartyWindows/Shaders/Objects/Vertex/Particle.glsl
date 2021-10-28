@@ -1,10 +1,13 @@
 #version 330 core
 layout (location = 0) in vec2 aPos;
 
+#define fopen fopen_s
+
 uniform float radius;
 uniform vec2 position;
 uniform float angle;
 uniform int type;
+uniform float animation;
 
 uniform float scale;
 uniform vec2 camera_position;
@@ -40,7 +43,18 @@ void main()
     case EXAUST_ENGINE:
         pixel_position = aPos;
         matrix =
-            Transport(vec2(-2.0f, 0.0f)) *
+            Transport(vec2(-0.8f, 0.0f)) *
+            Rotate(angle) *
+            Scale(vec2(radius)) * 
+            Transport(position) *
+            Transport(-camera_position) *
+            Scale(vec2(1.0f / camera_size)) *
+            Scale(vec2(1.0f, scale));
+        break;
+    case SHARDS_SHIP:
+        pixel_position = aPos;
+        matrix =
+            Scale(vec2(1.0f + animation)) *
             Rotate(angle) *
             Scale(vec2(radius)) * 
             Transport(position) *

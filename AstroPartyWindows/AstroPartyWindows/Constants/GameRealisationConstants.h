@@ -48,6 +48,8 @@ Asteroid
 	//The maximum possible count of bullets on the map.
 #define GAME_BULLETS_MAX_COUNT		(UINT16_MAX - 1)
 	//The maximum possible count of particles on the map.
+#define GAME_DYNAMIC_PARTICLES_MAX_COUNT	(UINT16_MAX - 1)
+	//The maximum possible count of particles on the map.
 #define GAME_PARTICLES_MAX_COUNT	(UINT16_MAX - 1)
 	//The maximum possible count of map's rectangles on the map.
 #define GAME_RECTANGLES_MAX_COUNT	128
@@ -222,7 +224,7 @@ Asteroid
 
 	//ships super bonuses
 
-#define SHIP_SUPER_BONUS__BOMBS_IN_LOOP			20u
+#define SHIP_SUPER_BONUS__BOMBS_IN_LOOP			8u
 #define SHIP_SUPER_BONUS__BOMBS_LOOP_VELOCITY	BULLET_DEFAULT_VELOCITY
 
 	//ships super bonuses

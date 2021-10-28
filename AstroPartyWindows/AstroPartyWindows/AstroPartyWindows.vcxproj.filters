@@ -201,6 +201,12 @@
     <None Include="Shaders\Objects\Vertex\Particle.glsl">
       <Filter>Shaders\Vertex</Filter>
     </None>
+    <None Include="Shaders\Objects\Fragment\DynamicParticle.glsl">
+      <Filter>Shaders\Fragment</Filter>
+    </None>
+    <None Include="Shaders\Objects\Vertex\DynamicParticle.glsl">
+      <Filter>Shaders\Vertex</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\GameEngine.h">

@@ -185,6 +185,7 @@
     <None Include="Shaders\Objects\Fragment\Bonus.glsl" />
     <None Include="Shaders\Objects\Fragment\Bullet.glsl" />
     <None Include="Shaders\Objects\Fragment\Deceler.glsl" />
+    <None Include="Shaders\Objects\Fragment\DynamicParticle.glsl" />
     <None Include="Shaders\Objects\Fragment\Knife.glsl" />
     <None Include="Shaders\Objects\Fragment\Laser.glsl" />
     <None Include="Shaders\Objects\Fragment\MegaLaser.glsl" />
@@ -197,6 +198,7 @@
     <None Include="Shaders\Objects\Vertex\Bonus.glsl" />
     <None Include="Shaders\Objects\Vertex\Bullet.glsl" />
     <None Include="Shaders\Objects\Vertex\Deceler.glsl" />
+    <None Include="Shaders\Objects\Vertex\DynamicParticle.glsl" />
     <None Include="Shaders\Objects\Vertex\Knife.glsl" />
     <None Include="Shaders\Objects\Vertex\Laser.glsl" />
     <None Include="Shaders\Objects\Vertex\MegaLaser.glsl" />

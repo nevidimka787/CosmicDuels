@@ -20,7 +20,7 @@ Entity::Entity(Vec2F position, float radius, float angle, bool exist) :
 {
 }
 
-Entity::Entity(Vec2F* position, float radius, float angle, bool exist) :
+Entity::Entity(const Vec2F* position, float radius, float angle, bool exist) :
 	angle(angle),
 	direction(Vec2F(cosf(angle), -sinf(angle))),
 	exist(exist),
@@ -461,7 +461,16 @@ DynamicEntity::DynamicEntity(const DynamicEntity& dynamic_entity) :
 {
 }
 
-DynamicEntity::DynamicEntity(Vec2F* position, Vec2F* velocity, float radius, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, bool exist) :
+DynamicEntity::DynamicEntity(Vec2F position, Vec2F velocity, float radius, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, bool exist) :
+	Entity(position, radius, angle, exist),
+	angular_velocity(angular_velocity),
+	force_collision_coeffisient(force_collision_coeffisient),
+	force_resistance_air_coefficient(force_resistance_air_coefficient),
+	velocity(velocity)
+{
+}
+
+DynamicEntity::DynamicEntity(const Vec2F* position, const Vec2F* velocity, float radius, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, bool exist) :
 	Entity(position, radius, angle, exist),
 	angular_velocity(angular_velocity),
 	force_collision_coeffisient(force_collision_coeffisient),
@@ -1090,7 +1099,7 @@ Particle::Particle() :
 {
 }
 
-Particle::Particle(GameTypes::tic_t current_tic, EngineTypes::Particle::type_t type, const Entity* pointer_to_host, GameTypes::tic_t animation_period, GameTypes::tic_t animation_postpone, GameTypes::tic_t finish_tic, bool exist) :
+Particle::Particle(GameTypes::tic_t current_tic, const Entity* pointer_to_host, EngineTypes::Particle::type_t type, GameTypes::tic_t animation_period, GameTypes::tic_t animation_postpone, GameTypes::tic_t finish_tic, bool exist) :
 	Entity(*pointer_to_host),
 	finish_tic(finish_tic),
 	linked(true),
@@ -1292,13 +1301,124 @@ void Particle::operator=(Particle particle)
 	radius = particle.radius;
 	spawn_tic = particle.spawn_tic;
 	type = particle.type;
-
-	std::cout << "Particle=::linked:" << linked << std::endl;
 }
 
 Particle::~Particle()
 {
+}
 
+
+
+DynamicParticle::DynamicParticle() :
+	DynamicEntity(),
+	active(false),
+	animation(0.0f),
+	animation_period(0),
+	animation_postpone(0),
+	finish_tic(0),
+	properties(DYNAMIC_PARTICLE_PROPERTY_NULL),
+	spawn_tic(0),
+	type(0)
+{
+}
+
+DynamicParticle::DynamicParticle(GameTypes::tic_t current_tic, Vec2F position, Vec2F velocisy, float radius, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, EngineTypes::Particle::type_t type, EngineTypes::DynamicParticle::property_t properties, GameTypes::tic_t animation_period, GameTypes::tic_t animation_postpone, GameTypes::tic_t finish_tic, bool exist) :
+	DynamicEntity(position, velocisy, radius, angle, angular_velocity, force_collision_coeffisient, force_resistance_air_coefficient, exist),
+	active(false),
+	animation(0.0f),
+	animation_period(animation_period),
+	animation_postpone(animation_postpone),
+	finish_tic(finish_tic),
+	properties(properties),
+	spawn_tic(current_tic),
+	type(type)
+{
+}
+
+DynamicParticle::DynamicParticle(GameTypes::tic_t current_tic, const Vec2F* position, const Vec2F* velocisy, float radius, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, EngineTypes::Particle::type_t type, EngineTypes::DynamicParticle::property_t properties, GameTypes::tic_t animation_period, GameTypes::tic_t animation_postpone, GameTypes::tic_t finish_tic, bool exist) :
+	DynamicEntity(position, velocisy, radius, angle, angular_velocity, force_collision_coeffisient, force_resistance_air_coefficient, exist),
+	active(false),
+	animation(0.0f),
+	animation_period(animation_period),
+	animation_postpone(animation_postpone),
+	finish_tic(finish_tic),
+	properties(properties),
+	spawn_tic(current_tic),
+	type(type)
+{
+}
+
+#pragma warning (disable : 6282)
+bool DynamicParticle::Activate(GameTypes::tic_t current_tic)
+{
+	return (!active && current_tic == spawn_tic + animation_postpone) ? (active = true) : false;
+}
+
+bool DynamicParticle::CanRemove(GameTypes::tic_t current_tic)
+{
+	return current_tic == finish_tic;
+}
+
+EngineTypes::Particle::type_t DynamicParticle::GetType()
+{
+	return type;
+}
+
+bool DynamicParticle::IsActive()
+{
+	return active;
+}
+
+void DynamicParticle::Update(GameTypes::tic_t current_tic)
+{
+	angle += angular_velocity;
+	if (angle > (float)M_PI)
+	{
+		angle -= (float)M_PI * 2.0f;
+	}
+	else if (angle < -(float)M_PI)
+	{
+		angle += (float)M_PI * 2.0f;
+	}
+	UpdateDirection();
+
+	velocity += force;
+	if (properties & DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_AIR_RESISTANCE)
+	{
+		velocity *= 1.0f - force_resistance_air_coefficient;
+	}
+	force.Set(0.0f, 0.0f);
+	Move(&velocity);
+	if (active)
+	{
+		animation = (float)((current_tic - spawn_tic - animation_postpone) % animation_period) / (float)animation_period;
+	}
+}
+
+void DynamicParticle::operator=(DynamicParticle dynamical_entity)
+{
+	active = dynamical_entity.active;
+	angle = dynamical_entity.angle;
+	angular_velocity = dynamical_entity.angular_velocity;
+	animation = dynamical_entity.animation;
+	animation_period = dynamical_entity.animation_period;
+	animation_postpone = dynamical_entity.animation_postpone;
+	UpdateDirection();
+	exist = dynamical_entity.exist;
+	finish_tic = dynamical_entity.finish_tic;
+	force = dynamical_entity.force;
+	force_collision_coeffisient = dynamical_entity.force_collision_coeffisient;
+	force_resistance_air_coefficient = dynamical_entity.force_resistance_air_coefficient;
+	position = dynamical_entity.position;
+	properties = dynamical_entity.properties;
+	radius = dynamical_entity.radius;
+	spawn_tic = dynamical_entity.spawn_tic;
+	type = dynamical_entity.type;
+	velocity = dynamical_entity.velocity;
+}
+
+DynamicParticle::~DynamicParticle()
+{
 }
 
 
@@ -1479,6 +1599,24 @@ Asteroid::Asteroid(Vec2F* position, Vec2F* velocity, EngineTypes::Bonus::invento
 	UpdateRadius();
 	this->bonus_inventory = bonus_inventory;
 	exist = true;
+}
+
+DynamicParticle Asteroid::CreateShards(GameTypes::tic_t current_tic)
+{
+	return DynamicParticle(
+		current_tic,
+		position,
+		velocity,
+		radius,
+		angle,
+		angular_velocity,
+		force_collision_coeffisient,
+		force_resistance_air_coefficient,
+		PARTICLE_TYPE_SHARDS_ASTEROID,
+		DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_GRAVITY_GENERATORS | DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_AIR_RESISTANCE,
+		PARTICLE_PERIOD_SHARDS_ASTEROID,
+		PARTICLE_POSTPONE_SHARDS_ASTEROID,
+		current_tic + PARTICLE_PERIOD_SHARDS_ASTEROID);
 }
 
 void Asteroid::DecrementSize()
@@ -2313,6 +2451,62 @@ Bullet Ship::CreateBullet()
 	return Bullet(&bullet_position, &bullet_velosity, player_number, player_team_number);
 }
 
+DynamicParticle Ship::CreateBurnoutExaust(GameTypes::tic_t current_tic)
+{
+	return DynamicParticle(
+		current_tic,
+		position,
+		velocity,
+		radius,
+		angle,
+		angular_velocity,
+		force_collision_coeffisient,
+		force_resistance_air_coefficient,
+		PARTICLE_TYPE_EXAUST_BUTNOUT,
+		DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_GRAVITY_GENERATORS | DYNAMIC_PARTICLE_PROPERTY_DESTROED_BY_ALL | DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_AIR_RESISTANCE,
+		PARTICLE_PERIOD_EXAUST_ENGINE,
+		PARTICLE_PERIOD_EXAUST_ENGINE,
+		current_tic + PARTICLE_PERIOD_EXAUST_ENGINE);
+}
+
+DynamicParticle Ship::CreateEnginExaust(GameTypes::tic_t current_tic)
+{
+	return DynamicParticle(
+		current_tic,
+		position,
+		velocity - direction * 0.001f,
+		radius,
+		angle,
+		0.0f,
+		force_collision_coeffisient,
+		force_resistance_air_coefficient,
+		PARTICLE_TYPE_EXAUST_ENGINE,
+		DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_GRAVITY_GENERATORS | DYNAMIC_PARTICLE_PROPERTY_DESTROED_BY_ALL | DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_AIR_RESISTANCE,
+		PARTICLE_PERIOD_EXAUST_ENGINE,
+		PARTICLE_POSTPONE_EXAUST_ENGINE,
+		current_tic + PARTICLE_PERIOD_EXAUST_ENGINE);
+}
+
+DynamicParticle Ship::CreateShards(GameTypes::tic_t current_tic)
+{
+	return DynamicParticle(
+		current_tic,
+		position,
+		velocity,
+		radius,
+		angle,
+		angular_velocity,
+		force_collision_coeffisient,
+		force_resistance_air_coefficient,
+		PARTICLE_TYPE_SHARDS_SHIP,
+		DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_GRAVITY_GENERATORS | DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_AIR_RESISTANCE,
+		PARTICLE_PERIOD_SHARDS_SHIP,
+		PARTICLE_POSTPONE_SHARDS_SHIP,
+		current_tic + PARTICLE_PERIOD_SHARDS_SHIP + PARTICLE_POSTPONE_SHARDS_SHIP);
+
+	std::cout << "Ship::CreateShards" << std::endl;
+}
+
 Bullet Ship::CreateTriple(uint8_t bullet_number)
 {
 	Vec2F bullet_velocity, bullet_position;
@@ -2379,6 +2573,16 @@ Knife Ship::CreateKnife(uint8_t knife_number)
 	default:
 		return Knife();
 	}
+}
+
+
+
+Particle Ship::CreateShootingExaust(GameTypes::tic_t current_tic)
+{
+	return Particle(
+		current_tic,
+		this,
+		PARTICLE_TYPE_EXAUST_SHOOT);
 }
 
 Pilot Ship::Destroy()
@@ -2635,6 +2839,24 @@ Pilot::Pilot(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t player
 bool Pilot::CanRespawn()
 {
 	return respawn_timer == 0;
+}
+
+DynamicParticle Pilot::CreateShards(GameTypes::tic_t current_tic)
+{
+	return DynamicParticle(
+		current_tic,
+		position,
+		velocity,
+		radius,
+		angle,
+		angular_velocity,
+		force_collision_coeffisient,
+		force_resistance_air_coefficient,
+		PARTICLE_TYPE_SHARDS_PILOT,
+		DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_GRAVITY_GENERATORS | DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_AIR_RESISTANCE,
+		PARTICLE_PERIOD_SHARDS_PILOT,
+		PARTICLE_POSTPONE_SHARDS_PILOT,
+		current_tic + PARTICLE_PERIOD_SHARDS_PILOT);
 }
 
 GameTypes::tic_t Pilot::GetRespawnDellay()
@@ -3018,6 +3240,26 @@ Turel::Turel(const Turel& turel) :
 Turel::Turel(Vec2F* position, float angle, GameTypes::tic_t attack_dellay, GameTypes::tic_t attack_period, GameTypes::tic_t inactive_period, EngineTypes::AgressiveEntity::shoots_count_t shoots_count, float radius, bool exist) :
 	AggressiveEntity(position, radius, angle, attack_dellay, attack_period, inactive_period, shoots_count, exist)
 {
+}
+
+DynamicParticle Turel::CreateShards(GameTypes::tic_t current_tic)
+{
+	return DynamicParticle(
+		current_tic,
+		position,
+		Vec2F(),
+		radius,
+		angle,
+		0.0f,
+		DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
+		PARTICLE_TYPE_SHARDS_ASTEROID,
+		DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_GRAVITY_GENERATORS | DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_AIR_RESISTANCE,
+		PARTICLE_PERIOD_SHARDS_ASTEROID,
+		PARTICLE_POSTPONE_SHARDS_ASTEROID,
+		current_tic + PARTICLE_PERIOD_SHARDS_ASTEROID);
+
+	std::cout << "Turel::CreateShards::Not realisated." << std::endl;
 }
 
 Bullet Turel::Shoot()

@@ -305,6 +305,7 @@ void OpenGL::InitBuffers()
     grav_gen_buffer.Initialisate(points, 6);
     rectangle_buffer.Initialisate(points, 6);
 
+    dynamic_particle_buffer.Initialisate(points, 6);
     particle_buffer.Initialisate(points, 6);
 
     points[0].Set(1.0f, 1.0f);
@@ -382,26 +383,27 @@ void OpenGL::InitOpenGL()
 
 void OpenGL::InitShaders()
 {
-    asteroid_shader.Initialisate(       "Shaders/Objects/Vertex/Asteroid.glsl"  ,   "Shaders/Objects/Fragment/Asteroid.glsl");
-    bomb_shader.Initialisate(           "Shaders/Objects/Vertex/Bomb.glsl"      ,   "Shaders/Objects/Fragment/Bomb.glsl");
-    bonus_shader.Initialisate(          "Shaders/Objects/Vertex/Bonus.glsl"     ,   "Shaders/Objects/Fragment/Bonus.glsl");
-    bullet_shader.Initialisate(         "Shaders/Objects/Vertex/Bullet.glsl"    ,   "Shaders/Objects/Fragment/Bullet.glsl");
-    deceler_area_shader.Initialisate(   "Shaders/Objects/Vertex/Deceler.glsl"   ,   "Shaders/Objects/Fragment/Deceler.glsl");
-    grav_gen_shader.Initialisate(       "Shaders/Objects/Vertex/GravGen.glsl"   ,   "Shaders/Objects/Fragment/GravGen.glsl");
-    knife_shader.Initialisate(          "Shaders/Objects/Vertex/Knife.glsl"     ,   "Shaders/Objects/Fragment/Knife.glsl");
-    laser_shader.Initialisate(          "Shaders/Objects/Vertex/Laser.glsl"     ,   "Shaders/Objects/Fragment/Laser.glsl");
-    mega_laser_shader.Initialisate(     "Shaders/Objects/Vertex/MegaLaser.glsl" ,   "Shaders/Objects/Fragment/MegaLaser.glsl");
-    particle_shader.Initialisate(       "Shaders/Objects/Vertex/Particle.glsl"  ,   "Shaders/Objects/Fragment/Particle.glsl");
-    pilot_shader.Initialisate(          "Shaders/Objects/Vertex/Pilot.glsl"     ,   "Shaders/Objects/Fragment/Pilot.glsl");
-    ship_shader.Initialisate(           "Shaders/Objects/Vertex/Ship.glsl"      ,   "Shaders/Objects/Fragment/Ship.glsl");
-    turel_shader.Initialisate(          "Shaders/Objects/Vertex/Turel.glsl"     ,   "Shaders/Objects/Fragment/Turel.glsl");
+    asteroid_shader.Initialisate(           "Shaders/Objects/Vertex/Asteroid.glsl"          ,   "Shaders/Objects/Fragment/Asteroid.glsl");
+    bomb_shader.Initialisate(               "Shaders/Objects/Vertex/Bomb.glsl"              ,   "Shaders/Objects/Fragment/Bomb.glsl");
+    bonus_shader.Initialisate(              "Shaders/Objects/Vertex/Bonus.glsl"             ,   "Shaders/Objects/Fragment/Bonus.glsl");
+    bullet_shader.Initialisate(             "Shaders/Objects/Vertex/Bullet.glsl"            ,   "Shaders/Objects/Fragment/Bullet.glsl");
+    deceler_area_shader.Initialisate(       "Shaders/Objects/Vertex/Deceler.glsl"           ,   "Shaders/Objects/Fragment/Deceler.glsl");
+    dynamic_particle_shader.Initialisate(   "Shaders/Objects/Vertex/Particle.glsl"          ,   "Shaders/Objects/Fragment/Particle.glsl");
+    grav_gen_shader.Initialisate(           "Shaders/Objects/Vertex/GravGen.glsl"           ,   "Shaders/Objects/Fragment/GravGen.glsl");
+    knife_shader.Initialisate(              "Shaders/Objects/Vertex/Knife.glsl"             ,   "Shaders/Objects/Fragment/Knife.glsl");
+    laser_shader.Initialisate(              "Shaders/Objects/Vertex/Laser.glsl"             ,   "Shaders/Objects/Fragment/Laser.glsl");
+    mega_laser_shader.Initialisate(         "Shaders/Objects/Vertex/MegaLaser.glsl"         ,   "Shaders/Objects/Fragment/MegaLaser.glsl");
+    particle_shader.Initialisate(           "Shaders/Objects/Vertex/Particle.glsl"          ,   "Shaders/Objects/Fragment/Particle.glsl");
+    pilot_shader.Initialisate(              "Shaders/Objects/Vertex/Pilot.glsl"             ,   "Shaders/Objects/Fragment/Pilot.glsl");
+    ship_shader.Initialisate(               "Shaders/Objects/Vertex/Ship.glsl"              ,   "Shaders/Objects/Fragment/Ship.glsl");
+    turel_shader.Initialisate(              "Shaders/Objects/Vertex/Turel.glsl"             ,   "Shaders/Objects/Fragment/Turel.glsl");
     
-    rectangle_shader.Initialisate(      "Shaders/Map/Vertex/Rectangle.glsl"     ,   "Shaders/Map/Fragment/Rectangle.glsl");
-    cyrcle_shader.Initialisate(         "Shaders/Map/Vertex/Cyrcle.glsl"        ,   "Shaders/Map/Fragment/Cyrcle.glsl");
-    polygon_shader.Initialisate(        "Shaders/Map/Vertex/Polygon.glsl"       ,   "Shaders/Map/Fragment/Polygon.glsl");
+    rectangle_shader.Initialisate(          "Shaders/Map/Vertex/Rectangle.glsl"             ,   "Shaders/Map/Fragment/Rectangle.glsl");
+    cyrcle_shader.Initialisate(             "Shaders/Map/Vertex/Cyrcle.glsl"                ,   "Shaders/Map/Fragment/Cyrcle.glsl");
+    polygon_shader.Initialisate(            "Shaders/Map/Vertex/Polygon.glsl"               ,   "Shaders/Map/Fragment/Polygon.glsl");
     
-    button_shader.Initialisate(         "Shaders/Menu/Vertex/Button.glsl"       ,   "Shaders/Menu/Fragment/Button.glsl");
-    controler_shader.Initialisate(      "Shaders/Menu/Vertex/Controler.glsl"    ,   "Shaders/Menu/Fragment/Controler.glsl");
+    button_shader.Initialisate(             "Shaders/Menu/Vertex/Button.glsl"               ,   "Shaders/Menu/Fragment/Button.glsl");
+    controler_shader.Initialisate(          "Shaders/Menu/Vertex/Controler.glsl"            ,   "Shaders/Menu/Fragment/Controler.glsl");
 }
 
 void OpenGL::InitTextures()
@@ -432,6 +434,12 @@ void OpenGL::DrawFrame()
             DrawParticles();
         }
         game_p__particles_array_mtx->unlock();
+        game_p__dynamic_particles_array_mtx->lock();
+        if (*game_p__particles_count > 0)
+        {
+            DrawDynamicParticles();
+        }
+        game_p__dynamic_particles_array_mtx->unlock();
         game_p__map_data_mtx->lock();
         DrawCurrentMap();
         game_p__map_data_mtx->unlock();
@@ -634,6 +642,29 @@ void OpenGL::DrawObject(DecelerationArea* deceler_area, bool update_shader)
     deceler_area_shader.SetUniform("position", deceler_area->GetPosition());
     deceler_area_shader.SetUniform("size", deceler_area->radius);
     deceler_area_buffer.Draw();
+}
+
+void OpenGL::DrawObject(DynamicParticle* dynamic_particle, bool update_shader)
+{
+    if (update_shader)
+    {
+        dynamic_particle_buffer.Use();
+        dynamic_particle_shader.Use();
+        dynamic_particle_shader.SetUniform("scale", window_scale);
+        dynamic_particle_shader.SetUniform("camera_position", temp__game__camera_position);
+        dynamic_particle_shader.SetUniform("camera_size", temp__game__camera_size);
+    }
+
+    dynamic_particle_shader.SetUniform("position", dynamic_particle->GetPosition());
+    dynamic_particle_shader.SetUniform("angle", dynamic_particle->GetAngle());
+    dynamic_particle_shader.SetUniform("radius", dynamic_particle->radius);
+    dynamic_particle_shader.SetUniform("type", (int)dynamic_particle->GetType());
+    if (dynamic_particle->GetType() == PARTICLE_TYPE_SHARDS_SHIP)
+    {
+        std::cout << "DrawObject::Shards" << std::endl;
+    }
+    dynamic_particle_shader.SetUniform("animation", dynamic_particle->animation);
+    dynamic_particle_buffer.Draw();
 }
 
 void OpenGL::DrawObject(GravGen* grav_gen, bool update_shader)
@@ -1039,6 +1070,26 @@ void OpenGL::DrawDecelerationAreas()
         {
             found_deceler_area++;
             DrawObject(&(*game_p__deceler_areas)[deceler_area]);
+        }
+    }
+}
+
+void OpenGL::DrawDynamicParticles()
+{
+    dynamic_particle_buffer.Use();
+    dynamic_particle_shader.Use();
+    dynamic_particle_shader.SetUniform("scale", window_scale);
+    dynamic_particle_shader.SetUniform("camera_position", temp__game__camera_position);
+    dynamic_particle_shader.SetUniform("camera_size", temp__game__camera_size);
+    for (GameTypes::entities_count_t dynamic_particle = 0, found_dynamic_particles = 0; found_dynamic_particles < *game_p__dynamic_particles_count; dynamic_particle++)
+    {
+        if ((*game_p__dynamic_particles)[dynamic_particle].exist)
+        {
+            found_dynamic_particles++;
+            if ((*game_p__dynamic_particles)[dynamic_particle].IsActive())
+            {
+                DrawObject(&(*game_p__dynamic_particles)[dynamic_particle]);
+            }
         }
     }
 }

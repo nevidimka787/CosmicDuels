@@ -8,23 +8,25 @@
 #include "../Types/AllTypes.h"
 #include "../Constants/AllConstants.h"
 
-class Entity;
-class StaticEntity;
-class MegaLaser;
 class AggressiveEntity;
-class Turel;
-class GravGen;
-class DecelerationArea;
-class DynamicEntity;
-class KillerEntity;
-class Bullet;
-class Laser;
-class Knife;
 class Bomb;
 class Bonus;
+class Bullet;
 class ControledEntity;
-class Ship;
+class DecelerationArea;
+class DynamicEntity;
+class DynamicParticle;
+class Entity;
+class GravGen;
+class KillerEntity;
+class Knife;
+class Laser;
+class MegaLaser;
+class Particle;
 class Pilot;
+class Ship;
+class StaticEntity;
+class Turel;
 
 class Entity
 {
@@ -43,7 +45,7 @@ public:
 		float angle = 0.0f,
 		bool exist = true);
 	Entity(
-		Vec2F* position,
+		const Vec2F* position,
 		float radius,
 		float angle = 0.0f,
 		bool exist = true);
@@ -143,8 +145,17 @@ public:
 	DynamicEntity();
 	DynamicEntity(const DynamicEntity& dynamic_entity);
 	DynamicEntity(
-		Vec2F* position,
-		Vec2F* velocity,
+		Vec2F position,
+		Vec2F velocity,
+		float radius,
+		float angle = 0.0f,
+		float angular_velocity = 0.0f,
+		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
+		bool exist = true);
+	DynamicEntity(
+		const Vec2F* position,
+		const Vec2F* velocity,
 		float radius,
 		float angle = 0.0f,
 		float angular_velocity = 0.0f,
@@ -269,8 +280,8 @@ public:
 	Particle();
 	Particle(
 		GameTypes::tic_t current_tic,
-		EngineTypes::Particle::type_t type,
 		const Entity* pointer_to_host,
+		EngineTypes::Particle::type_t type,
 		GameTypes::tic_t animation_period = PARTICLE_PROPERTY_AUTO,
 		GameTypes::tic_t animation_postpone = PARTICLE_PROPERTY_AUTO,
 		GameTypes::tic_t finish_tic = PARTICLE_PROPERTY_AUTO,
@@ -308,6 +319,62 @@ public:
 	void operator=(Particle particle);
 
 	~Particle();
+};
+
+class DynamicParticle : public DynamicEntity
+{
+private:
+	bool active = false;
+	GameTypes::tic_t spawn_tic;
+	GameTypes::tic_t animation_period;
+	GameTypes::tic_t animation_postpone;
+	GameTypes::tic_t finish_tic;
+	EngineTypes::Particle::type_t type;
+public:
+	float animation;
+	EngineTypes::DynamicParticle::property_t properties;
+
+	DynamicParticle();
+	DynamicParticle(
+		GameTypes::tic_t current_tic,
+		Vec2F position,
+		Vec2F velocisy,
+		float radius,
+		float angle,
+		float angular_velocity,
+		float force_collision_coeffisient,
+		float force_resistance_air_coefficient,
+		EngineTypes::Particle::type_t type,
+		EngineTypes::DynamicParticle::property_t properties,
+		GameTypes::tic_t animation_period = PARTICLE_PROPERTY_AUTO,
+		GameTypes::tic_t animation_postpone = PARTICLE_PROPERTY_AUTO,
+		GameTypes::tic_t finish_tic = PARTICLE_PROPERTY_AUTO,
+		bool exist = true);
+	DynamicParticle(
+		GameTypes::tic_t current_tic,
+		const Vec2F* position,
+		const Vec2F* velocisy,
+		float angle,
+		float angular_velocity,
+		float radius,
+		float force_collision_coeffisient,
+		float force_resistance_air_coefficient,
+		EngineTypes::Particle::type_t type,
+		EngineTypes::DynamicParticle::property_t properties,
+		GameTypes::tic_t animation_period = PARTICLE_PROPERTY_AUTO,
+		GameTypes::tic_t animation_postpone = PARTICLE_PROPERTY_AUTO,
+		GameTypes::tic_t finish_tic = PARTICLE_PROPERTY_AUTO,
+		bool exist = true);
+
+	bool Activate(GameTypes::tic_t current_tic);
+	bool CanRemove(GameTypes::tic_t current_tic);
+	EngineTypes::Particle::type_t GetType();
+	bool IsActive();
+	void Update(GameTypes::tic_t current_tic);
+
+	void operator=(DynamicParticle dynamical_entity);
+
+	~DynamicParticle();
 };
 
 class Bonus : public DynamicEntity
@@ -375,6 +442,8 @@ public:
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
 		bool exist = true);
+
+	DynamicParticle CreateShards(GameTypes::tic_t current_tic);
 	void DecrementSize();
 	Bonus Destroy();
 	/*
@@ -566,6 +635,12 @@ public:
 		bool rotate_clockwise,
 		GameTypes::tic_t burnout_period = SHIP_DEFAULT_BURNOUT_PERIOD);
 	Bullet CreateBullet();
+	//The function return dynamic particle.
+	DynamicParticle CreateBurnoutExaust(GameTypes::tic_t current_tic);
+	//The function return dynamic particle.
+	DynamicParticle CreateEnginExaust(GameTypes::tic_t current_tic);
+	//The function return dynamic particle.
+	DynamicParticle CreateShards(GameTypes::tic_t current_tic);
 	//The function does not check for the presence of a bonus.
 	Bullet CreateTriple(uint8_t bullet_number);
 	//The function does not check for the presence of a bonus.
@@ -576,6 +651,8 @@ public:
 	Laser CreateLaser();
 	//The function does not check for the presence of a bonus.
 	Knife CreateKnife(uint8_t knife_number);
+	//The function return dynamic particle.
+	Particle CreateShootingExaust(GameTypes::tic_t current_tic);
 	Pilot Destroy();
 	bool HaveBonus(EngineTypes::Bonus::inventory_t bonus);
 	bool HaveBuff(EngineTypes::Ship::inventory_t buff);
@@ -649,6 +726,7 @@ public:
 
 	GameTypes::tic_t GetRespawnDellay();
 	bool CanRespawn();
+	DynamicParticle CreateShards(GameTypes::tic_t current_tic);
 	Ship Respawn();
 	void Set(Pilot* entity);
 	void Update();
@@ -830,6 +908,7 @@ public:
 		float radius = TUREL_DEFAULT_RADIUS,
 		bool exist = true);
 
+	DynamicParticle CreateShards(GameTypes::tic_t current_tic);
 	Bullet Shoot();
 	void Set(Turel* entity);
 	void Set(

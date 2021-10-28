@@ -146,70 +146,26 @@ bool PositionInQuare(vec2 _position, float _quare_side)
 
 void ExaustEngine()
 {
-#define JET_WIDTH	0.5f
-#define POS0 (vec2(0.24072422f, 0.49338662f) * JET_WIDTH - JET_WIDTH + 0.5f)
-#define POS1 (vec2(0.98175764f, 0.22186973f) * JET_WIDTH - JET_WIDTH + 0.5f)
-#define POS2 (vec2(0.47484369f, 0.70038374f) * JET_WIDTH - JET_WIDTH + 0.5f)
-#define POS3 (vec2(0.43450010f, 0.82839354f) * JET_WIDTH - JET_WIDTH + 0.5f)
-#define POS4 (-vec2(0.24072422f, 0.49338662f) * JET_WIDTH + JET_WIDTH - 0.5f)
-#define POS5 (-vec2(0.98175764f, 0.22186973f) * JET_WIDTH + JET_WIDTH - 0.5f)
-#define POS6 (-vec2(0.47484369f, 0.70038374f) * JET_WIDTH + JET_WIDTH - 0.5f)
-#define POS7 (-vec2(0.43450010f, 0.82839354f) * JET_WIDTH + JET_WIDTH - 0.5f)
-#define QUARE_SIDE	0.2f
+#define POS0 (vec2(0.0f, 0.75f) * 2.0f - 1.0f)
+#define POS1 (vec2(1.0f / 3.0f, 0.80f) * 2.0f - 1.0f)
+#define POS2 (vec2(2.0f / 3.0f, 0.70f) * 2.0f - 1.0f)
+#define POS3 (vec2(0.0f, 0.25f) * 2.0f - 1.0f)
+#define POS4 (vec2(2.0f / 3.0f, 0.30f) * 2.0f - 1.0f)
+#define POS5 (vec2(1.0f / 3.0f, 0.20f) * 2.0f - 1.0f)
+#define RADIUS	0.1f
 
-	vec2 _l_pix_pos = pixel_position + vec2(2.0f * animation, 0.0f);
-	float alpha = pixel_position.x * 0.5f + 1.0f;
-	alpha *= alpha * alpha;
-	if(_l_pix_pos.x > 1.0f)
+	if(
+		length(pixel_position - POS0) > RADIUS &&
+		length(pixel_position - POS1) > RADIUS &&
+		length(pixel_position - POS2) > RADIUS &&
+		length(pixel_position - POS3) > RADIUS &&
+		length(pixel_position - POS4) > RADIUS &&
+		length(pixel_position - POS5) > RADIUS)
 	{
-		_l_pix_pos.x -= 2.0f;
-	}
-	else if(_l_pix_pos.x < -1.0f)
-	{
-		_l_pix_pos.x += 2.0f;
+		discard;
 	}
 
-	if(PositionInQuare(_l_pix_pos - POS0, QUARE_SIDE))
-	{
-		frag_color = vec4(1.0f, 1.0f, 1.0f, alpha);
-		return;
-	}
-	if(PositionInQuare(_l_pix_pos - POS1, QUARE_SIDE))
-	{
-		frag_color = vec4(1.0f, 1.0f, 1.0f, alpha);
-		return;
-	}
-	if(PositionInQuare(_l_pix_pos - POS2, QUARE_SIDE))
-	{
-		frag_color = vec4(1.0f, 1.0f, 1.0f, alpha);
-		return;
-	}
-	if(PositionInQuare(_l_pix_pos - POS3, QUARE_SIDE))
-	{
-		frag_color = vec4(1.0f, 1.0f, 1.0f, alpha);
-		return;
-	}
-	if(PositionInQuare(_l_pix_pos - POS4, QUARE_SIDE))
-	{
-		frag_color = vec4(1.0f, 1.0f, 1.0f, alpha);
-		return;
-	}
-	if(PositionInQuare(_l_pix_pos - POS5, QUARE_SIDE))
-	{
-		frag_color = vec4(1.0f, 1.0f, 1.0f, alpha);
-		return;
-	}
-	if(PositionInQuare(_l_pix_pos - POS6, QUARE_SIDE))
-	{
-		frag_color = vec4(1.0f, 1.0f, 1.0f, alpha);
-		return;
-	}
-	if(PositionInQuare(_l_pix_pos - POS7, QUARE_SIDE))
-	{
-		frag_color = vec4(1.0f, 1.0f, 1.0f, alpha);
-		return;
-	}
-	discard;
+	frag_color = vec4(1.0f);
 }
 
 void ExaustShoot()
@@ -249,7 +205,11 @@ void ShardsPilot()
 
 void ShardsShip()
 {
-	
+	if(length(pixel_position) < 0.9f || length(pixel_position) > 1.0f)
+	{
+		discard;
+	}
+	frag_color = vec4(1.0f);
 }
 
 

@@ -53,6 +53,11 @@ namespace EngineTypes
 		typedef uint16_t heat_box_vertexes_count_t;
 	}
 
+	namespace DynamicParticle
+	{
+		typedef uint8_t property_t;
+	}
+
 	namespace Knife
 	{
 		typedef uint8_t knife_health_t;

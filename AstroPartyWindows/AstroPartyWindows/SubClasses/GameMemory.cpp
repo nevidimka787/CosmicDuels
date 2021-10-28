@@ -155,6 +155,19 @@ void Game::AddEntity(Particle new_particle)
 	}
 }
 
+void Game::AddEntity(DynamicParticle new_particle)
+{
+	for (GameTypes::entities_count_t particle = 0; particle < GAME_DYNAMIC_PARTICLES_MAX_COUNT; particle++)
+	{
+		if (dynamic_particles[particle].exist == false)
+		{
+			dynamic_particles[particle] = new_particle;
+			dynamic_particles_count++;
+			return;
+		}
+	}
+}
+
 
 void Game::AddEntity(Pilot new_pilot)
 {
@@ -183,13 +196,6 @@ void Game::AddEntity(Ship new_ship)
 	{
 		ships[ship_number] = new_ship;
 		ships_count++;
-		AddEntity(
-			Particle(
-				global_timer,
-				PARTICLE_TYPE_EXAUST_ENGINE,
-				&ships[ship_number],
-				PARTICLE_PERIOD_EXAUST_ENGINE,
-				PARTICLE_POSTPONE_EXAUST_ENGINE));
 	}
 }
 
@@ -235,6 +241,15 @@ void Game::RemoveEntity(DecelerationArea* deleting_deceler_area)
 	{
 		deleting_deceler_area->exist = false;
 		Game::deceler_areas_count--;
+	}
+}
+
+void Game::RemoveEntity(DynamicParticle* deleting_dynamic_particle)
+{
+	if (deleting_dynamic_particle->exist)
+	{
+		deleting_dynamic_particle->exist = false;
+		Game::dynamic_particles_count--;
 	}
 }
 
@@ -371,6 +386,7 @@ void Game::DestroyEntity(Bomb* destroyer, Ship* entity)
 		DecrementPlayersCountInTeam(entity->GetTeamNumber());
 	}
 	DestroySupportEntitiesBy(entity);
+	AddEntity(entity->CreateShards(global_timer));
 	AddBonuses(entity);
 	pilots[entity->GetPlayerNumber()] = entity->Destroy();
 	pilots_count++;
@@ -461,6 +477,7 @@ void Game::DestroyEntity(Bullet* destroyer, Ship* entity)
 		DecrementPlayersCountInTeam(entity->GetTeamNumber());
 	}
 	DestroySupportEntitiesBy(entity);
+	AddEntity(entity->CreateShards(global_timer));
 	AddBonuses(entity);
 	AddEntity(entity->Destroy());
 	RemoveEntity(entity);
@@ -876,8 +893,6 @@ void Game::AddBonuses(Ship* spawner)
 
 void Game::MemoryLock()
 {
-	particles = new Particle[GAME_PARTICLES_MAX_COUNT];
-	particles_count = 0;
 	asteroids = new Asteroid[GAME_ASTEROIDS_MAX_COUNT];
 	asteroids_count = 0;
 	bombs = new Bomb[GAME_BOMBS_MAX_COUNT];
@@ -888,6 +903,8 @@ void Game::MemoryLock()
 	bullets_count = 0;
 	deceler_areas = new DecelerationArea[GAME_DECEL_AREAS_MAX_COUNT];
 	deceler_areas_count = 0;
+	dynamic_particles = new DynamicParticle[GAME_PARTICLES_MAX_COUNT];
+	dynamic_particles_count = 0;
 	grav_gens = new GravGen[GAME_GRAV_GENS_MAX_COUNT];
 	grav_gens_count = 0;
 	knifes = new Knife[GAME_KNIFES_MAX_COUNT];
@@ -898,6 +915,8 @@ void Game::MemoryLock()
 	mega_lasers_count = 0;
 	pilots = new Pilot[GAME_PLAYERS_MAX_COUNT];
 	pilots_count = 0;
+	particles = new Particle[GAME_PARTICLES_MAX_COUNT];
+	particles_count = 0;
 	ships = new Ship[GAME_PLAYERS_MAX_COUNT];
 	ships_count = 0;
 	turels = new Turel[GAME_TURELS_MAX_COUNT];
@@ -928,6 +947,7 @@ void Game::MemorySetDefault()
 	bonuses_count = 0;
 	bullets_count = 0;
 	deceler_areas_count = 0;
+	dynamic_particles_count = 0;
 	grav_gens_count = 0;
 	knifes_count = 0;
 	lasers_count = 0;
@@ -958,6 +978,10 @@ void Game::MemorySetDefault()
 		if (entity < GAME_DECEL_AREAS_MAX_COUNT && deceler_areas[entity].exist)
 		{
 			deceler_areas->exist = false;
+		}
+		if (entity < GAME_DYNAMIC_PARTICLES_MAX_COUNT && dynamic_particles[entity].exist)
+		{
+			dynamic_particles[entity].exist = false;
 		}
 		if (entity < GAME_GRAV_GENS_MAX_COUNT && grav_gens[entity].exist)
 		{

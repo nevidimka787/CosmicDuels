@@ -61,6 +61,9 @@ Linker::Linker(Game* game_object, MenuFunctions* menu_functions_object, OpenGL* 
 	open_gl_object->game_p__deceler_areas = &game_object->deceler_areas;
 	open_gl_object->game_p__deceler_areas_array_mtx = &game_object->deceler_areas_array_mtx;
 	open_gl_object->game_p__deceler_areas_count = &game_object->deceler_areas_count;
+	open_gl_object->game_p__dynamic_particles = &game_object->dynamic_particles;
+	open_gl_object->game_p__dynamic_particles_array_mtx = &game_object->dynamic_particles_array_mtx;
+	open_gl_object->game_p__dynamic_particles_count = &game_object->dynamic_particles_count;
 	open_gl_object->game_p__flag_all_entities_initialisate = &game_object->flag_all_entities_initialisate;
 	open_gl_object->game_p__flag_round_results = &game_object->flag_round_results;
 	open_gl_object->game_p__global_timer = &game_object->global_timer;

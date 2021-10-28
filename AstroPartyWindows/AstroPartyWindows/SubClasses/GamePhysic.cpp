@@ -156,7 +156,7 @@ void Game::ShipShoot_LoopBomb(Ship* ship)
 	bombs_array_mtx.lock();
 	for (GameTypes::entities_count_t bomb = 0; bomb < SHIP_SUPER_BONUS__BOMBS_IN_LOOP; bomb++)
 	{
-		angle = (float)bomb / (float)SHIP_SUPER_BONUS__BOMBS_IN_LOOP * (float)M_PI * 2.0f;
+		angle = (float)bomb / (float)SHIP_SUPER_BONUS__BOMBS_IN_LOOP * (float)M_PI - (float)M_PI / 2.0f;
 		bomb_velocity = velocity + Vec2F(SHIP_SUPER_BONUS__BOMBS_LOOP_VELOCITY, 0.0f).Rotate(angle);
 		AddEntity(Bomb(&position, &bomb_velocity, ship->GetTeamNumber(), ship->GetTeamNumber()));
 	}
@@ -316,6 +316,29 @@ void Game::UpdateDecelerAreasPhase2()
 		}
 	}
 	deceler_areas_array_mtx.unlock();
+}
+
+void Game::UpdateDynamicParticlesPhase2()
+{
+	DynamicParticle* temp__dynamic_particle_p;
+	dynamic_particles_array_mtx.lock();
+	for (GameTypes::entities_count_t dynamic_particle = 0, found_dynamic_particles = 0; found_dynamic_particles < dynamic_particles_count; dynamic_particle++)
+	{
+		temp__dynamic_particle_p = &dynamic_particles[dynamic_particle];
+		if (temp__dynamic_particle_p->exist)
+		{
+			if (temp__dynamic_particle_p->CanRemove(global_timer))
+			{
+				RemoveEntity(temp__dynamic_particle_p);
+				goto end_of_particle_cycle;
+			}
+			temp__dynamic_particle_p->Activate(global_timer);
+			temp__dynamic_particle_p->Update(global_timer);
+			found_dynamic_particles++;
+		}
+	end_of_particle_cycle:;
+	}
+	dynamic_particles_array_mtx.unlock();
 }
 
 void Game::UpdateGravGensPhase2()
@@ -510,10 +533,10 @@ void Game::BombsChainReaction()
 			}
 			if (temp__bomb1_p->IsBoom())
 			{
-				for (second_bomb = bomb + 1, found_second_bombs = found_bombs + 1; found_second_bombs < bombs_count; second_bomb++)
+				for (second_bomb = 0, found_second_bombs = 1; found_second_bombs < bombs_count; second_bomb++)
 				{
 					temp__bomb2_p = &bombs[second_bomb];
-					if (bombs[second_bomb].exist)
+					if (bombs[second_bomb].exist && bomb != second_bomb)
 					{
 						if (!temp__bomb2_p->IsBoom() && temp__bomb2_p->Entity::IsCollision(temp__bomb1_p))
 						{
@@ -1688,6 +1711,27 @@ void Game::PilotsRespawnAuto()
 	pilots_array_mtx.unlock();
 }
 
+void Game::ShipsCreateExaust()
+{
+	if (!(global_timer % (PARTICLE_PERIOD_EXAUST_ENGINE / 10)))
+	{
+		Ship* temp__ship_p;
+		ships_array_mtx.lock();
+		for (GameTypes::players_count_t ship = 0, found_ships = 0; found_ships < ships_count; ship++)
+		{
+			temp__ship_p = &ships[ship];
+			if (temp__ship_p->exist)
+			{
+				dynamic_particles_array_mtx.lock();
+				AddEntity(temp__ship_p->CreateEnginExaust(global_timer));
+				dynamic_particles_array_mtx.unlock();
+				found_ships++;
+			}
+		}
+		ships_array_mtx.unlock();
+	}
+}
+
 void Game::PilotsKilledByMegaLaser()
 {
 	GameTypes::entities_count_t mega_laser, found_mega_lasers;
@@ -1903,10 +1947,12 @@ void Game::ShipsDestroedByBombsOrActivateBombs()
 					if (temp__bomb_p->IsBoom() && temp__ship_p->IsCollision(temp__bomb_p))
 					{
 						bonuses_array_mtx.lock();
+						dynamic_particles_array_mtx.lock();
 						log_data_mtx.lock();
 						DestroyEntity(temp__bomb_p, temp__ship_p);
 						log_data_mtx.unlock();
 						bonuses_array_mtx.unlock();
+						dynamic_particles_array_mtx.unlock();
 						pilots_array_mtx.unlock();
 						goto end_of_ship_cycle;
 					}
@@ -1969,9 +2015,11 @@ void Game::ShipsDestroedByBullets()
 						{
 							temp__ship_p->AddVelocity(temp__bullet_p->GetVelocity());
 							bonuses_array_mtx.lock();
+							dynamic_particles_array_mtx.lock();
 							log_data_mtx.lock();
 							DestroyEntity(temp__bullet_p, temp__ship_p);
 							log_data_mtx.unlock();
+							dynamic_particles_array_mtx.unlock();
 							bonuses_array_mtx.unlock();
 							RemoveEntity(temp__bullet_p);
 							goto end_of_ship_cycle;
