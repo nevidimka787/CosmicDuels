@@ -51,6 +51,29 @@ void main()
             Scale(vec2(1.0f / camera_size)) *
             Scale(vec2(1.0f, scale));
         break;
+    case SHARDS_ASTEROID:
+    case SHARDS_ASTEROID_POWERED:
+        pixel_position = aPos;
+        matrix =
+            Scale(vec2(1.0f + animation)) *
+            Rotate(angle) *
+            Scale(vec2(radius)) * 
+            Transport(position) *
+            Transport(-camera_position) *
+            Scale(vec2(1.0f / camera_size)) *
+            Scale(vec2(1.0f, scale));
+        break;
+    case SHARDS_PILOT:
+        pixel_position = aPos;
+        matrix =
+            Scale(vec2(1.0f + animation)) *
+            Rotate(angle) *
+            Scale(vec2(radius)) * 
+            Transport(position) *
+            Transport(-camera_position) *
+            Scale(vec2(1.0f / camera_size)) *
+            Scale(vec2(1.0f, scale));
+        break;
     case SHARDS_SHIP:
         pixel_position = aPos;
         matrix =

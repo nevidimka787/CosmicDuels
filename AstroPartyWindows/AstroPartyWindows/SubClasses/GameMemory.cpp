@@ -333,6 +333,7 @@ void Game::DestroyEntity(Bomb* destroyer, Asteroid* entity)
 	{
 		return;
 	}
+	AddEntity(entity->CreateShards(global_timer));
 	if (entity->GetSize() > ASTEROID_SIZE_MEDIUM)
 	{
 		AddEntity(entity->Division());
@@ -419,6 +420,7 @@ void Game::DestroyEntity(Bomb* destroyer, Pilot* entity)
 		}
 		DecrementPlayersCountInTeam(entity->GetTeamNumber());
 	}
+	AddEntity(entity->CreateShards(global_timer));
 	RemoveEntity(entity);
 	camera.SetCoefficients();
 }
@@ -434,6 +436,7 @@ void Game::DestroyEntity(Bullet* destroyer, Asteroid* entity)
 	{
 		return;
 	}
+	AddEntity(entity->CreateShards(global_timer));
 	if (entity->GetSize() > ASTEROID_SIZE_MEDIUM)
 	{
 		AddEntity(entity->Division());
@@ -502,6 +505,7 @@ void Game::DestroyEntity(Bullet* destroyer, Pilot* entity)
 		}
 		DecrementPlayersCountInTeam(entity->GetTeamNumber());
 	}
+	AddEntity(entity->CreateShards(global_timer));
 	pilots[entity->GetPlayerNumber()].exist = false;
 	pilots_count--;
 	camera.SetCoefficients();
@@ -513,6 +517,7 @@ void Game::DestroyEntity(Knife* destroyer, Asteroid* entity)
 	{
 		return;
 	}
+	AddEntity(entity->CreateShards(global_timer));
 	if (entity->GetSize() > ASTEROID_SIZE_MEDIUM)
 	{
 		AddEntity(entity->Division());
@@ -551,6 +556,7 @@ void Game::DestroyEntity(Knife* destroyer, Ship* entity)
 		DecrementPlayersCountInTeam(entity->GetTeamNumber());
 	}
 	DestroySupportEntitiesBy(entity);
+	AddEntity(entity->CreateShards(global_timer));
 	AddBonuses(entity);
 	pilots[entity->GetPlayerNumber()] = entity->Destroy();
 	pilots_count++;
@@ -577,6 +583,7 @@ void Game::DestroyEntity(Knife* destroyer, Pilot* entity)
 		}
 		DecrementPlayersCountInTeam(entity->GetTeamNumber());
 	}
+	AddEntity(entity->CreateShards(global_timer));
 	pilots[entity->GetPlayerNumber()].exist = false;
 	pilots_count--;
 	camera.SetCoefficients();
@@ -593,6 +600,7 @@ void Game::DestroyEntity(Laser* destroyer, Asteroid* entity)
 	{
 		return;
 	}
+	AddEntity(entity->CreateShards(global_timer));
 	if (entity->GetSize() > ASTEROID_SIZE_MEDIUM)
 	{
 		AddEntity(entity->Division());
@@ -646,6 +654,7 @@ void Game::DestroyEntity(Laser* destroyer, Ship* entity)
 		DecrementPlayersCountInTeam(entity->GetTeamNumber());
 	}
 	DestroySupportEntitiesBy(entity);
+	AddEntity(entity->CreateShards(global_timer));
 	AddBonuses(entity);
 	pilots[entity->GetPlayerNumber()] = entity->Destroy();
 	pilots_count++;
@@ -677,6 +686,7 @@ void Game::DestroyEntity(Laser* destroyer, Pilot* entity)
 		}
 		DecrementPlayersCountInTeam(entity->GetTeamNumber());
 	}
+	AddEntity(entity->CreateShards(global_timer));
 	pilots[entity->GetPlayerNumber()].exist = false;
 	pilots_count--;
 	camera.SetCoefficients();
@@ -693,6 +703,7 @@ void Game::DestroyEntity(MegaLaser* destroyer, Asteroid* entity)
 	{
 		return;
 	}
+	AddEntity(entity->CreateShards(global_timer));
 	if (entity->GetSize() > ASTEROID_SIZE_MEDIUM)
 	{
 		AddEntity(entity->Division());
@@ -739,6 +750,7 @@ void Game::DestroyEntity(MegaLaser* destroyer, Ship* entity)
 		DecrementPlayersCountInTeam(entity->GetTeamNumber());
 	}
 	DestroySupportEntitiesBy(entity);
+	AddEntity(entity->CreateShards(global_timer));
 	AddBonuses(entity);
 	AddEntity(entity->Destroy());
 	std::cout << "\nMegaLaser destroys ship\n";
@@ -762,6 +774,7 @@ void Game::DestroyEntity(MegaLaser* destroyer, Pilot* entity)
 		DecrementScore(entity->GetTeamNumber());
 		DecrementPlayersCountInTeam(entity->GetTeamNumber());
 	}
+	AddEntity(entity->CreateShards(global_timer));
 	RemoveEntity(entity);
 }
 
@@ -783,11 +796,13 @@ void Game::DestroyEntity(Ship* destroyer, Pilot* entity)
 		}
 		DecrementPlayersCountInTeam(entity->GetTeamNumber());
 	}
+	AddEntity(entity->CreateShards(global_timer));
 	RemoveEntity(entity);
 }
 
 void Game::DestroyEntity(Asteroid* entity)
 {
+	AddEntity(entity->CreateShards(global_timer));
 	RemoveEntity(entity);
 }
 
@@ -831,6 +846,7 @@ void Game::DestroyEntity(Pilot* entity)
 		DecrementScore(entity->GetTeamNumber());
 		DecrementPlayersCountInTeam(entity->GetTeamNumber());
 	}
+	AddEntity(entity->CreateShards(global_timer));
 	pilots_count--;
 }
 
@@ -886,6 +902,10 @@ void Game::SpawnEntity(Ship* spawner, Pilot* pilot)
 void Game::AddBonuses(Ship* spawner)
 {
 	Bonus ship_bonus = spawner->LoseBonus();
+	while (ship_bonus.CanDivision())
+	{
+		AddEntity(ship_bonus.Division());
+	}
 	AddEntity(ship_bonus);
 }
 

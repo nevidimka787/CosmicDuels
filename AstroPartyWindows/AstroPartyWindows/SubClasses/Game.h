@@ -605,11 +605,11 @@ public:
 	//t = (n - 1) / 2 * n
 	void BombsChainReaction();
 
-	//mtx: bomb -> asteroid -> bonus
+	//mtx: bomb -> asteroid -> bonus -> dynamic_particle
 	//t = n * k
 	void BombsDestroyAsteroids();
 
-	//mtx: bomb -> bonus
+	//mtx: bomb -> bonus -> dynamic_particle
 	//t = n * k
 	void BombsDestroyBonuses();
 
@@ -625,11 +625,11 @@ public:
 	//t = n * k
 	void BombsDestroyKnifes();
 
-	//mtx: bomb -> turel
+	//mtx: bomb -> turel -> dynamic_particle
 	//t = n * k
 	void BombsDestroyTurels();
 
-	//mtx: bullet -> asteroid -> bonus
+	//mtx: bullet -> asteroid -> bonus -> dynamic_particle
 	//t = n * k
 	void BulletsDestroyAsteroids();
 
@@ -641,7 +641,7 @@ public:
 	//t = s + p
 	void CameraFocusesOnPlayers();
 
-	//mtx: knife -> asteroid -> bonus
+	//mtx: knife -> asteroid -> bonus -> dynamic_particle
 	//t = n * k
 	void KnifesDestroyAsteroids();
 
@@ -649,15 +649,15 @@ public:
 	//t = n * k
 	void KnifesDestroyBullets();
 
-	//mtx: knife -> map
+	//mtx: knife -> map -> dynamic_particle
 	//t = n * (m1 + m2 + m3)
  	void KnifesDestroyMap();
 
- 	//mtx: knife -> turel
+ 	//mtx: knife -> turel -> dynamic_particle
 	//t = n * k
  	void KnifesDestroyTurels();
 
-	//mtx: laser -> asteroid -> bonus
+	//mtx: laser -> asteroid -> bonus -> dynamic_particle
 	//t = n * k
 	void LasersDestroyAsteroids();
 
@@ -677,15 +677,15 @@ public:
 	//t = n * k
 	void LasersDestroyKnifes();
 
-	//mtx: laser -> map
+	//mtx: laser -> map -> dynamic_particle
 	//t = n * (m1 + m2 + m3)
 	void LasersDestroyMap();
 
-	//mtx: laser -> turel
+	//mtx: laser -> turel -> dynamic_particle
 	//t = n * k
 	void LasersDestroyTurels();
 
-	//mtx: mega_laser -> asteroid -> bonus
+	//mtx: mega_laser -> asteroid -> bonus -> dynamic_particle
 	//t = n * k
 	void MegaLasersDestroyAsteroids();
 
@@ -705,19 +705,19 @@ public:
 	//t = n * k
 	void MegaLasersDestroyKnifes();
 
-	//mtx: mega_laser -> map
+	//mtx: mega_laser -> map -> dynamic_particle
 	//t = n * (m1 + m2 + m3)
 	void MegaLasersDestroyMap();
 
-	//mtx: mega_laser -> turel
+	//mtx: mega_laser -> turel -> dynamic_particle
 	//t = n * k
 	void MegaLasersDestroyTurels();
 
-	//mtx: pilot -> bomb -> log
+	//mtx: pilot -> bomb -> dynamic_particle -> log
 	//t = n * k
 	void PilotsKilledByBombs();
 
-	//mtx: pilot -> bullet -> log
+	//mtx: pilot -> bullet -> dynamic_particle -> log
 	//t = n * k
 	void PilotsKilledByBullet();
 
@@ -725,15 +725,15 @@ public:
 	//t = n
 	void PilotsCheckInput();
 
-	//mtx: pilot -> knife -> log
+	//mtx: pilot -> knife -> dynamic_particle -> log
 	//t = n * k
 	void PilotsKilledByKnifes();
 
-	//mtx: pilot -> laser -> log
+	//mtx: pilot -> laser -> dynamic_particle -> log
 	//t = n * k
 	void PilotsKilledByLasers();
 
-	//mtx: pilot -> mega_laser -> log
+	//mtx: pilot -> mega_laser -> dynamic_particle -> log
 	//t = n * k
 	void PilotsKilledByMegaLaser();
 
@@ -749,7 +749,7 @@ public:
 	//t = n
 	void ShipsShoot();
 
-	//mtx: ship -> pilot
+	//mtx: ship -> pilot -> dynamic_particle
 	//t = n * k
 	void ShipsRespawnOrDestroyPilots();
 

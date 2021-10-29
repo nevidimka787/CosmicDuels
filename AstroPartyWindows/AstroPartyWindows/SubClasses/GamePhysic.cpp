@@ -577,7 +577,9 @@ void Game::BombsDestroyAsteroids()
 						if (temp__asteroid_p->Entity::IsCollision(temp__bomb_p))
 						{
 							bonuses_array_mtx.lock();
+							dynamic_particles_array_mtx.lock();
 							DestroyEntity(temp__bomb_p, temp__asteroid_p);
+							dynamic_particles_array_mtx.unlock();
 							bonuses_array_mtx.unlock();
 							goto end_of_asteroid_cycle;
 						}
@@ -824,7 +826,9 @@ void Game::BulletsDestroyAsteroids()
 					if (temp__asteroid_p->Entity::IsCollision(temp__bullet_p))
 					{
 						bonuses_array_mtx.lock();
+						dynamic_particles_array_mtx.lock();
 						DestroyEntity(temp__bullet_p, temp__asteroid_p);
+						dynamic_particles_array_mtx.unlock();
 						bonuses_array_mtx.unlock();
 						RemoveEntity(temp__bullet_p);
 						goto end_of_asteroid_cycle;
@@ -898,7 +902,9 @@ void Game::KnifesDestroyAsteroids()
 					if (temp__asteroid_p->Entity::IsCollision(&temp__segment))
 					{
 						bonuses_array_mtx.lock();
+						dynamic_particles_array_mtx.lock();
 						DestroyEntity(temp__knife_p, temp__asteroid_p);
+						dynamic_particles_array_mtx.unlock();
 						bonuses_array_mtx.unlock();
 						if (temp__knife_p->LoseHealth() == false)
 						{
@@ -1038,7 +1044,9 @@ void Game::LasersDestroyAsteroids()
 					if (temp__asteroid_p->Entity::IsCollision(temp__laser_p))
 					{
 						bonuses_array_mtx.lock();
+						dynamic_particles_array_mtx.lock();
 						DestroyEntity(temp__laser_p, temp__asteroid_p);
+						dynamic_particles_array_mtx.unlock();
 						bonuses_array_mtx.unlock();
 						goto end_of_asteroid_cycle;
 					}
@@ -1275,7 +1283,9 @@ void Game::MegaLasersDestroyAsteroids()
 						if (temp__asteroid_p->Entity::IsCollision(temp__mega_laser_p))
 						{
 							bonuses_array_mtx.lock();
+							dynamic_particles_array_mtx.lock();
 							DestroyEntity(temp__mega_laser_p, temp__asteroid_p);
+							dynamic_particles_array_mtx.unlock();
 							bonuses_array_mtx.unlock();
 							goto end_of_asteroid_cycle;
 						}
@@ -1504,9 +1514,11 @@ void Game::PilotsKilledByBombs()
 				{
 					if (temp__bomb_p->IsBoom() && temp__pilot_p->IsCollision(temp__bomb_p))
 					{
+						dynamic_particles_array_mtx.lock();
 						log_data_mtx.lock();
 						DestroyEntity(temp__bomb_p, temp__pilot_p);
 						log_data_mtx.unlock();
+						dynamic_particles_array_mtx.unlock();
 						goto end_of_bomb_cycle;
 
 					}
@@ -1547,9 +1559,11 @@ void Game::PilotsKilledByBullet()
 							RemoveEntity(temp__bullet_p);
 							goto end_of_bullet_cycle;
 						}
+						dynamic_particles_array_mtx.lock();
 						log_data_mtx.lock();
 						DestroyEntity(temp__bullet_p, temp__pilot_p);
 						log_data_mtx.unlock();
+						dynamic_particles_array_mtx.unlock();
 						if (game_rules & GAME_RULE_NEED_KILL_PILOT)
 						{
 							RemoveEntity(temp__bullet_p);
@@ -1629,9 +1643,11 @@ void Game::PilotsKilledByKnifes()
 					if (!(game_rules & GAME_RULE_FRENDLY_FIRE && temp__knife_p->CreatedByTeam(temp__pilot_p)) &&
 						temp__pilot_p->IsCollision(&temp__segment))
 					{
+						dynamic_particles_array_mtx.lock();
 						log_data_mtx.lock();
 						DestroyEntity(temp__knife_p, temp__pilot_p);
 						log_data_mtx.unlock();
+						dynamic_particles_array_mtx.unlock();
 						knifes_array_mtx.unlock();
 						goto end_of_pilot_cycle;
 					}
@@ -1667,9 +1683,11 @@ void Game::PilotsKilledByLasers()
 					if (!(game_rules & GAME_RULE_FRENDLY_FIRE && temp__laser_p->CreatedByTeam(temp__pilot_p)) &&
 						temp__pilot_p->IsCollision(temp__laser_p))
 					{
+						dynamic_particles_array_mtx.lock();
 						log_data_mtx.lock();
 						DestroyEntity(temp__laser_p, temp__pilot_p);
 						log_data_mtx.unlock();
+						dynamic_particles_array_mtx.unlock();
 						lasers_array_mtx.unlock();
 						goto end_of_pilots_cycle;
 					}
@@ -1754,9 +1772,11 @@ void Game::PilotsKilledByMegaLaser()
 					if (temp__mega_laser_p->IsShooting(global_timer) &&
 						temp__pilot_p->IsCollision(temp__mega_laser_p))
 					{
+						dynamic_particles_array_mtx.lock();
 						log_data_mtx.lock();
 						DestroyEntity(temp__mega_laser_p, temp__pilot_p);
 						log_data_mtx.unlock();
+						dynamic_particles_array_mtx.unlock();
 						mega_lasers_array_mtx.unlock();
 						goto end_of_pilot_cycle;
 					}
@@ -2065,10 +2085,12 @@ void Game::ShipsDestroedByKnifes()
 						temp__ship_p->IsCollision(&temp__segment))
 					{
 						bonuses_array_mtx.lock();
+						dynamic_particles_array_mtx.lock();
 						log_data_mtx.lock();
 						DestroyEntity(temp__knife_p, temp__ship_p);
 						RemoveEntity(temp__knife_p);
 						log_data_mtx.unlock();
+						dynamic_particles_array_mtx.unlock();
 						bonuses_array_mtx.unlock();
 						knifes_array_mtx.unlock();
 						pilots_array_mtx.unlock();
@@ -2111,9 +2133,11 @@ void Game::ShipsDestroedByLasers()
 						temp__ship_p->IsCollision(temp__laser_p))
 					{
 						bonuses_array_mtx.lock();
+						dynamic_particles_array_mtx.lock();
 						log_data_mtx.lock();
 						DestroyEntity(temp__laser_p, temp__ship_p);
 						log_data_mtx.unlock();
+						dynamic_particles_array_mtx.unlock();
 						bonuses_array_mtx.unlock();
 						lasers_array_mtx.unlock();
 						pilots_array_mtx.unlock();
@@ -2154,9 +2178,11 @@ void Game::ShipsDestroedByMegaLasers()
 						if (temp__ship_p->IsCollision(temp__mega_laser_p))
 						{
 							bonuses_array_mtx.lock();
+							dynamic_particles_array_mtx.lock();
 							log_data_mtx.lock();
 							DestroyEntity(temp__mega_laser_p, temp__ship_p);
 							log_data_mtx.unlock();
+							dynamic_particles_array_mtx.unlock();
 							bonuses_array_mtx.unlock();
 							goto end_of_ship_cycle;
 						}

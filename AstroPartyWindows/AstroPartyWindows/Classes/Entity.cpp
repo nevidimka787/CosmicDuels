@@ -1453,22 +1453,45 @@ EngineTypes::Bonus::inventory_t Bonus::BonusInfo()
 	return bonus_inventory;
 }
 
+bool Bonus::CanDivision()
+{
+	bool bonus_found = false;
+	for (uint8_t cell = 0; cell < BONUS_CELLS_COUNT; cell++)
+	{
+		if ((bonus_inventory & (BONUS_CELL << (cell * 2))) > (1 << (cell * 2)))
+		{
+			return true;
+		}
+		else if (bonus_inventory & (BONUS_CELL << (cell * 2)))
+		{
+			if (bonus_found)
+			{
+				return true;
+			}
+			bonus_found = true;
+		}
+	}
+	return false;
+}
+
 Bonus Bonus::Division()
 {
-	EngineTypes::Bonus::inventory_t temp_bonus_inventory;
-	for (uint8_t i = 0; i < BONUS_BONUSES_COUNT; i++)
+	Bonus found_bonus;
+	for (uint8_t cell = 0; cell < BONUS_CELLS_COUNT; cell++)
 	{
-		temp_bonus_inventory = 0x03 << (i * 2);
-		if (bonus_inventory & temp_bonus_inventory)
+		if ((bonus_inventory & (BONUS_CELL << (cell * 2))) > (1 << (cell * 2)))
 		{
-			temp_bonus_inventory &= bonus_inventory;
-			bonus_inventory &= BONUS_ALL - temp_bonus_inventory;
-			if (bonus_inventory & (1u << (BONUS_BONUSES_COUNT * 2)) - 1)
+			bonus_inventory -= 1 << (cell * 2);
+			return Bonus(&position, &velocity, 1 << (cell * 2), 0.0f, 0.0f);
+		}
+		else if(bonus_inventory & (BONUS_CELL << (cell * 2)))
+		{
+			if (found_bonus.exist)
 			{
-				Vec2F new_position = position + direction.Rotate((float)rand() / (float)RAND_MAX * (float)M_PI * 2.0f) * radius;
-				return Bonus(&new_position, &velocity, temp_bonus_inventory);
+				bonus_inventory -= found_bonus.bonus_inventory;
+				return found_bonus;
 			}
-			return Bonus(false);
+			found_bonus = Bonus(&position, &velocity, 1 << (cell * 2), 0.0f, 0.0f);
 		}
 	}
 	return Bonus(false);
@@ -1482,11 +1505,12 @@ uint16_t Bonus::GetType()
 uint8_t Bonus::GetBonusesCount()
 {
 	uint8_t count = 0;
-	for (uint8_t i = 0; i < BONUS_BONUSES_COUNT; i++)
+	EngineTypes::Bonus::inventory_t inventory_cell;
+	for (uint8_t i = BONUS_BONUS_FIRST_CELL; i <= BONUS_BONUS_LAST_CELL; i++)
 	{
-		if (bonus_inventory & (0x11 << (i << 1)))
+		if (inventory_cell = (bonus_inventory & (BONUS_CELL << (i * 2))))
 		{
-			count++;
+			count += inventory_cell >> (i * 2);
 		}
 	}
 	return count;
@@ -1495,9 +1519,9 @@ uint8_t Bonus::GetBonusesCount()
 uint8_t Bonus::GetBuffsCount()
 {
 	uint8_t count = 0;
-	for (uint8_t i = BONUS_BONUSES_COUNT; i < BONUS_BONUSES_COUNT + BONUS_BUFFS_COUNT; i++)
+	for (uint8_t i = BONUS_BUFF_FIRST_CELL; i <= BONUS_BUFF_LAST_CELL; i++)
 	{
-		if (bonus_inventory & (0x11 << (i << 1)))
+		if (bonus_inventory & (BONUS_CELL << (i << 1)))
 		{
 			count++;
 		}
@@ -1508,22 +1532,9 @@ uint8_t Bonus::GetBuffsCount()
 uint8_t Bonus::GetGameRulesCount()
 {
 	uint8_t count = 0;
-	for (uint8_t i = BONUS_BONUSES_COUNT + BONUS_BUFFS_COUNT; i < BONUS_BONUSES_COUNT + BONUS_BUFFS_COUNT + BONUS_GAME_RULES_COUNT; i++)
+	for (uint8_t i = BONUS_RULE_FIRST_CELL; i <= BONUS_RULE_LAST_CELL; i++)
 	{
-		if (bonus_inventory & (0x11 << (i << 1)))
-		{
-			count++;
-		}
-	}
-	return count;
-}
-
-uint8_t Bonus::GetTypesCount()
-{
-	uint8_t count = 0;
-	for (uint8_t i = 0; i < BONUS_TYPES_COUNT; i++)
-	{
-		if (bonus_inventory & (0x11 << (i << 1)))
+		if (bonus_inventory & (BONUS_CELL << (i << 1)))
 		{
 			count++;
 		}
@@ -1603,6 +1614,23 @@ Asteroid::Asteroid(Vec2F* position, Vec2F* velocity, EngineTypes::Bonus::invento
 
 DynamicParticle Asteroid::CreateShards(GameTypes::tic_t current_tic)
 {
+	if (bonus_inventory)
+	{
+		return DynamicParticle(
+			current_tic,
+			position,
+			velocity,
+			radius,
+			angle,
+			angular_velocity,
+			force_collision_coeffisient,
+			force_resistance_air_coefficient,
+			PARTICLE_TYPE_SHARDS_ASTEROID_POWERED,
+			DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_GRAVITY_GENERATORS | DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_AIR_RESISTANCE,
+			PARTICLE_PERIOD_SHARDS_ASTEROID_POWERED,
+			PARTICLE_POSTPONE_SHARDS_ASTEROID_POWERED,
+			current_tic + PARTICLE_PERIOD_SHARDS_ASTEROID_POWERED);
+	}
 	return DynamicParticle(
 		current_tic,
 		position,
@@ -1645,19 +1673,39 @@ Asteroid Asteroid::Division()
 	}
 
 	EngineTypes::Bonus::inventory_t return_bonus = BONUS_NOTHING;
-	EngineTypes::Bonus::inventory_t temp_bonus;
-	for (uint8_t i = 0; i < BONUS_BONUSES_COUNT; i++)
+	uint8_t found_bonuses_count = 0;
+
+	switch (size)
 	{
-		temp_bonus = 0x11 << (i * 2);
-		if (bonus_inventory & temp_bonus)
+	case ASTEROID_SIZE_MEDIUM:
+		for (uint8_t i = BONUS_BONUS_FIRST_CELL; i <= BONUS_BONUS_LAST_CELL; i++)
 		{
-			temp_bonus &= bonus_inventory;
-			bonus_inventory &= BONUS_ALL - temp_bonus;
-			return_bonus = temp_bonus;
-			goto end_of_cycle;
+			if (bonus_inventory & BONUS_CELL << (i * 2))
+			{
+				return_bonus = 1 << (i * 2);
+				bonus_inventory -= return_bonus;
+				break;
+			}
 		}
+		break;
+	case ASTEROID_SIZE_BIG:
+		for (uint8_t i = BONUS_BONUS_FIRST_CELL; i <= BONUS_BONUS_LAST_CELL; i++)
+		{
+			if (bonus_inventory & BONUS_CELL << (i * 2))
+			{
+				return_bonus += 1 << (i * 2);
+				bonus_inventory -= return_bonus;
+				found_bonuses_count++;
+				if (found_bonuses_count >= 2)
+				{
+					i = BONUS_BONUS_LAST_CELL + 1;
+				}
+			}
+		}
+		break;
+	default:
+		return Asteroid();
 	}
-end_of_cycle:;
 
 	Vec2F asteroid_velocity = direction.Rotate(((float)rand() / (float)RAND_MAX) * (float)M_PI * 2.0f) * ASTEROID_DEEFAULT_VELOCITY;
 	Vec2F asteroid_position = position + asteroid_velocity.Normalize() * radius;
@@ -2728,7 +2776,7 @@ void Ship::TakeBonus(Bonus* bonus, bool as_triple)
 	EngineTypes::Bonus::inventory_t new_inventory = bonus->bonus_inventory;
 	if (as_triple)
 	{
-		for (EngineTypes::Bonus::inventory_length_t i = 0; i < BONUS_BONUS_DATA_LENGTH * 2; i += 2)
+		for (EngineTypes::Bonus::inventory_length_t i = 0; i < BONUS_CELLS_COUNT * 2; i += 2)
 		{
 			if (new_inventory & (BONUS_CELL << i))
 			{
@@ -2739,13 +2787,13 @@ void Ship::TakeBonus(Bonus* bonus, bool as_triple)
 	else
 	{
 		EngineTypes::Bonus::inventory_t count;
-		for (EngineTypes::Bonus::inventory_length_t i = 0; i < BONUS_BONUS_DATA_LENGTH * 2; i += 2)
+		for (EngineTypes::Bonus::inventory_length_t i = 0; i < BONUS_CELLS_COUNT * 2; i += 2)
 		{
 			count = (new_inventory & (BONUS_CELL << i)) >> i;
 			if (count)
 			{
 				count += (bonus_inventory & (BONUS_CELL << i)) >> i;
-				if (count > 3)
+				if (count > BONUS_CELL)
 				{
 					bonus_inventory |= BONUS_CELL << i;
 				}

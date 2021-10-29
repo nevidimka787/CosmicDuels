@@ -185,12 +185,20 @@ void ExaustBurnous()
 
 void ShardsAsteroid()
 {
-	
+	if(length(pixel_position) < 0.9f || length(pixel_position) > 1.0f)
+	{
+		discard;
+	}
+	frag_color = vec4(0.5f, 0.5f, 0.5f, 1.0f);
 }
 
 void ShardsAsteroidPowered()
 {
-	
+	if(length(pixel_position) < 0.9f || length(pixel_position) > 1.0f)
+	{
+		discard;
+	}
+	frag_color = vec4(1.0f, 0.0f, 0.0f, 1.0f);
 }
 
 void ShardsMapElement()
@@ -200,7 +208,13 @@ void ShardsMapElement()
 
 void ShardsPilot()
 {
-	
+	if(
+		(length(pixel_position) < 0.9f || length(pixel_position) > 1.0f) && 
+		(length(pixel_position) < 0.7f || length(pixel_position) > 0.8f))
+	{
+		discard;
+	}
+	frag_color = vec4(1.0f);
 }
 
 void ShardsShip()

@@ -402,12 +402,14 @@ public:
 		bonus type will be passed as a new object,
 		otherwise the function will return 'nullptr'.
 	*/
+	//If bonus collent more then one item then function returns true.
+	bool CanDivision();
+	//The function returns new bonus that collect one item in the its inventory and remove that item from the inventory of the main bonus.
 	Bonus Division();
 	EngineTypes::Bonus::inventory_t GetType();
 	uint8_t GetBonusesCount();
 	uint8_t	GetBuffsCount();
 	uint8_t GetGameRulesCount();
-	uint8_t GetTypesCount();
 	void Set(Bonus* entity);
 	void Set(
 		Vec2F* position,
