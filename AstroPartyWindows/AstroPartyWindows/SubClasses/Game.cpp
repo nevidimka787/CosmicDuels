@@ -1226,6 +1226,7 @@ void Game::RoundResultsInit()
 			if (ships[ship].GetTeamNumber() == team)
 			{
 				ships[ship].exist = true;
+				ships[ship].SpendBuff(SHIP_BUFF_ALL);
 				ships[ship].SetPosition(
 					Vec2F(
 						((float)scores[team - 1] / ((float)end_match_score + 0.5f) - 0.015f) * ROUND_RESULTS_INIT__MAP_SIZE,

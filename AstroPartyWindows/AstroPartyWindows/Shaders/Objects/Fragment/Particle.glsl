@@ -26,6 +26,10 @@ void ShardsMapElement();
 void ShardsPilot();
 void ShardsShip();
 
+bool PositionInCyrcle(vec2 _position, float _radius);
+bool PositionInQuare(vec2 _position, float _quare_side);
+bool PositionInTriangle(vec2 _position, float _triangle_side, float _triangle_angle);
+
 #define BACKGROUND					0x01
 #define EXAUST_ENGINE				0x02
 #define EXAUST_SHOOT				0x03
@@ -107,10 +111,10 @@ void Background()
 	for(int _star = 0; _star < STARS_COUNT; _star++)
 	{
 		_star_pos = Rand(vec2((_star + 1) * (trunc(pixel_position) + 1.0f))) * 0.92f + 0.04f;
-		_star_r = RandF(_star_pos) * 0.02f + 0.01f;
+		_star_r = RandF(_star_pos) * 0.02f + 0.015f;
 		float _temp = Rand(_star_r);
 
-		if(length(fract(pixel_position / SIZE) - _star_pos) < _star_r / SIZE)
+		if(PositionInTriangle(fract(pixel_position / SIZE) - _star_pos, _star_r / SIZE * sqrt(3.0f), Rand(_temp) * radians(60.0f)))
 		{
 			if(radius < 100.0f)
 			{
@@ -139,9 +143,30 @@ void Background()
 
 }
 
+bool PositionInCyrcle(vec2 _position, float _radius)
+{
+	return length(_position) < _radius;
+}
+
 bool PositionInQuare(vec2 _position, float _quare_side)
 {
-	return _position.x > -_quare_side && _position.y > -_quare_side && _position.x < _quare_side && _position.y < _quare_side;
+	return 
+		_position.x > -_quare_side &&
+		_position.y > -_quare_side &&
+		_position.x < _quare_side &&
+		_position.y < _quare_side;
+}
+
+bool PositionInTriangle(vec2 _position, float _triangle_side, float _triangle_angle)
+{
+	vec2 _l_pos = _position / _triangle_side;
+	_l_pos = vec2(
+		_l_pos.x * cos(_triangle_angle) - _l_pos.y * sin(_triangle_angle),
+		_l_pos.x * sin(_triangle_angle) + _l_pos.y * cos(_triangle_angle));
+	return
+		_l_pos.y < sqrt(3.0f) * _l_pos.x + 1.0f / sqrt(3.0f) &&
+		_l_pos.y < -sqrt(3.0f) * _l_pos.x + 1.0f / sqrt(3.0f) &&
+		_l_pos.y > -0.5f / sqrt(3.0f);
 }
 
 void ExaustEngine()

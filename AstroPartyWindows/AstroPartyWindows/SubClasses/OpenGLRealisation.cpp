@@ -659,10 +659,6 @@ void OpenGL::DrawObject(DynamicParticle* dynamic_particle, bool update_shader)
     dynamic_particle_shader.SetUniform("angle", dynamic_particle->GetAngle());
     dynamic_particle_shader.SetUniform("radius", dynamic_particle->radius);
     dynamic_particle_shader.SetUniform("type", (int)dynamic_particle->GetType());
-    if (dynamic_particle->GetType() == PARTICLE_TYPE_SHARDS_SHIP)
-    {
-        std::cout << "DrawObject::Shards" << std::endl;
-    }
     dynamic_particle_shader.SetUniform("animation", dynamic_particle->animation);
     dynamic_particle_buffer.Draw();
 }
@@ -693,7 +689,6 @@ void OpenGL::DrawObject(Knife* knife, bool update_shader)
         knife_shader.SetUniform("camera_position", temp__game__camera_position);
         knife_shader.SetUniform("camera_size", temp__game__camera_size);
     }
-    //std::cout << "Segment: p1: " << knife->GetSegment().point << " p2: " << knife->GetSegment().point + knife->GetSegment().vector << std::endl;
     knife_shader.SetUniform("beam", knife->GetSegment());
     knife_buffer.Draw();
 }
@@ -809,14 +804,14 @@ void OpenGL::DrawObject(Ship* ship, bool update_shader)
     ship_shader.SetUniform("model", ship->GetModelMatrixPointer());
     ship_shader.SetUniform("team", ship->GetTeamNumber());
 
+    ship_shader.SetUniform("player", number_of_player_in_team | (ship->IsUnbrakable() ? 0xF000 : 0x0000));
+    ship_buffer.Draw();
+
     if (ship->HaveBuff(SHIP_BUFF_SHIELD))
     {
         ship_shader.SetUniform("player", PLAYER_SHIELD);
         ship_buffer.Draw();
     }
-
-    ship_shader.SetUniform("player", number_of_player_in_team | (ship->IsUnbrakable() ? 0xF000 : 0x0000));
-    ship_buffer.Draw();
 }
 
 void OpenGL::DrawObject(Turel* turel, bool update_shader)

@@ -1041,7 +1041,7 @@ void Game::LasersDestroyAsteroids()
 				temp__asteroid_p = &asteroids[asteroid];
 				if (temp__asteroid_p->exist)
 				{
-					if (temp__asteroid_p->Entity::IsCollision(temp__laser_p))
+					if (temp__asteroid_p->IsCollision(temp__laser_p))
 					{
 						bonuses_array_mtx.lock();
 						dynamic_particles_array_mtx.lock();
@@ -2029,6 +2029,7 @@ void Game::ShipsDestroedByBullets()
 						{
 							temp__ship_p->SetUnbrakablePeriod(SHIP_DEFAULT_UNBRAKABLE_PERIOD);
 							temp__ship_p->SpendBuffNoCheck(SHIP_BUFF_SHIELD);
+							RemoveEntity(temp__bullet_p);
 							goto end_of_bullet_cycle;
 						}
 						else

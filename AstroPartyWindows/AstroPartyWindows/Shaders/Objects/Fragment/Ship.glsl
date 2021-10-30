@@ -28,7 +28,7 @@ void main()
 	}
 	if((player & SHIELD) != 0x0000)
 	{
-		frag_color = vec4(0.5f, 0.5f, 1.0f, 0.6f);
+		frag_color = vec4(0.5f, 0.5f, 1.0f, 0.4f);
 		return;
 	}
 
