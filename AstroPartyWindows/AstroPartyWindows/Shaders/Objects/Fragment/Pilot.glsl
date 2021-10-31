@@ -13,8 +13,8 @@ vec3 color;
 #define BLUE	3
 #define PURPURE	4
 
-#define PLAUER_COLOR	0.3f
-#define TEAM_COLOR		0.7f
+#define PLAUER_COLOR	0.35f
+#define TEAM_COLOR		0.65f
 
 void main()
 {

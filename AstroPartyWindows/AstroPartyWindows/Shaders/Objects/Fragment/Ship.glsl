@@ -14,8 +14,8 @@ vec3 color;
 #define BLUE	3
 #define PURPURE	4
 
-#define PLAUER_COLOR	0.3f
-#define TEAM_COLOR		0.7f
+#define PLAUER_COLOR	0.35f
+#define TEAM_COLOR		0.65f
 
 #define UNBRAKABLE	0xF000
 #define SHIELD		0x0F00
@@ -70,8 +70,8 @@ void main()
 	}
 	if((player & UNBRAKABLE) != 0x0000)
 	{
-		frag_color = vec4(color * 0.7 + 0.3, 0.7f);
+		frag_color = vec4(color, 0.4f);
 		return;
 	}
-	frag_color = vec4(color, 1.0f);
+	frag_color = vec4(color * 0.9f + 0.1f, 1.0f);
 }

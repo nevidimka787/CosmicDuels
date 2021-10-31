@@ -4,6 +4,7 @@
 
 #include "Math.h"
 #include "Map.h"
+#include "Color.h"
 
 #include "../Types/AllTypes.h"
 #include "../Constants/AllConstants.h"
@@ -264,17 +265,18 @@ class Particle : public Entity
 {
 protected:
 	bool active = false;
-	GameTypes::tic_t spawn_tic;
 	GameTypes::tic_t animation_period;
 	GameTypes::tic_t animation_postpone;
 	GameTypes::tic_t finish_tic;
-	EngineTypes::Particle::type_t type;
 	bool linked;
+	GameTypes::tic_t spawn_tic;
+	EngineTypes::Particle::type_t type;
 
 	void SetAutoPeriod(EngineTypes::Particle::type_t type);
 	void SetAutoPostpone(EngineTypes::Particle::type_t type);
 public:
 	float animation = 0.0f;
+	Color3F color;
 	const Entity* pointer_to_entity;
 
 	Particle();
@@ -282,6 +284,16 @@ public:
 		GameTypes::tic_t current_tic,
 		const Entity* pointer_to_host,
 		EngineTypes::Particle::type_t type,
+		Color3F color,
+		GameTypes::tic_t animation_period = PARTICLE_PROPERTY_AUTO,
+		GameTypes::tic_t animation_postpone = PARTICLE_PROPERTY_AUTO,
+		GameTypes::tic_t finish_tic = PARTICLE_PROPERTY_AUTO,
+		bool exist = true);
+	Particle(
+		GameTypes::tic_t current_tic,
+		const Entity* pointer_to_host,
+		EngineTypes::Particle::type_t type,
+		const Color3F* color,
 		GameTypes::tic_t animation_period = PARTICLE_PROPERTY_AUTO,
 		GameTypes::tic_t animation_postpone = PARTICLE_PROPERTY_AUTO,
 		GameTypes::tic_t finish_tic = PARTICLE_PROPERTY_AUTO,
@@ -292,6 +304,7 @@ public:
 		float angle,
 		float radius,
 		EngineTypes::Particle::type_t type,
+		Color3F color,
 		GameTypes::tic_t animation_period,
 		GameTypes::tic_t animation_postpone,
 		GameTypes::tic_t finish_tic,
@@ -302,6 +315,7 @@ public:
 		float angle,
 		float radius,
 		EngineTypes::Particle::type_t type,
+		const Color3F* color,
 		GameTypes::tic_t animation_period,
 		GameTypes::tic_t animation_postpone,
 		GameTypes::tic_t finish_tic,
@@ -325,13 +339,14 @@ class DynamicParticle : public DynamicEntity
 {
 private:
 	bool active = false;
-	GameTypes::tic_t spawn_tic;
 	GameTypes::tic_t animation_period;
 	GameTypes::tic_t animation_postpone;
 	GameTypes::tic_t finish_tic;
+	GameTypes::tic_t spawn_tic;
 	EngineTypes::Particle::type_t type;
 public:
 	float animation;
+	Color3F color;
 	EngineTypes::DynamicParticle::property_t properties;
 
 	DynamicParticle();
@@ -346,6 +361,7 @@ public:
 		float force_resistance_air_coefficient,
 		EngineTypes::Particle::type_t type,
 		EngineTypes::DynamicParticle::property_t properties,
+		Color3F color,
 		GameTypes::tic_t animation_period = PARTICLE_PROPERTY_AUTO,
 		GameTypes::tic_t animation_postpone = PARTICLE_PROPERTY_AUTO,
 		GameTypes::tic_t finish_tic = PARTICLE_PROPERTY_AUTO,
@@ -361,6 +377,7 @@ public:
 		float force_resistance_air_coefficient,
 		EngineTypes::Particle::type_t type,
 		EngineTypes::DynamicParticle::property_t properties,
+		const Color3F* color,
 		GameTypes::tic_t animation_period = PARTICLE_PROPERTY_AUTO,
 		GameTypes::tic_t animation_postpone = PARTICLE_PROPERTY_AUTO,
 		GameTypes::tic_t finish_tic = PARTICLE_PROPERTY_AUTO,
@@ -545,6 +562,7 @@ public:
 		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
 		bool exist = true);
 
+	Color3F GetColor();
 	Mat3x2F GetModelMatrix();
 	Mat3x2F* GetModelMatrixPointer();
 	GameTypes::players_count_t GetPlayerNumber();

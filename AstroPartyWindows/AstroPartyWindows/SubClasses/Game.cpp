@@ -753,6 +753,7 @@ void Game::InitLevel()
 			0.0f,							//angle
 			101.0f,							//radius
 			PARTICLE_PERIOD_BACKGROUND,		//type
+			Color3F(67.0f / 256.0f, 45.0f / 256.0f, 93.0f / 256.0f),
 			1000,							//period
 			0,								//postpone
 			PARTICLE_ANIMATION_NOT_FINISH)	//finish tic
@@ -765,6 +766,7 @@ void Game::InitLevel()
 			0.0f,							//angle
 			21.0f,							//radius
 			PARTICLE_PERIOD_BACKGROUND,		//type
+			Color3F(57.0f / 256.0f, 40.0f / 256.0f, 93.0f / 256.0f),
 			1000,							//period
 			0,								//postpone
 			PARTICLE_ANIMATION_NOT_FINISH)	//finish tic
@@ -777,6 +779,7 @@ void Game::InitLevel()
 			0.0f,							//angle
 			7.0f,							//radius
 			PARTICLE_PERIOD_BACKGROUND,		//type
+			Color3F(57.0f / 256.0f, 40.0f / 256.0f, 93.0f / 256.0f),
 			1000,							//period
 			0,								//postpone
 			PARTICLE_ANIMATION_NOT_FINISH)	//finish tic

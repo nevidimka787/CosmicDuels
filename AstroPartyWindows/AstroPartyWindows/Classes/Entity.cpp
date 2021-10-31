@@ -1099,8 +1099,9 @@ Particle::Particle() :
 {
 }
 
-Particle::Particle(GameTypes::tic_t current_tic, const Entity* pointer_to_host, EngineTypes::Particle::type_t type, GameTypes::tic_t animation_period, GameTypes::tic_t animation_postpone, GameTypes::tic_t finish_tic, bool exist) :
+Particle::Particle(GameTypes::tic_t current_tic, const Entity* pointer_to_host, EngineTypes::Particle::type_t type, Color3F color, GameTypes::tic_t animation_period, GameTypes::tic_t animation_postpone, GameTypes::tic_t finish_tic, bool exist) :
 	Entity(*pointer_to_host),
+	color(color),
 	finish_tic(finish_tic),
 	linked(true),
 	pointer_to_entity(pointer_to_host),
@@ -1126,11 +1127,40 @@ Particle::Particle(GameTypes::tic_t current_tic, const Entity* pointer_to_host, 
 	}
 }
 
-Particle::Particle(GameTypes::tic_t current_tic, Vec2F position, float angle, float radius, EngineTypes::Particle::type_t type, GameTypes::tic_t animation_period, GameTypes::tic_t animation_postpone, GameTypes::tic_t finish_tic, bool exist) :
+Particle::Particle(GameTypes::tic_t current_tic, const Entity* pointer_to_host, EngineTypes::Particle::type_t type, const Color3F* color, GameTypes::tic_t animation_period, GameTypes::tic_t animation_postpone, GameTypes::tic_t finish_tic, bool exist) :
+	Entity(*pointer_to_host),
+	color(*color),
+	finish_tic(finish_tic),
+	linked(true),
+	pointer_to_entity(pointer_to_host),
+	spawn_tic(current_tic),
+	type(type)
+{
+	if (animation_period == PARTICLE_PROPERTY_AUTO)
+	{
+		SetAutoPeriod(type);
+	}
+	else
+	{
+		this->animation_period = animation_period;
+	}
+
+	if (animation_postpone == PARTICLE_PROPERTY_AUTO)
+	{
+		SetAutoPostpone(type);
+	}
+	else
+	{
+		this->animation_postpone = animation_postpone;
+	}
+}
+
+Particle::Particle(GameTypes::tic_t current_tic, Vec2F position, float angle, float radius, EngineTypes::Particle::type_t type, Color3F color, GameTypes::tic_t animation_period, GameTypes::tic_t animation_postpone, GameTypes::tic_t finish_tic, bool exist) :
 	Entity(position, radius, angle, exist),
 	type(type),
 	animation_period(animation_period),
 	animation_postpone(animation_postpone),
+	color(color),
 	finish_tic(finish_tic),
 	linked(false),
 	pointer_to_entity(nullptr),
@@ -1138,11 +1168,12 @@ Particle::Particle(GameTypes::tic_t current_tic, Vec2F position, float angle, fl
 {
 }
 
-Particle::Particle(GameTypes::tic_t current_tic, const Vec2F* position, float angle, float radius, EngineTypes::Particle::type_t type, GameTypes::tic_t animation_period, GameTypes::tic_t animation_postpone, GameTypes::tic_t finish_tic, bool exist) :
+Particle::Particle(GameTypes::tic_t current_tic, const Vec2F* position, float angle, float radius, EngineTypes::Particle::type_t type, const Color3F* color, GameTypes::tic_t animation_period, GameTypes::tic_t animation_postpone, GameTypes::tic_t finish_tic, bool exist) :
 	Entity(*position, radius, angle, exist),
 	type(type),
 	animation_period(animation_period),
 	animation_postpone(animation_postpone),
+	color(*color),
 	finish_tic(finish_tic),
 	linked(false),
 	pointer_to_entity(nullptr),
@@ -1293,6 +1324,7 @@ void Particle::operator=(Particle particle)
 	animation = particle.animation;
 	animation_period = particle.animation_period;
 	animation_postpone = particle.animation_postpone;
+	color = particle.color;
 	exist = particle.exist;
 	finish_tic = particle.finish_tic;
 	linked = particle.linked;
@@ -1322,12 +1354,13 @@ DynamicParticle::DynamicParticle() :
 {
 }
 
-DynamicParticle::DynamicParticle(GameTypes::tic_t current_tic, Vec2F position, Vec2F velocisy, float radius, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, EngineTypes::Particle::type_t type, EngineTypes::DynamicParticle::property_t properties, GameTypes::tic_t animation_period, GameTypes::tic_t animation_postpone, GameTypes::tic_t finish_tic, bool exist) :
+DynamicParticle::DynamicParticle(GameTypes::tic_t current_tic, Vec2F position, Vec2F velocisy, float radius, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, EngineTypes::Particle::type_t type, EngineTypes::DynamicParticle::property_t properties, Color3F color, GameTypes::tic_t animation_period, GameTypes::tic_t animation_postpone, GameTypes::tic_t finish_tic, bool exist) :
 	DynamicEntity(position, velocisy, radius, angle, angular_velocity, force_collision_coeffisient, force_resistance_air_coefficient, exist),
 	active(false),
 	animation(0.0f),
 	animation_period(animation_period),
 	animation_postpone(animation_postpone),
+	color(color),
 	finish_tic(finish_tic),
 	properties(properties),
 	spawn_tic(current_tic),
@@ -1335,12 +1368,13 @@ DynamicParticle::DynamicParticle(GameTypes::tic_t current_tic, Vec2F position, V
 {
 }
 
-DynamicParticle::DynamicParticle(GameTypes::tic_t current_tic, const Vec2F* position, const Vec2F* velocisy, float radius, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, EngineTypes::Particle::type_t type, EngineTypes::DynamicParticle::property_t properties, GameTypes::tic_t animation_period, GameTypes::tic_t animation_postpone, GameTypes::tic_t finish_tic, bool exist) :
+DynamicParticle::DynamicParticle(GameTypes::tic_t current_tic, const Vec2F* position, const Vec2F* velocisy, float radius, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, EngineTypes::Particle::type_t type, EngineTypes::DynamicParticle::property_t properties, const Color3F* color, GameTypes::tic_t animation_period, GameTypes::tic_t animation_postpone, GameTypes::tic_t finish_tic, bool exist) :
 	DynamicEntity(position, velocisy, radius, angle, angular_velocity, force_collision_coeffisient, force_resistance_air_coefficient, exist),
 	active(false),
 	animation(0.0f),
 	animation_period(animation_period),
 	animation_postpone(animation_postpone),
+	color(*color),
 	finish_tic(finish_tic),
 	properties(properties),
 	spawn_tic(current_tic),
@@ -1403,6 +1437,7 @@ void DynamicParticle::operator=(DynamicParticle dynamical_entity)
 	animation = dynamical_entity.animation;
 	animation_period = dynamical_entity.animation_period;
 	animation_postpone = dynamical_entity.animation_postpone;
+	color = dynamical_entity.color;
 	UpdateDirection();
 	exist = dynamical_entity.exist;
 	finish_tic = dynamical_entity.finish_tic;
@@ -1627,6 +1662,7 @@ DynamicParticle Asteroid::CreateShards(GameTypes::tic_t current_tic)
 			force_resistance_air_coefficient,
 			PARTICLE_TYPE_SHARDS_ASTEROID_POWERED,
 			DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_GRAVITY_GENERATORS | DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_AIR_RESISTANCE,
+			Color3F(0.7f, 0.2f, 0.0f),
 			PARTICLE_PERIOD_SHARDS_ASTEROID_POWERED,
 			PARTICLE_POSTPONE_SHARDS_ASTEROID_POWERED,
 			current_tic + PARTICLE_PERIOD_SHARDS_ASTEROID_POWERED);
@@ -1642,6 +1678,7 @@ DynamicParticle Asteroid::CreateShards(GameTypes::tic_t current_tic)
 		force_resistance_air_coefficient,
 		PARTICLE_TYPE_SHARDS_ASTEROID,
 		DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_GRAVITY_GENERATORS | DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_AIR_RESISTANCE,
+		Color3F(0.4f),
 		PARTICLE_PERIOD_SHARDS_ASTEROID,
 		PARTICLE_POSTPONE_SHARDS_ASTEROID,
 		current_tic + PARTICLE_PERIOD_SHARDS_ASTEROID);
@@ -1995,6 +2032,22 @@ bool ControledEntity::Collision(Map* map)
 		}
 	}
 	return collision;
+}
+
+Color3F ControledEntity::GetColor()
+{
+	switch (player_team_number)
+	{
+	case SHIPS_SELECT_BUTTONS_TEAM_RED:
+		return Color3F(1.0f, 0.0f, 0.0f);
+	case SHIPS_SELECT_BUTTONS_TEAM_GREEN:
+		return Color3F(0.0f, 1.0f, 0.0f);
+	case SHIPS_SELECT_BUTTONS_TEAM_BLUE:
+		return Color3F(0.0f, 0.0f, 1.0f);
+	case SHIPS_SELECT_BUTTONS_TEAM_PURPURE:
+		return Color3F(1.0f, 0.0f, 1.0f);
+	}
+	return Color3F();
 }
 
 Mat3x2F ControledEntity::GetModelMatrix()
@@ -2512,6 +2565,7 @@ DynamicParticle Ship::CreateBurnoutExaust(GameTypes::tic_t current_tic)
 		force_resistance_air_coefficient,
 		PARTICLE_TYPE_EXAUST_BUTNOUT,
 		DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_GRAVITY_GENERATORS | DYNAMIC_PARTICLE_PROPERTY_DESTROED_BY_ALL | DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_AIR_RESISTANCE,
+		GetColor(),
 		PARTICLE_PERIOD_EXAUST_ENGINE,
 		PARTICLE_PERIOD_EXAUST_ENGINE,
 		current_tic + PARTICLE_PERIOD_EXAUST_ENGINE);
@@ -2530,6 +2584,7 @@ DynamicParticle Ship::CreateEnginExaust(GameTypes::tic_t current_tic)
 		force_resistance_air_coefficient,
 		PARTICLE_TYPE_EXAUST_ENGINE,
 		DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_GRAVITY_GENERATORS | DYNAMIC_PARTICLE_PROPERTY_DESTROED_BY_ALL | DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_AIR_RESISTANCE,
+		GetColor(),
 		PARTICLE_PERIOD_EXAUST_ENGINE,
 		PARTICLE_POSTPONE_EXAUST_ENGINE,
 		current_tic + PARTICLE_PERIOD_EXAUST_ENGINE);
@@ -2537,6 +2592,7 @@ DynamicParticle Ship::CreateEnginExaust(GameTypes::tic_t current_tic)
 
 DynamicParticle Ship::CreateShards(GameTypes::tic_t current_tic)
 {
+	
 	return DynamicParticle(
 		current_tic,
 		position,
@@ -2548,6 +2604,7 @@ DynamicParticle Ship::CreateShards(GameTypes::tic_t current_tic)
 		force_resistance_air_coefficient,
 		PARTICLE_TYPE_SHARDS_SHIP,
 		DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_GRAVITY_GENERATORS | DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_AIR_RESISTANCE,
+		GetColor(),
 		PARTICLE_PERIOD_SHARDS_SHIP,
 		PARTICLE_POSTPONE_SHARDS_SHIP,
 		current_tic + PARTICLE_PERIOD_SHARDS_SHIP + PARTICLE_POSTPONE_SHARDS_SHIP);
@@ -2630,7 +2687,8 @@ Particle Ship::CreateShootingExaust(GameTypes::tic_t current_tic)
 	return Particle(
 		current_tic,
 		this,
-		PARTICLE_TYPE_EXAUST_SHOOT);
+		PARTICLE_TYPE_EXAUST_SHOOT,
+		Color3F(1.0f, 0.0f, 0.0f));
 }
 
 Pilot Ship::Destroy()
@@ -2902,6 +2960,7 @@ DynamicParticle Pilot::CreateShards(GameTypes::tic_t current_tic)
 		force_resistance_air_coefficient,
 		PARTICLE_TYPE_SHARDS_PILOT,
 		DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_GRAVITY_GENERATORS | DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_AIR_RESISTANCE,
+		GetColor(),
 		PARTICLE_PERIOD_SHARDS_PILOT,
 		PARTICLE_POSTPONE_SHARDS_PILOT,
 		current_tic + PARTICLE_PERIOD_SHARDS_PILOT);

@@ -14,6 +14,7 @@ uniform vec2 camera_position;
 uniform float camera_size;
 uniform float radius;
 uniform float scale;
+uniform vec3 color;
 
 void Background();
 void ExaustEngine();
@@ -104,7 +105,6 @@ vec3 Rand(vec3 _value)
 void Background()
 {
 #define SIZE		1.0f
-#define BG_COLOR	vec3(67.0f / 256.0f, 50.0f / 256.0f, 103.0f / 256.0f)
 #define STAR_ALPHA	0.4f
 	vec2 _star_pos;
 	float _star_r;
@@ -130,7 +130,7 @@ void Background()
 					max(min(3.0f * (1.0f - abs((_temp * 2.0f - 1.0f) * 1.5f + 2.0f / 3.0f)), 1.0f), 0.0f),
 					max(min(3.0f * (1.0f - abs((_temp * 2.0f - 1.0f) * 1.5f)), 1.0f), 0.0f),
 					max(min(3.0f * (1.0f - abs((_temp * 2.0f - 1.0f) * 1.5f - 2.0f / 3.0f)), 1.0f), 0.0f)
-					) * STAR_ALPHA + BG_COLOR * (1.0f - STAR_ALPHA), 1.0f - angle);
+					) * STAR_ALPHA + color * (1.0f - STAR_ALPHA), 1.0f - angle);
 			return;
 		}
 	}
@@ -139,7 +139,7 @@ void Background()
 		discard;
 	}
 	
-	frag_color = vec4(BG_COLOR, 1.0f - angle);
+	frag_color = vec4(color, 1.0f - angle);
 
 }
 
@@ -190,7 +190,7 @@ void ExaustEngine()
 		discard;
 	}
 
-	frag_color = vec4(1.0f);
+	frag_color = vec4(color, 1.1f * (1.0f - pow(animation, 4.0f)));
 }
 
 void ExaustShoot()
@@ -214,7 +214,7 @@ void ShardsAsteroid()
 	{
 		discard;
 	}
-	frag_color = vec4(0.5f, 0.5f, 0.5f, 1.0f);
+	frag_color = vec4(color, 1.0f);
 }
 
 void ShardsAsteroidPowered()
@@ -223,12 +223,19 @@ void ShardsAsteroidPowered()
 	{
 		discard;
 	}
-	frag_color = vec4(1.0f, 0.0f, 0.0f, 1.0f);
+	frag_color = vec4(color, 1.0f);
 }
 
 void ShardsMapElement()
 {
-	
+	if(
+		(length(pixel_position) < 0.9f || length(pixel_position) > 1.0f) && 
+		(length(pixel_position) < 0.7f || length(pixel_position) > 0.8f) &&
+		(length(pixel_position) < 0.5f || length(pixel_position) > 0.6f))
+	{
+		discard;
+	}
+	frag_color = vec4(color, 1.0f);
 }
 
 void ShardsPilot()
@@ -239,7 +246,7 @@ void ShardsPilot()
 	{
 		discard;
 	}
-	frag_color = vec4(1.0f);
+	frag_color = vec4(color, 1.0f);
 }
 
 void ShardsShip()
@@ -248,7 +255,7 @@ void ShardsShip()
 	{
 		discard;
 	}
-	frag_color = vec4(1.0f);
+	frag_color = vec4(color, 1.0f);
 }
 
 

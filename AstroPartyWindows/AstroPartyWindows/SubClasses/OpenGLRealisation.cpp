@@ -660,6 +660,7 @@ void OpenGL::DrawObject(DynamicParticle* dynamic_particle, bool update_shader)
     dynamic_particle_shader.SetUniform("radius", dynamic_particle->radius);
     dynamic_particle_shader.SetUniform("type", (int)dynamic_particle->GetType());
     dynamic_particle_shader.SetUniform("animation", dynamic_particle->animation);
+    dynamic_particle_shader.SetUniform("color", dynamic_particle->color);
     dynamic_particle_buffer.Draw();
 }
 
@@ -743,6 +744,7 @@ void OpenGL::DrawObject(Particle* particle, bool update_shader)
     particle_shader.SetUniform("radius", particle->radius);
     particle_shader.SetUniform("type", (int)particle->GetType());
     particle_shader.SetUniform("animation", particle->animation);
+    particle_shader.SetUniform("color", particle->color);
     particle_buffer.Draw();
 }
 
