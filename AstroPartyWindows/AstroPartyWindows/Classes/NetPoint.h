@@ -9,9 +9,8 @@ using namespace EngineTypes::NetPoint;
 
 class NetPoint : public DynamicEntity
 {
-private:
-	id_t connected_points_array_length;
 protected:
+	id_t connected_points_array_length;
 	GameTypes::tic_t exist_time;
 	NetPoint** connected_points_ps;//connected points pointers
 	id_t connected_points_count;

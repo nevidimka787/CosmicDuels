@@ -469,13 +469,13 @@ void Game::DestroyEntity(Bullet* destroyer, Ship* entity)
 	}
 	if (!(game_rules && GAME_RULE_NEED_KILL_PILOT))
 	{
-		if (destroyer->CreatedByTeam(entity) || destroyer->GetPlayerMasterTeamNumber() == AGGRESIVE_ENTITY_HOST_ID)
+		if (destroyer->CreatedByTeam(entity) || destroyer->GetHostTeamNumber() == AGGRESIVE_ENTITY_HOST_ID)
 		{
 			DecrementScore(entity->GetTeamNumber());
 		}
-		else if (destroyer->GetPlayerMasterTeamNumber() != AGGRESIVE_ENTITY_HOST_ID)
+		else if (destroyer->GetHostTeamNumber() != AGGRESIVE_ENTITY_HOST_ID)
 		{
-			IncrementScore(destroyer->GetPlayerMasterTeamNumber());
+			IncrementScore(destroyer->GetHostTeamNumber());
 		}
 		DecrementPlayersCountInTeam(entity->GetTeamNumber());
 	}
@@ -495,13 +495,13 @@ void Game::DestroyEntity(Bullet* destroyer, Pilot* entity)
 	}
 	if (game_rules && GAME_RULE_NEED_KILL_PILOT)
 	{
-		if (destroyer->CreatedByTeam(entity) || destroyer->GetPlayerMasterTeamNumber() == AGGRESIVE_ENTITY_HOST_ID)
+		if (destroyer->CreatedByTeam(entity) || destroyer->GetHostTeamNumber() == AGGRESIVE_ENTITY_HOST_ID)
 		{
 			DecrementScore(entity->GetTeamNumber());
 		}
-		else if (destroyer->GetPlayerMasterTeamNumber() != AGGRESIVE_ENTITY_HOST_ID)
+		else if (destroyer->GetHostTeamNumber() != AGGRESIVE_ENTITY_HOST_ID)
 		{
-			IncrementScore(destroyer->GetPlayerMasterTeamNumber());
+			IncrementScore(destroyer->GetHostTeamNumber());
 		}
 		DecrementPlayersCountInTeam(entity->GetTeamNumber());
 	}

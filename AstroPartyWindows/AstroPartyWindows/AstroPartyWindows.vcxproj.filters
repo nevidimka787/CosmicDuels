@@ -97,7 +97,7 @@
     <ClCompile Include="SubClasses\GameMap.cpp">
       <Filter>Classes\Файлы ресурсов</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\BrokenLine.cpp">
+    <ClCompile Include="Classes\NetPoint.cpp">
       <Filter>Classes\Файлы ресурсов</Filter>
     </ClCompile>
   </ItemGroup>
@@ -296,7 +296,7 @@
     <ClInclude Include="Classes\Logs.h">
       <Filter>Classes\Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\BrokenLine.h">
+    <ClInclude Include="Classes\NetPoint.h">
       <Filter>Classes\Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

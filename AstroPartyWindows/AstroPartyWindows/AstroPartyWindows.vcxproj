@@ -147,7 +147,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Classes\BrokenLine.cpp" />
     <ClCompile Include="Classes\Buffer.cpp" />
     <ClCompile Include="Classes\Camera.cpp" />
     <ClCompile Include="Classes\Color.cpp" />
@@ -157,6 +156,7 @@
     <ClCompile Include="Classes\Map.cpp" />
     <ClCompile Include="Classes\Mat.cpp" />
     <ClCompile Include="Classes\Menu.cpp" />
+    <ClCompile Include="Classes\NetPoint.cpp" />
     <ClCompile Include="Classes\Shader.cpp" />
     <ClCompile Include="Classes\Texture.cpp" />
     <ClCompile Include="gald.c" />
@@ -209,7 +209,6 @@
     <None Include="Shaders\Objects\Vertex\Turel.glsl" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Classes\BrokenLine.h" />
     <ClInclude Include="Classes\Buffer.h" />
     <ClInclude Include="Classes\Camera.h" />
     <ClInclude Include="Classes\Color.h" />
@@ -221,6 +220,7 @@
     <ClInclude Include="Classes\Mat.h" />
     <ClInclude Include="Classes\Math.h" />
     <ClInclude Include="Classes\Menu.h" />
+    <ClInclude Include="Classes\NetPoint.h" />
     <ClInclude Include="Classes\Shader.h" />
     <ClInclude Include="Classes\Texture.h" />
     <ClInclude Include="Constants\AllConstants.h" />

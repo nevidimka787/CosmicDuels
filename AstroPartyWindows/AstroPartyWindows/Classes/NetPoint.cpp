@@ -2,6 +2,7 @@
 
 #pragma warning (disable : 6011)
 #pragma warning (disable : 6308)
+#pragma warning (disable : 6386)
 #pragma warning (disable : 28182)
 
 NetPoint::NetPoint()
@@ -358,9 +359,38 @@ void NetPoint::RemovePoint(NetPoint* point_p)
 	}
 }
 
+void NetPoint::UpdateConnections()
+{
+	for (id_t point = 0, point_p = 0; point < connected_points_count; point_p++)
+	{
+		if (connected_points_ps[point_p] != nullptr)
+		{
+			if (connected_points_ps[point_p]->exist_time == 0)
+			{
+				RemovePoint(point_p);
+			}
+			else
+			{
+				point++;
+			}
+		}
+	}
+}
+
 void NetPoint::operator=(NetPoint net_point)
 {
+	exist = net_point.exist;
+	exist_time = net_point.exist_time;
+	connected_points_array_length = net_point.connected_points_array_length;
+	connected_points_count = net_point.connected_points_count;
+	connected_points_ps = (NetPoint**)realloc(connected_points_ps, sizeof(NetPoint*) * net_point.connected_points_array_length);
+	position = net_point.position;
+	velocity = net_point.velocity;
 
+	for (id_t point = 0; point < connected_points_array_length; point++)
+	{
+		connected_points_ps[point] = net_point.connected_points_ps[point];
+	}
 }
 
 NetPoint::~NetPoint()

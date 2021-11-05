@@ -142,8 +142,27 @@ void Game::ShipShoot_LaserLoop(Ship* ship)
 
 void Game::ShipShoot_LaserBomb(Ship* ship)
 {
-	std::cout << "Laser Bomb" << std::endl;
-	ShipShoot_NoBonus(ship);
+	Vec2F direction = ship->GetDirection();
+	Vec2F position = ship->GetPosition();
+	Vec2F velocity = ship->GetVelocity();
+	bombs_array_mtx.lock();
+	for (GameTypes::entities_count_t bomb = 0; bomb < SHIP_SUPER_BONUS__BOMBS_IN_LASER; bomb++)
+	{
+		AddEntity(
+			Bomb(
+				position,
+				velocity + direction * SHIP_SUPER_BONUS__BOMBS_LASER_VELOCITY * (float)(SHIP_SUPER_BONUS__BOMBS_IN_LASER / 2 + bomb) / 1.5f / (float)SHIP_SUPER_BONUS__BOMBS_IN_LASER,
+				ship->GetTeamNumber(),
+				ship->GetTeamNumber(),
+				BOMB_DEFAULT_BOOM_DELLAY + bomb,
+				0.0f,
+				0.0f,
+				DEFAULT_FORCE_COLLISION_COEFFICIENT,
+				BULLET_DEFAULT_RESISTANCE_AIR_COEFFICIENT,
+				SHIP_SUPER_BONUS__BOMBS_LASER_RADIUS,
+				BOMB_ACTIVE));
+	}
+	bombs_array_mtx.unlock();
 	ships_can_shoot_flags[ship->GetPlayerNumber()] += GAME_ADD_DELLAY_BONUS_USE + GAME_ADD_DELLAY_COMBO_USE;
 }
 
@@ -706,14 +725,14 @@ void Game::BombsSpawnedByBulletsAnigilation()
 									Bomb(
 										&bomb_position,
 										&bomb_velocity,
-										temp__bullet1_p->GetPlayerMasterTeamNumber(),
-										temp__bullet2_p->GetPlayerMasterTeamNumber(),
+										temp__bullet1_p->GetHostTeamNumber(),
+										temp__bullet2_p->GetHostTeamNumber(),
 										BOMB_BY_BULLET__BOOM_PERIOD,
 										0.0f,
 										0.0f,
 										DEFAULT_FORCE_COLLISION_COEFFICIENT,
 										BOMB_DEFAULT_RESISTANCE_AIR_COEFFICIENT,
-										BOMB_BOOM_RADIUS / 3.0f,
+										BOMB_DEFAULT_RADIUS * BOMB_BOOM_RADIUS_COEF / 3.0f,
 										BOMB_BOOM,
 										true));
 								RemoveEntity(temp__bullet1_p);
@@ -1976,7 +1995,7 @@ void Game::ShipsDestroedByBombsOrActivateBombs()
 						pilots_array_mtx.unlock();
 						goto end_of_ship_cycle;
 					}
-					else if (!temp__bomb_p->IsActive() && !temp__bomb_p->CreatedByTeam(temp__ship_p) && temp__ship_p->GetDistance(temp__bomb_p) < BOMB_ACTIVATION_RADIUS)
+					else if (!temp__bomb_p->IsActive() && !temp__bomb_p->CreatedByTeam(temp__ship_p) && temp__ship_p->GetDistance(temp__bomb_p) < temp__bomb_p->radius * BOMB_ACTIVATION_RADIUS_COEF)
 					{
 						temp__bomb_p->Activate();
 					}

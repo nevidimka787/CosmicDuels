@@ -500,6 +500,17 @@ public:
 	KillerEntity();
 	KillerEntity(const KillerEntity& killer_entity);
 	KillerEntity(
+		Vec2F position,
+		Vec2F velocity,
+		float radius,
+		GameTypes::players_count_t player_master_number,
+		GameTypes::players_count_t player_master_team_number,
+		float angle = 0.0f,
+		float angular_velocity = 0.0f,
+		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
+		bool exist = true);
+	KillerEntity(
 		Vec2F* position,
 		Vec2F* velocity,
 		float radius,
@@ -994,6 +1005,19 @@ protected:
 public:
 	Bomb();
 	Bomb(const Bomb& bomb);
+	Bomb(
+		Vec2F position,
+		Vec2F velocity,
+		GameTypes::players_count_t master1_team_number,
+		GameTypes::players_count_t master2_team_number,
+		GameTypes::tic_t animation_tic = BOMB_DEFAULT_BOOM_DELLAY,
+		float angle = 0.0f,
+		float angular_velocity = 0.0f,
+		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_resistance_air_coefficient = BOMB_DEFAULT_RESISTANCE_AIR_COEFFICIENT,
+		float radius = BOMB_DEFAULT_RADIUS,
+		EngineTypes::Bomb::status_t status = BOMB_INACTIVE,
+		bool exist = true);
 	Bomb(
 		Vec2F* position,
 		Vec2F* velocity,
