@@ -345,7 +345,7 @@ void Button::TakeData(Button* button)
 	size = button->size;
 	text_size = button->text_size;
 	id = button->id;
-	SetText(button->text, button->text_length);
+	//SetText(button->text, button->text_length);
 }
 
 void Button::operator=(Button button)
@@ -356,7 +356,7 @@ void Button::operator=(Button button)
 	status = button.status;
 	text_size = button.text_size;
 
-	SetText(button.text, button.text_length);
+	//SetText(button.text, button.text_length);
 }
 
 Button::~Button()

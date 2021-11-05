@@ -147,6 +147,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Classes\BrokenLine.cpp" />
     <ClCompile Include="Classes\Buffer.cpp" />
     <ClCompile Include="Classes\Camera.cpp" />
     <ClCompile Include="Classes\Color.cpp" />
@@ -208,6 +209,7 @@
     <None Include="Shaders\Objects\Vertex\Turel.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Classes\BrokenLine.h" />
     <ClInclude Include="Classes\Buffer.h" />
     <ClInclude Include="Classes\Camera.h" />
     <ClInclude Include="Classes\Color.h" />

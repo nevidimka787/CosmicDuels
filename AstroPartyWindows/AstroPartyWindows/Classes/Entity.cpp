@@ -584,7 +584,7 @@ bool DynamicEntity::Collision(Rectangle* rectangle)
 	if ((distance1 = side.Distance(&position, &nearest_position1)) < radius || GetTreck().IsIntersection(&side))
 	{
 		collision_direction = nearest_position1 - position;
-		velocity -= collision_direction.ProjectSign(&velocity) / 1.0f;
+		velocity -= collision_direction.ProjectSign(&velocity);
 		force -= collision_direction * (force_collision_coeffisient / distance1 * radius);
 		velocity += Vec2F(0.0f, 1.0f).ProjectSign(rectangle_velocity - velocity);
 
@@ -595,7 +595,7 @@ bool DynamicEntity::Collision(Rectangle* rectangle)
 	if ((distance1 = side.Distance(&position, &nearest_position1)) < radius || GetTreck().IsIntersection(&side))
 	{
 		collision_direction = nearest_position1 - position;
-		velocity -= collision_direction.ProjectSign(&velocity) / 1.0f;
+		velocity -= collision_direction.ProjectSign(&velocity);
 		force -= collision_direction * (force_collision_coeffisient / distance1 * radius);
 		velocity += Vec2F(0.0f, -1.0f).ProjectSign(rectangle_velocity - velocity);
 
@@ -606,9 +606,9 @@ bool DynamicEntity::Collision(Rectangle* rectangle)
 	if ((distance1 = side.Distance(&position, &nearest_position1)) < radius || GetTreck().IsIntersection(&side))
 	{
 		collision_direction = nearest_position1 - position;
-		velocity -= collision_direction.ProjectSign(&velocity) / 1.0f;
+		velocity -= collision_direction.ProjectSign(&velocity);
 		force -= collision_direction * (force_collision_coeffisient / distance1 * radius);
-		velocity += Vec2F(1.0f, 0.0f).ProjectSign(rectangle_velocity - velocity) / 2.0f;
+		velocity += Vec2F(1.0f, 0.0f).ProjectSign(rectangle_velocity - velocity);
 
 		collision = true;
 	}
@@ -617,7 +617,7 @@ bool DynamicEntity::Collision(Rectangle* rectangle)
 	if ((distance1 = side.Distance(&position, &nearest_position1)) < radius || GetTreck().IsIntersection(&side))
 	{
 		collision_direction = nearest_position1 - position;
-		velocity -= collision_direction.ProjectSign(&velocity) / 1.0f;
+		velocity -= collision_direction.ProjectSign(&velocity);
 		force -= collision_direction * (force_collision_coeffisient / distance1 * radius);
 		velocity += Vec2F(-1.0f, 0.0f).ProjectSign(rectangle_velocity - velocity);
 

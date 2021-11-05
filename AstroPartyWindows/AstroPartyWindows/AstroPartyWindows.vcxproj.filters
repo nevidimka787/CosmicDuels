@@ -97,6 +97,9 @@
     <ClCompile Include="SubClasses\GameMap.cpp">
       <Filter>Classes\Файлы ресурсов</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\BrokenLine.cpp">
+      <Filter>Classes\Файлы ресурсов</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Objects\Fragment\Asteroid.glsl">
@@ -291,6 +294,9 @@
       <Filter>Classes\Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Logs.h">
+      <Filter>Classes\Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\BrokenLine.h">
       <Filter>Classes\Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

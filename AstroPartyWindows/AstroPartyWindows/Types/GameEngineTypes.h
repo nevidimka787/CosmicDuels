@@ -81,6 +81,11 @@ namespace EngineTypes
 		typedef uint8_t buttons_count_t;
 	}
 
+	namespace NetPoint
+	{
+		typedef uint16_t id_t;
+	}
+
 	namespace Particle
 	{
 		typedef uint8_t type_t;

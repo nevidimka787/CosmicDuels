@@ -493,8 +493,8 @@ public:
 class KillerEntity : public DynamicEntity
 {
 protected:
-	GameTypes::players_count_t player_master_number;
-	GameTypes::players_count_t player_master_team_number;
+	GameTypes::players_count_t host_number;
+	GameTypes::players_count_t host_team_number;
 public:
 
 	KillerEntity();
@@ -512,8 +512,8 @@ public:
 		bool exist = true);
 	bool CreatedBy(ControledEntity* controled_entity);
 	bool CreatedByTeam(ControledEntity* controled_entity);
-	GameTypes::players_count_t GetPlayerMasterNumber();
-	GameTypes::players_count_t GetPlayerMasterTeamNumber();
+	GameTypes::players_count_t GetHostNumber();
+	GameTypes::players_count_t GetHostTeamNumber();
 	bool SameTeam(KillerEntity* killer_entity);
 	void Set(KillerEntity* killer_entity);
 	void Set(

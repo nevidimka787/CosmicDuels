@@ -3,6 +3,10 @@
 
 #pragma warning(disable : 26495)
 
+inline void SetStatusToButton(Menu* menu, EngineTypes::Button::id_t button_id, EngineTypes::Button::status_t status_mask, bool value);
+inline void SetTextToButton(Menu* menu, EngineTypes::Button::id_t button_id, const char* text, EngineTypes::Button::text_size_t text_size = 0);
+inline bool MinimalCountTeamsSelected(GameTypes::entities_count_t* teams_array, GameTypes::players_count_t array_length, GameTypes::players_count_t players_count);
+
 MenuFunctions::MenuFunctions()
 {
 	ships_select_buttons = new GameTypes::players_count_t[GAME_PLAYERS_MAX_COUNT];
@@ -156,6 +160,23 @@ inline void SetStatusToButton(Menu* menu, EngineTypes::Button::id_t button_id, E
 		if (menu->current_buttons[i].GetId() == button_id)
 		{
 			menu->current_buttons[i].SetStatus(status_mask, value);
+			return;
+		}
+	}
+}
+
+inline void SetTextToButton(Menu* menu, EngineTypes::Button::id_t button_id, const char* text, EngineTypes::Button::text_size_t text_size)
+{
+	for (EngineTypes::Menu::buttons_count_t i = 0; i < menu->GetButtonsCount(); i++)
+	{
+		if (menu->current_buttons[i].GetId() == button_id)
+		{
+			menu->current_buttons[i].SetText(text);
+			std::cout << "Set text: " << text << std::endl;
+			if (text_size)
+			{
+				menu->current_buttons[i].text_size = text_size;
+			}
 			return;
 		}
 	}
@@ -384,7 +405,7 @@ void MenuFunctions::ShipsSelectMenuFunction(Vec2F* clk_pos, uint8_t clk_status)
 		if (clk_status == OPEN_GL_REALISATION_BUTTON_LOST)
 		{
 			current_button->SetStatus(BUTTON_STATUS_SELECT, false);
-			goto CycleEnd;
+			goto end_of_button_cycle;
 		}
 		if (current_button->GetStatus(BUTTON_STATUS_ACTIVE) && current_button->HavePoint(clk_pos))
 		{
@@ -413,49 +434,105 @@ void MenuFunctions::ShipsSelectMenuFunction(Vec2F* clk_pos, uint8_t clk_status)
 					case BUTTON_STATUS_FALSE:
 						current_button->SetOnlyCustomStatus(BUTTON_STATUS_CUSTOM_RED | BUTTON_STATUS_ACTIVE);
 						SelectShip(id, SHIPS_SELECT_BUTTONS_TEAM_RED);
-						//game_p__ships_select_menu->UpdateDefaultButtons();
+						if (MinimalCountTeamsSelected(*game_p__teams, GAME_PLAYERS_MAX_COUNT, GAME_PLAYERS_MAX_COUNT))
+						{
+							SetStatusToButton(game_p__ships_select_menu, BUTTON_ID__START_GAME, BUTTON_STATUS_ACTIVE, true);
+							SetTextToButton(game_p__ships_select_menu, BUTTON_ID__START_GAME, "Start game");
+						}
+						else
+						{
+							SetStatusToButton(game_p__ships_select_menu, BUTTON_ID__START_GAME, BUTTON_STATUS_ACTIVE, false);
+							SetTextToButton(game_p__ships_select_menu, BUTTON_ID__START_GAME, "Select teams");
+						}
 						return;
 					case BUTTON_STATUS_CUSTOM_RED:
 						SelectShip(id, SHIPS_SELECT_BUTTONS_TEAM_GREEN);
 						current_button->SetOnlyCustomStatus(BUTTON_STATUS_CUSTOM_GREEN | BUTTON_STATUS_ACTIVE);
-						//game_p__ships_select_menu->UpdateDefaultButtons();
+						if (MinimalCountTeamsSelected(*game_p__teams, GAME_PLAYERS_MAX_COUNT, GAME_PLAYERS_MAX_COUNT))
+						{
+							SetStatusToButton(game_p__ships_select_menu, BUTTON_ID__START_GAME, BUTTON_STATUS_ACTIVE, true);
+							SetTextToButton(game_p__ships_select_menu, BUTTON_ID__START_GAME, "Start game");
+						}
+						else
+						{
+							SetStatusToButton(game_p__ships_select_menu, BUTTON_ID__START_GAME, BUTTON_STATUS_ACTIVE, false);
+							SetTextToButton(game_p__ships_select_menu, BUTTON_ID__START_GAME, "Select teams");
+						}
 						return;
 					case BUTTON_STATUS_CUSTOM_GREEN:
 						SelectShip(id, SHIPS_SELECT_BUTTONS_TEAM_BLUE);
 						current_button->SetOnlyCustomStatus(BUTTON_STATUS_CUSTOM_BLUE | BUTTON_STATUS_ACTIVE);
-						//game_p__ships_select_menu->UpdateDefaultButtons();
+						if (MinimalCountTeamsSelected(*game_p__teams, GAME_PLAYERS_MAX_COUNT, GAME_PLAYERS_MAX_COUNT))
+						{
+							SetStatusToButton(game_p__ships_select_menu, BUTTON_ID__START_GAME, BUTTON_STATUS_ACTIVE, true);
+							SetTextToButton(game_p__ships_select_menu, BUTTON_ID__START_GAME, "Start game");
+						}
 						return;
 					case BUTTON_STATUS_CUSTOM_BLUE:
 						SelectShip(id, SHIPS_SELECT_BUTTONS_TEAM_PURPURE);
 						current_button->SetOnlyCustomStatus(BUTTON_STATUS_CUSTOM_PURPURE | BUTTON_STATUS_ACTIVE);
-						//game_p__ships_select_menu->UpdateDefaultButtons();
+						if (MinimalCountTeamsSelected(*game_p__teams, GAME_PLAYERS_MAX_COUNT, GAME_PLAYERS_MAX_COUNT))
+						{
+							SetStatusToButton(game_p__ships_select_menu, BUTTON_ID__START_GAME, BUTTON_STATUS_ACTIVE, true);
+							SetTextToButton(game_p__ships_select_menu, BUTTON_ID__START_GAME, "Start game");
+						}
+						else
+						{
+							SetStatusToButton(game_p__ships_select_menu, BUTTON_ID__START_GAME, BUTTON_STATUS_ACTIVE, false);
+							SetTextToButton(game_p__ships_select_menu, BUTTON_ID__START_GAME, "Select teams");
+						}
 						return;
 					case BUTTON_STATUS_CUSTOM_PURPURE:
 					default:
 						SelectShip(id, SHIPS_SELECT_BUTTONS_NO_TEAM);
 						current_button->SetOnlyCustomStatus(BUTTON_STATUS_FALSE | BUTTON_STATUS_ACTIVE);
-						//game_p__ships_select_menu->UpdateDefaultButtons();
+						if (MinimalCountTeamsSelected(*game_p__teams, GAME_PLAYERS_MAX_COUNT, GAME_PLAYERS_MAX_COUNT))
+						{
+							SetStatusToButton(game_p__ships_select_menu, BUTTON_ID__START_GAME, BUTTON_STATUS_ACTIVE, true);
+							SetTextToButton(game_p__ships_select_menu, BUTTON_ID__START_GAME, "Start game");
+						}
+						else
+						{
+							SetStatusToButton(game_p__ships_select_menu, BUTTON_ID__START_GAME, BUTTON_STATUS_ACTIVE, false);
+							SetTextToButton(game_p__ships_select_menu, BUTTON_ID__START_GAME, "Select teams");
+						}
 						return;
 					}
 				case BUTTON_ID__START_GAME:
-					for (GameTypes::players_count_t i = 0; i < GAME_PLAYERS_MAX_COUNT; i++)
+					if (MinimalCountTeamsSelected(*game_p__teams, GAME_PLAYERS_MAX_COUNT, GAME_PLAYERS_MAX_COUNT))
 					{
-						if  ((*game_p__teams)[i] != SHIPS_SELECT_BUTTONS_NO_TEAM)
-						{
-							//std::cout << (*game_p__teams)[i] << std::endl;
-							StartMatch();
-							return;
-						}
+						StartMatch();
 					}
-					SelectShip(BUTTON_ID__SELECT_SHIP_1, SHIPS_SELECT_BUTTONS_TEAM_RED);
-					game_p__ships_select_menu->current_buttons[0].SetOnlyCustomStatus(BUTTON_STATUS_CUSTOM_RED);
 				default:
 					return;
 				}
 			}
 		}
-	CycleEnd:;
+	end_of_button_cycle:;
 	}
+}
+
+inline bool MinimalCountTeamsSelected(GameTypes::entities_count_t* teams_array, GameTypes::players_count_t array_length, GameTypes::players_count_t players_count)
+{
+	bool* flags_arr = new bool[players_count];
+	uint8_t found_teams = 0u;
+	for (GameTypes::players_count_t i = 0; i < players_count; i++)
+	{
+		flags_arr[i] = false;
+	}
+	for (GameTypes::players_count_t i = 0; i < array_length; i++)
+	{
+		if (teams_array[i] != SHIPS_SELECT_BUTTONS_NO_TEAM)
+		{
+			flags_arr[teams_array[i] - 1] = true;
+		}
+	}
+	for (GameTypes::players_count_t i = 0; i < players_count; i++)
+	{
+		found_teams += (flags_arr[i]) ? 1u : 0u;
+	}
+	delete[] flags_arr;
+	return found_teams >= 2u;
 }
 
 void MenuFunctions::MapPullSelectMenuFunction(Vec2F* clk_pos, uint8_t clk_status)
