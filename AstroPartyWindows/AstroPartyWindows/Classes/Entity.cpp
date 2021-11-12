@@ -896,6 +896,11 @@ bool DynamicEntity::IsCollision(Polygon* polygon)
 	return false;
 }
 
+bool DynamicEntity::IsCollision(Portal* portal)
+{
+	return Segment(position, -velocity).Distance(portal->GetPosition()) < portal->radius + radius;
+}
+
 bool DynamicEntity::IsCollision(Map* map)
 {
 	void* element;
@@ -1037,7 +1042,13 @@ StaticEntity::StaticEntity(const StaticEntity& static_entity) :
 {
 }
 
-StaticEntity::StaticEntity(Vec2F* position, float radius, float angle, bool exist) :
+StaticEntity::StaticEntity(Vec2F position, float radius, float angle, bool exist) :
+	Entity(position, radius, angle, exist),
+	last_position(position)
+{
+}
+
+StaticEntity::StaticEntity(const Vec2F* position, float radius, float angle, bool exist) :
 	Entity(position, radius, angle, exist),
 	last_position(*position)
 {
@@ -3541,6 +3552,109 @@ GravGen::~GravGen()
 
 
 
+Portal::Portal()
+	:
+	StaticEntity(),
+	second_portal_p(nullptr)
+{
+}
+
+Portal::Portal(const Portal& portal)
+	:
+	StaticEntity(portal.position, portal.radius, portal.angle, portal.exist),
+	second_portal_p(second_portal_p)
+{
+}
+
+Portal::Portal(
+	Vec2F position,
+	Portal* second_portal_p,
+	float radius,
+	float angle,
+	bool exist)
+	:
+	StaticEntity(position, radius, angle, exist),
+	second_portal_p(second_portal_p)
+{
+}
+
+Portal::Portal(
+	const Vec2F* position,
+	Portal* second_portal_p,
+	float radius,
+	float angle,
+	bool exist)
+	:
+	StaticEntity(position, radius, angle, exist),
+	second_portal_p(second_portal_p)
+{
+
+}
+
+void Portal::Connect(Portal* second_portal_p)
+{
+	this->second_portal_p = second_portal_p;
+}
+
+Portal* Portal::GetSecondPortalPointer()
+{
+	return second_portal_p;
+}
+
+bool Portal::IsConnected()
+{
+	return second_portal_p != nullptr;
+}
+
+void Portal::Set(
+	Vec2F position,
+	Portal* second_portal_p,
+	float radius,
+	float angle,
+	bool exist)
+{
+	this->angle = angle;
+	UpdateDirection();
+	this->exist = exist;
+	this->last_position = last_position;
+	this->position = position;
+	this->radius = radius;
+	this->second_portal_p = second_portal_p;
+}
+
+void Portal::Set(
+	const Vec2F* position,
+	Portal* second_portal_p,
+	float radius,
+	float angle,
+	bool exist)
+{
+	this->angle = angle;
+	UpdateDirection();
+	this->exist = exist;
+	this->last_position = last_position;
+	this->position = *position;
+	this->radius = radius;
+	this->second_portal_p = second_portal_p;
+}
+
+void Portal::operator=(Portal portal)
+{
+	angle = portal.angle;
+	direction = portal.direction;
+	exist = portal.exist;
+	last_position = portal.last_position;
+	position = portal.position;
+	radius = portal.radius;
+	second_portal_p = portal.second_portal_p;
+}
+
+Portal::~Portal()
+{
+}
+
+
+
 MegaLaser::MegaLaser() :
 	AggressiveEntity(),
 	active(false),
@@ -4021,7 +4135,7 @@ Knife::Knife(const Knife& knife) :
 }
 
 Knife::Knife(ControledEntity* host, Segment* local_segment, EngineTypes::Knife::knife_health_t health, bool exist) :
-	SupportEntity(host, &local_segment->point, local_segment->vector.Length(), local_segment->vector.AbsoluteAngle(), exist),
+	SupportEntity(host, &local_segment->point, local_segment->vector.Length(), local_segment->vector.AbsoluteAngleClockwise(), exist),
 	health(health)
 {
 }
@@ -4175,7 +4289,7 @@ Knife::~Knife()
 Bomb::Bomb() :
 	KillerEntity(),
 	animation_tic(BOMB_DEFAULT_BOOM_DELLAY),
-	status(BOMB_INACTIVE)
+	status(BOMB_STATUS_INACTIVE)
 {
 }
 
@@ -4202,20 +4316,82 @@ Bomb::Bomb(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t master1_
 
 void Bomb::Activate()
 {
-	status |= BOMB_ACTIVE;
+	status |= BOMB_STATUS_ACTIVE;
 }
 
 void Bomb::Boom()
 {
 	animation_tic = BOMB_BOOM_TIME;
-	status &= BOMB_ALL - BOMB_ACTIVE;
+	status &= BOMB_STATUS_ALL - BOMB_STATUS_ACTIVE;
 	radius *= BOMB_BOOM_RADIUS_COEF;
-	status |= BOMB_BOOM;
+	status |= BOMB_STATUS_BOOM;
 }
 
 bool Bomb::CanRemove()
 {
-	return status & BOMB_CAN_REMOVE;
+	return status & BOMB_STATUS_CAN_REMOVE;
+}
+
+bool Bomb::Collision(Map* map)
+{
+	void* map_element;
+
+	if (status & BOMB_STATUS_BOOM)
+	{
+		for (EngineTypes::Map::array_length_t i = 0; i < map->cyrcles_array_length; i++)
+		{
+			map_element = (void*)map->CyrclePointer(i);
+			if (((Cyrcle*)map_element)->exist && !(((Cyrcle*)map_element)->Prorerties() & MAP_PROPERTY_UNBREACABLE) && DynamicEntity::Collision((Cyrcle*)map_element))
+			{
+				((Cyrcle*)map_element)->exist = false;
+			}
+		}
+		for (EngineTypes::Map::array_length_t i = 0; i < map->polygons_array_length; i++)
+		{
+			map_element = (void*)map->PolygonPointer(i);
+			if (((Polygon*)map_element)->exist && !(((Polygon*)map_element)->Prorerties() & MAP_PROPERTY_UNBREACABLE) && DynamicEntity::Collision((Polygon*)map_element))
+			{
+				((Polygon*)map_element)->exist = false;
+			}
+		}
+		for (EngineTypes::Map::array_length_t i = 0; i < map->rectangles_array_length; i++)
+		{
+			map_element = (void*)map->RectanglePointer(i);
+			if (((Rectangle*)map_element)->exist && !(((Rectangle*)map_element)->Prorerties() & MAP_PROPERTY_UNBREACABLE) && DynamicEntity::Collision((Rectangle*)map_element))
+			{
+				((Rectangle*)map_element)->exist = false;
+			}
+		}
+		return false;
+	}
+
+	bool collision = false;
+
+	for (EngineTypes::Map::array_length_t i = 0; i < map->cyrcles_array_length; i++)
+	{
+		map_element = (void*)map->CyrclePointer(i);
+		if (((Cyrcle*)map_element)->exist)
+		{
+			collision |= DynamicEntity::Collision((Cyrcle*)map_element);
+		}
+	}
+	for (EngineTypes::Map::array_length_t i = 0; i < map->polygons_array_length; i++)
+	{
+		map_element = (void*)map->PolygonPointer(i);
+		if (((Polygon*)map_element)->exist)
+		{
+			collision |= DynamicEntity::Collision((Polygon*)map_element);
+		}
+	}
+	for (EngineTypes::Map::array_length_t i = 0; i < map->rectangles_array_length; i++)
+	{
+		map_element = (void*)map->RectanglePointer(i);
+		if (((Rectangle*)map_element)->exist)
+		{
+			collision |= DynamicEntity::Collision((Rectangle*)map_element);
+		}
+	}
+	return collision;
 }
 
 GameTypes::tic_t Bomb::GetAnimationTic()
@@ -4225,12 +4401,12 @@ GameTypes::tic_t Bomb::GetAnimationTic()
 
 bool Bomb::IsActive()
 {
-	return status & BOMB_ACTIVE;
+	return status & BOMB_STATUS_ACTIVE;
 }
 
 bool Bomb::IsBoom()
 {
-	return status & BOMB_BOOM;
+	return status & BOMB_STATUS_BOOM;
 }
 
 bool Bomb::CreatedByAggressiveTeam()
@@ -4312,19 +4488,19 @@ void Bomb::Set(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t paye
 
 void Bomb::Update()
 {
-	if (status & BOMB_CAN_REMOVE)
+	if (status & BOMB_STATUS_CAN_REMOVE)
 	{
 		return;
 	}
 	DynamicEntity::Update();
-	if (status && (BOMB_ACTIVE | BOMB_BOOM))
+	if (status && (BOMB_STATUS_ACTIVE | BOMB_STATUS_BOOM))
 	{
 		animation_tic--;
 		if (animation_tic == 0)
 		{
-			if (status & BOMB_BOOM)
+			if (status & BOMB_STATUS_BOOM)
 			{
-				status |= BOMB_CAN_REMOVE;
+				status |= BOMB_STATUS_CAN_REMOVE;
 				return;
 			}
 			Boom();

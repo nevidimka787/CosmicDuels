@@ -95,6 +95,8 @@ public:
 	GameTypes::entities_count_t dynamic_particles_count;
 	//Count of particles on the map.
 	GameTypes::entities_count_t particles_count;
+	//Count of portals on the map.
+	GameTypes::map_elements_count_t portals_count;
 
 	//Bonus in all ships at the start of the game.
 	EngineTypes::Bonus::inventory_t start_bonus;
@@ -167,6 +169,8 @@ public:
 	Turel* turels;
 	//Array of lasers of the map.
 	MegaLaser* mega_lasers;
+	//Array of porttals
+	Portal* portals;
 
 	Camera camera;
 
@@ -190,6 +194,7 @@ public:
 	std::shared_mutex mega_lasers_array_mtx;
 	std::shared_mutex particles_array_mtx;
 	std::shared_mutex pilots_array_mtx;
+	std::shared_mutex portals_array_mtx;
 	std::shared_mutex ships_array_mtx;
 	std::shared_mutex turels_array_mtx;
 
@@ -849,6 +854,11 @@ public:
 	void UpdateParticlesPhase2();
 
 	//Update the position and velocity of entity.
+	//mtx: portal
+	//t = n
+	void UpdatePortalsPhase2();
+
+	//Update the position and velocity of entity.
 	//mtx: pilot
 	//t = n
 	void UpdatePilotsPhase2();
@@ -874,144 +884,6 @@ public:
 	* In second phase entities not influence to other entities,
 	they convert their force and angular velocityes values
 	to new angle, velocity and position.
-	*/
-
-	/*
-	Updates functions list:
-
-	Firts phase functions:
-
-	+	-> position seted
-	++	-> position seted and function paste
-	#	-> functions sorted on position
-
-		FUNCTION								THREAD
-											
-		BombsChainReaction						0#
-
-		BombsDestroyAsteroids					1#
-
-		BombsDestroyBonuses						1#
-
-		BombsCollisionsWithBullets				2#
-
-		BombsSpawnedByBulletsAnigilation		2#
-
-		BombsDestroyKnifes						3#
-
-		BombsDestroyTurels						3#
-
-		BulletsDestroyAsteroids					0#
-
-		BulletsDestroedByMap					1#
-
-		CameraFocusesOnPlayers					2#
-
-		KnifesDestroyAsteroids					0#
-		
-		KnifesDestroyBullets					1#
-		
-		KnifesDestroyMap						2#
-		
-		KnifesDestroyTurels						3#
-		
-		LasersCheckRemove						0#
-		
-		LasersDestroyAsteroids					2#
-		
-		LasersDestroyBonuses					0#
-		
-		LasersDetonateBombs						1#
-		
-		LasersDestroyBullets					2#
-		
-		LasersDestroyKnifes						1#
-		
-		LasersDestroyMap						3#
-		
-		LasersDestroyTurels						3#
-		
-		MegaLasersDestroyAsteroids				0#
-		
-		MegaLasersDestroyBonuses				0#
-		
-		MegaLasersDetonateBombs					2#
-		
-		MegaLasersDestroyBullets				1#
-		
-		MegaLasersDestroyKnifes					3#
-		
-		MegaLasersDestroyMap					2#
-		
-		MegaLasersDestroyTurels					3#
-		
-		PilotsKilledByBombs						0#
-		
-		PilotKilledByBullet						1#
-		
-		PilotsCheckInput						2#
-		
-		PilotsKilledByKnifes					2#
-		
-		PilotsKilledByLasers					3#
-		
-		PilotsKilledByMegaLaser					3#
-
-		PilotsRespawnAuto						2#
-		
-		ShipsInfluenceToBonuses					0#
-		
-		ShipsCheckInput							1#
-		
-		ShipsShoot								1#
-		
-		ShipsRespawnOrDestroyPilots				0#
-
-		ShipsCreateExaust						?
-		
-		ShipsDestroedByBombsOrActivateBombs		0#
-		
-		ShipsDestroedByBullets					2#
-		
-		ShipsDestroedByKnifes					2#
-		
-		ShipsDestroedByLasers					3#
-		
-		ShipsDestroedByMegaLasers				3#
-
-		TurelsShoot								2#
-
-	Second phase functions:
-
-		UpdateMapPhase2				0#
-
-		UpdateAsteroidsPhase2		3#
-		
-		UpdateBombsPhase2			3#
-		
-		UpdateBonusesPhase2			1#
-		
-		UpdateBulletsPhase2			1#
-
-		UpdateDecelerAreasPhase2	0#`
-
-		UpdateDynamicParticlesPhase2 3#
-
-		UpdateGravGens				0#
-		
-		UpdateKnifesPhase2			2#
-		
-		UpdateLasersPhase2			2#
-		
-		UpdateMegaLasersPhase2		0#
-		
-		UpdateParticlesPhase2		2#
-		
-		UpdatePilotsPhase2			1#
-		
-		UpdateShipsPhase2			2#
-
-		UpdateTurelsPhase2			0#
 	*/
 
 	/*

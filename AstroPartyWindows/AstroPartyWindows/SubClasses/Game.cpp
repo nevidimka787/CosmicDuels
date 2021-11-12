@@ -368,10 +368,7 @@ void Game::DynamicEntitiesCollisions(Map* map, Bomb* entities, GameTypes::entiti
 	{
 		if (entities[i].exist)
 		{
-			if (!entities[i].IsBoom())
-			{
-				entities[i].Collision(map);
-			}
+			entities[i].Collision(map);
 			found++;
 		}
 	}
@@ -856,8 +853,7 @@ void Game::InitLevel()
 					nullptr,						//heatbox vertexs array
 					0,								//heatbox vertexs count
 					ships_angles[player],			//angle
-					//start_bonus));				//bonus inventory
-					BONUS_LASER + BONUS_BOMB));		//bonus inventory
+					start_bonus));					//bonus inventory
 
 			players_count++;
 			IncrementPlayersCountInTeam(teams[player]);

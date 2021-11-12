@@ -156,7 +156,6 @@
     <ClCompile Include="Classes\Map.cpp" />
     <ClCompile Include="Classes\Mat.cpp" />
     <ClCompile Include="Classes\Menu.cpp" />
-    <ClCompile Include="Classes\NetPoint.cpp" />
     <ClCompile Include="Classes\Shader.cpp" />
     <ClCompile Include="Classes\Texture.cpp" />
     <ClCompile Include="gald.c" />
@@ -220,7 +219,6 @@
     <ClInclude Include="Classes\Mat.h" />
     <ClInclude Include="Classes\Math.h" />
     <ClInclude Include="Classes\Menu.h" />
-    <ClInclude Include="Classes\NetPoint.h" />
     <ClInclude Include="Classes\Shader.h" />
     <ClInclude Include="Classes\Texture.h" />
     <ClInclude Include="Constants\AllConstants.h" />

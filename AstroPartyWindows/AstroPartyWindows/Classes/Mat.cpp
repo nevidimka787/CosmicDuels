@@ -508,6 +508,11 @@ float Vec2F::AbsoluteAngle() const
 	return (atan2f(-y, x));
 }
 
+float Vec2F::AbsoluteAngleClockwise() const
+{
+	return (atan2f(y, x));
+}
+
 float Vec2F::Distance(Vec2F target_vector) const
 {
 	return (*this - target_vector).Length();

@@ -160,7 +160,7 @@ void Game::ShipShoot_LaserBomb(Ship* ship)
 				DEFAULT_FORCE_COLLISION_COEFFICIENT,
 				BULLET_DEFAULT_RESISTANCE_AIR_COEFFICIENT,
 				SHIP_SUPER_BONUS__BOMBS_LASER_RADIUS,
-				BOMB_ACTIVE));
+				BOMB_STATUS_ACTIVE));
 	}
 	bombs_array_mtx.unlock();
 	ships_can_shoot_flags[ship->GetPlayerNumber()] += GAME_ADD_DELLAY_BONUS_USE + GAME_ADD_DELLAY_COMBO_USE;
@@ -192,15 +192,39 @@ void Game::ShipShoot_LaserKnife(Ship* ship)
 
 void Game::ShipShoot_LoopKnife(Ship* ship)
 {
-	std::cout << "Loop Knife" << std::endl;
-	ShipShoot_NoBonus(ship);
+	Segment local_segment;
+	for (GameTypes::entities_count_t knife = 0; knife < SHIP_SUPER_BONUS__KNIFES_IN_LOOP / 2; knife++)
+	{
+		local_segment.Set(
+			Vec2F(0.5f, 0.0f).Rotate(((float)knife + 0.5f) / (float)SHIP_SUPER_BONUS__KNIFES_IN_LOOP * M_PI * 2.0f).Scale(Vec2F(1.0f, sqrtf(2.0f))),
+			Vec2F(0.5f, 0.0f).Rotate(((float)knife + 1.5f) / (float)SHIP_SUPER_BONUS__KNIFES_IN_LOOP * M_PI * 2.0f).Scale(Vec2F(1.0f, sqrtf(2.0f))),
+			true);
+		AddEntity(Knife(ship, &local_segment, 1u));
+
+		local_segment.Set(
+			Vec2F(0.5f, 0.0f).Rotate(-((float)knife + 0.5f) / (float)SHIP_SUPER_BONUS__KNIFES_IN_LOOP * M_PI * 2.0f).Scale(Vec2F(1.0f, sqrtf(2.0f))),
+			Vec2F(0.5f, 0.0f).Rotate(-((float)knife + 1.5f) / (float)SHIP_SUPER_BONUS__KNIFES_IN_LOOP * M_PI * 2.0f).Scale(Vec2F(1.0f, sqrtf(2.0f))),
+			true);
+		AddEntity(Knife(ship, &local_segment, 1u));
+	}
+
 	ships_can_shoot_flags[ship->GetPlayerNumber()] += GAME_ADD_DELLAY_BONUS_USE + GAME_ADD_DELLAY_COMBO_USE;
 }
 
 void Game::ShipShoot_BombKnife(Ship* ship)
 {
-	std::cout << "Bomb Knife" << std::endl;
-	ShipShoot_NoBonus(ship);
+	Game::AddEntity(
+		Bomb(ship->GetPosition() - ship->GetVelocity() - ship->GetDirection() * 1.1f * (ship->radius + BOMB_DEFAULT_RADIUS),
+			ship->GetVelocity() / 2.0f,
+			ship->GetTeamNumber(),
+			ship->GetTeamNumber(),
+			6000,
+			0.0f,
+			0.0f,
+			DEFAULT_FORCE_COLLISION_COEFFICIENT,
+			0.0f,
+			BOMB_DEFAULT_RADIUS,
+			BOMB_STATUS_BOOM));
 	ships_can_shoot_flags[ship->GetPlayerNumber()] += GAME_ADD_DELLAY_BONUS_USE + GAME_ADD_DELLAY_COMBO_USE;
 }
 
@@ -259,11 +283,10 @@ void Game::ShipShoot_NoBonus(Ship* ship)
 
 void Game::UpdateAsteroidsPhase2()
 {
-	Asteroid* temp__asteroid_p;
+	Asteroid* temp__asteroid_p = asteroids;
 	asteroids_array_mtx.lock();
-	for (GameTypes::entities_count_t asteroid = 0, found_asteroids = 0; found_asteroids < asteroids_count; asteroid++)
+	for (GameTypes::entities_count_t found_asteroids = 0; found_asteroids < asteroids_count; temp__asteroid_p++)
 	{
-		temp__asteroid_p = &asteroids[asteroid];
 		if (temp__asteroid_p->exist)
 		{
 			temp__asteroid_p->Update();
@@ -275,11 +298,10 @@ void Game::UpdateAsteroidsPhase2()
 
 void Game::UpdateBombsPhase2()
 {
-	Bomb* temp__bomb_p;
+	Bomb* temp__bomb_p = bombs;
 	bombs_array_mtx.lock();
-	for (GameTypes::entities_count_t bomb = 0, found_bombs = 0; found_bombs < bombs_count; bomb++)
+	for (GameTypes::entities_count_t found_bombs = 0; found_bombs < bombs_count; temp__bomb_p++)
 	{
-		temp__bomb_p = &bombs[bomb];
 		if (temp__bomb_p->exist)
 		{
 			temp__bomb_p->Update();
@@ -307,11 +329,10 @@ void Game::UpdateBonusesPhase2()
 
 void Game::UpdateBulletsPhase2()
 {
-	Bullet* temp__bullet_p;
+	Bullet* temp__bullet_p = bullets;
 	bullets_array_mtx.lock();
-	for (GameTypes::entities_count_t bullet = 0, found_bullets = 0; found_bullets < bullets_count; bullet++)
+	for (GameTypes::entities_count_t found_bullets = 0; found_bullets < bullets_count; temp__bullet_p++)
 	{
-		temp__bullet_p = &bullets[bullet];
 		if (temp__bullet_p->exist)
 		{
 			temp__bullet_p->Update();
@@ -451,6 +472,20 @@ void Game::UpdateParticlesPhase2()
 	end_of_particle_cycle:;
 	}
 	particles_array_mtx.unlock();
+}
+
+void Game::UpdatePortalsPhase2()
+{
+	Portal* temp__portal_p;
+	for (GameTypes::map_elements_count_t portal = 0, found_portals = 0; found_portals < portals_count; portal++)
+	{
+		temp__portal_p = &portals[portal];
+		if (temp__portal_p->exist)
+		{
+			temp__portal_p->Update();
+			found_portals++;
+		}
+	}
 }
 
 void Game::UpdatePilotsPhase2()
@@ -733,7 +768,7 @@ void Game::BombsSpawnedByBulletsAnigilation()
 										DEFAULT_FORCE_COLLISION_COEFFICIENT,
 										BOMB_DEFAULT_RESISTANCE_AIR_COEFFICIENT,
 										BOMB_DEFAULT_RADIUS * BOMB_BOOM_RADIUS_COEF / 3.0f,
-										BOMB_BOOM,
+										BOMB_STATUS_BOOM,
 										true));
 								RemoveEntity(temp__bullet1_p);
 								RemoveEntity(temp__bullet2_p);

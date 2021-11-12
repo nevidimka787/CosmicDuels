@@ -25,6 +25,7 @@ class Laser;
 class MegaLaser;
 class Particle;
 class Pilot;
+class Portal;
 class Ship;
 class StaticEntity;
 class Turel;
@@ -140,6 +141,7 @@ protected:
 	Vec2F velocity;
 	//This variable set only by force functions.
 	Vec2F force;
+
 public:
 	float force_collision_coeffisient;
 	float force_resistance_air_coefficient;
@@ -211,6 +213,7 @@ public:
 	bool IsCollision(Rectangle* rectangle);
 	bool IsCollision(Cyrcle* cyrcle);
 	bool IsCollision(Polygon* polygon);
+	bool IsCollision(Portal* portal);
 	bool IsCollision(Map* map);
 	void Set(DynamicEntity* dynamic_entity);
 	void Set(
@@ -242,7 +245,12 @@ public:
 	StaticEntity();
 	StaticEntity(const StaticEntity& static_entity);
 	StaticEntity(
-		Vec2F* position,
+		Vec2F position,
+		float radius,
+		float angle = 0.0f,
+		bool exist = true);
+	StaticEntity(
+		const Vec2F* position,
 		float radius,
 		float angle = 0.0f,
 		bool exist = true);
@@ -924,6 +932,47 @@ public:
 	~GravGen();
 };
 
+class Portal : public StaticEntity
+{
+	Portal* second_portal_p;
+
+public:
+	Portal();
+	Portal(const Portal& portal);
+	Portal(
+		Vec2F position,
+		Portal* second_portal_p = nullptr,
+		float radius = GRAVITY_GENERATOR_DEFAULT_RADIUS,
+		float angle = 0.0f,
+		bool exist = true);
+	Portal(
+		const Vec2F* position,
+		Portal* second_portal_p = nullptr,
+		float radius = GRAVITY_GENERATOR_DEFAULT_RADIUS,
+		float angle = 0.0f,
+		bool exist = true);
+
+	void Connect(Portal* second_portal_p);
+	Portal* GetSecondPortalPointer();
+	bool IsConnected();
+	void Set(
+		Vec2F position,
+		Portal* second_portal_p = nullptr,
+		float radius = GRAVITY_GENERATOR_DEFAULT_RADIUS,
+		float angle = 0.0f,
+		bool exist = true);
+	void Set(
+		const Vec2F* position,
+		Portal* second_portal_p = nullptr,
+		float radius = GRAVITY_GENERATOR_DEFAULT_RADIUS,
+		float angle = 0.0f,
+		bool exist = true);
+
+	void operator=(Portal portal);
+
+	~Portal();
+};
+
 class Turel : public AggressiveEntity
 {
 public:
@@ -1016,7 +1065,7 @@ public:
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		float force_resistance_air_coefficient = BOMB_DEFAULT_RESISTANCE_AIR_COEFFICIENT,
 		float radius = BOMB_DEFAULT_RADIUS,
-		EngineTypes::Bomb::status_t status = BOMB_INACTIVE,
+		EngineTypes::Bomb::status_t status = BOMB_STATUS_INACTIVE,
 		bool exist = true);
 	Bomb(
 		Vec2F* position,
@@ -1029,12 +1078,13 @@ public:
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		float force_resistance_air_coefficient = BOMB_DEFAULT_RESISTANCE_AIR_COEFFICIENT,
 		float radius = BOMB_DEFAULT_RADIUS,
-		EngineTypes::Bomb::status_t status = BOMB_INACTIVE,
+		EngineTypes::Bomb::status_t status = BOMB_STATUS_INACTIVE,
 		bool exist = true);
 
 	void Activate();
 	void Boom();
 	bool CanRemove();
+	bool Collision(Map* map);
 	GameTypes::tic_t GetAnimationTic();
 	bool IsActive();
 	bool IsBoom();
@@ -1057,7 +1107,7 @@ public:
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		float force_resistance_air_coefficient = BULLET_DEFAULT_RESISTANCE_AIR_COEFFICIENT,
 		float radius = BOMB_DEFAULT_RADIUS,
-		EngineTypes::Bomb::status_t status = BOMB_INACTIVE,
+		EngineTypes::Bomb::status_t status = BOMB_STATUS_INACTIVE,
 		bool exist = true);
 	void Update();
 

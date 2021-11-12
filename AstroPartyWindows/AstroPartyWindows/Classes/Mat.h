@@ -124,6 +124,7 @@ public:
 	operator Vec2D();
 
 	float AbsoluteAngle() const;
+	float AbsoluteAngleClockwise() const;
 	float Distance(Vec2F target) const;
 	float Distance(const Vec2F* target) const;
 	float Length() const;

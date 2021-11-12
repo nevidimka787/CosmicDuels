@@ -32,9 +32,9 @@ Asteroid
 //The maximum possible count of players on the map.
 #define GAME_PLAYERS_MAX_COUNT		4
 	//The maximum possible count of knifes on the map.
-#define GAME_KNIFES_MAX_COUNT		(GAME_PLAYERS_MAX_COUNT * 2)
+#define GAME_KNIFES_MAX_COUNT		(UINT8_MAX - 1)
 	//The maximum possible count of lasers on the map.
-#define GAME_LASERS_MAX_COUNT		(GAME_PLAYERS_MAX_COUNT * 2)
+#define GAME_LASERS_MAX_COUNT		(UINT8_MAX - 1)
 	//The maximum possible count of bombs on the map.
 #define GAME_BOMBS_MAX_COUNT		(UINT8_MAX - 1)
 	//The maximum possible count of turels on the map.
@@ -229,6 +229,7 @@ Asteroid
 #define SHIP_SUPER_BONUS__BOMBS_IN_LASER		14u
 #define SHIP_SUPER_BONUS__BOMBS_LASER_VELOCITY	(BULLET_DEFAULT_VELOCITY * 2.0f)
 #define SHIP_SUPER_BONUS__BOMBS_LASER_RADIUS	(BOMB_DEFAULT_RADIUS / 2.0f)
+#define SHIP_SUPER_BONUS__KNIFES_IN_LOOP		16u
 
 	//ships super bonuses
 
