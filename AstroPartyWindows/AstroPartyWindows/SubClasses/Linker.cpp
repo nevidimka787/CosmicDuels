@@ -88,6 +88,9 @@ Linker::Linker(Game* game_object, MenuFunctions* menu_functions_object, OpenGL* 
 	open_gl_object->game_p__particles_array_mtx = &game_object->particles_array_mtx;
 	open_gl_object->game_p__particles_count = &game_object->particles_count;
 	open_gl_object->game_p__pause_menu = &game_object->pause_menu;
+	open_gl_object->game_p__portals = &game_object->portals;
+	open_gl_object->game_p__portals_array_mtx = &game_object->portals_array_mtx;
+	open_gl_object->game_p__portals_count = &game_object->portals_count;
 	open_gl_object->game_p__pilots = &game_object->pilots;
 	open_gl_object->game_p__pilots_array_mtx = &game_object->pilots_array_mtx;
 	open_gl_object->game_p__pilots_count = &game_object->pilots_count;

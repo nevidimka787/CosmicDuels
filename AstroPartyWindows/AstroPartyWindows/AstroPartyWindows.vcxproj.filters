@@ -207,6 +207,18 @@
     <None Include="Shaders\Objects\Vertex\DynamicParticle.glsl">
       <Filter>Shaders\Vertex</Filter>
     </None>
+    <None Include="Shaders\Objects\Fragment\Portal.glsl">
+      <Filter>Shaders\Fragment</Filter>
+    </None>
+    <None Include="Shaders\Objects\Vertex\Portal.glsl">
+      <Filter>Shaders\Vertex</Filter>
+    </None>
+    <None Include="Shaders\Objects\Fragment\GravGen.glsl">
+      <Filter>Shaders\Fragment</Filter>
+    </None>
+    <None Include="Shaders\Objects\Vertex\GravGen.glsl">
+      <Filter>Shaders\Vertex</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\GameEngine.h">

@@ -51,6 +51,8 @@ Asteroid
 #define GAME_DYNAMIC_PARTICLES_MAX_COUNT	(UINT16_MAX - 1)
 	//The maximum possible count of particles on the map.
 #define GAME_PARTICLES_MAX_COUNT	(UINT16_MAX - 1)
+	//The maximum possible count of portals on the map.
+#define GAME_PORTALS_MAX_COUNT		(UINT8_MAX - 1)
 	//The maximum possible count of map's rectangles on the map.
 #define GAME_RECTANGLES_MAX_COUNT	128
 

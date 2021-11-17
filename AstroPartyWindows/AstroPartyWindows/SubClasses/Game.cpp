@@ -27,6 +27,7 @@ void Game::PhysicThread0()
 	MegaLasersDestroyAsteroids();
 	MegaLasersDestroyBonuses();
 	PilotsKilledByBombs();
+	PortalsTPAsteroids();
 	ShipsInfluenceToBonuses();
 	ShipsRespawnOrDestroyPilots();
 	ShipsDestroedByBombsOrActivateBombs();
@@ -104,6 +105,9 @@ void Game::PhysicThread0()
 
 void Game::PhysicThread1()
 {
+	PortalsTPAsteroids();
+	PortalsTPBombs();
+	PortalsTPBonuses();
 	PilotsKilledByBullet();
 	ShipsCheckInput();
 	ShipsShoot();
@@ -249,6 +253,9 @@ void Game::PhysicThread3()
 	LasersDestroyTurels();
 	MegaLasersDestroyKnifes();
 	MegaLasersDestroyTurels();
+	PortalsTPBullets();
+	PortalsTPDynamicParticles();
+	PortalsTPPilots();
 	PilotsKilledByLasers();
 	PilotsKilledByMegaLaser();
 	ShipsDestroedByLasers();

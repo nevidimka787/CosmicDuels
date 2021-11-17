@@ -168,6 +168,18 @@ void Game::AddEntity(DynamicParticle new_particle)
 	}
 }
 
+void Game::AddEntity(Portal new_portal)
+{
+	for (GameTypes::entities_count_t portal = 0; portal < GAME_PORTALS_MAX_COUNT; portal++)
+	{
+		if (portals[portal].exist == false)
+		{
+			portals[portal] = new_portal;
+			particles_count++;
+			return;
+		}
+	}
+}
 
 void Game::AddEntity(Pilot new_pilot)
 {
@@ -181,7 +193,6 @@ void Game::AddEntity(Pilot new_pilot)
 		pilots[pilot_number] = new_pilot;
 		pilots_count++;
 	}
-	printf("\nPilots count: %i\n", pilots_count);
 }
 
 
@@ -937,6 +948,8 @@ void Game::MemoryLock()
 	pilots_count = 0;
 	particles = new Particle[GAME_PARTICLES_MAX_COUNT];
 	particles_count = 0;
+	portals = new Portal[GAME_PORTALS_MAX_COUNT];
+	portals_count = 0;
 	ships = new Ship[GAME_PLAYERS_MAX_COUNT];
 	ships_count = 0;
 	turels = new Turel[GAME_TURELS_MAX_COUNT];
@@ -973,6 +986,7 @@ void Game::MemorySetDefault()
 	lasers_count = 0;
 	mega_lasers_count = 0;
 	particles_count = 0;
+	portals_count = 0;
 	pilots_count = 0;
 	ships_count = 0;
 	turels_count = 0;
@@ -1023,6 +1037,10 @@ void Game::MemorySetDefault()
 		{
 			particles[entity].exist = false;
 		}
+		if (entity < GAME_PORTALS_MAX_COUNT && portals[entity].exist)
+		{
+			portals[entity].exist = false;
+		}
 		if (entity < GAME_PLAYERS_MAX_COUNT)
 		{
 			if (pilots[entity].exist)
@@ -1067,6 +1085,8 @@ void Game::MemoryFree()
 	mega_lasers_count = 0;
 	delete[] particles;
 	particles_count = 0;
+	delete[] portals;
+	portals_count = 0;
 	delete[] pilots;
 	pilots_count = 0;
 	delete[] ships;

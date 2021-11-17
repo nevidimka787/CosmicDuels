@@ -81,6 +81,7 @@ public:
 	float GetFrameSize(Entity* entity, float scale) const;
 	Vec2F GetDirection() const;
 	Vec2F GetPosition() const;
+	const Vec2F* GetPositionPointer() const;
 	//If distance between two objects is less then zero, the function return true.
 	bool IsCollision(Beam* beam) const;
 	//If distance between two objects is less then zero, the function return true.
@@ -122,7 +123,7 @@ public:
 	void SetDirectionNotNormalize(Vec2F direction);
 	void SetDirectionNotNormalize(Vec2F* direction);
 	void SetPosition(Vec2F position);
-	void SetPosition(Vec2F* position);
+	void SetPosition(const Vec2F* position);
 	void UpdateAngle();
 	void UpdateDirection();
 	//need manual call
@@ -262,6 +263,8 @@ public:
 		float radius,
 		float angle = 0.0f,
 		bool exist = true);
+	void SetPosition(Vec2F position);
+	void SetPosition(const Vec2F* position);
 	void Update();
 
 	void operator=(StaticEntity static_entity);
@@ -934,39 +937,54 @@ public:
 
 class Portal : public StaticEntity
 {
-	Portal* second_portal_p;
-
 public:
+	const Vec2F* tp_position_pointer = nullptr;
+
 	Portal();
 	Portal(const Portal& portal);
 	Portal(
 		Vec2F position,
-		Portal* second_portal_p = nullptr,
+		const Vec2F* tp_position_pointer = nullptr,
 		float radius = GRAVITY_GENERATOR_DEFAULT_RADIUS,
 		float angle = 0.0f,
 		bool exist = true);
 	Portal(
 		const Vec2F* position,
-		Portal* second_portal_p = nullptr,
+		const Vec2F* tp_position_pointer = nullptr,
+		float radius = GRAVITY_GENERATOR_DEFAULT_RADIUS,
+		float angle = 0.0f,
+		bool exist = true);
+	Portal(
+		Vec2F position,
+		const Entity* entity,
+		float radius = GRAVITY_GENERATOR_DEFAULT_RADIUS,
+		float angle = 0.0f,
+		bool exist = true);
+	Portal(
+		const Vec2F* position,
+		const Entity* entity,
 		float radius = GRAVITY_GENERATOR_DEFAULT_RADIUS,
 		float angle = 0.0f,
 		bool exist = true);
 
-	void Connect(Portal* second_portal_p);
-	Portal* GetSecondPortalPointer();
+	void Connect(const Vec2F* pointer);
+	void Connect(const Entity* entity);
+	void Disconnect();
 	bool IsConnected();
 	void Set(
 		Vec2F position,
-		Portal* second_portal_p = nullptr,
+		const Vec2F* tp_position_pointer = nullptr,
 		float radius = GRAVITY_GENERATOR_DEFAULT_RADIUS,
 		float angle = 0.0f,
 		bool exist = true);
 	void Set(
 		const Vec2F* position,
-		Portal* second_portal_p = nullptr,
+		const Vec2F* tp_position_pointer = nullptr,
 		float radius = GRAVITY_GENERATOR_DEFAULT_RADIUS,
 		float angle = 0.0f,
 		bool exist = true);
+	template <typename EntityType>
+	void Teleport(EntityType* entity);
 
 	void operator=(Portal portal);
 

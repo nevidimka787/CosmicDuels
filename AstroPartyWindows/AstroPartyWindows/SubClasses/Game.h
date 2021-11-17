@@ -276,6 +276,10 @@ public:
 	//Function adds entity to array that store entities of the same type.
 	//Not checking nullprt!
 	void AddEntity(Particle new_particle);
+
+	//Function adds entity to array that store entities of the same type.
+	//Not checking nullprt!
+	void AddEntity(Portal new_portal);
 	
 	//Function adds entity to array that store entities of the same type.
 	void AddEntity(Pilot new_particle);
@@ -534,22 +538,23 @@ public:
 	 0. deceler_area
 	 1. grav_gen
 	 2. camera
-	 3. ship
-	 4. pilot
-	 5. input_values
-	 6. mega_laser
-	 7. laser
-	 8. bomb
-	 9. knife
-	10. turel
-	11. bullet
-	12. asteroid
-	13. bonus
-	14. map
-	15. particle
-	16. log
+	 3. portal
+	 4. ship
+	 5. pilot
+	 6. input_values
+	 7. mega_laser
+	 8. laser
+	 9. bomb
+	10. knife
+	11. turel
+	12. bullet
+	13. asteroid
+	14. bonus
+	15. map
+	16. particle
+	17. log
 	
-	//deceler_area -> grav_gen -> camera -> ship -> pilot -> input_values ->  mega_laser -> laser ->  bomb -> knife -> turel -> bullet -> asteroid -> bonus -> map -> particle -> dynamic_particle -> log
+	//deceler_area -> grav_gen -> camera -> portal -> ship -> pilot -> input_values ->  mega_laser -> laser ->  bomb -> knife -> turel -> bullet -> asteroid -> bonus -> map -> particle -> dynamic_particle -> log
 
 	bomb										bomb chain reaction
 	bomb -> asteroid -> bonus					bomb destroys asteroid after that bonus spawns
@@ -581,6 +586,13 @@ public:
 	mega_laser -> knife							mega_laser destroys knife
 	mega_laser -> map							mega_laser destroys map
 	mega_laser -> turel							mega_laser destroys turel
+	portal -> asteroid							portal teleported asteroid
+	portal -> bomb								portal teleported bonus
+	portal -> bonus								portal teleported bonus
+	portal -> bullet							portal teleported bullet
+	portal -> dynamic_particle					portal teleported dynamic_particle
+	portal -> pilot								portal teleported pilot
+	portal -> ship								portal teleported ship
 	pilot -> bomb -> log						pilot was destroed by bomb
 	pilot -> bullet -> log						pilot was destroed by bullet
 	pilot -> input_values						pilot cheks controled input values
@@ -718,6 +730,34 @@ public:
 	//t = n * k
 	void MegaLasersDestroyTurels();
 
+	//mtx: portal -> asteroid
+	//t = n * k
+	void PortalsTPAsteroids();
+
+	//mtx: portal -> bomb
+	//t = n * k
+	void PortalsTPBombs();
+
+	//mtx: portal -> bonus
+	//t = n * k
+	void PortalsTPBonuses();
+
+	//mtx: portal -> bullet
+	//t = n * k
+	void PortalsTPBullets();
+
+	//mtx: portal -> dynamic_particles
+	//t = n * k
+	void PortalsTPDynamicParticles();
+
+	//mtx: portal -> pilot
+	//t = n * k
+	void PortalsTPPilots();
+
+	//mtx: portal -> ship
+	//t = n * k
+	void PortalsTPShips(); 
+
 	//mtx: pilot -> bomb -> dynamic_particle -> log
 	//t = n * k
 	void PilotsKilledByBombs();
@@ -754,7 +794,7 @@ public:
 	//t = n
 	void ShipsShoot();
 
-	//mtx: ship -> pilot -> dynamic_particle
+	//mtx: ship -> pilot -> dynamic_particle -> log
 	//t = n * k
 	void ShipsRespawnOrDestroyPilots();
 

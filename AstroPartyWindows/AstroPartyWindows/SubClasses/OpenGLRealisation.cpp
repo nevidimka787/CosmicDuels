@@ -307,6 +307,7 @@ void OpenGL::InitBuffers()
 
     dynamic_particle_buffer.Initialisate(points, 6);
     particle_buffer.Initialisate(points, 6);
+    portal_buffer.Initialisate(points, 6);
 
     points[0].Set(1.0f, 1.0f);
     points[1].Set(0.0f, 1.0f);
@@ -394,6 +395,7 @@ void OpenGL::InitShaders()
     laser_shader.Initialisate(              "Shaders/Objects/Vertex/Laser.glsl"             ,   "Shaders/Objects/Fragment/Laser.glsl");
     mega_laser_shader.Initialisate(         "Shaders/Objects/Vertex/MegaLaser.glsl"         ,   "Shaders/Objects/Fragment/MegaLaser.glsl");
     particle_shader.Initialisate(           "Shaders/Objects/Vertex/Particle.glsl"          ,   "Shaders/Objects/Fragment/Particle.glsl");
+    portal_shader.Initialisate(             "Shaders/Objects/Vertex/Portal.glsl"            ,   "Shaders/Objects/Fragment/Portal.glsl");
     pilot_shader.Initialisate(              "Shaders/Objects/Vertex/Pilot.glsl"             ,   "Shaders/Objects/Fragment/Pilot.glsl");
     ship_shader.Initialisate(               "Shaders/Objects/Vertex/Ship.glsl"              ,   "Shaders/Objects/Fragment/Ship.glsl");
     turel_shader.Initialisate(              "Shaders/Objects/Vertex/Turel.glsl"             ,   "Shaders/Objects/Fragment/Turel.glsl");
@@ -746,6 +748,25 @@ void OpenGL::DrawObject(Particle* particle, bool update_shader)
     particle_shader.SetUniform("animation", particle->animation);
     particle_shader.SetUniform("color", particle->color);
     particle_buffer.Draw();
+}
+
+void OpenGL::DrawObject(Portal* portal, bool update_shader)
+{
+    if (update_shader)
+    {
+        portal_buffer.Use();
+        portal_shader.Use();
+        portal_shader.SetUniform("scale", window_scale);
+        portal_shader.SetUniform("camera_position", temp__game__camera_position);
+        portal_shader.SetUniform("camera_size", temp__game__camera_size);
+        portal_shader.SetUniform("glob_time", (int)(*game_p__global_timer % (unsigned)INT32_MAX));
+    }
+
+    portal_shader.SetUniform("position", portal->GetPosition());
+    portal_shader.SetUniform("angle", portal->GetAngle());
+    portal_shader.SetUniform("radius", portal->radius);
+    portal_shader.SetUniform("connected", (int)portal->IsConnected());
+    portal_buffer.Draw();
 }
 
 void OpenGL::DrawObject(Pilot* pilot, bool update_shader)
@@ -1158,6 +1179,23 @@ void OpenGL::DrawParticles()
             {
                 DrawObject(&(*game_p__particles)[particle]);
             }
+        }
+    }
+}
+
+void OpenGL::DrawPortals()
+{
+    particle_buffer.Use();
+    particle_shader.Use();
+    particle_shader.SetUniform("scale", window_scale);
+    particle_shader.SetUniform("camera_position", temp__game__camera_position);
+    particle_shader.SetUniform("camera_size", temp__game__camera_size);
+    for (GameTypes::entities_count_t portal = 0, found_particles = 0; found_particles < *game_p__portals_count; portal++)
+    {
+        if ((*game_p__portals)[portal].exist)
+        {
+            found_particles++;
+            DrawObject(&(*game_p__portals)[portal]);
         }
     }
 }

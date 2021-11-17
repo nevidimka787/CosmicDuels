@@ -33,6 +33,7 @@ public:
 	StaticBuffer laser_buffer;
 	StaticBuffer mega_laser_buffer;
 	StaticBuffer particle_buffer;
+	StaticBuffer portal_buffer;
 	StaticBuffer pilot_buffer;
 	StaticBuffer ship_buffer;
 	StaticBuffer turel_buffer;
@@ -93,6 +94,8 @@ public:
 	Shader mega_laser_shader;
 	//The shader use for draw particles.
 	Shader particle_shader;
+	//The shader use for draw portals.
+	Shader portal_shader;
 	//The shader use for draw pilots.
 	Shader pilot_shader;
 	//The shader use for draw shipd.
@@ -173,8 +176,10 @@ public:
 	void DrawObject(Laser* mega_laser, bool update_shader = false);
 	//The function draw mega laser.
 	void DrawObject(MegaLaser* mega_laser, bool update_shader = false);
-	//The function draw pilot.
-	void DrawObject(Particle* pilot, bool update_shader = false);
+	//The function draw particle.
+	void DrawObject(Particle* particle, bool update_shader = false);
+	//The function draw portal.
+	void DrawObject(Portal* portal, bool update_shader = false);
 	//The function draw pilot.
 	void DrawObject(Pilot* pilot, bool update_shader = false);
 	//The function draw ship.
@@ -218,6 +223,8 @@ public:
 	void DrawMegaLasers();
 	//The function draw all particles on the map.
 	void DrawParticles();
+	//The function draw all portals on the map.
+	void DrawPortals();
 	//The function draw all pilots on the map.
 	void DrawPilots();
 	//The function draw all ships on the map.
@@ -287,6 +294,8 @@ public:
 	GameTypes::map_elements_count_t* game_p__mega_lasers_count;
 	//Count of particles on the map.
 	GameTypes::entities_count_t* game_p__particles_count;
+	//Count of portals on the map.
+	GameTypes::map_elements_count_t* game_p__portals_count;
 	//Count of pilots on the map.
 	GameTypes::players_count_t* game_p__pilots_count;
 	//Count of players on the map.
@@ -323,6 +332,8 @@ public:
 	DecelerationArea** game_p__deceler_areas;
 	//Array of gravity generators.
 	GravGen** game_p__grav_gens;
+	//Array of portals
+	Portal** game_p__portals;
 	//Array of turels.
 	Turel** game_p__turels;
 	//Array of lasers of the map.
@@ -361,6 +372,7 @@ public:
 	std::shared_mutex* game_p__map_data_mtx;
 	std::shared_mutex* game_p__mega_lasers_array_mtx;
 	std::shared_mutex* game_p__particles_array_mtx;
+	std::shared_mutex* game_p__portals_array_mtx;
 	std::shared_mutex* game_p__pilots_array_mtx;
 	std::shared_mutex* game_p__ships_array_mtx;
 	std::shared_mutex* game_p__turels_array_mtx;

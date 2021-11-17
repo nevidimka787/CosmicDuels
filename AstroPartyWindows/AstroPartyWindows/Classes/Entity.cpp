@@ -182,6 +182,11 @@ Vec2F Entity::GetPosition() const
 	return position;
 }
 
+const Vec2F* Entity::GetPositionPointer() const
+{
+	return &position;
+}
+
 bool Entity::IsCollision(Beam* beam) const
 {
 	return beam->Distance(position) <= radius;
@@ -403,7 +408,7 @@ void Entity::SetPosition(Vec2F position)
 	this->position = position;
 }
 
-void Entity::SetPosition(Vec2F* position)
+void Entity::SetPosition(const Vec2F* position)
 {
 	this->position.Set(position);
 }
@@ -1076,6 +1081,18 @@ void StaticEntity::Set(Vec2F* position, float radius, float angle, bool exist)
 	this->exist = exist;
 	this->position = *position;
 	this->radius = radius;
+}
+
+void StaticEntity::SetPosition(Vec2F position)
+{
+	this->position = position;
+	last_position = position;
+}
+
+void StaticEntity::SetPosition(const Vec2F* position)
+{
+	this->position = *position;
+	last_position = *position;
 }
 
 void StaticEntity::Update()
@@ -3554,61 +3571,88 @@ GravGen::~GravGen()
 
 Portal::Portal()
 	:
-	StaticEntity(),
-	second_portal_p(nullptr)
+	StaticEntity()
 {
 }
 
 Portal::Portal(const Portal& portal)
 	:
 	StaticEntity(portal.position, portal.radius, portal.angle, portal.exist),
-	second_portal_p(second_portal_p)
+	tp_position_pointer(portal.tp_position_pointer)
 {
 }
 
 Portal::Portal(
 	Vec2F position,
-	Portal* second_portal_p,
+	const Vec2F* tp_position_pointer,
 	float radius,
 	float angle,
 	bool exist)
 	:
 	StaticEntity(position, radius, angle, exist),
-	second_portal_p(second_portal_p)
+	tp_position_pointer(tp_position_pointer)
 {
 }
 
 Portal::Portal(
 	const Vec2F* position,
-	Portal* second_portal_p,
+	const Vec2F* tp_position_pointer,
 	float radius,
 	float angle,
 	bool exist)
 	:
 	StaticEntity(position, radius, angle, exist),
-	second_portal_p(second_portal_p)
+	tp_position_pointer(tp_position_pointer)
 {
-
 }
 
-void Portal::Connect(Portal* second_portal_p)
+Portal::Portal(
+	Vec2F position,
+	const Entity* entity,
+	float radius,
+	float angle,
+	bool exist)
+	:
+	StaticEntity(position, radius, angle, exist),
+	tp_position_pointer(entity->GetPositionPointer())
 {
-	this->second_portal_p = second_portal_p;
 }
 
-Portal* Portal::GetSecondPortalPointer()
+Portal::Portal(
+	const Vec2F* position,
+	const Entity* entity,
+	float radius,
+	float angle,
+	bool exist)
+	:
+	StaticEntity(position, radius, angle, exist),
+	tp_position_pointer(entity->GetPositionPointer())
 {
-	return second_portal_p;
+}
+
+void Portal::Connect(const Vec2F* pointer)
+{
+	tp_position_pointer = pointer;
+}
+
+void Portal::Connect(const Entity* entity)
+{
+	tp_position_pointer = entity->GetPositionPointer();
+}
+
+void Portal::Disconnect()
+{
+	tp_position_pointer = nullptr;
 }
 
 bool Portal::IsConnected()
 {
-	return second_portal_p != nullptr;
+	return tp_position_pointer != nullptr;
 }
 
 void Portal::Set(
 	Vec2F position,
-	Portal* second_portal_p,
+	const Vec2F* tp_position_pointer,
 	float radius,
 	float angle,
 	bool exist)
@@ -3619,12 +3663,12 @@ void Portal::Set(
 	this->last_position = last_position;
 	this->position = position;
 	this->radius = radius;
-	this->second_portal_p = second_portal_p;
+	this->tp_position_pointer = tp_position_pointer;
 }
 
 void Portal::Set(
 	const Vec2F* position,
-	Portal* second_portal_p,
+	const Vec2F* tp_position_pointer,
 	float radius,
 	float angle,
 	bool exist)
@@ -3635,8 +3679,21 @@ void Portal::Set(
 	this->last_position = last_position;
 	this->position = *position;
 	this->radius = radius;
-	this->second_portal_p = second_portal_p;
+	this->tp_position_pointer = tp_position_pointer;
 }
+
+template <typename EntityType>
+void Portal::Teleport(EntityType* entity)
+{
+	entity->SetPosition(tp_position_pointer);
+}
+template void Portal::Teleport<Asteroid>(Asteroid* asteroid);
+template void Portal::Teleport<Bomb>(Bomb* asteroid);
+template void Portal::Teleport<Bonus>(Bonus* asteroid);
+template void Portal::Teleport<Bullet>(Bullet* asteroid);
+template void Portal::Teleport<DynamicParticle>(DynamicParticle* asteroid);
+template void Portal::Teleport<Pilot>(Pilot* asteroid);
+template void Portal::Teleport<Ship>(Ship* asteroid);
 
 void Portal::operator=(Portal portal)
 {
@@ -3646,7 +3703,7 @@ void Portal::operator=(Portal portal)
 	last_position = portal.last_position;
 	position = portal.position;
 	radius = portal.radius;
-	second_portal_p = portal.second_portal_p;
+	tp_position_pointer = portal.tp_position_pointer;
 }
 
 Portal::~Portal()
