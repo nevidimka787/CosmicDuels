@@ -429,13 +429,18 @@ void OpenGL::DrawFrame()
         temp__game__camera_position = game_p__camera->GetPosition();
         temp__game__camera_size = game_p__camera->GetSize();
         game_p__camera_data_mtx->unlock();
-
         game_p__particles_array_mtx->lock();
         if (*game_p__particles_count > 0)
         {
             DrawParticles();
         }
         game_p__particles_array_mtx->unlock();
+        game_p__portals_array_mtx->lock();
+        if (*game_p__portals_count > 0)
+        {
+            DrawPortals();
+        }
+        game_p__portals_array_mtx->unlock();
         game_p__dynamic_particles_array_mtx->lock();
         if (*game_p__particles_count > 0)
         {
@@ -763,7 +768,7 @@ void OpenGL::DrawObject(Portal* portal, bool update_shader)
     }
 
     portal_shader.SetUniform("position", portal->GetPosition());
-    portal_shader.SetUniform("angle", portal->GetAngle());
+    //portal_shader.SetUniform("angle", portal->GetAngle());
     portal_shader.SetUniform("radius", portal->radius);
     portal_shader.SetUniform("connected", (int)portal->IsConnected());
     portal_buffer.Draw();
@@ -1185,16 +1190,16 @@ void OpenGL::DrawParticles()
 
 void OpenGL::DrawPortals()
 {
-    particle_buffer.Use();
-    particle_shader.Use();
-    particle_shader.SetUniform("scale", window_scale);
-    particle_shader.SetUniform("camera_position", temp__game__camera_position);
-    particle_shader.SetUniform("camera_size", temp__game__camera_size);
-    for (GameTypes::entities_count_t portal = 0, found_particles = 0; found_particles < *game_p__portals_count; portal++)
+    portal_buffer.Use();
+    portal_shader.Use();
+    portal_shader.SetUniform("scale", window_scale);
+    portal_shader.SetUniform("camera_position", temp__game__camera_position);
+    portal_shader.SetUniform("camera_size", temp__game__camera_size);
+    for (GameTypes::entities_count_t portal = 0, found_portals = 0; found_portals < *game_p__portals_count; portal++)
     {
         if ((*game_p__portals)[portal].exist)
         {
-            found_particles++;
+            found_portals++;
             DrawObject(&(*game_p__portals)[portal]);
         }
     }

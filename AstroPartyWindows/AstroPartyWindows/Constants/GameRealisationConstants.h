@@ -90,6 +90,7 @@ Asteroid
 #define MAP_DESTROYABLE			6u
 #define MAP_AGGRESSIVE			7u
 #define MAP_BROKEN				8u
+#define MAP_PORTAL				9u
 
 	//map pull
 
@@ -126,7 +127,7 @@ Asteroid
 	//match rules
 
 #define GAME_RANDOM_ITERATIONS_COUNT			8u
-#define GAME_MAPS_COUNT							9u
+#define GAME_MAPS_COUNT							10u
 #define GAME_OBJECTS_COUNT						1u
 #define GAME_BONUSES_COUNT						4u
 #define GAME_BALANCE_ACTIVATE_DIFFERENCE_SCORES	3u

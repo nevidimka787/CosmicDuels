@@ -937,33 +937,48 @@ public:
 
 class Portal : public StaticEntity
 {
+private:
+	EngineTypes::Portal::mode_t tp_mode;
 public:
-	const Vec2F* tp_position_pointer = nullptr;
+	const Vec2F* tp_position_pointer;
+	Vec2F tp_position;
 
 	Portal();
 	Portal(const Portal& portal);
 	Portal(
 		Vec2F position,
+		Vec2F tp_position,
+		float radius = PORTAL_DEFAULT_RADIUS,
+		float angle = 0.0f,
+		bool exist = true);
+	Portal(
+		const Vec2F* position,
+		Vec2F tp_position,
+		float radius = PORTAL_DEFAULT_RADIUS,
+		float angle = 0.0f,
+		bool exist = true);
+	Portal(
+		Vec2F position,
 		const Vec2F* tp_position_pointer = nullptr,
-		float radius = GRAVITY_GENERATOR_DEFAULT_RADIUS,
+		float radius = PORTAL_DEFAULT_RADIUS,
 		float angle = 0.0f,
 		bool exist = true);
 	Portal(
 		const Vec2F* position,
 		const Vec2F* tp_position_pointer = nullptr,
-		float radius = GRAVITY_GENERATOR_DEFAULT_RADIUS,
+		float radius = PORTAL_DEFAULT_RADIUS,
 		float angle = 0.0f,
 		bool exist = true);
 	Portal(
 		Vec2F position,
 		const Entity* entity,
-		float radius = GRAVITY_GENERATOR_DEFAULT_RADIUS,
+		float radius = PORTAL_DEFAULT_RADIUS,
 		float angle = 0.0f,
 		bool exist = true);
 	Portal(
 		const Vec2F* position,
 		const Entity* entity,
-		float radius = GRAVITY_GENERATOR_DEFAULT_RADIUS,
+		float radius = PORTAL_DEFAULT_RADIUS,
 		float angle = 0.0f,
 		bool exist = true);
 
@@ -983,6 +998,7 @@ public:
 		float radius = GRAVITY_GENERATOR_DEFAULT_RADIUS,
 		float angle = 0.0f,
 		bool exist = true);
+	void SetMode(EngineTypes::Portal::mode_t mode);
 	template <typename EntityType>
 	void Teleport(EntityType* entity);
 

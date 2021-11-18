@@ -419,6 +419,9 @@ public:
 	//"Broken"
 	void Event8();
 
+	//"Portal"
+	void Event9();
+
 	//"Test"
 	void CreateMap0(Vec2F* ships_positions, float* ships_angles);
 	
@@ -445,6 +448,9 @@ public:
 
 	//"Broken"
 	void CreateMap8(Vec2F* ships_positions, float* ships_angles);
+
+	//"Portal"
+	void CreateMap9(Vec2F* ships_positions, float* ships_angles);
 
 	//Memory functions
 

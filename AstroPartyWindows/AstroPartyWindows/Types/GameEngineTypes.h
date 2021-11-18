@@ -96,6 +96,11 @@ namespace EngineTypes
 		typedef uint32_t points_array_length_t;
 	}
 
+	namespace Portal
+	{
+		typedef uint8_t mode_t;
+	}
+
 	namespace Rectangle
 	{
 		typedef uint8_t sides_t;

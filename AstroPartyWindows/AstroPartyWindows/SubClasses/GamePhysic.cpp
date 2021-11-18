@@ -1539,7 +1539,8 @@ void Game::MegaLasersDestroyTurels()
 
 void Game::PortalsTPAsteroids()
 {
-	Asteroid* temp__asteroid_p = asteroids;
+	GameTypes::entities_count_t found_asteroids;
+	Asteroid* temp__asteroid_p;
 	Portal* temp__portal_p = portals;
 
 	portals_array_mtx.lock();
@@ -1548,7 +1549,7 @@ void Game::PortalsTPAsteroids()
 		if (temp__portal_p->exist)
 		{
 			asteroids_array_mtx.lock();
-			for (GameTypes::entities_count_t found_asteroids = 0; found_asteroids < asteroids_count; temp__asteroid_p++)
+			for (temp__asteroid_p = asteroids, found_asteroids = 0; found_asteroids < asteroids_count; temp__asteroid_p++)
 			{
 				if (temp__asteroid_p->exist)
 				{
@@ -1570,7 +1571,8 @@ void Game::PortalsTPAsteroids()
 
 void Game::PortalsTPBombs()
 {
-	Bomb* temp__bomb_p = bombs;
+	GameTypes::entities_count_t found_bombs;
+	Bomb* temp__bomb_p;
 	Portal* temp__portal_p = portals;
 
 	portals_array_mtx.lock();
@@ -1579,7 +1581,7 @@ void Game::PortalsTPBombs()
 		if (temp__portal_p->exist)
 		{
 			bombs_array_mtx.lock();
-			for (GameTypes::entities_count_t found_bombs = 0; found_bombs < bombs_count; temp__bomb_p++)
+			for (temp__bomb_p = bombs, found_bombs = 0; found_bombs < bombs_count; temp__bomb_p++)
 			{
 				if (temp__bomb_p->exist)
 				{
@@ -1601,7 +1603,8 @@ void Game::PortalsTPBombs()
 
 void Game::PortalsTPBonuses()
 {
-	Bonus* temp__bonuses_p = bonuses;
+	GameTypes::entities_count_t found_bonuses;
+	Bonus* temp__bonuses_p;
 	Portal* temp__portal_p = portals;
 
 	portals_array_mtx.lock();
@@ -1610,7 +1613,7 @@ void Game::PortalsTPBonuses()
 		if (temp__portal_p->exist)
 		{
 			bonuses_array_mtx.lock();
-			for (GameTypes::entities_count_t found_bonuses = 0; found_bonuses < bonuses_count; temp__bonuses_p++)
+			for (temp__bonuses_p = bonuses, found_bonuses = 0; found_bonuses < bonuses_count; temp__bonuses_p++)
 			{
 				if (temp__bonuses_p->exist)
 				{
@@ -1632,7 +1635,8 @@ void Game::PortalsTPBonuses()
 
 void Game::PortalsTPBullets()
 {
-	Bullet* temp__bullets_p = bullets;
+	GameTypes::entities_count_t found_bullets;
+	Bullet* temp__bullets_p;
 	Portal* temp__portal_p = portals;
 
 	portals_array_mtx.lock();
@@ -1641,7 +1645,7 @@ void Game::PortalsTPBullets()
 		if (temp__portal_p->exist)
 		{
 			bullets_array_mtx.lock();
-			for (GameTypes::entities_count_t found_bullets = 0; found_bullets < bullets_count; temp__bullets_p++)
+			for (temp__bullets_p = bullets, found_bullets = 0; found_bullets < bullets_count; temp__bullets_p++)
 			{
 				if (temp__bullets_p->exist)
 				{
@@ -1663,7 +1667,8 @@ void Game::PortalsTPBullets()
 
 void Game::PortalsTPDynamicParticles()
 {
-	DynamicParticle* temp__dynamic_particles_p = dynamic_particles;
+	DynamicParticle* temp__dynamic_particles_p;
+	GameTypes::entities_count_t found_dynamic_particles;
 	Portal* temp__portal_p = portals;
 
 	portals_array_mtx.lock();
@@ -1672,7 +1677,7 @@ void Game::PortalsTPDynamicParticles()
 		if (temp__portal_p->exist)
 		{
 			dynamic_particles_array_mtx.lock();
-			for (GameTypes::entities_count_t found_dynamic_particles = 0; found_dynamic_particles < dynamic_particles_count; temp__dynamic_particles_p++)
+			for (found_dynamic_particles = 0, temp__dynamic_particles_p = dynamic_particles; found_dynamic_particles < dynamic_particles_count; temp__dynamic_particles_p++)
 			{
 				if (temp__dynamic_particles_p->exist)
 				{
@@ -1694,7 +1699,8 @@ void Game::PortalsTPDynamicParticles()
 
 void Game::PortalsTPPilots()
 {
-	Pilot* temp__pilots_p = pilots;
+	GameTypes::players_count_t found_pilots;
+	Pilot* temp__pilots_p;
 	Portal* temp__portal_p = portals;
 
 	portals_array_mtx.lock();
@@ -1703,7 +1709,7 @@ void Game::PortalsTPPilots()
 		if (temp__portal_p->exist)
 		{
 			pilots_array_mtx.lock();
-			for (GameTypes::players_count_t found_pilots = 0; found_pilots < pilots_count; temp__pilots_p++)
+			for (found_pilots = 0, temp__pilots_p = pilots; found_pilots < pilots_count; temp__pilots_p++)
 			{
 				if (temp__pilots_p->exist)
 				{
@@ -1725,7 +1731,8 @@ void Game::PortalsTPPilots()
 
 void Game::PortalsTPShips()
 {
-	Ship* temp__ships_p = ships;
+	GameTypes::players_count_t found_ships;
+	Ship* temp__ships_p;
 	Portal* temp__portal_p = portals;
 
 	portals_array_mtx.lock();
@@ -1734,7 +1741,7 @@ void Game::PortalsTPShips()
 		if (temp__portal_p->exist)
 		{
 			pilots_array_mtx.lock();
-			for (GameTypes::players_count_t found_ships = 0; found_ships < ships_count; temp__ships_p++)
+			for (temp__ships_p = ships, found_ships = 0; found_ships < ships_count; temp__ships_p++)
 			{
 				if (temp__ships_p->exist)
 				{

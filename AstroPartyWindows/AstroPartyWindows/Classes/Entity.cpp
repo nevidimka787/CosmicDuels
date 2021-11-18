@@ -3571,14 +3571,47 @@ GravGen::~GravGen()
 
 Portal::Portal()
 	:
-	StaticEntity()
+	StaticEntity(),
+	tp_mode(0),
+	tp_position(Vec2F()),
+	tp_position_pointer(nullptr)
 {
 }
 
 Portal::Portal(const Portal& portal)
 	:
 	StaticEntity(portal.position, portal.radius, portal.angle, portal.exist),
+	tp_mode(portal.tp_mode),
+	tp_position(portal.tp_position),
 	tp_position_pointer(portal.tp_position_pointer)
+{
+}
+
+Portal::Portal(
+	Vec2F position,
+	Vec2F tp_position,
+	float radius,
+	float angle,
+	bool exist)
+	:
+	StaticEntity(position, radius, angle, exist),
+	tp_mode(PORTAL_MODE_POSITION),
+	tp_position(tp_position),
+	tp_position_pointer(nullptr)
+{
+}
+
+Portal::Portal(
+	const Vec2F* position,
+	Vec2F tp_position,
+	float radius,
+	float angle,
+	bool exist)
+	:
+	StaticEntity(position, radius, angle, exist),
+	tp_mode(PORTAL_MODE_POSITION),
+	tp_position(tp_position),
+	tp_position_pointer(nullptr)
 {
 }
 
@@ -3590,6 +3623,8 @@ Portal::Portal(
 	bool exist)
 	:
 	StaticEntity(position, radius, angle, exist),
+	tp_mode(PORTAL_MODE_POINTER),
+	tp_position(Vec2F()),
 	tp_position_pointer(tp_position_pointer)
 {
 }
@@ -3602,6 +3637,8 @@ Portal::Portal(
 	bool exist)
 	:
 	StaticEntity(position, radius, angle, exist),
+	tp_mode(PORTAL_MODE_POINTER),
+	tp_position(Vec2F()),
 	tp_position_pointer(tp_position_pointer)
 {
 }
@@ -3614,6 +3651,8 @@ Portal::Portal(
 	bool exist)
 	:
 	StaticEntity(position, radius, angle, exist),
+	tp_mode((EngineTypes::Portal::mode_t)PORTAL_MODE_POINTER),
+	tp_position(Vec2F()),
 	tp_position_pointer(entity->GetPositionPointer())
 {
 }
@@ -3626,6 +3665,8 @@ Portal::Portal(
 	bool exist)
 	:
 	StaticEntity(position, radius, angle, exist),
+	tp_mode((EngineTypes::Portal::mode_t)PORTAL_MODE_POINTER),
+	tp_position(Vec2F()),
 	tp_position_pointer(entity->GetPositionPointer())
 {
 }
@@ -3647,7 +3688,9 @@ void Portal::Disconnect()
 
 bool Portal::IsConnected()
 {
-	return tp_position_pointer != nullptr;
+	return 
+		tp_mode == PORTAL_MODE_POSITION || 
+		tp_mode == PORTAL_MODE_POINTER && tp_position_pointer != nullptr;
 }
 
 void Portal::Set(
@@ -3679,13 +3722,38 @@ void Portal::Set(
 	this->last_position = last_position;
 	this->position = *position;
 	this->radius = radius;
+	this->tp_mode = PORTAL_MODE_POINTER;
 	this->tp_position_pointer = tp_position_pointer;
+}
+
+void Portal::SetMode(EngineTypes::Portal::mode_t mode)
+{
+	if (mode == PORTAL_MODE_POINTER && tp_position_pointer != nullptr)
+	{
+		tp_mode = PORTAL_MODE_POINTER;
+		return;
+	}
+	if (mode == PORTAL_MODE_POSITION)
+	{
+		tp_mode = PORTAL_MODE_POSITION;
+		return;
+	}
 }
 
 template <typename EntityType>
 void Portal::Teleport(EntityType* entity)
 {
-	entity->SetPosition(tp_position_pointer);
+	if (tp_mode == PORTAL_MODE_POINTER)
+	{
+		entity->SetPosition(tp_position_pointer);
+		return;
+	}
+	if (tp_mode == PORTAL_MODE_POSITION)
+	{
+		entity->SetPosition(tp_position);
+		return;
+	}
+	std::cout << "tp_mode: " << (unsigned)tp_mode << std::endl;
 }
 template void Portal::Teleport<Asteroid>(Asteroid* asteroid);
 template void Portal::Teleport<Bomb>(Bomb* asteroid);
@@ -3703,6 +3771,8 @@ void Portal::operator=(Portal portal)
 	last_position = portal.last_position;
 	position = portal.position;
 	radius = portal.radius;
+	tp_mode = portal.tp_mode;
+	tp_position = portal.tp_position;
 	tp_position_pointer = portal.tp_position_pointer;
 }
 

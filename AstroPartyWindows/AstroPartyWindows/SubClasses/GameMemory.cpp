@@ -175,7 +175,8 @@ void Game::AddEntity(Portal new_portal)
 		if (portals[portal].exist == false)
 		{
 			portals[portal] = new_portal;
-			particles_count++;
+			portals_count++;
+			std::cout << "New Portal was added." << "Pos:" << new_portal.GetPosition() << std::endl;
 			return;
 		}
 	}

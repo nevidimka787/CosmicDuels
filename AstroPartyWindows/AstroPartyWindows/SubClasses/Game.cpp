@@ -27,7 +27,7 @@ void Game::PhysicThread0()
 	MegaLasersDestroyAsteroids();
 	MegaLasersDestroyBonuses();
 	PilotsKilledByBombs();
-	PortalsTPAsteroids();
+	PortalsTPShips();
 	ShipsInfluenceToBonuses();
 	ShipsRespawnOrDestroyPilots();
 	ShipsDestroedByBombsOrActivateBombs();
@@ -719,6 +719,9 @@ void Game::InitLevel()
 	
 	switch (current_map_id)
 	{
+	case MAP_PORTAL:
+		CreateMap9(ships_positions, ships_angles);
+		break;
 	case MAP_BROKEN:
 		CreateMap8(ships_positions, ships_angles);
 		break;
@@ -1029,6 +1032,7 @@ void Game::InitMenus()
 	buttons[MAP_AGGRESSIVE].SetText("Aggressive");
 	buttons[MAP_AGGRESSIVE].text_size = 4u;
 	buttons[MAP_BROKEN].SetText("Broken");
+	buttons[MAP_PORTAL].SetText("Portal");
 	position.Set(0.0f, 0.0f);
 	size.Set(1.0f, -GAME_PULL_MENU_DOWN_BORDER * (float)(((GAME_MAPS_COUNT + 1) / 2) + 1));
 	map_pull_select_menu.Set(&position, &size, buttons, GAME_MAPS_COUNT);
