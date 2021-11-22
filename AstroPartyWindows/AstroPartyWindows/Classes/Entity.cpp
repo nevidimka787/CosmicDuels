@@ -531,6 +531,11 @@ void DynamicEntity::AddVelocity(Vec2F* velocity)
 	this->velocity += *velocity;
 }
 
+void DynamicEntity::ClearForce()
+{
+	force.Set(0.0f, 0.0f);
+}
+
 bool DynamicEntity::Collision(DynamicEntity* entity)
 {
 	float distance;
@@ -1011,7 +1016,12 @@ void DynamicEntity::SetCoefficients(float force_collision_coeffisient, float for
 	this->force_resistance_air_coefficient = force_resistance_air_coefficient;
 }
 
-void DynamicEntity::SetVelocity(Vec2F* velocity)
+void DynamicEntity::SetVelocity(Vec2F velocity)
+{
+	this->velocity = velocity;
+}
+
+void DynamicEntity::SetVelocity(const Vec2F* velocity)
 {
 	this->velocity = *velocity;
 }
@@ -3745,15 +3755,21 @@ void Portal::Teleport(EntityType* entity)
 {
 	if (tp_mode == PORTAL_MODE_POINTER)
 	{
-		entity->SetPosition(tp_position_pointer);
-		return;
+		entity->SetPosition(*tp_position_pointer + (entity->GetPosition() - position).Rotate(angle));
 	}
-	if (tp_mode == PORTAL_MODE_POSITION)
+	else if (tp_mode == PORTAL_MODE_POSITION)
 	{
-		entity->SetPosition(tp_position);
+		entity->SetPosition(tp_position + (entity->GetPosition() - position).Rotate(angle));
+	}
+	else
+	{
+		std::cout << "tp_mode: " << (unsigned)tp_mode << std::endl;
 		return;
 	}
-	std::cout << "tp_mode: " << (unsigned)tp_mode << std::endl;
+
+	entity->Rotate(angle);
+	entity->SetVelocity(entity->GetVelocity().RotateClockwise(angle));
+	entity->ClearForce();
 }
 template void Portal::Teleport<Asteroid>(Asteroid* asteroid);
 template void Portal::Teleport<Bomb>(Bomb* asteroid);

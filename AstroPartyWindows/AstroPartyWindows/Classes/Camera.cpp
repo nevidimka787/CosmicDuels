@@ -13,7 +13,8 @@ Camera::Camera(const Camera& camera) :
 	position(camera.position),
 	resize_velocity_coefficient(camera.resize_velocity_coefficient),
 	scale(camera.scale),
-	new_view_area_size_x(camera.new_view_area_size_x)
+	new_view_area_size_x(camera.new_view_area_size_x),
+	view_area_size_x(camera.view_area_size_x)
 {
 }
 
@@ -37,7 +38,6 @@ Camera::Camera(Vec2F* position, float size, float scale, float margin, float mov
 	}
 	this->new_view_area_size_x = size;
 	this->view_area_size_x = size;
-	Limit();
 }
 
 Mat2F Camera::GetLimits()
@@ -62,137 +62,151 @@ float Camera::GetScale()
 
 void Camera::Focus(Ship* ships_array, Pilot* pilots_array, GameTypes::players_count_t ships_count, GameTypes::players_count_t pilots_count)
 {
-	GameTypes::players_count_t player1, found_players1, player2, found_players2;
+#define MAX_X		0x01
+#define MAX_Y		0x02
+#define MIN_X		0x04
+#define MIN_Y		0x08
+#define UPDATE_F	0xFF
+#define UPDATE_N	0x00
 
-	temp_flag = true;
+	Mat2F current_limits;
+	Vec2F pos_buff;
+	uint8_t first_update = MAX_X | MAX_Y | MIN_X | MIN_Y;
 
-	float max = 0.0f;
-	Vec2F dist;
+	Ship* temp__ship_p = ships_array;
+	Pilot* temp__pilot_p = pilots_array;
 
-	new_view_area_size_x = 0.0f;
-	for (player1 = 0, found_players1 = 0; found_players1 < ships_count; player1++)
+	for (GameTypes::players_count_t found_ships = 0; found_ships < ships_count; temp__ship_p++)
 	{
-		if (ships_array[player1].exist)
+		if (temp__ship_p->exist)
 		{
-			for (player2 = player1 + 1, found_players2 = found_players1 + 1; found_players2 < ships_count; player2++)
+			pos_buff = temp__ship_p->GetPosition();
+			if (first_update & MAX_X)
 			{
-				if (ships_array[player2].exist)
-				{
-					max = ships_array[player1].GetFrameSize(&ships_array[player2], scale);
-					if (max > new_view_area_size_x)
-					{
-						new_view_area_size_x = max;
-					}
-					temp_position = ships_array[player2].GetPosition();
-					UpdateLimits();
-					found_players2++;
-				}
+				first_update &= UPDATE_F - MAX_X;
+				current_limits.max_x = pos_buff.x;
 			}
-			temp_position = ships_array[player1].GetPosition();
-			UpdateLimits();
-			found_players1++;
-		}
-	}
-	for (player1 = 0, found_players1 = 0; found_players1 < pilots_count; player1++)
-	{
-		if (pilots_array[player1].exist)
-		{
-			for (player2 = player1 + 1, found_players2 = found_players1 + 1; found_players2 < pilots_count; player2++)
+			else if (pos_buff.x > current_limits.max_x)
 			{
-				if (pilots_array[player2].exist)
-				{
-					max = pilots_array[player1].GetFrameSize(&pilots_array[player2], scale);
-					if (max > new_view_area_size_x)
-					{
-						new_view_area_size_x = max;
-					}
-					temp_position = pilots_array[player2].GetPosition();
-					UpdateLimits();
-					found_players2++;
-				}
+				current_limits.max_x = pos_buff.x;
 			}
-			temp_position = pilots_array[player1].GetPosition();
-			UpdateLimits();
-			found_players1++;
-		}
-	}
-	for (player1 = 0, found_players1 = 0; found_players1 < ships_count; player1++)
-	{
-		if (ships_array[player1].exist == true)
-		{
-			for (player2 = 0, found_players2 = 0; found_players2 < pilots_count; player2++)
+
+			if (first_update & MAX_Y)
 			{
-				if (pilots_array[player2].exist == true)
-				{
-					max = ships_array[player1].GetFrameSize(&pilots_array[player2], scale);
-					if (max > new_view_area_size_x)
-					{
-						new_view_area_size_x = max;
-					}
-					temp_position = pilots_array[player2].GetPosition();
-					UpdateLimits();
-					found_players2++;
-				}
+				first_update &= UPDATE_F - MAX_Y;
+				current_limits.max_y = pos_buff.y;
 			}
-			temp_position = ships_array[player1].GetPosition();
-			UpdateLimits();
-			found_players1++;
+			else if (pos_buff.y > current_limits.max_y)
+			{
+				current_limits.max_y = pos_buff.y;
+			}
+
+			if (first_update & MIN_X)
+			{
+				first_update &= UPDATE_F - MIN_X;
+				current_limits.min_x = pos_buff.x;
+			}
+			else if (pos_buff.x < current_limits.min_x)
+			{
+				current_limits.min_x = pos_buff.x;
+			}
+
+			if (first_update & MIN_Y)
+			{
+				first_update &= UPDATE_F - MIN_Y;
+				current_limits.min_y = pos_buff.y;
+			}
+			else if (pos_buff.y < current_limits.min_y)
+			{
+				current_limits.min_y = pos_buff.y;
+			}
+
+			found_ships++;
 		}
 	}
 
-	Limit();
+	for (GameTypes::players_count_t found_pilots = 0; found_pilots < pilots_count; temp__pilot_p++)
+	{
+		if (temp__pilot_p->exist)
+		{
+			pos_buff = temp__pilot_p->GetPosition();
+			if (first_update & MAX_X)
+			{
+				first_update &= UPDATE_F - MAX_X;
+				current_limits.max_x = pos_buff.x;
+			}
+			else if (pos_buff.x > current_limits.max_x)
+			{
+				current_limits.max_x = pos_buff.x;
+			}
 
-	position.Set(
-		(position.x + (temp_limits.max_x + temp_limits.min_x) / 2.0f * move_velocity_coefficient) / (1.0f + move_velocity_coefficient),
-		(position.y + (temp_limits.max_y + temp_limits.min_y) / 2.0f * move_velocity_coefficient) / (1.0f + move_velocity_coefficient));
-//	position.Set(
-//		(temp_limits.max_x + temp_limits.min_x) / 2.0f,
-//		(temp_limits.max_y + temp_limits.min_y) / 2.0f);
-	new_view_area_size_x *= margin;
-	view_area_size_x = (view_area_size_x + new_view_area_size_x * resize_velocity_coefficient) / (1.0f + resize_velocity_coefficient);
+			if (first_update & MAX_Y)
+			{
+				first_update &= UPDATE_F - MAX_Y;
+				current_limits.max_y = pos_buff.y;
+			}
+			else if (pos_buff.y > current_limits.max_y)
+			{
+				current_limits.max_y = pos_buff.y;
+			}
 
-	if (position.x > hight_limits.max_x)
-	{
-		position.x = hight_limits.max_x;
-	}
-	else if (position.x < hight_limits.min_x)
-	{
-		position.x = -hight_limits.min_x;
-	}
-	if (position.y > hight_limits.max_y)
-	{
-		position.y = hight_limits.max_y;
-	}
-	else if (position.y < hight_limits.min_y)
-	{
-		position.y = -hight_limits.min_y;
+			if (first_update & MIN_X)
+			{
+				first_update &= UPDATE_F - MIN_X;
+				current_limits.min_x = pos_buff.x;
+			}
+			else if (pos_buff.x < current_limits.min_x)
+			{
+				current_limits.min_x = pos_buff.x;
+			}
+
+			if (first_update & MIN_Y)
+			{
+				first_update &= UPDATE_F - MIN_Y;
+				current_limits.min_y = pos_buff.y;
+			}
+			else if (pos_buff.y < current_limits.min_y)
+			{
+				current_limits.min_y = pos_buff.y;
+			}
+
+			found_pilots++;
+		}
 	}
 
-	int i = 0;
-}
+	if (first_update)
+	{
+		return;
+	}
 
-void Camera::Limit()
-{
-	if (temp_limits.max_x > hight_limits.max_x * margin)
+	if (current_limits.max_x > hight_limits.max_x)
 	{
-		temp_limits.max_x = hight_limits.max_x * margin;
+		current_limits.max_x = hight_limits.max_x;
 	}
-	if (temp_limits.max_y > hight_limits.max_y * margin)
+	if (current_limits.max_y > hight_limits.max_y)
 	{
-		temp_limits.max_y = hight_limits.max_y * margin;
+		current_limits.max_y = hight_limits.max_y;
 	}
-	if (temp_limits.min_x < hight_limits.min_x * margin)
+	if (current_limits.min_x < hight_limits.min_x)
 	{
-		temp_limits.min_x = hight_limits.min_x * margin;
+		current_limits.min_x = hight_limits.min_x;
 	}
-	if (temp_limits.min_y < hight_limits.min_y * margin)
+	if (current_limits.min_y < hight_limits.min_y)
 	{
-		temp_limits.min_y = hight_limits.min_y * margin;
+		current_limits.min_y = hight_limits.min_y;
 	}
-	if (new_view_area_size_x < low_limits.y)
+
+	pos_buff.Set((current_limits.max_x + current_limits.min_x) / 2.0f, (current_limits.max_y + current_limits.min_y) / 2.0f);
+
+	new_view_area_size_x = fmaxf(current_limits.max_x - current_limits.min_x, (current_limits.max_y - current_limits.min_y) * scale) / 2.0f;
+	new_view_area_size_x += margin;
+	if (new_view_area_size_x < low_limits.x || new_view_area_size_x < low_limits.y * scale)
 	{
-		new_view_area_size_x = low_limits.y;
+		new_view_area_size_x = fmaxf(low_limits.x, low_limits.y * scale);
 	}
+
+	position = (position + pos_buff * move_velocity_coefficient) / (1.0f + move_velocity_coefficient);
+	view_area_size_x = (view_area_size_x + new_view_area_size_x * move_velocity_coefficient) / (1.0f + move_velocity_coefficient);
 }
 
 void Camera::Set(Camera* camera)

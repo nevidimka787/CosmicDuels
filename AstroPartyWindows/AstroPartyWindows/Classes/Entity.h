@@ -175,6 +175,8 @@ public:
 	void AddGravityForce(float gravity_coeffisient, Vec2F forced_point);
 	void AddVelocity(Vec2F velocity);
 	void AddVelocity(Vec2F* velocity);
+	//The function sets the sum of all forces those affecting to this entity to zero.
+	void ClearForce();
 	/*
 	If objects collide, function will be changing the physical parameters of those objects.
 	*/
@@ -230,7 +232,8 @@ public:
 	void SetCoefficients(
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT);
-	void SetVelocity(Vec2F* velocity);
+	void SetVelocity(Vec2F velocity);
+	void SetVelocity(const Vec2F* velocity);
 	void Update();
 
 	void operator=(DynamicEntity dynamic_entity);

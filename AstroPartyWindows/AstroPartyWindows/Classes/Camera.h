@@ -38,7 +38,6 @@ private:
 	float new_view_area_size_x;
 	float view_area_size_x;
 
-	void Limit();
 	//Use temp_position
 	//Use and change temp flag.
 	inline void UpdateLimits();
@@ -84,9 +83,7 @@ public:
 		float min_y = -CAMERA_DEFAULT_HIGH_LIMITS,
 		float max_x = CAMERA_DEFAULT_HIGH_LIMITS,
 		float max_y = CAMERA_DEFAULT_HIGH_LIMITS);
-	void SetLowLimits(
-		float size_x = CAMERA_DEFAULT_LOW_LIMITS,
-		float size_y = CAMERA_DEFAULT_LOW_LIMITS);
+	void SetLowLimits(float size_x = CAMERA_DEFAULT_LOW_LIMITS, float size_y = CAMERA_DEFAULT_LOW_LIMITS);
 	void SetPosition(Vec2F position = Vec2F());
 	void SetPosition(Vec2F* position = nullptr);
 	void SetScale(float scale = 16.0f / 9.0f);

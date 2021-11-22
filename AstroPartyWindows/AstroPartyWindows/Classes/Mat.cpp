@@ -595,6 +595,23 @@ void Vec2F::PerpendicularClockwiseThis()
 	y = temp;
 }
 
+Vec2F Vec2F::RotateClockwise(float angle) const
+{
+	float temp_cos = cosf(angle);
+	float temp_sin = sinf(angle);
+	return Vec2F(x * temp_cos + y * temp_sin, y * temp_cos - x * temp_sin);
+}
+
+void Vec2F::RotateClockwiseThis(float angle)
+{
+	float temp_cos = cosf(angle);
+	float temp_sin = sinf(angle);
+
+	float temp = x * temp_cos + y * temp_sin;
+	y = x * temp_sin - y * temp_cos;
+	x = temp;
+}
+
 Vec2F Vec2F::Rotate(float angle) const
 {
 	float temp_cos = cosf(angle);

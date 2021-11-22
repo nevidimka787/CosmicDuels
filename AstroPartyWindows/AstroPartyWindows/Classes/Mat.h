@@ -149,6 +149,8 @@ public:
 	//The function rotate vector on -90 degrees.
 	void PerpendicularClockwiseThis();
 	//Clockwise is positive.
+	Vec2F RotateClockwise(float angle) const;
+	void RotateClockwiseThis(float angle);
 	Vec2F Rotate(float angle) const;
 	void RotateThis(float angle);
 	Vec2F Scale(Vec2F scale) const;

@@ -999,7 +999,7 @@ void Game::InitMenus()
 	buttons[3].status |= BUTTON_STATUS_ACTIVE;
 	position.Set(-0.5f, 0.3f);
 	size.Set(1.0f, -0.25f);
-	buttons[4].Set(BUTTON_ID__START_GAME, &position, &size, area, "Select teams", 7);
+	buttons[4].Set(BUTTON_ID__START_GAME, &position, &size, area, "Start game", 7);
 	buttons[4].status |= BUTTON_STATUS_FALSE;
 	position.Set(0.0f, 0.0f);
 	size.Set(1.0f, -1.0f);
