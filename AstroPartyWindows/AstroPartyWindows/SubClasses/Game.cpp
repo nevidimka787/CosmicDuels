@@ -45,10 +45,13 @@ void Game::PhysicThread0()
 	UpdateTurelsPhase2();
 
 	camera_data_mtx.lock();
-	if (camera.move_velocity_coefficient < 1000.0f)
+	if (camera.move_velocity_coefficient < CAMERA_HIGH_MOVE_VELOCITY)
 	{
-		camera.move_velocity_coefficient *= 1.01f;
-		camera.resize_velocity_coefficient *= 1.01f;
+		camera.move_velocity_coefficient *= CAMERA_UPDATE_COEFF_PARAM;
+	}
+	if (camera.resize_velocity_coefficient < CAMERA_HIGH_RESIZE_VELOCITY)
+	{
+		camera.resize_velocity_coefficient *= CAMERA_UPDATE_COEFF_PARAM;
 	}
 	camera_data_mtx.unlock();
 	input_values_mtx.lock();
@@ -306,169 +309,6 @@ void Game::PhysicThread3()
 	thread_3_update.unlock();
 
 	WaitPhaseNotAll();
-}
-template<typename EntityType>
-void Game::DynamicEntitiesCollisions(EntityType* entities, GameTypes::entities_count_t entities_count)
-{
-	for (GameTypes::entities_count_t first = 0, found_entites_count1 = 0; found_entites_count1 < entities_count; first++)
-	{
-		if (entities[first].exist)
-		{
-			for (GameTypes::entities_count_t second = first + 1, found_entites_count2 = found_entites_count1 + 1; found_entites_count2 < entities_count; second++)
-			{
-				if (entities[second].exist)
-				{
-					entities[first].DynamicEntity::Collision(&entities[second]);
-					found_entites_count2++;
-				}
-			}
-			found_entites_count1++;
-		}
-	}
-}
-
-template<typename Entity1Type, typename Entity2Type>
-void Game::DynamicEntitiesCollisions(Entity1Type* entities1, Entity2Type* entities2, GameTypes::entities_count_t entities1_count, GameTypes::entities_count_t entities2_count)
-{
-	for (GameTypes::entities_count_t first = 0, found_entites_count1 = 0; found_entites_count1 < entities1_count; first++)
-	{
-		if (entities1[first].exist)
-		{
-			for (GameTypes::entities_count_t second = 0, found_entites_count2 = 0; found_entites_count2 < entities2_count; second++)
-			{
-				if (entities2[second].exist)
-				{
-					entities1[first].DynamicEntity::Collision(&entities2[second]);
-					found_entites_count2++;
-				}
-			}
-			found_entites_count1++;
-		}
-	}
-}
-
-template<typename EntityType>
-void Game::DynamicEntitiesCollisions(Map* map, EntityType* entities, GameTypes::entities_count_t entities_count)
-{
-	for (GameTypes::entities_count_t i = 0, found = 0; found < entities_count; i++)
-	{
-		if (entities[i].exist)
-		{
-			entities[i].Collision(map);
-			if (!entities[i].exist)
-			{
-				log_data_mtx.lock();
-				entities[i].exist = true;
-				DestroyEntity(&entities[i]);
-				log_data_mtx.unlock();
-				goto end_of_map_cycle;
-			}
-			found++;
-		}
-	end_of_map_cycle:;
-	}
-}
-
-void Game::DynamicEntitiesCollisions(Map* map, Bomb* entities, GameTypes::entities_count_t entities_count)
-{
-	for (GameTypes::entities_count_t i = 0, found = 0; found < entities_count; i++)
-	{
-		if (entities[i].exist)
-		{
-			entities[i].Collision(map);
-			found++;
-		}
-	}
-}
-
-template<typename EntityType>
-void Game::DynamicEntitiesAddForce(Vec2F* force, EntityType* entities, GameTypes::entities_count_t entities_count)
-{
-	for (GameTypes::entities_count_t i = 0, found = 0; found < entities_count; i++)
-	{
-		if (entities[i].exist)
-		{
-			entities[i].AddForce(force);
-			found++;
-		}
-	}
-}
-
-template<typename EntityType>
-void Game::DynamicEntitiesAddForce(GravGen* grav_gens, GameTypes::map_elements_count_t grav_gens_count, EntityType* entities, GameTypes::entities_count_t entities_count)
-{
-	Vec2F force;
-	float len2;
-	for (GameTypes::map_elements_count_t grav_gen = 0; grav_gen < grav_gens_count; grav_gen++)
-	{
-		if (grav_gens[grav_gen].exist)
-		{
-			for (GameTypes::entities_count_t i = 0, found = 0; found < entities_count; i++)
-			{
-				if (entities[i].exist)
-				{
-					force = entities[i].GetPosition() - grav_gens[grav_gen].GetPosition();
-					len2 = force.x * force.x + force.y * force.y;
-					force /= len2 * sqrt(len2) / grav_gens[grav_gen].gravity;
-					entities[i].AddForce(&force);
-
-					found++;
-				}
-			}
-		}
-	}
-}
-
-void Game::DynamicEntitiesAddForce(GravGen* grav_gens, GameTypes::map_elements_count_t grav_gens_count, Bomb* entities, GameTypes::entities_count_t entities_count)
-{
-	Vec2F force;
-	float len2;
-	for (GameTypes::map_elements_count_t grav_gen = 0, found_grav_gens = 0; found_grav_gens < grav_gens_count; grav_gen++)
-	{
-		if (grav_gens[grav_gen].exist)
-		{
-			for (GameTypes::entities_count_t i = 0, found = 0; found < entities_count; i++)
-			{
-				if (entities[i].exist)
-				{
-					if (!entities[i].IsBoom())
-					{
-						force = entities[i].GetPosition() - grav_gens[grav_gen].GetPosition();
-						len2 = force.x * force.x + force.y * force.y;
-						force /= len2 * sqrt(len2) / grav_gens[grav_gen].gravity;
-						entities[i].AddForce(&force);
-					}
-					found++;
-				}
-			}
-			found_grav_gens++;
-		}
-	}
-}
-
-template<typename EntityType>
-void Game::DynamicEntitiesAddForce(DecelerationArea* deceler_areas, GameTypes::map_elements_count_t deceler_areas_count, EntityType* entities, GameTypes::entities_count_t entities_count)
-{
-	Vec2F force;
-	for (GameTypes::map_elements_count_t deceler_area = 0, found_deceler_areas = 0; found_deceler_areas < deceler_areas_count; deceler_area++)
-	{
-		if (deceler_areas[deceler_area].exist)
-		{
-			for (GameTypes::entities_count_t i = 0, found = 0; found < entities_count; i++)
-			{
-				if (entities[i].exist)
-				{
-					if (deceler_areas[deceler_area].IsCollision(&entities[i]))
-					{
-						force = -entities[i].GetVelocity() * deceler_areas[deceler_area].deceleration_parameter;
-						entities[i].AddForce(force);
-					}
-					found++;
-				}
-			}
-			found_deceler_areas++;
-		}
-	}
 }
 
 EngineTypes::Bonus::inventory_t Game::GenerateRandomBonus()

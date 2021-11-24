@@ -4,6 +4,247 @@
 
 
 
+
+template<typename EntityType>
+void Game::DynamicEntitiesCollisions(EntityType* entities, GameTypes::entities_count_t entities_count)
+{
+	for (GameTypes::entities_count_t first = 0, found_entites_count1 = 0; found_entites_count1 < entities_count; first++)
+	{
+		if (entities[first].exist)
+		{
+			for (GameTypes::entities_count_t second = first + 1, found_entites_count2 = found_entites_count1 + 1; found_entites_count2 < entities_count; second++)
+			{
+				if (entities[second].exist)
+				{
+					entities[first].DynamicEntity::Collision(&entities[second]);
+					found_entites_count2++;
+				}
+			}
+			found_entites_count1++;
+		}
+	}
+}
+template void Game::DynamicEntitiesCollisions<Asteroid>(Asteroid* entities, GameTypes::entities_count_t entities_count);
+template void Game::DynamicEntitiesCollisions<Bomb>(Bomb* entities, GameTypes::entities_count_t entities_count);
+template void Game::DynamicEntitiesCollisions<Bullet>(Bullet* entities, GameTypes::entities_count_t entities_count);
+template void Game::DynamicEntitiesCollisions<Bonus>(Bonus* entities, GameTypes::entities_count_t entities_count);
+template void Game::DynamicEntitiesCollisions<Ship>(Ship* entities, GameTypes::entities_count_t entities_count);
+template void Game::DynamicEntitiesCollisions<Pilot>(Pilot* entities, GameTypes::entities_count_t entities_count);
+
+template<typename Entity1Type, typename Entity2Type>
+void Game::DynamicEntitiesCollisions(Entity1Type* entities1, Entity2Type* entities2, GameTypes::entities_count_t entities1_count, GameTypes::entities_count_t entities2_count)
+{
+	for (GameTypes::entities_count_t first = 0, found_entites_count1 = 0; found_entites_count1 < entities1_count; first++)
+	{
+		if (entities1[first].exist)
+		{
+			for (GameTypes::entities_count_t second = 0, found_entites_count2 = 0; found_entites_count2 < entities2_count; second++)
+			{
+				if (entities2[second].exist)
+				{
+					entities1[first].DynamicEntity::Collision(&entities2[second]);
+					found_entites_count2++;
+				}
+			}
+			found_entites_count1++;
+		}
+	}
+}
+template void Game::DynamicEntitiesCollisions<Asteroid,	Bomb>(Asteroid* entities1, Bomb* entities2, GameTypes::entities_count_t entities1_count, GameTypes::entities_count_t entities2_count);
+template void Game::DynamicEntitiesCollisions<Asteroid, Bullet>(Asteroid* entities1, Bullet* entities2, GameTypes::entities_count_t entities1_count, GameTypes::entities_count_t entities2_count);
+template void Game::DynamicEntitiesCollisions<Asteroid, Bonus>(Asteroid* entities1, Bonus* entities2, GameTypes::entities_count_t entities1_count, GameTypes::entities_count_t entities2_count);
+template void Game::DynamicEntitiesCollisions<Asteroid, Ship>(Asteroid* entities1, Ship* entities2, GameTypes::entities_count_t entities1_count, GameTypes::entities_count_t entities2_count);
+template void Game::DynamicEntitiesCollisions<Asteroid, Pilot>(Asteroid* entities1, Pilot* entities2, GameTypes::entities_count_t entities1_count, GameTypes::entities_count_t entities2_count);
+template void Game::DynamicEntitiesCollisions<Bomb, Asteroid>(Bomb* entities1, Asteroid* entities2, GameTypes::entities_count_t entities1_count, GameTypes::entities_count_t entities2_count);
+template void Game::DynamicEntitiesCollisions<Bomb, Bullet>(Bomb* entities1, Bullet* entities2, GameTypes::entities_count_t entities1_count, GameTypes::entities_count_t entities2_count);
+template void Game::DynamicEntitiesCollisions<Bomb, Bonus>(Bomb* entities1, Bonus* entities2, GameTypes::entities_count_t entities1_count, GameTypes::entities_count_t entities2_count);
+template void Game::DynamicEntitiesCollisions<Bomb, Ship>(Bomb* entities1, Ship* entities2, GameTypes::entities_count_t entities1_count, GameTypes::entities_count_t entities2_count);
+template void Game::DynamicEntitiesCollisions<Bomb, Pilot>(Bomb* entities1, Pilot* entities2, GameTypes::entities_count_t entities1_count, GameTypes::entities_count_t entities2_count);
+template void Game::DynamicEntitiesCollisions<Bullet, Asteroid>(Bullet* entities1, Asteroid* entities2, GameTypes::entities_count_t entities1_count, GameTypes::entities_count_t entities2_count);
+template void Game::DynamicEntitiesCollisions<Bullet, Bomb>(Bullet* entities1, Bomb* entities2, GameTypes::entities_count_t entities1_count, GameTypes::entities_count_t entities2_count);
+template void Game::DynamicEntitiesCollisions<Bullet, Bonus>(Bullet* entities1, Bonus* entities2, GameTypes::entities_count_t entities1_count, GameTypes::entities_count_t entities2_count);
+template void Game::DynamicEntitiesCollisions<Bullet, Ship>(Bullet* entities1, Ship* entities2, GameTypes::entities_count_t entities1_count, GameTypes::entities_count_t entities2_count);
+template void Game::DynamicEntitiesCollisions<Bullet, Pilot>(Bullet* entities1, Pilot* entities2, GameTypes::entities_count_t entities1_count, GameTypes::entities_count_t entities2_count);
+template void Game::DynamicEntitiesCollisions<Bonus, Asteroid>(Bonus* entities1, Asteroid* entities2, GameTypes::entities_count_t entities1_count, GameTypes::entities_count_t entities2_count);
+template void Game::DynamicEntitiesCollisions<Bonus, Bomb>(Bonus* entities1, Bomb* entities2, GameTypes::entities_count_t entities1_count, GameTypes::entities_count_t entities2_count);
+template void Game::DynamicEntitiesCollisions<Bonus, Bullet>(Bonus* entities1, Bullet* entities2, GameTypes::entities_count_t entities1_count, GameTypes::entities_count_t entities2_count);
+template void Game::DynamicEntitiesCollisions<Bonus, Ship>(Bonus* entities1, Ship* entities2, GameTypes::entities_count_t entities1_count, GameTypes::entities_count_t entities2_count);
+template void Game::DynamicEntitiesCollisions<Bonus, Pilot>(Bonus* entities1, Pilot* entities2, GameTypes::entities_count_t entities1_count, GameTypes::entities_count_t entities2_count);
+template void Game::DynamicEntitiesCollisions<Ship, Asteroid>(Ship* entities1, Asteroid* entities2, GameTypes::entities_count_t entities1_count, GameTypes::entities_count_t entities2_count);
+template void Game::DynamicEntitiesCollisions<Ship, Bomb>(Ship* entities1, Bomb* entities2, GameTypes::entities_count_t entities1_count, GameTypes::entities_count_t entities2_count);
+template void Game::DynamicEntitiesCollisions<Ship, Bullet>(Ship* entities1, Bullet* entities2, GameTypes::entities_count_t entities1_count, GameTypes::entities_count_t entities2_count);
+template void Game::DynamicEntitiesCollisions<Ship, Bonus>(Ship* entities1, Bonus* entities2, GameTypes::entities_count_t entities1_count, GameTypes::entities_count_t entities2_count);
+template void Game::DynamicEntitiesCollisions<Ship, Pilot>(Ship* entities1, Pilot* entities2, GameTypes::entities_count_t entities1_count, GameTypes::entities_count_t entities2_count);
+template void Game::DynamicEntitiesCollisions<Pilot, Asteroid>(Pilot* entities1, Asteroid* entities2, GameTypes::entities_count_t entities1_count, GameTypes::entities_count_t entities2_count);
+template void Game::DynamicEntitiesCollisions<Pilot, Bomb>(Pilot* entities1, Bomb* entities2, GameTypes::entities_count_t entities1_count, GameTypes::entities_count_t entities2_count);
+template void Game::DynamicEntitiesCollisions<Pilot, Bullet>(Pilot* entities1, Bullet* entities2, GameTypes::entities_count_t entities1_count, GameTypes::entities_count_t entities2_count);
+template void Game::DynamicEntitiesCollisions<Pilot, Bonus>(Pilot* entities1, Bonus* entities2, GameTypes::entities_count_t entities1_count, GameTypes::entities_count_t entities2_count);
+template void Game::DynamicEntitiesCollisions<Pilot, Ship>(Pilot* entities1, Ship* entities2, GameTypes::entities_count_t entities1_count, GameTypes::entities_count_t entities2_count);
+
+template<typename EntityType>
+void Game::DynamicEntitiesCollisions(Map* map, EntityType* entities, GameTypes::entities_count_t entities_count)
+{
+	for (GameTypes::entities_count_t i = 0, found = 0; found < entities_count; i++)
+	{
+		if (entities[i].exist)
+		{
+			entities[i].Collision(map);
+			if (!entities[i].exist)
+			{
+				log_data_mtx.lock();
+				entities[i].exist = true;
+				DestroyEntity(&entities[i]);
+				log_data_mtx.unlock();
+				goto end_of_map_cycle;
+			}
+			found++;
+		}
+	end_of_map_cycle:;
+	}
+}
+template void Game::DynamicEntitiesCollisions<Asteroid>(Map* map, Asteroid* entities, GameTypes::entities_count_t entities_count);
+template void Game::DynamicEntitiesCollisions<Bonus>(Map* map, Bonus* entities, GameTypes::entities_count_t entities_count);
+template void Game::DynamicEntitiesCollisions<Bullet>(Map* map, Bullet* entities, GameTypes::entities_count_t entities_count);
+template void Game::DynamicEntitiesCollisions<Ship>(Map* map, Ship* entities, GameTypes::entities_count_t entities_count);
+template void Game::DynamicEntitiesCollisions<Pilot>(Map* map, Pilot* entities, GameTypes::entities_count_t entities_count);
+
+void Game::DynamicEntitiesCollisions(Map* map, Bomb* entities, GameTypes::entities_count_t entities_count)
+{
+	for (GameTypes::entities_count_t i = 0, found = 0; found < entities_count; i++)
+	{
+		if (entities[i].exist)
+		{
+			entities[i].Collision(map);
+			found++;
+		}
+	}
+}
+
+template<typename EntityType>
+void Game::DynamicEntitiesAddForce(Vec2F force, EntityType* entities, GameTypes::entities_count_t entities_count)
+{
+	for (GameTypes::entities_count_t i = 0, found = 0; found < entities_count; i++)
+	{
+		if (entities[i].exist)
+		{
+			entities[i].AddForce(force);
+			found++;
+		}
+	}
+}
+template void Game::DynamicEntitiesAddForce<Asteroid>(Vec2F force, Asteroid* entities, GameTypes::entities_count_t entities_count);
+template void Game::DynamicEntitiesAddForce<Bomb>(Vec2F force, Bomb* entities, GameTypes::entities_count_t entities_count);
+template void Game::DynamicEntitiesAddForce<Bonus>(Vec2F force, Bonus* entities, GameTypes::entities_count_t entities_count);
+template void Game::DynamicEntitiesAddForce<Bullet>(Vec2F force, Bullet* entities, GameTypes::entities_count_t entities_count);
+template void Game::DynamicEntitiesAddForce<Ship>(Vec2F force, Ship* entities, GameTypes::entities_count_t entities_count);
+template void Game::DynamicEntitiesAddForce<Pilot>(Vec2F force, Pilot* entities, GameTypes::entities_count_t entities_count);
+
+template<typename EntityType>
+void Game::DynamicEntitiesAddForce(GravGen* grav_gens, GameTypes::map_elements_count_t grav_gens_count, EntityType* entities, GameTypes::entities_count_t entities_count)
+{
+	Vec2F force;
+	float len2;
+	for (GameTypes::map_elements_count_t grav_gen = 0; grav_gen < grav_gens_count; grav_gen++)
+	{
+		if (grav_gens[grav_gen].exist)
+		{
+			for (GameTypes::entities_count_t i = 0, found = 0; found < entities_count; i++)
+			{
+				if (entities[i].exist)
+				{
+					force = entities[i].GetPosition() - grav_gens[grav_gen].GetPosition();
+					len2 = force.x * force.x + force.y * force.y;
+					force /= len2 * sqrt(len2) / grav_gens[grav_gen].gravity;
+					entities[i].AddForce(&force);
+
+					found++;
+				}
+			}
+		}
+	}
+}
+template void Game::DynamicEntitiesAddForce<Asteroid>(GravGen* grav_gens, GameTypes::map_elements_count_t grav_gens_count, Asteroid* entities, GameTypes::entities_count_t entities_count);
+template void Game::DynamicEntitiesAddForce<Bullet>(GravGen* grav_gens, GameTypes::map_elements_count_t grav_gens_count, Bullet* entities, GameTypes::entities_count_t entities_count);
+template void Game::DynamicEntitiesAddForce<Bonus>(GravGen* grav_gens, GameTypes::map_elements_count_t grav_gens_count, Bonus* entities, GameTypes::entities_count_t entities_count);
+template void Game::DynamicEntitiesAddForce<Ship>(GravGen* grav_gens, GameTypes::map_elements_count_t grav_gens_count, Ship* entities, GameTypes::entities_count_t entities_count);
+template void Game::DynamicEntitiesAddForce<Pilot>(GravGen* grav_gens, GameTypes::map_elements_count_t grav_gens_count, Pilot* entities, GameTypes::entities_count_t entities_count);
+
+void Game::DynamicEntitiesAddForce(GravGen* grav_gens, GameTypes::map_elements_count_t grav_gens_count, Bomb* entities, GameTypes::entities_count_t entities_count)
+{
+	Vec2F force;
+	float len2;
+	for (GameTypes::map_elements_count_t grav_gen = 0, found_grav_gens = 0; found_grav_gens < grav_gens_count; grav_gen++)
+	{
+		if (grav_gens[grav_gen].exist)
+		{
+			for (GameTypes::entities_count_t i = 0, found = 0; found < entities_count; i++)
+			{
+				if (entities[i].exist)
+				{
+					if (!entities[i].IsBoom())
+					{
+						force = entities[i].GetPosition() - grav_gens[grav_gen].GetPosition();
+						len2 = force.x * force.x + force.y * force.y;
+						force /= len2 * sqrt(len2) / grav_gens[grav_gen].gravity;
+						entities[i].AddForce(&force);
+					}
+					found++;
+				}
+			}
+			found_grav_gens++;
+		}
+	}
+}
+
+template<typename EntityType>
+void Game::DynamicEntitiesAddForce(DecelerationArea* deceler_areas, GameTypes::map_elements_count_t deceler_areas_count, EntityType* entities, GameTypes::entities_count_t entities_count)
+{
+	Vec2F force;
+	for (GameTypes::map_elements_count_t deceler_area = 0, found_deceler_areas = 0; found_deceler_areas < deceler_areas_count; deceler_area++)
+	{
+		if (deceler_areas[deceler_area].exist)
+		{
+			for (GameTypes::entities_count_t i = 0, found = 0; found < entities_count; i++)
+			{
+				if (entities[i].exist)
+				{
+					if (deceler_areas[deceler_area].IsCollision(&entities[i]))
+					{
+						force = -entities[i].GetVelocity() * deceler_areas[deceler_area].deceleration_parameter;
+						entities[i].AddForce(force);
+					}
+					found++;
+				}
+			}
+			found_deceler_areas++;
+		}
+	}
+}
+template void Game::DynamicEntitiesAddForce<Asteroid>(DecelerationArea* grav_gens, GameTypes::map_elements_count_t grav_gens_count, Asteroid* entities, GameTypes::entities_count_t entities_count);
+template void Game::DynamicEntitiesAddForce<Bomb>(DecelerationArea* grav_gens, GameTypes::map_elements_count_t grav_gens_count, Bomb* entities, GameTypes::entities_count_t entities_count);
+template void Game::DynamicEntitiesAddForce<Bonus>(DecelerationArea* grav_gens, GameTypes::map_elements_count_t grav_gens_count, Bonus* entities, GameTypes::entities_count_t entities_count);
+template void Game::DynamicEntitiesAddForce<Bullet>(DecelerationArea* grav_gens, GameTypes::map_elements_count_t grav_gens_count, Bullet* entities, GameTypes::entities_count_t entities_count);
+template void Game::DynamicEntitiesAddForce<Ship>(DecelerationArea* grav_gens, GameTypes::map_elements_count_t grav_gens_count, Ship* entities, GameTypes::entities_count_t entities_count);
+template void Game::DynamicEntitiesAddForce<Pilot>(DecelerationArea* grav_gens, GameTypes::map_elements_count_t grav_gens_count, Pilot* entities, GameTypes::entities_count_t entities_count);
+
+template <typename EntityType>
+void Game::TeleportEntity(Portal* portal, EntityType* entity)
+{
+	portal->Teleport(entity);
+	AddEntity(portal->CreateParticles(global_timer));
+	AddEntity(portal->CreateParticlesTP(global_timer, 5.0f * entity->radius));
+
+	camera.move_velocity_coefficient = CAMERA_LOW_MOVE_VELOCITY;
+	camera.resize_velocity_coefficient = CAMERA_LOW_RESIZE_VELOCITY;
+}
+template void Game::TeleportEntity<Asteroid>(Portal* portal, Asteroid* asteroid);
+template void Game::TeleportEntity<Bonus>(Portal* portal, Bonus* bonus);
+template void Game::TeleportEntity<Bomb>(Portal* portal, Bomb* bomb);
+template void Game::TeleportEntity<Bullet>(Portal* portal, Bullet* bullet);
+template void Game::TeleportEntity<DynamicParticle>(Portal* portal, DynamicParticle* dynamic_entity);
+template void Game::TeleportEntity<Ship>(Portal* portal, Ship* ship);
+template void Game::TeleportEntity<Pilot>(Portal* portal, Pilot* pilot);
+
 void Game::ShipShoot(Ship* ship)
 {
 	if (ships_can_shoot_flags[ship->GetPlayerNumber()] > 0)
@@ -1555,7 +1796,7 @@ void Game::PortalsTPAsteroids()
 				{
 					if (temp__asteroid_p->IsCollision(temp__portal_p))
 					{
-						temp__portal_p->Teleport(temp__asteroid_p);
+						TeleportEntity(temp__portal_p, temp__asteroid_p);
 					}
 
 					found_asteroids++;
@@ -1587,7 +1828,7 @@ void Game::PortalsTPBombs()
 				{
 					if (!temp__bomb_p->IsBoom() && temp__bomb_p->IsCollision(temp__portal_p))
 					{
-						temp__portal_p->Teleport(temp__bomb_p);
+						TeleportEntity(temp__portal_p, temp__bomb_p);
 					}
 
 					found_bombs++;
@@ -1619,7 +1860,7 @@ void Game::PortalsTPBonuses()
 				{
 					if (temp__bonuses_p->IsCollision(temp__portal_p))
 					{
-						temp__portal_p->Teleport(temp__bonuses_p);
+						TeleportEntity(temp__portal_p, temp__bonuses_p);
 					}
 
 					found_bonuses++;
@@ -1651,7 +1892,7 @@ void Game::PortalsTPBullets()
 				{
 					if (temp__bullets_p->IsCollision(temp__portal_p))
 					{
-						temp__portal_p->Teleport(temp__bullets_p);
+						TeleportEntity(temp__portal_p, temp__bullets_p);
 					}
 
 					found_bullets++;
@@ -1683,7 +1924,7 @@ void Game::PortalsTPDynamicParticles()
 				{
 					if (temp__dynamic_particles_p->IsCollision(temp__portal_p))
 					{
-						temp__portal_p->Teleport(temp__dynamic_particles_p);
+						TeleportEntity(temp__portal_p, temp__dynamic_particles_p);
 					}
 
 					found_dynamic_particles++;
@@ -1715,7 +1956,7 @@ void Game::PortalsTPPilots()
 				{
 					if (temp__pilots_p->DynamicEntity::IsCollision(temp__portal_p))
 					{
-						temp__portal_p->Teleport(temp__pilots_p);
+						TeleportEntity(temp__portal_p, temp__pilots_p);
 					}
 
 					found_pilots++;
@@ -1747,7 +1988,7 @@ void Game::PortalsTPShips()
 				{
 					if (temp__ships_p->DynamicEntity::IsCollision(temp__portal_p))
 					{
-						temp__portal_p->Teleport(temp__ships_p);
+						TeleportEntity(temp__portal_p, temp__ships_p);
 					}
 
 					found_ships++;

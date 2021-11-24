@@ -21,6 +21,8 @@ void ExaustEngine();
 void ExaustShoot();
 void ExaustBombBoom();
 void ExaustBurnous();
+void PortalIn();
+void PortalOut();
 void ShardsAsteroid();
 void ShardsAsteroidPowered();
 void ShardsMapElement();
@@ -31,16 +33,19 @@ bool PositionInCyrcle(vec2 _position, float _radius);
 bool PositionInQuare(vec2 _position, float _quare_side);
 bool PositionInTriangle(vec2 _position, float _triangle_side, float _triangle_angle);
 
-#define BACKGROUND					0x01
-#define EXAUST_ENGINE				0x02
-#define EXAUST_SHOOT				0x03
-#define EXAUST_BOMB_BOOM			0x04
-#define EXAUST_BURNOUT				0x05
-#define SHARDS_ASTEROID				0x06
-#define SHARDS_ASTEROID_POWERED		0x07
-#define SHARDS_MAP_ELEMENT			0x08
-#define SHARDS_PILOT				0x09
-#define SHARDS_SHIP					0x0A
+#define NULL					0
+#define BACKGROUND				1
+#define EXAUST_ENGINE			2
+#define EXAUST_BURNOUT			3
+#define EXAUST_BOMB_BOOM		4
+#define EXAUST_SHOOT			5
+#define PORTAL_IN				6
+#define PORTAL_OUT				7
+#define SHARDS_ASTEROID			8
+#define SHARDS_ASTEROID_POWERED	9
+#define SHARDS_MAP_ELEMENT		10
+#define SHARDS_PILOT			11
+#define SHARDS_SHIP				12
 
 void main()
 {
@@ -60,6 +65,12 @@ void main()
 		break;
 	case EXAUST_BURNOUT:
 		ExaustBurnous();
+		break;
+	case PORTAL_IN:
+		PortalIn();
+		break;
+	case PORTAL_OUT:
+		PortalOut();
 		break;
 	case SHARDS_ASTEROID:
 		ShardsAsteroid();
@@ -195,17 +206,50 @@ void ExaustEngine()
 
 void ExaustShoot()
 {
-	
+	frag_color = vec4(0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 void ExaustBombBoom()
 {
-	
+	frag_color = vec4(0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 void ExaustBurnous()
 {
+	frag_color = vec4(0.0f, 0.0f, 0.0f, 1.0f);
+}
+
+void PortalIn()
+{
+	if(length(pixel_position) < 0.9f || length(pixel_position) > 1.0f)
+	{
+		discard;
+	}
+	frag_color = vec4(color, 1.0f);
+}
+
+void PortalOut()
+{
+	#define WAVE_SPEED	9.8f
+	#define WAVE_LENGHT	0.033f
+	#define LN__0_5	-0.69314718f
 	
+	float x;
+	if((x = length(pixel_position)) > 1.0f)
+	{
+		discard;
+	}
+
+	if(x < animation)
+	{
+		frag_color = vec4(color,
+			(sin(WAVE_SPEED * animation * 2.0f * radians(180.0f) - radians(90.0f) - x / WAVE_LENGHT) * 
+			(exp(x * LN__0_5) - 0.5f) - 0.5f + exp(x * LN__0_5)) *
+			(1.0f - animation));
+		return;
+	}
+
+	discard;
 }
 
 void ShardsAsteroid()

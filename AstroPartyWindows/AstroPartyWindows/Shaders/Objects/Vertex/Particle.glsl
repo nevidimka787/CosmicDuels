@@ -19,16 +19,19 @@ mat3 Scale(vec2 vector);
 
 mat3 matrix;
 
-#define BACKGROUND					0x01
-#define EXAUST_ENGINE				0x02
-#define EXAUST_SHOOT				0x03
-#define EXAUST_BOMB_BOOM			0x04
-#define EXAUST_BUTNOUT				0x05
-#define SHARDS_ASTEROID				0x06
-#define SHARDS_ASTEROID_POWERED		0x07
-#define SHARDS_MAP_ELEMENT			0x08
-#define SHARDS_PILOT				0x09
-#define SHARDS_SHIP					0x0A
+#define NULL					0
+#define BACKGROUND				1
+#define EXAUST_ENGINE			2
+#define EXAUST_BURNOUT			3
+#define EXAUST_BOMB_BOOM		4
+#define EXAUST_SHOOT			5
+#define PORTAL_IN				6
+#define PORTAL_OUT				7
+#define SHARDS_ASTEROID			8
+#define SHARDS_ASTEROID_POWERED	9
+#define SHARDS_MAP_ELEMENT		10
+#define SHARDS_PILOT			11
+#define SHARDS_SHIP				12
 
 out vec2 pixel_position;
 
@@ -51,6 +54,17 @@ void main()
             Scale(vec2(1.0f / camera_size)) *
             Scale(vec2(1.0f, scale));
         break;
+    case PORTAL_OUT:
+        pixel_position = aPos;
+        matrix =
+            Rotate(angle) *
+            Scale(vec2(radius)) * 
+            Transport(position) *
+            Transport(-camera_position) *
+            Scale(vec2(1.0f / camera_size)) *
+            Scale(vec2(1.0f, scale));
+        break;
+    case PORTAL_IN:
     case SHARDS_ASTEROID:
     case SHARDS_ASTEROID_POWERED:
     case SHARDS_PILOT:

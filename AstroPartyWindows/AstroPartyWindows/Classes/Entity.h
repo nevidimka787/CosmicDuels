@@ -987,6 +987,12 @@ public:
 
 	void Connect(const Vec2F* pointer);
 	void Connect(const Entity* entity);
+
+	//The function create particle on portal position and return it.
+	Particle CreateParticles(GameTypes::tic_t current_tic);
+
+	//The function create particle on teleport position and return it.
+	Particle CreateParticlesTP(GameTypes::tic_t current_tic, float radius);
 	void Disconnect();
 	bool IsConnected();
 	void Set(

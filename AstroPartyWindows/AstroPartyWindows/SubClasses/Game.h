@@ -274,7 +274,6 @@ public:
 	void AddEntity(MegaLaser new_laser);
 	
 	//Function adds entity to array that store entities of the same type.
-	//Not checking nullprt!
 	void AddEntity(Particle new_particle);
 
 	//Function adds entity to array that store entities of the same type.
@@ -503,7 +502,7 @@ public:
 	//Use temp_p1 temp_p2
 	template<typename EntityType>
 	void DynamicEntitiesAddForce(
-		Vec2F* force,
+		Vec2F force,
 		EntityType* entities,
 		GameTypes::entities_count_t entities_count);
 	
@@ -1009,6 +1008,10 @@ public:
 	//The function spawn the ship from the pilot by spawner.
 	//After that the function removes the pilot.
 	void SpawnEntity(Ship* spawner, Pilot* pilot);
+
+	template <typename EntityType>
+	void TeleportEntity(Portal* portal, EntityType* entity);
+
 	void AddBonuses(Ship* spawner);
 		
 	

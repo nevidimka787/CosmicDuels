@@ -1262,14 +1262,20 @@ void Particle::SetAutoPeriod(EngineTypes::Particle::type_t type)
 	case PARTICLE_TYPE_EXAUST_BOMB_BOOM:
 		this->animation_period = PARTICLE_PERIOD_EXAUST_BOMB_BOOM;
 		break;
-	case PARTICLE_TYPE_EXAUST_BUTNOUT:
-		this->animation_period = PARTICLE_PERIOD_EXAUST_BUTNOUT;
+	case PARTICLE_TYPE_EXAUST_BURNOUT:
+		this->animation_period = PARTICLE_PERIOD_EXAUST_BURNOUT;
 		break;
 	case PARTICLE_TYPE_EXAUST_ENGINE:
 		this->animation_period = PARTICLE_PERIOD_EXAUST_ENGINE;
 		break;
 	case PARTICLE_TYPE_EXAUST_SHOOT:
 		this->animation_period = PARTICLE_PERIOD_EXAUST_SHOOT;
+		break;
+	case PARTICLE_TYPE_PORTAL_IN:
+		this->animation_period = PARTICLE_PERIOD_PORTAL_IN;
+		break;
+	case PARTICLE_TYPE_PORTAL_OUT:
+		this->animation_period = PARTICLE_PERIOD_PORTAL_OUT;
 		break;
 	case PARTICLE_TYPE_SHARDS_ASTEROID:
 		this->animation_period = PARTICLE_PERIOD_SHARDS_ASTEROID;
@@ -1303,14 +1309,20 @@ void Particle::SetAutoPostpone(EngineTypes::Particle::type_t type)
 	case PARTICLE_TYPE_EXAUST_BOMB_BOOM:
 		this->animation_postpone = PARTICLE_POSTPONE_EXAUST_BOMB_BOOM;
 		break;
-	case PARTICLE_TYPE_EXAUST_BUTNOUT:
-		this->animation_postpone = PARTICLE_POSTPONE_EXAUST_BUTNOUT;
+	case PARTICLE_TYPE_EXAUST_BURNOUT:
+		this->animation_postpone = PARTICLE_POSTPONE_EXAUST_BURNOUT;
 		break;
 	case PARTICLE_TYPE_EXAUST_ENGINE:
 		this->animation_postpone = PARTICLE_POSTPONE_EXAUST_ENGINE;
 		break;
 	case PARTICLE_TYPE_EXAUST_SHOOT:
 		this->animation_postpone = PARTICLE_POSTPONE_EXAUST_SHOOT;
+		break;
+	case PARTICLE_TYPE_PORTAL_IN:
+		this->animation_postpone = PARTICLE_POSTPONE_PORTAL_IN;
+		break;
+	case PARTICLE_TYPE_PORTAL_OUT:
+		this->animation_postpone = PARTICLE_POSTPONE_PORTAL_OUT;
 		break;
 	case PARTICLE_TYPE_SHARDS_ASTEROID:
 		this->animation_postpone = PARTICLE_POSTPONE_SHARDS_ASTEROID;
@@ -2608,7 +2620,7 @@ DynamicParticle Ship::CreateBurnoutExaust(GameTypes::tic_t current_tic)
 		angular_velocity,
 		force_collision_coeffisient,
 		force_resistance_air_coefficient,
-		PARTICLE_TYPE_EXAUST_BUTNOUT,
+		PARTICLE_TYPE_EXAUST_BURNOUT,
 		DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_GRAVITY_GENERATORS | DYNAMIC_PARTICLE_PROPERTY_DESTROED_BY_ALL | DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_AIR_RESISTANCE,
 		GetColor(),
 		PARTICLE_PERIOD_EXAUST_ENGINE,
@@ -3691,6 +3703,51 @@ void Portal::Connect(const Entity* entity)
 	tp_position_pointer = entity->GetPositionPointer();
 }
 
+Particle Portal::CreateParticles(GameTypes::tic_t current_tic)
+{
+	return Particle(
+		current_tic,
+		position,
+		angle,
+		radius,
+		PARTICLE_TYPE_PORTAL_IN,
+		Color3F(31.0f / 256.0f, 14.0f / 256.0f, 32.0f / 256.0f),
+		PARTICLE_PERIOD_PORTAL_IN,
+		PARTICLE_POSTPONE_PORTAL_IN,
+		current_tic + PARTICLE_POSTPONE_PORTAL_IN + PARTICLE_PERIOD_PORTAL_IN);
+}
+
+Particle Portal::CreateParticlesTP(GameTypes::tic_t current_tic, float radius)
+{
+	if (tp_mode == PORTAL_MODE_POSITION)
+	{
+		return Particle(
+			current_tic,
+			tp_position,
+			angle,
+			radius,
+			PARTICLE_TYPE_PORTAL_OUT,
+			Color3F(31.0f / 256.0f, 14.0f / 256.0f, 32.0f / 256.0f),
+			PARTICLE_PERIOD_PORTAL_OUT,
+			PARTICLE_POSTPONE_PORTAL_OUT,
+			current_tic + PARTICLE_POSTPONE_PORTAL_OUT + PARTICLE_PERIOD_PORTAL_OUT);
+	}
+	if (tp_mode == PORTAL_MODE_POINTER)
+	{
+		return Particle(
+			current_tic,
+			*tp_position_pointer,
+			angle,
+			radius,
+			PARTICLE_TYPE_PORTAL_OUT,
+			Color3F(31.0f / 256.0f, 14.0f / 256.0f, 32.0f / 256.0f),
+			PARTICLE_PERIOD_PORTAL_OUT,
+			PARTICLE_POSTPONE_PORTAL_OUT,
+			current_tic + PARTICLE_POSTPONE_PORTAL_OUT + PARTICLE_PERIOD_PORTAL_OUT);
+	}
+	return Particle();
+}
+
 void Portal::Disconnect()
 {
 	tp_position_pointer = nullptr;
@@ -3755,11 +3812,11 @@ void Portal::Teleport(EntityType* entity)
 {
 	if (tp_mode == PORTAL_MODE_POINTER)
 	{
-		entity->SetPosition(*tp_position_pointer + (entity->GetPosition() - position).Rotate(angle));
+		entity->SetPosition(tp_position_pointer);
 	}
 	else if (tp_mode == PORTAL_MODE_POSITION)
 	{
-		entity->SetPosition(tp_position + (entity->GetPosition() - position).Rotate(angle));
+		entity->SetPosition(tp_position);
 	}
 	else
 	{

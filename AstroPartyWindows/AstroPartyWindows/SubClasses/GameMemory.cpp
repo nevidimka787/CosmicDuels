@@ -144,6 +144,10 @@ void Game::AddEntity(Turel new_turel)
 
 void Game::AddEntity(Particle new_particle)
 {
+	if (!new_particle.exist)
+	{
+		return;
+	}
 	for (GameTypes::entities_count_t particle = 0; particle < GAME_PARTICLES_MAX_COUNT; particle++)
 	{
 		if (particles[particle].exist == false)
@@ -406,7 +410,9 @@ void Game::DestroyEntity(Bomb* destroyer, Ship* entity)
 	AddEntity(entity->Destroy());
 	ships[entity->GetPlayerNumber()].exist = false;
 	ships_count--;
-	camera.SetCoefficients();
+
+	camera.move_velocity_coefficient = CAMERA_LOW_MOVE_VELOCITY;
+	camera.resize_velocity_coefficient = CAMERA_LOW_RESIZE_VELOCITY;
 }
 
 void Game::DestroyEntity(Bomb* destroyer, Particle* entity)
@@ -434,7 +440,9 @@ void Game::DestroyEntity(Bomb* destroyer, Pilot* entity)
 	}
 	AddEntity(entity->CreateShards(global_timer));
 	RemoveEntity(entity);
-	camera.SetCoefficients();
+
+	camera.move_velocity_coefficient = CAMERA_LOW_MOVE_VELOCITY;
+	camera.resize_velocity_coefficient = CAMERA_LOW_RESIZE_VELOCITY;
 }
 
 void Game::DestroyEntity(Bomb* destroyer, Turel* entity)
@@ -496,7 +504,9 @@ void Game::DestroyEntity(Bullet* destroyer, Ship* entity)
 	AddBonuses(entity);
 	AddEntity(entity->Destroy());
 	RemoveEntity(entity);
-	camera.SetCoefficients();
+
+	camera.move_velocity_coefficient = CAMERA_LOW_MOVE_VELOCITY;
+	camera.resize_velocity_coefficient = CAMERA_LOW_RESIZE_VELOCITY;
 }
 
 void Game::DestroyEntity(Bullet* destroyer, Pilot* entity)
@@ -520,7 +530,9 @@ void Game::DestroyEntity(Bullet* destroyer, Pilot* entity)
 	AddEntity(entity->CreateShards(global_timer));
 	pilots[entity->GetPlayerNumber()].exist = false;
 	pilots_count--;
-	camera.SetCoefficients();
+
+	camera.move_velocity_coefficient = CAMERA_LOW_MOVE_VELOCITY;
+	camera.resize_velocity_coefficient = CAMERA_LOW_RESIZE_VELOCITY;
 }
 
 void Game::DestroyEntity(Knife* destroyer, Asteroid* entity)
@@ -574,7 +586,9 @@ void Game::DestroyEntity(Knife* destroyer, Ship* entity)
 	pilots_count++;
 	ships[entity->GetPlayerNumber()].exist = false;
 	ships_count--;
-	camera.SetCoefficients();
+
+	camera.move_velocity_coefficient = CAMERA_LOW_MOVE_VELOCITY;
+	camera.resize_velocity_coefficient = CAMERA_LOW_RESIZE_VELOCITY;
 }
 
 void Game::DestroyEntity(Knife* destroyer, Pilot* entity)
@@ -598,7 +612,9 @@ void Game::DestroyEntity(Knife* destroyer, Pilot* entity)
 	AddEntity(entity->CreateShards(global_timer));
 	pilots[entity->GetPlayerNumber()].exist = false;
 	pilots_count--;
-	camera.SetCoefficients();
+
+	camera.move_velocity_coefficient = CAMERA_LOW_MOVE_VELOCITY;
+	camera.resize_velocity_coefficient = CAMERA_LOW_RESIZE_VELOCITY;
 }
 
 void Game::DestroyEntity(Knife* destroyer, Turel* entity)
@@ -672,7 +688,9 @@ void Game::DestroyEntity(Laser* destroyer, Ship* entity)
 	pilots_count++;
 	ships[entity->GetPlayerNumber()].exist = false;
 	ships_count--;
-	camera.SetCoefficients();
+
+	camera.move_velocity_coefficient = CAMERA_LOW_MOVE_VELOCITY;
+	camera.resize_velocity_coefficient = CAMERA_LOW_RESIZE_VELOCITY;
 }
 
 void Game::DestroyEntity(Laser* destroyer, Particle* entity)
@@ -701,7 +719,9 @@ void Game::DestroyEntity(Laser* destroyer, Pilot* entity)
 	AddEntity(entity->CreateShards(global_timer));
 	pilots[entity->GetPlayerNumber()].exist = false;
 	pilots_count--;
-	camera.SetCoefficients();
+
+	camera.move_velocity_coefficient = CAMERA_LOW_MOVE_VELOCITY;
+	camera.resize_velocity_coefficient = CAMERA_LOW_RESIZE_VELOCITY;
 }
 
 void Game::DestroyEntity(Laser* destroyer, Turel* entity)
@@ -767,7 +787,9 @@ void Game::DestroyEntity(MegaLaser* destroyer, Ship* entity)
 	AddEntity(entity->Destroy());
 	std::cout << "\nMegaLaser destroys ship\n";
 	RemoveEntity(entity);
-	camera.SetCoefficients();
+
+	camera.move_velocity_coefficient = CAMERA_LOW_MOVE_VELOCITY;
+	camera.resize_velocity_coefficient = CAMERA_LOW_RESIZE_VELOCITY;
 }
 
 void Game::DestroyEntity(MegaLaser* destroyer, Particle* entity)
@@ -904,10 +926,12 @@ void Game::SpawnEntity(Ship* spawner, Pilot* pilot)
 	}
 	if (game_rules & GAME_RULE_FRIEDNLY_SHEEP_CAN_RESTORE)
 	{
-		camera.SetCoefficients();
 		IncrementPlayersCountInTeam(spawner->GetTeamNumber());
 		AddEntity(pilot->Respawn());
 		RemoveEntity(pilot);
+
+		camera.move_velocity_coefficient = CAMERA_LOW_MOVE_VELOCITY;
+		camera.resize_velocity_coefficient = CAMERA_LOW_RESIZE_VELOCITY;
 	}
 }
 
