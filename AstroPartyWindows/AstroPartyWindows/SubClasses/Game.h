@@ -735,31 +735,35 @@ public:
 	//t = n * k
 	void MegaLasersDestroyTurels();
 
-	//mtx: portal -> asteroid
+	//mtx: portal -> particle
+	//t = n
+	void PortalsCreateParticles();
+
+	//mtx: portal -> asteroid -> particle
 	//t = n * k
 	void PortalsTPAsteroids();
 
-	//mtx: portal -> bomb
+	//mtx: portal -> bomb -> particle
 	//t = n * k
 	void PortalsTPBombs();
 
-	//mtx: portal -> bonus
+	//mtx: portal -> bonus -> particle
 	//t = n * k
 	void PortalsTPBonuses();
 
-	//mtx: portal -> bullet
+	//mtx: portal -> bullet -> particle
 	//t = n * k
 	void PortalsTPBullets();
 
-	//mtx: portal -> dynamic_particles
+	//mtx: portal -> particle -> dynamic_particles
 	//t = n * k
 	void PortalsTPDynamicParticles();
 
-	//mtx: portal -> pilot
+	//mtx: portal -> pilot -> particle
 	//t = n * k
 	void PortalsTPPilots();
 
-	//mtx: portal -> ship
+	//mtx: portal -> ship -> particle
 	//t = n * k
 	void PortalsTPShips(); 
 
@@ -1009,6 +1013,7 @@ public:
 	//After that the function removes the pilot.
 	void SpawnEntity(Ship* spawner, Pilot* pilot);
 
+	//portal-> entyty_mtx -> particle
 	template <typename EntityType>
 	void TeleportEntity(Portal* portal, EntityType* entity);
 

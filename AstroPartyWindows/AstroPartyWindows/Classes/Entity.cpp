@@ -1527,7 +1527,13 @@ Bonus::Bonus(const Bonus& bonus) :
 {
 }
 
-Bonus::Bonus(Vec2F* position, Vec2F* velocity, EngineTypes::Bonus::inventory_t bonus_inventory, float angle, float angular_velocity, float radius, float force_collision_coeffisient, float force_resistance_air_coefficient, bool exist) :
+Bonus::Bonus(Vec2F position, Vec2F velocity, EngineTypes::Bonus::inventory_t bonus_inventory, float angle, float angular_velocity, float radius, float force_collision_coeffisient, float force_resistance_air_coefficient, bool exist) :
+	DynamicEntity(position, velocity, radius, angle, angular_velocity, force_collision_coeffisient, force_resistance_air_coefficient, exist),
+	bonus_inventory(bonus_inventory)
+{
+}
+
+Bonus::Bonus(const Vec2F* position, const Vec2F* velocity, EngineTypes::Bonus::inventory_t bonus_inventory, float angle, float angular_velocity, float radius, float force_collision_coeffisient, float force_resistance_air_coefficient, bool exist) :
 	DynamicEntity(position, velocity, radius, angle, angular_velocity, force_collision_coeffisient, force_resistance_air_coefficient, exist),
 	bonus_inventory(bonus_inventory)
 {
@@ -1688,7 +1694,16 @@ Asteroid::Asteroid(const Asteroid& asteroid) :
 {
 }
 
-Asteroid::Asteroid(Vec2F* position, Vec2F* velocity, EngineTypes::Bonus::inventory_t bonus_inventory, EngineTypes::Asteroid::size_t size, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, bool exist) :
+Asteroid::Asteroid(Vec2F position, Vec2F velocity, EngineTypes::Bonus::inventory_t bonus_inventory, EngineTypes::Asteroid::size_t size, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, bool exist) :
+	Bonus(position, velocity, bonus_inventory, 0.0f, angle, angular_velocity, force_collision_coeffisient, force_resistance_air_coefficient, exist),
+	size(size)
+{
+	UpdateRadius();
+	this->bonus_inventory = bonus_inventory;
+	exist = true;
+}
+
+Asteroid::Asteroid(const Vec2F* position, const Vec2F* velocity, EngineTypes::Bonus::inventory_t bonus_inventory, EngineTypes::Asteroid::size_t size, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, bool exist) :
 	Bonus(position, velocity, bonus_inventory, 0.0f, angle, angular_velocity, force_collision_coeffisient, force_resistance_air_coefficient, exist),
 	size(size)
 {

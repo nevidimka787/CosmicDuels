@@ -250,7 +250,7 @@ void PhysicsCalculation0()
             main_game->PhysicThread0();
             ph0++;
         }
-        local_time_point += std::chrono::milliseconds(THREAD_PHYSIC_TIK_PERIOD);
+        local_time_point += std::chrono::microseconds(THREAD_PHYSIC_TIK_PERIOD);
         std::this_thread::sleep_until(local_time_point);
     }
 }
@@ -267,7 +267,7 @@ void PhysicsCalculation1()
             main_game->PhysicThread1();
             ph1++;
         }
-        local_time_point += std::chrono::milliseconds(THREAD_PHYSIC_TIK_PERIOD);
+        local_time_point += std::chrono::microseconds(THREAD_PHYSIC_TIK_PERIOD);
         std::this_thread::sleep_until(local_time_point);
     }
 }
@@ -284,7 +284,7 @@ void PhysicsCalculation2()
             main_game->PhysicThread2();
             ph2++;
         }
-        local_time_point += std::chrono::milliseconds(THREAD_PHYSIC_TIK_PERIOD);
+        local_time_point += std::chrono::microseconds(THREAD_PHYSIC_TIK_PERIOD);
         std::this_thread::sleep_until(local_time_point);
     }
 }
@@ -301,7 +301,7 @@ void PhysicsCalculation3()
             main_game->PhysicThread3();
             ph3++;
         }
-        local_time_point += std::chrono::milliseconds(THREAD_PHYSIC_TIK_PERIOD);
+        local_time_point += std::chrono::microseconds(THREAD_PHYSIC_TIK_PERIOD);
         std::this_thread::sleep_until(local_time_point);
     }
 }

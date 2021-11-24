@@ -27,6 +27,10 @@ void Game::PhysicThread0()
 	MegaLasersDestroyAsteroids();
 	MegaLasersDestroyBonuses();
 	PilotsKilledByBombs();
+	if (!(global_timer % PARTICLE_PERIOD_PORTAL_OUT))
+	{
+		PortalsCreateParticles();
+	}
 	PortalsTPShips();
 	ShipsInfluenceToBonuses();
 	ShipsRespawnOrDestroyPilots();
@@ -531,6 +535,7 @@ void Game::PollEvents()
 	case MAP_DESTROYABLE:		Event6();	return;
 	case MAP_AGGRESSIVE:		Event7();	return;
 	case MAP_BROKEN:			Event8();	return;
+	case MAP_PORTAL:			Event9();	return;
 	}
 }
 
@@ -547,6 +552,9 @@ void Game::InitLevel()
 	MemorySetDefault();
 
 	current_map_id = GenerateRandomMapId();
+
+	current_map_id = MAP_PORTAL;
+	std::cout << "Only map Portal selected." << std::endl;
 
 	Vec2F ships_positions[GAME_PLAYERS_MAX_COUNT];
 	float ships_angles[GAME_PLAYERS_MAX_COUNT];

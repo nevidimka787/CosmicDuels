@@ -1778,6 +1778,24 @@ void Game::MegaLasersDestroyTurels()
 	mega_lasers_array_mtx.unlock();
 }
 
+void Game::PortalsCreateParticles()
+{
+	Portal* temp__portal_p = portals;
+
+	portals_array_mtx.lock();
+	for (GameTypes::map_elements_count_t found_portals = 0; found_portals < portals_count; temp__portal_p++)
+	{
+		if (temp__portal_p->exist)
+		{
+			particles_array_mtx.lock();
+			AddEntity(temp__portal_p->CreateParticlesTP(global_timer, BULLET_DEFAULT_RADIUS * 2.0f));
+			particles_array_mtx.unlock();
+			found_portals++;
+		}
+	}
+	portals_array_mtx.unlock();
+}
+
 void Game::PortalsTPAsteroids()
 {
 	GameTypes::entities_count_t found_asteroids;
@@ -1796,7 +1814,9 @@ void Game::PortalsTPAsteroids()
 				{
 					if (temp__asteroid_p->IsCollision(temp__portal_p))
 					{
+						particles_array_mtx.lock();
 						TeleportEntity(temp__portal_p, temp__asteroid_p);
+						particles_array_mtx.unlock();
 					}
 
 					found_asteroids++;
@@ -1828,7 +1848,9 @@ void Game::PortalsTPBombs()
 				{
 					if (!temp__bomb_p->IsBoom() && temp__bomb_p->IsCollision(temp__portal_p))
 					{
+						particles_array_mtx.lock();
 						TeleportEntity(temp__portal_p, temp__bomb_p);
+						particles_array_mtx.unlock();
 					}
 
 					found_bombs++;
@@ -1860,7 +1882,9 @@ void Game::PortalsTPBonuses()
 				{
 					if (temp__bonuses_p->IsCollision(temp__portal_p))
 					{
+						particles_array_mtx.lock();
 						TeleportEntity(temp__portal_p, temp__bonuses_p);
+						particles_array_mtx.unlock();
 					}
 
 					found_bonuses++;
@@ -1892,7 +1916,9 @@ void Game::PortalsTPBullets()
 				{
 					if (temp__bullets_p->IsCollision(temp__portal_p))
 					{
+						particles_array_mtx.lock();
 						TeleportEntity(temp__portal_p, temp__bullets_p);
+						particles_array_mtx.unlock();
 					}
 
 					found_bullets++;
@@ -1917,6 +1943,7 @@ void Game::PortalsTPDynamicParticles()
 	{
 		if (temp__portal_p->exist)
 		{
+			particles_array_mtx.lock();
 			dynamic_particles_array_mtx.lock();
 			for (found_dynamic_particles = 0, temp__dynamic_particles_p = dynamic_particles; found_dynamic_particles < dynamic_particles_count; temp__dynamic_particles_p++)
 			{
@@ -1931,6 +1958,7 @@ void Game::PortalsTPDynamicParticles()
 				}
 			}
 			dynamic_particles_array_mtx.unlock();
+			particles_array_mtx.unlock();
 
 			found_portals++;
 		}
@@ -1956,7 +1984,9 @@ void Game::PortalsTPPilots()
 				{
 					if (temp__pilots_p->DynamicEntity::IsCollision(temp__portal_p))
 					{
+						particles_array_mtx.lock();
 						TeleportEntity(temp__portal_p, temp__pilots_p);
+						particles_array_mtx.unlock();
 					}
 
 					found_pilots++;
@@ -1988,7 +2018,9 @@ void Game::PortalsTPShips()
 				{
 					if (temp__ships_p->DynamicEntity::IsCollision(temp__portal_p))
 					{
+						particles_array_mtx.lock();
 						TeleportEntity(temp__portal_p, temp__ships_p);
+						particles_array_mtx.unlock();
 					}
 
 					found_ships++;

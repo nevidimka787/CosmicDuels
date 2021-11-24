@@ -417,8 +417,18 @@ public:
 	Bonus(bool exist);
 	Bonus(const Bonus& bonus);
 	Bonus(
-		Vec2F* position,
-		Vec2F* velocity,
+		Vec2F position,
+		Vec2F velocity,
+		EngineTypes::Bonus::inventory_t bonus_inventory,
+		float angle = 0.0f,
+		float angular_velocity = 0.0f,
+		float radius = BONUS_DEFAULT_RADIUS,
+		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_resistance_air_coefficient = BONUS_DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
+		bool exist = true);
+	Bonus(
+		const Vec2F* position,
+		const Vec2F* velocity,
 		EngineTypes::Bonus::inventory_t bonus_inventory,
 		float angle = 0.0f,
 		float angular_velocity = 0.0f,
@@ -466,8 +476,18 @@ public:
 	Asteroid();
 	Asteroid(const Asteroid& asteroid);
 	Asteroid(
-		Vec2F* position,
-		Vec2F* velocity,
+		Vec2F position,
+		Vec2F velocity,
+		EngineTypes::Bonus::inventory_t bonus_type,
+		EngineTypes::Asteroid::size_t size = ASTEROID_DEFAULT_SIZE,
+		float angle = 0.0f,
+		float angular_velocity = 0.0f,
+		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
+		bool exist = true);
+	Asteroid(
+		const Vec2F* position,
+		const Vec2F* velocity,
 		EngineTypes::Bonus::inventory_t bonus_type,
 		EngineTypes::Asteroid::size_t size = ASTEROID_DEFAULT_SIZE,
 		float angle = 0.0f,
