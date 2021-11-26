@@ -553,8 +553,8 @@ void Game::InitLevel()
 
 	current_map_id = GenerateRandomMapId();
 
-	current_map_id = MAP_PORTAL;
-	std::cout << "Only map Portal selected." << std::endl;
+	//current_map_id = MAP_PORTAL;
+	//std::cout << "Only map Portal selected." << std::endl;
 
 	Vec2F ships_positions[GAME_PLAYERS_MAX_COUNT];
 	float ships_angles[GAME_PLAYERS_MAX_COUNT];
