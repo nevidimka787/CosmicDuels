@@ -743,7 +743,7 @@ bool DynamicEntity::Collision(Polygon* polygon)
 			collision = true;
 		}
 	}
-	return false;
+	return collision;
 }
 
 bool DynamicEntity::Collision(Map* map)
