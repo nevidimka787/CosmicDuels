@@ -2,216 +2,236 @@
 
 void Game::AddEntity(Asteroid new_asteroid)
 {
-	for (GameTypes::entities_count_t asteroid = 0; asteroid < GAME_ASTEROIDS_MAX_COUNT; asteroid++)
+	if (new_asteroid.exist)
 	{
-		if (asteroids[asteroid].exist == false)
+		for (GameTypes::entities_count_t asteroid = 0; asteroid < GAME_ASTEROIDS_MAX_COUNT; asteroid++)
 		{
-			asteroids[asteroid] = new_asteroid;
-			asteroids_count++;
-			return;
+			if (asteroids[asteroid].exist == false)
+			{
+				asteroids[asteroid] = new_asteroid;
+				asteroids_count++;
+				return;
+			}
 		}
 	}
 }
 
 void Game::AddEntity(Bonus new_bonus)
 {
-	if (new_bonus.exist == false)
+	if (new_bonus.exist)
 	{
-		return;
-	}
-	for (GameTypes::entities_count_t bonus = 0; bonus < GAME_BONUSES_MAX_COUNT; bonus++)
-	{
-		if (bonuses[bonus].exist == false)
+		for (GameTypes::entities_count_t bonus = 0; bonus < GAME_BONUSES_MAX_COUNT; bonus++)
 		{
-			bonuses[bonus] = new_bonus;
-			bonuses_count++;
-			return;
+			if (bonuses[bonus].exist == false)
+			{
+				bonuses[bonus] = new_bonus;
+				bonuses_count++;
+				return;
+			}
 		}
 	}
 }
 
 void Game::AddEntity(Bullet new_bullet)
 {
-	for (GameTypes::entities_count_t bullet = 0; bullet < GAME_BULLETS_MAX_COUNT; bullet++)
+	if (new_bullet.exist)
 	{
-		if (bullets[bullet].exist == false)
+		for (GameTypes::entities_count_t bullet = 0; bullet < GAME_BULLETS_MAX_COUNT; bullet++)
 		{
-			bullets[bullet] = new_bullet;
-			bullets_count++;
-			return;
+			if (bullets[bullet].exist == false)
+			{
+				bullets[bullet] = new_bullet;
+				bullets_count++;
+				return;
+			}
 		}
 	}
 }
 
 void Game::AddEntity(DecelerationArea new_deceler_area)
 {
-	for (GameTypes::map_elements_count_t deceler_area = 0; deceler_area < GAME_DECEL_AREAS_MAX_COUNT; deceler_area++)
+	if (new_deceler_area.exist)
 	{
-		if (deceler_areas[deceler_area].exist == false)
+		for (GameTypes::map_elements_count_t deceler_area = 0; deceler_area < GAME_DECEL_AREAS_MAX_COUNT; deceler_area++)
 		{
-			deceler_areas[deceler_area] = new_deceler_area;
-			deceler_areas_count++;
-			return;
+			if (deceler_areas[deceler_area].exist == false)
+			{
+				deceler_areas[deceler_area] = new_deceler_area;
+				deceler_areas_count++;
+				return;
+			}
 		}
 	}
 }
 
 void Game::AddEntity(GravGen new_grav_gen)
 {
-	for (GameTypes::map_elements_count_t grav_gen = 0; grav_gen < GAME_GRAV_GENS_MAX_COUNT; grav_gen++)
+	if (new_grav_gen.exist)
 	{
-		if (grav_gens[grav_gen].exist == false)
+		for (GameTypes::map_elements_count_t grav_gen = 0; grav_gen < GAME_GRAV_GENS_MAX_COUNT; grav_gen++)
 		{
-			grav_gens[grav_gen] = new_grav_gen;
-			grav_gens_count++;
-			return;
+			if (grav_gens[grav_gen].exist == false)
+			{
+				grav_gens[grav_gen] = new_grav_gen;
+				grav_gens_count++;
+				return;
+			}
 		}
 	}
 }
 
 void Game::AddEntity(Knife new_knife)
 {
-	if (!new_knife.exist)
+	if (new_knife.exist)
 	{
-		return;
-	}
-	for (GameTypes::entities_count_t knife = 0; knife < GAME_KNIFES_MAX_COUNT; knife++)
-	{
-		if (!knifes[knife].exist)
+		for (GameTypes::entities_count_t knife = 0; knife < GAME_KNIFES_MAX_COUNT; knife++)
 		{
-			knifes[knife] = new_knife;
-			knifes_count++;
-			return;
+			if (!knifes[knife].exist)
+			{
+				knifes[knife] = new_knife;
+				knifes_count++;
+				return;
+			}
 		}
 	}
 }
 
 void Game::AddEntity(Bomb new_bomb)
 {
-	if (bombs_count == GAME_BOMBS_MAX_COUNT)
+	if (new_bomb.exist)
 	{
-		return;
-	}
-	for (GameTypes::entities_count_t bomb = 0; bomb < GAME_BOMBS_MAX_COUNT; bomb++)
-	{
-		if (bombs[bomb].exist == false)
+		for (GameTypes::entities_count_t bomb = 0; bomb < GAME_BOMBS_MAX_COUNT; bomb++)
 		{
-			bombs[bomb] = new_bomb;
-			bombs_count++;
-			return;
+			if (bombs[bomb].exist == false)
+			{
+				bombs[bomb] = new_bomb;
+				bombs_count++;
+				return;
+			}
 		}
 	}
 }
 
 void Game::AddEntity(Laser new_laser)
 {
-	for (GameTypes::entities_count_t laser = 0; laser < GAME_LASERS_MAX_COUNT; laser++)
+	if (new_laser.exist)
 	{
-		if (lasers[laser].exist == false)
+		for (GameTypes::entities_count_t laser = 0; laser < GAME_LASERS_MAX_COUNT; laser++)
 		{
-			lasers[laser] = new_laser;
-			lasers_count++;
-			return;
+			if (lasers[laser].exist == false)
+			{
+				lasers[laser] = new_laser;
+				lasers_count++;
+				return;
+			}
 		}
 	}
 }
 
 void Game::AddEntity(MegaLaser new_mega_laser)
 {
-	for (GameTypes::map_elements_count_t mega_laser = 0; mega_laser < GAME_MEGA_LASERS_MAX_COUNT; mega_laser++)
+	if (new_mega_laser.exist)
 	{
-		if (mega_lasers[mega_laser].exist == false)
+		for (GameTypes::map_elements_count_t mega_laser = 0; mega_laser < GAME_MEGA_LASERS_MAX_COUNT; mega_laser++)
 		{
-			mega_lasers[mega_laser] = new_mega_laser;
-			mega_lasers_count++;
-			return;
+			if (mega_lasers[mega_laser].exist == false)
+			{
+				mega_lasers[mega_laser] = new_mega_laser;
+				mega_lasers_count++;
+				return;
+			}
 		}
 	}
 }
 
 void Game::AddEntity(Turel new_turel)
 {
-	for (GameTypes::map_elements_count_t turel = 0; turel < GAME_TURELS_MAX_COUNT; turel++)
+	if (new_turel.exist)
 	{
-		if (turels[turel].exist == false)
+		for (GameTypes::map_elements_count_t turel = 0; turel < GAME_TURELS_MAX_COUNT; turel++)
 		{
-			turels[turel] = new_turel;
-			turels_count++;
-			return;
+			if (turels[turel].exist == false)
+			{
+				turels[turel] = new_turel;
+				turels_count++;
+				return;
+			}
 		}
 	}
 }
 
 void Game::AddEntity(Particle new_particle)
 {
-	if (!new_particle.exist)
+	if (new_particle.exist)
 	{
-		return;
-	}
-	for (GameTypes::entities_count_t particle = 0; particle < GAME_PARTICLES_MAX_COUNT; particle++)
-	{
-		if (particles[particle].exist == false)
+		for (GameTypes::entities_count_t particle = 0; particle < GAME_PARTICLES_MAX_COUNT; particle++)
 		{
-			particles[particle] = new_particle;
-			particles_count++;
-			return;
+			if (particles[particle].exist == false)
+			{
+				particles[particle] = new_particle;
+				particles_count++;
+				return;
+			}
 		}
 	}
 }
 
 void Game::AddEntity(DynamicParticle new_particle)
 {
-	for (GameTypes::entities_count_t particle = 0; particle < GAME_DYNAMIC_PARTICLES_MAX_COUNT; particle++)
+	if (new_particle.exist)
 	{
-		if (dynamic_particles[particle].exist == false)
+		for (GameTypes::entities_count_t particle = 0; particle < GAME_DYNAMIC_PARTICLES_MAX_COUNT; particle++)
 		{
-			dynamic_particles[particle] = new_particle;
-			dynamic_particles_count++;
-			return;
+			if (dynamic_particles[particle].exist == false)
+			{
+				dynamic_particles[particle] = new_particle;
+				dynamic_particles_count++;
+				return;
+			}
 		}
 	}
 }
 
 void Game::AddEntity(Portal new_portal)
 {
-	for (GameTypes::entities_count_t portal = 0; portal < GAME_PORTALS_MAX_COUNT; portal++)
+	if (new_portal.exist)
 	{
-		if (portals[portal].exist == false)
+		for (GameTypes::entities_count_t portal = 0; portal < GAME_PORTALS_MAX_COUNT; portal++)
 		{
-			portals[portal] = new_portal;
-			portals_count++;
-			std::cout << "New Portal was added." << "Pos:" << new_portal.GetPosition() << std::endl;
-			return;
+			if (portals[portal].exist == false)
+			{
+				portals[portal] = new_portal;
+				portals_count++;
+				return;
+			}
 		}
 	}
 }
 
 void Game::AddEntity(Pilot new_pilot)
 {
-	if (!new_pilot.exist)
+	if (new_pilot.exist)
 	{
-		return;
-	}
-	GameTypes::players_count_t pilot_number = new_pilot.GetPlayerNumber();
-	if (pilot_number < GAME_PLAYERS_MAX_COUNT && !pilots[pilot_number].exist)
-	{
-		pilots[pilot_number] = new_pilot;
-		pilots_count++;
+		GameTypes::players_count_t pilot_number = new_pilot.GetPlayerNumber();
+		if (pilot_number < GAME_PLAYERS_MAX_COUNT && !pilots[pilot_number].exist)
+		{
+			pilots[pilot_number] = new_pilot;
+			pilots_count++;
+		}
 	}
 }
 
 
 void Game::AddEntity(Ship new_ship)
 {
-	if (!new_ship.exist)
+	if (new_ship.exist)
 	{
-		return;
-	}
-	GameTypes::players_count_t ship_number = new_ship.GetPlayerNumber();
-	if (ship_number < GAME_PLAYERS_MAX_COUNT && !ships[ship_number].exist)
-	{
-		ships[ship_number] = new_ship;
-		ships_count++;
+		GameTypes::players_count_t ship_number = new_ship.GetPlayerNumber();
+		if (ship_number < GAME_PLAYERS_MAX_COUNT && !ships[ship_number].exist)
+		{
+			ships[ship_number] = new_ship;
+			ships_count++;
+		}
 	}
 }
 

@@ -140,7 +140,7 @@ void InputOutputUpdate()
                 ph2 = 0;
                 ph3 = 0;
             }
-            else if (!((lock_timer + 30) % 100))
+            else if (!((lock_timer + 60) % 100))
             {
                 if (ph0 == 0 || ph1 == 0 || ph2 == 0 || ph3 == 0)
                 {
@@ -149,11 +149,12 @@ void InputOutputUpdate()
                     main_game->DebugLog__CheckMutexeslLock();
                 }
             }
-            else if (!((lock_timer + 60) % 100))
+            else if (!((lock_timer + 90) % 100))
             {
                 if (!(ph0 == ph1 && ph1 == ph2 && ph2 == ph3))
                 {
                     std::cout << "Thread desinchronisation detected." << std::endl;
+                    printf("Ph0:%4u Ph1:%4u Ph2:%4u Ph3:%4u Ans:%1u\n", ph0, ph1, ph2, ph3, (unsigned)(!(ph0 == ph1 && ph1 == ph2 && ph2 == ph3)));
                 }
             }
         }

@@ -1210,17 +1210,17 @@ void Game::MutexesUnlock()
 
 void Game::WaitPhase1()
 {
-	while ((threads_statuses & THREAD_PHASE_1_COMPLETE) != THREAD_PHASE_1_COMPLETE);
+	while ((threads_statuses & THREAD_PHASE_1_COMPLETE) != THREAD_PHASE_1_COMPLETE);// std::this_thread::sleep_for(std::chrono::nanoseconds(THREAD_PHYSIC_WAIT_PERIOD));
 }
 
 void Game::WaitPhaseAllPhases()
 {
-	while ((threads_statuses & THREAD_ALL_PHASE_COMPLETE) != THREAD_ALL_PHASE_COMPLETE);
+	while ((threads_statuses & THREAD_ALL_PHASE_COMPLETE) != THREAD_ALL_PHASE_COMPLETE);// std::this_thread::sleep_for(std::chrono::nanoseconds(THREAD_PHYSIC_WAIT_PERIOD));
 }
 
 void Game::WaitPhaseNotAll()
 {
-	while ((threads_statuses & THREAD_ALL_PHASE_COMPLETE) == THREAD_ALL_PHASE_COMPLETE);
+	while ((threads_statuses & THREAD_ALL_PHASE_COMPLETE) == THREAD_ALL_PHASE_COMPLETE);// std::this_thread::sleep_for(std::chrono::nanoseconds(THREAD_PHYSIC_WAIT_PERIOD));
 }
 
 

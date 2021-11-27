@@ -57,7 +57,7 @@ public:
 	//Getting the distance between two closest points of objects.
 	float GetDistance(Beam* beam) const;
 	//Getting the distance between two closest points of objects.
-	float GetDistance(Cyrcle* cyrcle) const;
+	float GetDistance(Cyrcle* cyrcle, bool* is_inside = nullptr) const;
 	//Getting the distance between two closest points of objects.
 	float GetDistance(DecelerationArea* deceler_area) const;
 	//Getting the distance between two closest points of objects.
@@ -145,6 +145,8 @@ protected:
 
 public:
 	float force_collision_coeffisient;
+	//the distance the ship will be pushed to the side
+	float force_collision_delta = DEFAULT_FORCE_COLLISION_DELTA;
 	float force_resistance_air_coefficient;
 	DynamicEntity();
 	DynamicEntity(const DynamicEntity& dynamic_entity);

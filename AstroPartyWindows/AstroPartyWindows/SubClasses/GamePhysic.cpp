@@ -494,7 +494,8 @@ void Game::ShipShoot_Loop(Ship* ship)
 		Game::AddEntity(ship->CreateLoop(bullet));
 	}
 	bullets_array_mtx.unlock();
-	ships_can_shoot_flags[ship->GetPlayerNumber()] += GAME_ADD_DELLAY_BONUS_USE;
+	//ships_can_shoot_flags[ship->GetPlayerNumber()] += GAME_ADD_DELLAY_BONUS_USE;
+	ships_can_shoot_flags[ship->GetPlayerNumber()] += 2;
 }
 
 void Game::ShipShoot_Laser(Ship* ship)
@@ -507,6 +508,9 @@ void Game::ShipShoot_Laser(Ship* ship)
 
 void Game::ShipShoot_NoBonus(Ship* ship)
 {
+	//ShipShoot_Loop(ship);
+	//return;
+
 	bullets_array_mtx.lock();
 	if (ship->HaveBuff(SHIP_BUFF_TRIPLE))
 	{

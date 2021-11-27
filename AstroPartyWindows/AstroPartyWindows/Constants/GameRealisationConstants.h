@@ -238,8 +238,9 @@ Asteroid
 
 	//threads
 
-//TIme (in milliseconds) between to starts of tiks.
-#define THREAD_PHYSIC_TIK_PERIOD	9990
+#define THREAD_PHYSIC_WAIT_PERIOD	1
+//Time (in milliseconds) between to starts of tiks.
+#define THREAD_PHYSIC_TIK_PERIOD	(unsigned)(10000.0f * 0.995f)
 #define THREAD_INPUT_TIK_PERIOD		10
 
 #define THREAD_PHASE_1		0u

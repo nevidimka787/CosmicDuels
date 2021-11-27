@@ -116,6 +116,8 @@
 
 
 #define DEFAULT_FORCE_COLLISION_COEFFICIENT			0.002f
+//the distance the ship will be pushed to the side
+#define DEFAULT_FORCE_COLLISION_DELTA				0.001f
 #define DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT	0.01f
 
 
