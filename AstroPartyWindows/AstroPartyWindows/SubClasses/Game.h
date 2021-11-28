@@ -397,7 +397,7 @@ public:
 	//"Turel"
 	void Event1();
 	
-	//"Cyrcle"
+	//"Grav Gen"
 	void Event2();
 	
 	//"Deceleration area"
@@ -427,7 +427,7 @@ public:
 	//"Turel"
 	void CreateMap1(Vec2F* ships_positions, float* ships_angles);
 	
-	//"Cyrcle"
+	//"Grav Gen"
 	void CreateMap2(Vec2F* ships_positions, float* ships_angles);
 	
 	//"Deceleration area"
@@ -1021,6 +1021,7 @@ public:
 		
 	
 	//Not checking nullprt!
+	//mtx: laser -> bomb -> knife -> bullet
 	void ShipShoot(Ship* ship);
 
 	void ShipShoot_LaserLoopBombKnife(Ship* ship);
@@ -1033,6 +1034,8 @@ public:
 	void ShipShoot_LoopBomb(Ship* ship);
 	void ShipShoot_LaserKnife(Ship* ship);
 	void ShipShoot_LoopKnife(Ship* ship);
+
+	//mtx: bomb
 	void ShipShoot_BombKnife(Ship* ship);
 
 	//mtx: knife
@@ -1041,7 +1044,7 @@ public:
 	//mtx: bomb
 	void ShipShoot_Bomb(Ship* ship);
 
-	//mts: bullet
+	//mtx: bullet
 	void ShipShoot_Loop(Ship* ship);
 
 	//mtx: laser
@@ -1049,6 +1052,10 @@ public:
 
 	//mtx: bullet
 	void ShipShoot_NoBonus(Ship* ship);
+
+	//loop by laser's host is created by asteroid
+	//need mtx: laser -> bullet -> asteroid
+	void CreateLoop(Laser* laser, Asteroid* asteroid);
 
 	void IncrementScore(GameTypes::players_count_t team_number);
 	void DecrementScore(GameTypes::players_count_t team_number);

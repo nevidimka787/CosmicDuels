@@ -4,22 +4,69 @@
 #define M_PI_2	1.5707796326794897		// pi/2
 #define M_PI_4  0.785398163397448309616	// pi/4
 
+#define ALL_MAPS__SPAWN_DELTA_ANGLE	0.05f
+
 #pragma warning(disable : 26451)
 
 void Game::Event0()
 {
-	asteroids_array_mtx.lock();
-	if (object_pull_array[GAME_OBJECT_ASTEROID] && !(global_timer % 500) && asteroids_count == 0)
+#define EVENT0__CENTER_POSITION	0.0f
+#define EVENT0__BONUS_POSITION	1.0f
+#define EVENT0__BAD_AREA_RADIUS	1.5f
+#define EVENT0__RM_ARAE_RADIUS	2.0f
+	if (!(global_timer % 100))
 	{
-		asteroids_array_mtx.unlock();
-		Vec2F positions[1];
-#define EVENT0__CENTER_POSITION	6.0f
-		positions[0].Set(EVENT0__CENTER_POSITION, EVENT0__CENTER_POSITION);
-		Vec2F zero_velocity;
-		asteroids_array_mtx.lock();
-		AddEntity(Asteroid(&positions[0], &zero_velocity, BONUS_RULE_REVERSE, ASTEROID_SIZE_SMALL));
+		Ship* temp__ship_p = ships;
+		bool can_spawn = true;
+		ships_array_mtx.lock();
+		for (GameTypes::players_count_t found_ships = 0; found_ships < ships_count; temp__ship_p++)
+		{
+			if (temp__ship_p->exist)
+			{
+				if (can_spawn && temp__ship_p->GetPosition().Length() < EVENT0__BAD_AREA_RADIUS)
+				{
+					can_spawn = false;
+					break;
+				}
+				found_ships++;
+			}
+		}
+		ships_array_mtx.unlock();
+
+		if (can_spawn)
+		{
+			bonuses_array_mtx.lock();
+			if (!bonuses[0].exist)
+			{
+				bonuses_count++;
+				bonuses[0] = Bonus(Vec2F(EVENT0__CENTER_POSITION, EVENT0__CENTER_POSITION + EVENT0__BONUS_POSITION), Vec2F(), BONUS_LOOP);//up
+			}
+			if (!bonuses[1].exist)
+			{
+				bonuses_count++;
+				bonuses[1] = Bonus(Vec2F(EVENT0__CENTER_POSITION + EVENT0__BONUS_POSITION, EVENT0__CENTER_POSITION), Vec2F(), BONUS_LASER);//right
+			}
+			if (!bonuses[2].exist)
+			{
+				bonuses_count++;
+				bonuses[2] = Bonus(Vec2F(EVENT0__CENTER_POSITION, EVENT0__CENTER_POSITION - EVENT0__BONUS_POSITION), Vec2F(), BONUS_BOMB);//down
+			}
+			if (!bonuses[3].exist)
+			{
+				bonuses_count++;
+				bonuses[3] = Bonus(Vec2F(EVENT0__CENTER_POSITION - EVENT0__BONUS_POSITION, EVENT0__CENTER_POSITION), Vec2F(), BONUS_KNIFE);//left
+			}
+			bonuses_array_mtx.unlock();
+		}
 	}
-	asteroids_array_mtx.unlock();
+
+	if (!((global_timer + 50) % 100))
+	{
+		if (asteroids_count == 0)
+		{
+			AddEntity(Asteroid(Vec2F(EVENT0__CENTER_POSITION), Vec2F(), BONUS_LASER, ASTEROID_MAX_SIZE));
+		}
+	}
 }
 
 void Game::Event1()
@@ -274,10 +321,10 @@ void Game::CreateMap0(Vec2F* ships_positions, float* ships_angles)
 	ships_positions[2].Set(MAP_TEST_MAP__CENTER_POSITION + 1.85f, MAP_TEST_MAP__CENTER_POSITION - 1.9f);
 	ships_positions[3].Set(MAP_TEST_MAP__CENTER_POSITION - 1.9f, MAP_TEST_MAP__CENTER_POSITION - 1.85f);
 
-	ships_angles[0] = -(float)M_PI_4;
-	ships_angles[1] = -(float)M_PI_2 - (float)M_PI_4;
-	ships_angles[2] = (float)M_PI_2 + (float)M_PI_4;
-	ships_angles[3] = (float)M_PI_4;
+	ships_angles[0] = -(float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
+	ships_angles[1] = -(float)M_PI_2 - (float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
+	ships_angles[2] = (float)M_PI_2 + (float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
+	ships_angles[3] = (float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
 
 	camera.SetHightLimits(
 		MAP_TEST_MAP__CENTER_POSITION - CAMERA_DEFAULT_HIGH_LIMITS,
@@ -358,15 +405,15 @@ void Game::CreateMap1(Vec2F* ships_positions, float* ships_angles)
 
 	/* Spawn entities */
 
-	ships_positions[0].Set(-1.85f, 1.9f);
-	ships_positions[1].Set(1.9f, 1.85f);
-	ships_positions[2].Set(1.85f, -1.9f);
-	ships_positions[3].Set(-1.9f, -1.85f);
+	ships_positions[0].Set(MAP_TUREL_ON_CENTER__CENTER_POSITION - 1.85f, MAP_TUREL_ON_CENTER__CENTER_POSITION + 1.9f);
+	ships_positions[1].Set(MAP_TUREL_ON_CENTER__CENTER_POSITION + 1.9f, MAP_TUREL_ON_CENTER__CENTER_POSITION + 1.85f);
+	ships_positions[2].Set(MAP_TUREL_ON_CENTER__CENTER_POSITION + 1.85f, MAP_TUREL_ON_CENTER__CENTER_POSITION - 1.9f);
+	ships_positions[3].Set(MAP_TUREL_ON_CENTER__CENTER_POSITION - 1.9f, MAP_TUREL_ON_CENTER__CENTER_POSITION - 1.85f);
 
-	ships_angles[0] = -(float)M_PI_4;
-	ships_angles[1] = -(float)M_PI_2 - (float)M_PI_4;
-	ships_angles[2] = (float)M_PI_2 + (float)M_PI_4;
-	ships_angles[3] = (float)M_PI_4;
+	ships_angles[0] = -(float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
+	ships_angles[1] = -(float)M_PI_2 - (float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
+	ships_angles[2] = (float)M_PI_2 + (float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
+	ships_angles[3] = (float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
 
 	delete[] rectangles;
 }
@@ -376,69 +423,68 @@ void Game::CreateMap2(Vec2F* ships_positions, float* ships_angles)
 	Vec2F new_position;
 	Segment diagonal;
 
-#define MAP_CYRCLE_ON_CENTER__RECTANGLES_COUNT	5
-#define MAP_CYRCLE_ON_CENTER__CYRCLES_COUNT		1
+#define MAP_GRAV_GEN__CENTER_POSITION	0.0f
+#define MAP_GRAV_GEN__RECTANGLES_COUNT	5
+#define MAP_GRAV_GEN__CYRCLES_COUNT		1
 
-#define MAP_CYRCLE_ON_CENTER__FRAME_SIZE		2.0f
-#define MAP_CYRCLE_ON_CENTER__SQUARE_SIZE		0.5f
-#define MAP_CYRCLE_ON_CENTER__SQUARE_POSITION	1.5f
-#define MAP_CYRCLE_ON_CENTER__CYRCLE_SIZE		(0.1f / 0.8f)
-#define MAP_CYRCLE_ON_CENTER__CENTER			0.0f
+#define MAP_GRAV_GEN__FRAME_SIZE		2.0f
+#define MAP_GRAV_GEN__SQUARE_SIZE		0.5f
+#define MAP_GRAV_GEN__SQUARE_POSITION	1.5f
+#define MAP_GRAV_GEN__CYRCLE_SIZE		(0.1f / 0.8f)
+#define MAP_GRAV_GEN__CENTER			MAP_GRAV_GEN__CENTER_POSITION
 
 	/* Create map */
 
-	Rectangle* rectangles = new Rectangle[MAP_CYRCLE_ON_CENTER__RECTANGLES_COUNT];
-	Cyrcle* cyrcles = new Cyrcle[MAP_CYRCLE_ON_CENTER__CYRCLES_COUNT];
+	Rectangle* rectangles = new Rectangle[MAP_GRAV_GEN__RECTANGLES_COUNT];
+	Cyrcle* cyrcles = new Cyrcle[MAP_GRAV_GEN__CYRCLES_COUNT];
 
 	diagonal.Set(
-		Vec2F(-MAP_CYRCLE_ON_CENTER__FRAME_SIZE, -MAP_CYRCLE_ON_CENTER__FRAME_SIZE),
-		Vec2F(MAP_CYRCLE_ON_CENTER__FRAME_SIZE, MAP_CYRCLE_ON_CENTER__FRAME_SIZE),
+		Vec2F(-MAP_GRAV_GEN__FRAME_SIZE + MAP_GRAV_GEN__CENTER_POSITION, -MAP_GRAV_GEN__FRAME_SIZE + MAP_GRAV_GEN__CENTER_POSITION),
+		Vec2F(MAP_GRAV_GEN__FRAME_SIZE + MAP_GRAV_GEN__CENTER_POSITION, MAP_GRAV_GEN__FRAME_SIZE + MAP_GRAV_GEN__CENTER_POSITION),
 		true);
 	rectangles[0].Set(&diagonal);
 
 	diagonal.Set(
-		Vec2F(-MAP_CYRCLE_ON_CENTER__SQUARE_POSITION, -MAP_CYRCLE_ON_CENTER__SQUARE_POSITION),
-		Vec2F(MAP_CYRCLE_ON_CENTER__SQUARE_SIZE, MAP_CYRCLE_ON_CENTER__SQUARE_SIZE));
+		Vec2F(-MAP_GRAV_GEN__SQUARE_POSITION + MAP_GRAV_GEN__CENTER_POSITION, -MAP_GRAV_GEN__SQUARE_POSITION + MAP_GRAV_GEN__CENTER_POSITION),
+		Vec2F(MAP_GRAV_GEN__SQUARE_SIZE + MAP_GRAV_GEN__CENTER_POSITION, MAP_GRAV_GEN__SQUARE_SIZE + MAP_GRAV_GEN__CENTER_POSITION));
 	rectangles[1].Set(&diagonal);
 
 	diagonal.Set(
-		Vec2F(MAP_CYRCLE_ON_CENTER__SQUARE_POSITION, MAP_CYRCLE_ON_CENTER__SQUARE_POSITION),
-		Vec2F(-MAP_CYRCLE_ON_CENTER__SQUARE_SIZE, -MAP_CYRCLE_ON_CENTER__SQUARE_SIZE));
+		Vec2F(MAP_GRAV_GEN__SQUARE_POSITION + MAP_GRAV_GEN__CENTER_POSITION, MAP_GRAV_GEN__SQUARE_POSITION + MAP_GRAV_GEN__CENTER_POSITION),
+		Vec2F(-MAP_GRAV_GEN__SQUARE_SIZE + MAP_GRAV_GEN__CENTER_POSITION, -MAP_GRAV_GEN__SQUARE_SIZE + MAP_GRAV_GEN__CENTER_POSITION));
 	rectangles[2].Set(&diagonal);
 
 	diagonal.Set(
-		Vec2F(-MAP_CYRCLE_ON_CENTER__SQUARE_POSITION, MAP_CYRCLE_ON_CENTER__SQUARE_POSITION),
-		Vec2F(MAP_CYRCLE_ON_CENTER__SQUARE_SIZE, -MAP_CYRCLE_ON_CENTER__SQUARE_SIZE));
+		Vec2F(-MAP_GRAV_GEN__SQUARE_POSITION + MAP_GRAV_GEN__CENTER_POSITION, MAP_GRAV_GEN__SQUARE_POSITION + MAP_GRAV_GEN__CENTER_POSITION),
+		Vec2F(MAP_GRAV_GEN__SQUARE_SIZE + MAP_GRAV_GEN__CENTER_POSITION, -MAP_GRAV_GEN__SQUARE_SIZE + MAP_GRAV_GEN__CENTER_POSITION));
 	rectangles[3].Set(&diagonal);
 
 	diagonal.Set(
-		Vec2F(MAP_CYRCLE_ON_CENTER__SQUARE_POSITION, -MAP_CYRCLE_ON_CENTER__SQUARE_POSITION),
-		Vec2F(-MAP_CYRCLE_ON_CENTER__SQUARE_SIZE, MAP_CYRCLE_ON_CENTER__SQUARE_SIZE));
+		Vec2F(MAP_GRAV_GEN__SQUARE_POSITION + MAP_GRAV_GEN__CENTER_POSITION, -MAP_GRAV_GEN__SQUARE_POSITION + MAP_GRAV_GEN__CENTER_POSITION),
+		Vec2F(-MAP_GRAV_GEN__SQUARE_SIZE + MAP_GRAV_GEN__CENTER_POSITION, MAP_GRAV_GEN__SQUARE_SIZE + MAP_GRAV_GEN__CENTER_POSITION));
 	rectangles[4].Set(&diagonal);
 
 
-	new_position.Set(MAP_CYRCLE_ON_CENTER__CENTER, MAP_CYRCLE_ON_CENTER__CENTER);
-	cyrcles[0].Set(&new_position, MAP_CYRCLE_ON_CENTER__CYRCLE_SIZE, MAP_PROPERTY_UNBREACABLE);
+	cyrcles[0].Set(Vec2F(MAP_GRAV_GEN__CENTER + MAP_GRAV_GEN__CENTER_POSITION, MAP_GRAV_GEN__CENTER + MAP_GRAV_GEN__CENTER_POSITION), MAP_GRAV_GEN__CYRCLE_SIZE, MAP_PROPERTY_UNBREACABLE);
 
-	map.Set(rectangles, MAP_CYRCLE_ON_CENTER__RECTANGLES_COUNT, cyrcles, MAP_CYRCLE_ON_CENTER__CYRCLES_COUNT);
+	map.Set(rectangles, MAP_GRAV_GEN__RECTANGLES_COUNT, cyrcles, MAP_GRAV_GEN__CYRCLES_COUNT);
 
 	delete[] rectangles;
 	delete[] cyrcles;
 
-	new_position.Set(MAP_CYRCLE_ON_CENTER__CENTER, MAP_CYRCLE_ON_CENTER__CENTER);
-	AddEntity(GravGen(&new_position));
+	AddEntity(GravGen(Vec2F(MAP_GRAV_GEN__CENTER + MAP_GRAV_GEN__CENTER_POSITION, MAP_GRAV_GEN__CENTER + MAP_GRAV_GEN__CENTER_POSITION)));
 
 	/* Spawn entities */
 
-	ships_positions[0].Set(-1.85f, 1.9f);
-	ships_positions[1].Set(1.9f, 1.85f);
-	ships_positions[2].Set(1.85f, -1.9f);
-	ships_positions[3].Set(-1.9f, -1.85f);
+	ships_positions[0].Set(MAP_GRAV_GEN__CENTER_POSITION - 1.85f, MAP_GRAV_GEN__CENTER_POSITION + 1.9f);
+	ships_positions[1].Set(MAP_GRAV_GEN__CENTER_POSITION + 1.9f, MAP_GRAV_GEN__CENTER_POSITION + 1.85f);
+	ships_positions[2].Set(MAP_GRAV_GEN__CENTER_POSITION + 1.85f, MAP_GRAV_GEN__CENTER_POSITION - 1.9f);
+	ships_positions[3].Set(MAP_GRAV_GEN__CENTER_POSITION - 1.9f, MAP_GRAV_GEN__CENTER_POSITION - 1.85f);
 
-	ships_angles[0] = -(float)M_PI_4;
-	ships_angles[1] = -(float)M_PI_2 - (float)M_PI_4;
-	ships_angles[2] = (float)M_PI_2 + (float)M_PI_4;
-	ships_angles[3] = (float)M_PI_4;
+	ships_angles[0] = -(float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
+	ships_angles[1] = -(float)M_PI_2 - (float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
+	ships_angles[2] = (float)M_PI_2 + (float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
+	ships_angles[3] = (float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
 }
 
 void Game::CreateMap3(Vec2F* ships_positions, float* ships_angles)
@@ -527,10 +573,10 @@ void Game::CreateMap3(Vec2F* ships_positions, float* ships_angles)
 	ships_positions[2].Set(1.85f, -1.9f);
 	ships_positions[3].Set(-1.9f, -1.85f);
 
-	ships_angles[0] = -(float)M_PI_4;
-	ships_angles[1] = -(float)M_PI_2 - (float)M_PI_4;
-	ships_angles[2] = (float)M_PI_2 + (float)M_PI_4;
-	ships_angles[3] = (float)M_PI_4;
+	ships_angles[0] = -(float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
+	ships_angles[1] = -(float)M_PI_2 - (float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
+	ships_angles[2] = (float)M_PI_2 + (float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
+	ships_angles[3] = (float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
 }
 
 void Game::CreateMap4(Vec2F* ships_positions, float* ships_angles)
@@ -625,10 +671,10 @@ void Game::CreateMap4(Vec2F* ships_positions, float* ships_angles)
 	ships_positions[2].Set(MAP_MEGA_LASERS__CENTER_POSITION + 1.85f, MAP_MEGA_LASERS__CENTER_POSITION - 1.9f);
 	ships_positions[3].Set(MAP_MEGA_LASERS__CENTER_POSITION - 1.9f, MAP_MEGA_LASERS__CENTER_POSITION - 1.85f);
 
-	ships_angles[0] = -(float)M_PI_4;
-	ships_angles[1] = -(float)M_PI_2 - (float)M_PI_4;
-	ships_angles[2] = (float)M_PI_2 + (float)M_PI_4;
-	ships_angles[3] = (float)M_PI_4;
+	ships_angles[0] = -(float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
+	ships_angles[1] = -(float)M_PI_2 - (float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
+	ships_angles[2] = (float)M_PI_2 + (float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
+	ships_angles[3] = (float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
 
 	camera.SetHightLimits(
 		MAP_MEGA_LASERS__CENTER_POSITION - CAMERA_DEFAULT_HIGH_LIMITS,
@@ -725,10 +771,10 @@ void Game::CreateMap5(Vec2F* ships_positions, float* ships_angles)
 	ships_positions[2].Set(MAP_DYNAMICAL__CENTER_POSITION + 1.85f, MAP_DYNAMICAL__CENTER_POSITION - 1.9f);
 	ships_positions[3].Set(MAP_DYNAMICAL__CENTER_POSITION - 1.9f, MAP_DYNAMICAL__CENTER_POSITION - 1.85f);
 
-	ships_angles[0] = -(float)M_PI_4;
-	ships_angles[1] = -(float)M_PI_2 - (float)M_PI_4;
-	ships_angles[2] = (float)M_PI_2 + (float)M_PI_4;
-	ships_angles[3] = (float)M_PI_4;
+	ships_angles[0] = -(float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
+	ships_angles[1] = -(float)M_PI_2 - (float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
+	ships_angles[2] = (float)M_PI_2 + (float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
+	ships_angles[3] = (float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
 
 	camera.SetHightLimits(
 		MAP_DYNAMICAL__CENTER_POSITION - CAMERA_DEFAULT_HIGH_LIMITS,
@@ -952,10 +998,10 @@ void Game::CreateMap6(Vec2F* ships_positions, float* ships_angles)
 	ships_positions[2].Set(MAP_DYNAMICAL__CENTER_POSITION + 1.85f, MAP_DYNAMICAL__CENTER_POSITION - 1.9f);
 	ships_positions[3].Set(MAP_DYNAMICAL__CENTER_POSITION - 1.9f, MAP_DYNAMICAL__CENTER_POSITION - 1.85f);
 
-	ships_angles[0] = -(float)M_PI_4;
-	ships_angles[1] = -(float)M_PI_2 - (float)M_PI_4;
-	ships_angles[2] = (float)M_PI_2 + (float)M_PI_4;
-	ships_angles[3] = (float)M_PI_4;
+	ships_angles[0] = -(float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
+	ships_angles[1] = -(float)M_PI_2 - (float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
+	ships_angles[2] = (float)M_PI_2 + (float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
+	ships_angles[3] = (float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
 
 	camera.SetHightLimits(
 		MAP_DYNAMICAL__CENTER_POSITION - CAMERA_DEFAULT_HIGH_LIMITS,
@@ -1085,10 +1131,10 @@ void Game::CreateMap7(Vec2F* ships_positions, float* ships_angles)
 	ships_positions[2].Set(MAP_DYNAMICAL__CENTER_POSITION + 1.85f, MAP_DYNAMICAL__CENTER_POSITION - 1.9f);
 	ships_positions[3].Set(MAP_DYNAMICAL__CENTER_POSITION - 1.9f, MAP_DYNAMICAL__CENTER_POSITION - 1.85f);
 
-	ships_angles[0] = -(float)M_PI_4;
-	ships_angles[1] = -(float)M_PI_2 - (float)M_PI_4;
-	ships_angles[2] = (float)M_PI_2 + (float)M_PI_4;
-	ships_angles[3] = (float)M_PI_4;
+	ships_angles[0] = -(float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
+	ships_angles[1] = -(float)M_PI_2 - (float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
+	ships_angles[2] = (float)M_PI_2 + (float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
+	ships_angles[3] = (float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
 
 	camera.SetHightLimits(
 		MAP_DYNAMICAL__CENTER_POSITION - CAMERA_DEFAULT_HIGH_LIMITS,
@@ -1188,15 +1234,15 @@ void Game::CreateMap8(Vec2F* ships_positions, float* ships_angles)
 
 	/* Spawn entities */
 
-	ships_positions[0].Set(MAP_DYNAMICAL__CENTER_POSITION - 1.85f, MAP_DYNAMICAL__CENTER_POSITION + 1.9f);
+	ships_positions[0].Set(MAP_DYNAMICAL__CENTER_POSITION - 1.9f, MAP_DYNAMICAL__CENTER_POSITION + 1.85f);
 	ships_positions[1].Set(MAP_DYNAMICAL__CENTER_POSITION + 1.9f, MAP_DYNAMICAL__CENTER_POSITION + 1.85f);
 	ships_positions[2].Set(MAP_DYNAMICAL__CENTER_POSITION + 1.85f, MAP_DYNAMICAL__CENTER_POSITION - 1.9f);
 	ships_positions[3].Set(MAP_DYNAMICAL__CENTER_POSITION - 1.9f, MAP_DYNAMICAL__CENTER_POSITION - 1.85f);
 
-	ships_angles[0] = -(float)M_PI_4;
-	ships_angles[1] = -(float)M_PI_2 - (float)M_PI_4;
-	ships_angles[2] = (float)M_PI_2 + (float)M_PI_4;
-	ships_angles[3] = (float)M_PI_4;
+	ships_angles[0] = -(float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
+	ships_angles[1] = -(float)M_PI_2 - (float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
+	ships_angles[2] = (float)M_PI_2 + (float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
+	ships_angles[3] = (float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
 
 	camera.SetHightLimits(
 		MAP_DYNAMICAL__CENTER_POSITION - MAP_BROKEN__FRAME_SIZE,
@@ -1430,10 +1476,10 @@ void Game::CreateMap9(Vec2F* ships_positions, float* ships_angles)
 	ships_positions[2].Set(MAP_DYNAMICAL__CENTER_POSITION + 1.05f, MAP_DYNAMICAL__CENTER_POSITION - 1.1f);
 	ships_positions[3].Set(MAP_DYNAMICAL__CENTER_POSITION - 1.1f, MAP_DYNAMICAL__CENTER_POSITION - 1.05f);
 
-	ships_angles[0] = -(float)M_PI_4;
-	ships_angles[1] = -(float)M_PI_2 - (float)M_PI_4;
-	ships_angles[2] = (float)M_PI_2 + (float)M_PI_4;
-	ships_angles[3] = (float)M_PI_4;
+	ships_angles[0] = -(float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
+	ships_angles[1] = -(float)M_PI_2 - (float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
+	ships_angles[2] = (float)M_PI_2 + (float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
+	ships_angles[3] = (float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
 
 	camera.SetHightLimits(
 		MAP_DYNAMICAL__CENTER_POSITION - CAMERA_DEFAULT_HIGH_LIMITS,

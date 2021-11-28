@@ -547,8 +547,8 @@ public:
 		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
 		bool exist = true);
 	KillerEntity(
-		Vec2F* position,
-		Vec2F* velocity,
+		const Vec2F* position,
+		const Vec2F* velocity,
 		float radius,
 		GameTypes::players_count_t player_master_number,
 		GameTypes::players_count_t player_master_team_number,
@@ -942,7 +942,13 @@ public:
 	GravGen();
 	GravGen(const GravGen& grav_gen);
 	GravGen(
-		Vec2F* position,
+		Vec2F position,
+		float gravity = GRAVITY_GENERATOR_DEFAULT_GRAVITY,
+		float radius = GRAVITY_GENERATOR_DEFAULT_RADIUS,
+		float angle = 0.0f,
+		bool exist = true);
+	GravGen(
+		const Vec2F* position,
 		float gravity = GRAVITY_GENERATOR_DEFAULT_GRAVITY,
 		float radius = GRAVITY_GENERATOR_DEFAULT_RADIUS,
 		float angle = 0.0f,
@@ -1191,8 +1197,21 @@ public:
 	Bullet();
 	Bullet(const Bullet& bullet);
 	Bullet(
-		Vec2F* position,
-		Vec2F* velocity,
+		const Vec2F* position,
+		const Vec2F* velocity,
+		GameTypes::players_count_t player_master_number,
+		GameTypes::players_count_t player_master_team_number,
+		bool is_collision_master = true,
+		float angle = 0.0f,
+		float angular_velocity = 0.0f,
+		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_resistance_air_coefficient = BULLET_DEFAULT_RESISTANCE_AIR_COEFFICIENT,
+		float radius = BULLET_DEFAULT_RADIUS,
+		float min_velocity = BULLET_DEFAULT_MIN_VELOCITY,
+		bool exist = true);
+	Bullet(
+		Vec2F position,
+		Vec2F velocity,
 		GameTypes::players_count_t player_master_number,
 		GameTypes::players_count_t player_master_team_number,
 		bool is_collision_master = true,
@@ -1263,6 +1282,8 @@ protected:
 	GameTypes::tic_t shoot_time;
 public:
 	float width;
+	//if laser destroy powered asredoid and flag is active then will be create loop
+	bool can_create_loops;
 
 	Laser();
 	Laser(const Laser& laser);
@@ -1271,6 +1292,7 @@ public:
 		Beam* local_beam,
 		float width = LASER_DEFAULT_WIDTH,
 		GameTypes::tic_t shoot_time = LASER_DEFAULT_SHOOT_TIME,
+		bool can_create_loops = false,
 		bool exist = true);
 
 	//The function checks collision between knife and all map's elemnts.
@@ -1291,6 +1313,7 @@ public:
 		Beam* local_beam,
 		float width = LASER_DEFAULT_WIDTH,
 		GameTypes::tic_t shoot_time = LASER_DEFAULT_SHOOT_TIME,
+		bool can_create_loops = false,
 		bool exist = true);
 	void Update();
 

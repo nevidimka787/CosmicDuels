@@ -89,7 +89,7 @@ void Game::DynamicEntitiesCollisions(Map* map, EntityType* entities, GameTypes::
 		if (entities[i].exist)
 		{
 			entities[i].Collision(map);
-			if (!entities[i].exist)
+			if (!entities[i].exist)//if entity was destroed after collision
 			{
 				log_data_mtx.lock();
 				entities[i].exist = true;
@@ -108,13 +108,13 @@ template void Game::DynamicEntitiesCollisions<Bullet>(Map* map, Bullet* entities
 template void Game::DynamicEntitiesCollisions<Ship>(Map* map, Ship* entities, GameTypes::entities_count_t entities_count);
 template void Game::DynamicEntitiesCollisions<Pilot>(Map* map, Pilot* entities, GameTypes::entities_count_t entities_count);
 
-void Game::DynamicEntitiesCollisions(Map* map, Bomb* entities, GameTypes::entities_count_t entities_count)
+void Game::DynamicEntitiesCollisions(Map* map, Bomb* bombs_array_p, GameTypes::entities_count_t entities_count)
 {
-	for (GameTypes::entities_count_t i = 0, found = 0; found < entities_count; i++)
+	for (GameTypes::entities_count_t found = 0; found < entities_count; bombs_array_p++)
 	{
-		if (entities[i].exist)
+		if (bombs_array_p->exist)
 		{
-			entities[i].Collision(map);
+			bombs_array_p->Collision(map);
 			found++;
 		}
 	}
@@ -376,8 +376,9 @@ void Game::ShipShoot_LoopBombKnife(Ship* ship)
 
 void Game::ShipShoot_LaserLoop(Ship* ship)
 {
-	std::cout << "Laser Loop" << std::endl;
-	ShipShoot_NoBonus(ship);
+	Beam local_beam = LASER_DEFAULT_LOCAL_BEAM;
+	Game::AddEntity(Laser(ship, &local_beam, LASER_DEFAULT_WIDTH, LASER_DEFAULT_SHOOT_TIME, true));
+
 	ships_can_shoot_flags[ship->GetPlayerNumber()] += GAME_ADD_DELLAY_BONUS_USE + GAME_ADD_DELLAY_COMBO_USE;
 }
 
@@ -410,14 +411,15 @@ void Game::ShipShoot_LaserBomb(Ship* ship)
 void Game::ShipShoot_LoopBomb(Ship* ship)
 {
 	float angle;
+	float ship_angle = ship->GetAngle();
 	Vec2F position = ship->GetPosition();
 	Vec2F velocity = ship->GetVelocity();
 	Vec2F bomb_velocity;
 	bombs_array_mtx.lock();
 	for (GameTypes::entities_count_t bomb = 0; bomb < SHIP_SUPER_BONUS__BOMBS_IN_LOOP; bomb++)
 	{
-		angle = (float)bomb / (float)SHIP_SUPER_BONUS__BOMBS_IN_LOOP * (float)M_PI - (float)M_PI / 2.0f;
-		bomb_velocity = velocity + Vec2F(SHIP_SUPER_BONUS__BOMBS_LOOP_VELOCITY, 0.0f).Rotate(angle);
+		angle = (float)bomb / (float)SHIP_SUPER_BONUS__BOMBS_IN_LOOP * (float)M_PI - 3.0f * (float)M_PI / 2.0f;
+		bomb_velocity = velocity + Vec2F(SHIP_SUPER_BONUS__BOMBS_LOOP_VELOCITY, 0.0f).Rotate(angle + ship_angle);
 		AddEntity(Bomb(&position, &bomb_velocity, ship->GetTeamNumber(), ship->GetTeamNumber()));
 	}
 	bombs_array_mtx.unlock();
@@ -434,6 +436,7 @@ void Game::ShipShoot_LaserKnife(Ship* ship)
 void Game::ShipShoot_LoopKnife(Ship* ship)
 {
 	Segment local_segment;
+	knifes_array_mtx.lock();
 	for (GameTypes::entities_count_t knife = 0; knife < SHIP_SUPER_BONUS__KNIFES_IN_LOOP / 2; knife++)
 	{
 		local_segment.Set(
@@ -448,12 +451,14 @@ void Game::ShipShoot_LoopKnife(Ship* ship)
 			true);
 		AddEntity(Knife(ship, &local_segment, 1u));
 	}
+	knifes_array_mtx.unlock();
 
 	ships_can_shoot_flags[ship->GetPlayerNumber()] += GAME_ADD_DELLAY_BONUS_USE + GAME_ADD_DELLAY_COMBO_USE;
 }
 
 void Game::ShipShoot_BombKnife(Ship* ship)
 {
+	bombs_array_mtx.lock();
 	Game::AddEntity(
 		Bomb(ship->GetPosition() - ship->GetVelocity() - ship->GetDirection() * 1.1f * (ship->radius + BOMB_DEFAULT_RADIUS),
 			ship->GetVelocity() / 2.0f,
@@ -466,6 +471,7 @@ void Game::ShipShoot_BombKnife(Ship* ship)
 			0.0f,
 			BOMB_DEFAULT_RADIUS,
 			BOMB_STATUS_BOOM));
+	bombs_array_mtx.unlock();
 	ships_can_shoot_flags[ship->GetPlayerNumber()] += GAME_ADD_DELLAY_BONUS_USE + GAME_ADD_DELLAY_COMBO_USE;
 }
 
@@ -524,6 +530,42 @@ void Game::ShipShoot_NoBonus(Ship* ship)
 		AddEntity(ship->CreateBullet());
 	}
 	bullets_array_mtx.unlock();
+}
+
+void Game::CreateLoop(Laser* laser, Asteroid* asteroid)
+{
+	Vec2F loop_center_position = asteroid->GetPosition();
+	GameTypes::entities_count_t bullets_in_loop =
+		(asteroid->GetSize() == ASTEROID_SIZE_BIG) ?
+		SHIP_SUPER_BONUS__BULLETS_IN_LOOP_BY_ASTEROID_BIG :
+		(asteroid->GetSize() == ASTEROID_SIZE_MEDIUM) ?
+		SHIP_SUPER_BONUS__BULLETS_IN_LOOP_BY_ASTEROID_MEDIUM :
+		SHIP_SUPER_BONUS__BULLETS_IN_LOOP_BY_ASTEROID_SMALL;
+	float bullets_radius =
+		(asteroid->GetSize() == ASTEROID_SIZE_BIG) ?
+		SHIP_SUPER_BONUS__BULLETS_RADIUS_BY_ASTEROID_BIG :
+		(asteroid->GetSize() == ASTEROID_SIZE_MEDIUM) ?
+		SHIP_SUPER_BONUS__BULLETS_RADIUS_BY_ASTEROID_MEDIUM :
+		SHIP_SUPER_BONUS__BULLETS_RADIUS_BY_ASTEROID_SMALL;
+	Vec2F laser_vector = laser->GetBeam().vector;
+	Vec2F radius_vector;
+
+	for (GameTypes::entities_count_t bullet = 0; bullet < bullets_in_loop; bullet++)
+	{
+		radius_vector = Vec2F(asteroid->radius, 0.0f).Rotate(
+			(float)bullet / (float)bullets_in_loop * (float)M_PI * 2.0f);
+		Game::AddEntity(
+			Bullet(loop_center_position + radius_vector,
+				(radius_vector.Normalize() + laser_vector.Normalize() * 0.75f) * BULLET_DEFAULT_VELOCITY * 2.0f,
+				laser->GetPlayerMasterNumber(),
+				laser->GetPlayerMasterTeamNumber(),
+				false,
+				0.0f,
+				0.0f,
+				DEFAULT_FORCE_COLLISION_COEFFICIENT,
+				BULLET_DEFAULT_RESISTANCE_AIR_COEFFICIENT,
+				bullets_radius));
+	}
 }
 
 void Game::UpdateAsteroidsPhase2()
@@ -1323,6 +1365,7 @@ void Game::LasersDestroyAsteroids()
 		temp__laser_p = &lasers[laser];
 		if (temp__laser_p->exist)
 		{
+			bullets_array_mtx.lock();
 			asteroids_array_mtx.lock();
 			for (asteroid = 0, found_asteroids = 0; found_asteroids < asteroids_count; asteroid++)
 			{
@@ -1331,6 +1374,11 @@ void Game::LasersDestroyAsteroids()
 				{
 					if (temp__asteroid_p->IsCollision(temp__laser_p))
 					{
+						if (temp__asteroid_p->bonus_inventory && temp__laser_p->can_create_loops)
+						{
+							CreateLoop(temp__laser_p, temp__asteroid_p);
+						}
+
 						bonuses_array_mtx.lock();
 						dynamic_particles_array_mtx.lock();
 						DestroyEntity(temp__laser_p, temp__asteroid_p);
@@ -1343,6 +1391,7 @@ void Game::LasersDestroyAsteroids()
 			end_of_asteroid_cycle:;
 			}
 			asteroids_array_mtx.unlock();
+			bullets_array_mtx.unlock();
 			found_lasers++;
 		}
 	}

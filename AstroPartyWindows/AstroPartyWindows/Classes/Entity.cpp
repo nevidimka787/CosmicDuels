@@ -849,12 +849,12 @@ bool DynamicEntity::IsCollision(Beam* beam)
 
 bool DynamicEntity::IsCollision(Segment segment)
 {
-	return Segment(position, -velocity).Distance(&segment) < radius;
+	return segment.Distance(position) < radius || GetTreck().IsIntersection(&segment);
 }
 
 bool DynamicEntity::IsCollision(Segment* segment)
 {
-	return Segment(position, -velocity).Distance(segment) < radius;
+	return segment->Distance(position) < radius || GetTreck().IsIntersection(segment);
 }
 
 bool DynamicEntity::IsCollision(DynamicEntity* entity)
@@ -891,27 +891,11 @@ bool DynamicEntity::IsCollision(MegaLaser* mega_laser)
 
 bool DynamicEntity::IsCollision(Rectangle* rectangle)
 {
-	Segment side = rectangle->UpSide();
-	if (Segment(position, -velocity).Distance(&side) < radius)
-	{
-		return true;
-	}
-	side = rectangle->LeftSide();
-	if (Segment(position, -velocity).Distance(&side) < radius)
-	{	
-		return true;
-	}
-	side = rectangle->DownSide();
-	if (Segment(position, -velocity).Distance(&side) < radius)
-	{
-		return true;
-	}
-	side = rectangle->RightSide();
-	if (Segment(position, -velocity).Distance(&side) < radius)
-	{
-		return true;
-	}
-	return false;
+	return 
+		IsCollision(rectangle->UpSide()) ||
+		IsCollision(rectangle->DownSide()) ||
+		IsCollision(rectangle->RightSide()) ||
+		IsCollision(rectangle->LeftSide());
 }
 
 bool DynamicEntity::IsCollision(Cyrcle* cyrcle)
@@ -931,11 +915,10 @@ bool DynamicEntity::IsCollision(Polygon* polygon)
 		return false;
 	}
 	Segment treck = GetTreck();
-	Segment side = Segment(polygon->points_array[p_count - 1], polygon->points_array[0], true);
 
 	if (p_count > 2 && polygon->IsClosed())
 	{
-		if (side.Distance(&treck) < radius)
+		if (IsCollision(Segment(polygon->points_array[p_count - 1], polygon->points_array[0], true)))
 		{
 			return true;
 		}
@@ -943,8 +926,7 @@ bool DynamicEntity::IsCollision(Polygon* polygon)
 
 	for (EngineTypes::Map::array_length_t p = 1; p < p_count; p++)
 	{
-		side.Set(polygon->points_array[p - 1], polygon->points_array[p], true);
-		if (side.Distance(&treck) < radius)
+		if (IsCollision(Segment(polygon->points_array[p - 1], polygon->points_array[p], true)))
 		{
 			return true;
 		}
@@ -1967,7 +1949,7 @@ KillerEntity::KillerEntity(Vec2F position, Vec2F velocity, float radius, GameTyp
 {
 }
 
-KillerEntity::KillerEntity(Vec2F* position, Vec2F* velocity, float radius, GameTypes::players_count_t player_master_number, GameTypes::players_count_t player_master_team_number, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, bool exist) :
+KillerEntity::KillerEntity(const Vec2F* position, const Vec2F* velocity, float radius, GameTypes::players_count_t player_master_number, GameTypes::players_count_t player_master_team_number, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, bool exist) :
 	DynamicEntity(position, velocity, radius, angle, angular_velocity, force_collision_coeffisient, force_resistance_air_coefficient, exist),
 	host_number(player_master_number),
 	host_team_number(player_master_team_number)
@@ -2770,7 +2752,7 @@ Bomb Ship::CreateBomb()
 
 Laser Ship::CreateLaser()
 {
-	Beam laser_beam = Beam(Vec2F(0.5f, 0.0f), Vec2F(1.0f, 0.0f));
+	Beam laser_beam = LASER_DEFAULT_LOCAL_BEAM;
 	AddForceAlongDirection(-SHIP_SHOOT_FORCE * 4.0f);
 	Laser laser = Laser(this, &laser_beam);
 	laser.Update();
@@ -3608,7 +3590,13 @@ GravGen::GravGen(const GravGen& grav_gen) :
 {
 }
 
-GravGen::GravGen(Vec2F* position, float gravity, float radius, float angle, bool exist) :
+GravGen::GravGen(Vec2F position, float gravity, float radius, float angle, bool exist) :
+	StaticEntity(position, radius, angle, exist),
+	gravity(gravity)
+{
+}
+
+GravGen::GravGen(const Vec2F* position, float gravity, float radius, float angle, bool exist) :
 	StaticEntity(position, radius, angle, exist),
 	gravity(gravity)
 {
@@ -4082,8 +4070,9 @@ Laser::Laser(const Laser& laser) :
 {
 }
 
-Laser::Laser(ControledEntity* host, Beam* local_beam, float width, GameTypes::tic_t shoot_time, bool exist) :
+Laser::Laser(ControledEntity* host, Beam* local_beam, float width, GameTypes::tic_t shoot_time, bool can_create_loops, bool exist) :
 	SupportEntity(host, &local_beam->point, 0.0f, local_beam->vector.AbsoluteAngle(), exist),
+	can_create_loops(can_create_loops),
 	shoot_time(shoot_time),
 	width(width)
 {
@@ -4197,9 +4186,10 @@ void Laser::Set(Laser* laser)
 	width = laser->width;
 }
 
-void Laser::Set(ControledEntity* host, Beam* local_beam, float width, GameTypes::tic_t shoot_time, bool exist)
+void Laser::Set(ControledEntity* host, Beam* local_beam, float width, GameTypes::tic_t shoot_time, bool can_create_loops, bool exist)
 {
 	UpdateDirection();
+	this->can_create_loops = can_create_loops;
 	this->exist = exist;
 	this->host_number = host_number;
 	this->host_team = host_team;
@@ -4265,7 +4255,14 @@ Bullet::Bullet(const Bullet& bullet) :
 {
 }
 
-Bullet::Bullet(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t player_master_number, GameTypes::players_count_t player_master_team_number, bool is_collision_master, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, float radius, float min_velocity, bool exist) :
+Bullet::Bullet(const Vec2F* position, const Vec2F* velocity, GameTypes::players_count_t player_master_number, GameTypes::players_count_t player_master_team_number, bool is_collision_master, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, float radius, float min_velocity, bool exist) :
+	KillerEntity(position, velocity, radius, player_master_number, player_master_team_number, angle, angular_velocity, force_collision_coeffisient, force_resistance_air_coefficient, exist),
+	is_ignore((is_collision_master) ? (BULLET_IGNORE_MUSTER | BULLET_IGNORE_KNIFES_OF_MASTER) : BULLET_IGNORE_NOTHING),
+	min_velocity(min_velocity)
+{
+}
+
+Bullet::Bullet(Vec2F position, Vec2F velocity, GameTypes::players_count_t player_master_number, GameTypes::players_count_t player_master_team_number, bool is_collision_master, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, float radius, float min_velocity, bool exist) :
 	KillerEntity(position, velocity, radius, player_master_number, player_master_team_number, angle, angular_velocity, force_collision_coeffisient, force_resistance_air_coefficient, exist),
 	is_ignore((is_collision_master) ? (BULLET_IGNORE_MUSTER | BULLET_IGNORE_KNIFES_OF_MASTER) : BULLET_IGNORE_NOTHING),
 	min_velocity(min_velocity)
@@ -4596,37 +4593,39 @@ bool Bomb::CanRemove()
 bool Bomb::Collision(Map* map)
 {
 	void* map_element;
+	bool collision = false;
 
 	if (status & BOMB_STATUS_BOOM)
 	{
 		for (EngineTypes::Map::array_length_t i = 0; i < map->cyrcles_array_length; i++)
 		{
 			map_element = (void*)map->CyrclePointer(i);
-			if (((Cyrcle*)map_element)->exist && !(((Cyrcle*)map_element)->Prorerties() & MAP_PROPERTY_UNBREACABLE) && DynamicEntity::Collision((Cyrcle*)map_element))
+			if (((Cyrcle*)map_element)->exist && !(((Cyrcle*)map_element)->Prorerties() & MAP_PROPERTY_UNBREACABLE) && DynamicEntity::IsCollision((Cyrcle*)map_element))
 			{
 				((Cyrcle*)map_element)->exist = false;
+				collision = true;
 			}
 		}
 		for (EngineTypes::Map::array_length_t i = 0; i < map->polygons_array_length; i++)
 		{
 			map_element = (void*)map->PolygonPointer(i);
-			if (((Polygon*)map_element)->exist && !(((Polygon*)map_element)->Prorerties() & MAP_PROPERTY_UNBREACABLE) && DynamicEntity::Collision((Polygon*)map_element))
+			if (((Polygon*)map_element)->exist && !(((Polygon*)map_element)->Prorerties() & MAP_PROPERTY_UNBREACABLE) && DynamicEntity::IsCollision((Polygon*)map_element))
 			{
 				((Polygon*)map_element)->exist = false;
+				collision = true;
 			}
 		}
 		for (EngineTypes::Map::array_length_t i = 0; i < map->rectangles_array_length; i++)
 		{
 			map_element = (void*)map->RectanglePointer(i);
-			if (((Rectangle*)map_element)->exist && !(((Rectangle*)map_element)->Prorerties() & MAP_PROPERTY_UNBREACABLE) && DynamicEntity::Collision((Rectangle*)map_element))
+			if (((Rectangle*)map_element)->exist && !(((Rectangle*)map_element)->Prorerties() & MAP_PROPERTY_UNBREACABLE) && DynamicEntity::IsCollision((Rectangle*)map_element))
 			{
 				((Rectangle*)map_element)->exist = false;
+				collision = true;
 			}
 		}
-		return false;
+		return collision;
 	}
-
-	bool collision = false;
 
 	for (EngineTypes::Map::array_length_t i = 0; i < map->cyrcles_array_length; i++)
 	{
