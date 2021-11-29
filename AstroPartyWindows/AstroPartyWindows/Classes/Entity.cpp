@@ -4058,6 +4058,7 @@ MegaLaser::~MegaLaser()
 
 Laser::Laser() :
 	SupportEntity(),
+	can_create_loops(false),
 	shoot_time(0),
 	width(0.0f)
 {
@@ -4065,6 +4066,7 @@ Laser::Laser() :
 
 Laser::Laser(const Laser& laser) :
 	SupportEntity(laser),
+	can_create_loops(laser.can_create_loops),
 	shoot_time(laser.shoot_time),
 	width(laser.width)
 {
@@ -4171,6 +4173,7 @@ bool Laser::IsCollision(Segment* segment)
 void Laser::Set(Laser* laser)
 {
 	angle = laser->angle;
+	can_create_loops = laser->can_create_loops;
 	direction = laser->direction;
 	exist = laser->exist;
 	host_matrix_p = laser->host_matrix_p;
@@ -4219,6 +4222,7 @@ void Laser::Update()
 void Laser::operator=(Laser laser)
 {
 	angle = laser.angle;
+	can_create_loops = laser.can_create_loops;
 	direction = laser.direction;
 	exist = laser.exist;
 	host_matrix_p = laser.host_matrix_p;
@@ -4232,7 +4236,6 @@ void Laser::operator=(Laser laser)
 	position = laser.position;
 	shoot_time = laser.shoot_time;
 	width = laser.width;
-
 }
 
 Laser::~Laser()
