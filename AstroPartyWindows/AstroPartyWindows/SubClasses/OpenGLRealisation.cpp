@@ -410,7 +410,13 @@ void OpenGL::InitShaders()
 
 void OpenGL::InitTextures()
 {
-    symbols_texture.Initialisate("Textures/Sample.bmp");
+    bonus_bomb_texture.Initialisate("Textures/Entities/Bonus/Bomb.png", GL_RGBA, GL_RGBA);
+    bonus_knife_texture.Initialisate("Textures/Entities/Bonus/Knife.png", GL_RGBA, GL_RGBA);
+    bonus_laser_texture.Initialisate("Textures/Entities/Bonus/Laser.png", GL_RGBA, GL_RGBA);
+    bonus_loop_texture.Initialisate("Textures/Entities/Bonus/Loop.png", GL_RGBA, GL_RGBA);
+    bonus_revers_texture.Initialisate("Textures/Entities/Bonus/Revers.png", GL_RGBA, GL_RGBA);
+
+    symbols_texture.Initialisate("Textures/Menu/Buttons/Symbols.bmp");
 }
 
 //Draw functions
@@ -611,6 +617,16 @@ void OpenGL::DrawObject(Bonus* bonus, bool update_shader)
     {
         bonus_buffer.Use();
         bonus_shader.Use();
+        bonus_bomb_texture.Use(0);
+        bonus_shader.SetUniform("bomb_texture", 0);
+        bonus_knife_texture.Use(1);
+        bonus_shader.SetUniform("knife_texture", 1);
+        bonus_laser_texture.Use(2);
+        bonus_shader.SetUniform("laser_texture", 2);
+        bonus_loop_texture.Use(3);
+        bonus_shader.SetUniform("loop_texture", 3);
+        bonus_revers_texture.Use(4);
+        bonus_shader.SetUniform("revers_texture", 4);
         bonus_shader.SetUniform("scale", window_scale);
         bonus_shader.SetUniform("camera_position", temp__game__camera_position);
         bonus_shader.SetUniform("camera_size", temp__game__camera_size);
@@ -714,6 +730,7 @@ void OpenGL::DrawObject(Laser* laser, bool update_shader)
     laser_shader.SetUniform("beam", laser->GetBeam());
     laser_shader.SetUniform("life", (float)laser->GetLifeTime() / (float)LASER_DEFAULT_SHOOT_TIME);
     laser_shader.SetUniform("width", laser->width);
+    laser_shader.SetUniform("power", laser->can_create_loops);
     laser_buffer.Draw();
 }
 
@@ -1033,6 +1050,16 @@ void OpenGL::DrawBonuses()
 {
     bonus_buffer.Use();
     bonus_shader.Use();
+    bonus_bomb_texture.Use(0);
+    bonus_shader.SetUniform("bomb_texture", 0);
+    bonus_knife_texture.Use(1);
+    bonus_shader.SetUniform("knife_texture", 1);
+    bonus_laser_texture.Use(2);
+    bonus_shader.SetUniform("laser_texture", 2);
+    bonus_loop_texture.Use(3);
+    bonus_shader.SetUniform("loop_texture", 3);
+    bonus_revers_texture.Use(4);
+    bonus_shader.SetUniform("revers_texture", 4);
     bonus_shader.SetUniform("scale", window_scale);
     bonus_shader.SetUniform("camera_position", temp__game__camera_position);
     bonus_shader.SetUniform("camera_size", temp__game__camera_size);

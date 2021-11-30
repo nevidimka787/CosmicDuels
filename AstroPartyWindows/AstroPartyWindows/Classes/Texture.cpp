@@ -24,13 +24,15 @@ bool Texture2D::Initialisate(const char* texture_file_name, GLint format, GLint 
 
     if (data != nullptr)
     {
-        glTexImage2D(GL_TEXTURE_2D, 0, internal_format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+        glTexImage2D(GL_TEXTURE_2D, 0, internal_format, width, height, 0, format, GL_UNSIGNED_BYTE, (void*)data);
         glGenerateMipmap(GL_TEXTURE_2D);
     }
     else
     {
         std::cout << "ERROR::TEXTURE2D::TEXTURE_INITIALISATION::File can't opened." << std::endl
-            << "File: " << texture_file_name << std::endl;
+            << "File: " << texture_file_name << std::endl
+            << "Logs: " << std::endl <<
+            stbi_failure_reason() << std::endl;
         succses_flag = false;
     }
     stbi_image_free((void*)data);

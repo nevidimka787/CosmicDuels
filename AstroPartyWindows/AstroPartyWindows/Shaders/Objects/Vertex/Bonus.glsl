@@ -20,7 +20,7 @@ void main()
     pixel_position = aPos;
 
     matrix = 
-        Scale(vec2(size)) * 
+        Scale(vec2(size * 2.0f)) * 
         Transport(position) * 
         Transport(-camera_position) *
         Scale(vec2(1.0f / camera_size)) *

@@ -122,6 +122,12 @@ public:
 	//The texture stores symbols and signs that will be drawn on the buttons.
 	Texture2D symbols_texture;
 
+	Texture2D bonus_bomb_texture;
+	Texture2D bonus_knife_texture;
+	Texture2D bonus_laser_texture;
+	Texture2D bonus_loop_texture;
+	Texture2D bonus_revers_texture;
+
 	//textures
 
 	OpenGL(int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share, GLFWframebuffersizefun Function, GLFWwindow** window);
