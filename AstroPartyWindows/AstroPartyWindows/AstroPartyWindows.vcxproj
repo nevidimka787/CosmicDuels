@@ -246,7 +246,13 @@
     <ClInclude Include="Types\OpenGLRealisationTypes.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Textures\Symbols.bmp" />
+    <Image Include="Textures\Entities\Asteroid\Basic.png" />
+    <Image Include="Textures\Entities\Bonus\Bomb.png" />
+    <Image Include="Textures\Entities\Bonus\Knife.png" />
+    <Image Include="Textures\Entities\Bonus\Laser.png" />
+    <Image Include="Textures\Entities\Bonus\Loop.png" />
+    <Image Include="Textures\Entities\Bonus\Revers.png" />
+    <Image Include="Textures\Menu\Buttons\Symbols.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

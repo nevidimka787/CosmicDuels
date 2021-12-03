@@ -631,6 +631,7 @@ void OpenGL::DrawObject(Bonus* bonus, bool update_shader)
         bonus_shader.SetUniform("camera_position", temp__game__camera_position);
         bonus_shader.SetUniform("camera_size", temp__game__camera_size);
     }
+    bonus_shader.SetUniform("angle", bonus->GetAngle());
     bonus_shader.SetUniform("position", bonus->GetPosition());
     bonus_shader.SetUniform("size", bonus->radius);
     bonus_shader.SetUniform("inventory", bonus->bonus_inventory);

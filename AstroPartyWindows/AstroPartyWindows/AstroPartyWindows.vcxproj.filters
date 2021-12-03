@@ -32,6 +32,24 @@
     <Filter Include="Textures">
       <UniqueIdentifier>{bda6f163-ae58-4eaa-869a-8c2115a5b620}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Textures\Menu">
+      <UniqueIdentifier>{e1012501-8a31-479b-b2be-f19cafea1267}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Textures\Menu\Buttons">
+      <UniqueIdentifier>{a2d0ef9d-67f5-4cd2-a3da-d916e0c8877b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Textures\Entities">
+      <UniqueIdentifier>{7ec68b50-3eaa-4396-a6e0-77be6a08fea5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Textures\Entities\Asteroid">
+      <UniqueIdentifier>{77adfcc7-e784-4578-a9e1-875de86af818}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Textures\Entities\Bonus">
+      <UniqueIdentifier>{7e6050aa-dc8d-4805-af40-79dfc9674d3f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Textures\Entities\Bomb">
+      <UniqueIdentifier>{bd9a8249-2cb9-4f69-b567-6ed3a508d66b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -307,8 +325,26 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Textures\Symbols.bmp">
-      <Filter>Textures</Filter>
+    <Image Include="Textures\Menu\Buttons\Symbols.bmp">
+      <Filter>Textures\Menu\Buttons</Filter>
+    </Image>
+    <Image Include="Textures\Entities\Bonus\Bomb.png">
+      <Filter>Textures\Entities\Bonus</Filter>
+    </Image>
+    <Image Include="Textures\Entities\Bonus\Knife.png">
+      <Filter>Textures\Entities\Bonus</Filter>
+    </Image>
+    <Image Include="Textures\Entities\Bonus\Laser.png">
+      <Filter>Textures\Entities\Bonus</Filter>
+    </Image>
+    <Image Include="Textures\Entities\Bonus\Loop.png">
+      <Filter>Textures\Entities\Bonus</Filter>
+    </Image>
+    <Image Include="Textures\Entities\Bonus\Revers.png">
+      <Filter>Textures\Entities\Bonus</Filter>
+    </Image>
+    <Image Include="Textures\Entities\Asteroid\Basic.png">
+      <Filter>Textures\Entities\Asteroid</Filter>
     </Image>
   </ItemGroup>
 </Project>

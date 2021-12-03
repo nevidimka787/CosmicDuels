@@ -64,7 +64,7 @@ void Game::Event0()
 	{
 		if (asteroids_count == 0)
 		{
-			AddEntity(Asteroid(Vec2F(EVENT0__CENTER_POSITION), Vec2F(), BONUS_LASER, ASTEROID_MAX_SIZE));
+			AddEntity(Asteroid(Vec2F(EVENT0__CENTER_POSITION), Vec2F(), BONUS_RULE_REVERSE, ASTEROID_MAX_SIZE));
 		}
 	}
 }

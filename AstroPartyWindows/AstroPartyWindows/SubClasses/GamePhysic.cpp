@@ -610,6 +610,10 @@ void Game::UpdateBonusesPhase2()
 	{
 		if (temp__bonus_p->exist)
 		{
+			if (rotation_inverse)
+			{
+				temp__bonus_p->Rotate(-2.0f * temp__bonus_p->GetAngularVelocity());
+			}
 			temp__bonus_p->Update();
 			found_bonuses++;
 		}
