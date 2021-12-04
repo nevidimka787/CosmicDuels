@@ -1123,6 +1123,9 @@ protected:
 	GameTypes::tic_t animation_tic;
 	EngineTypes::Bomb::status_t status;
 public:
+	GameTypes::tic_t activation_period;
+	GameTypes::tic_t blinking_period;
+
 	Bomb();
 	Bomb(const Bomb& bomb);
 	Bomb(
@@ -1130,30 +1133,34 @@ public:
 		Vec2F velocity,
 		GameTypes::players_count_t master1_team_number,
 		GameTypes::players_count_t master2_team_number,
-		GameTypes::tic_t animation_tic = BOMB_DEFAULT_BOOM_DELLAY,
+		GameTypes::tic_t start_animation_tic = 0,
 		float angle = 0.0f,
 		float angular_velocity = 0.0f,
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		float force_resistance_air_coefficient = BOMB_DEFAULT_RESISTANCE_AIR_COEFFICIENT,
 		float radius = BOMB_DEFAULT_RADIUS,
 		EngineTypes::Bomb::status_t status = BOMB_STATUS_INACTIVE,
+		GameTypes::tic_t activation_period = BOMB_DEFAULT_ACTIVATION_PERIOD,
+		GameTypes::tic_t blinking_period = BOMB_DEFAULT_BLINKING_PERIOD,
 		bool exist = true);
 	Bomb(
 		Vec2F* position,
 		Vec2F* velocity,
 		GameTypes::players_count_t master1_team_number,
 		GameTypes::players_count_t master2_team_number,
-		GameTypes::tic_t animation_tic = BOMB_DEFAULT_BOOM_DELLAY,
+		GameTypes::tic_t start_animation_tic = 0,
 		float angle = 0.0f,
 		float angular_velocity = 0.0f,
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		float force_resistance_air_coefficient = BOMB_DEFAULT_RESISTANCE_AIR_COEFFICIENT,
 		float radius = BOMB_DEFAULT_RADIUS,
 		EngineTypes::Bomb::status_t status = BOMB_STATUS_INACTIVE,
+		GameTypes::tic_t activation_period = BOMB_DEFAULT_ACTIVATION_PERIOD,
+		GameTypes::tic_t blinking_period = BOMB_DEFAULT_BLINKING_PERIOD,
 		bool exist = true);
 
 	void Activate();
-	void Boom();
+	void Boom(GameTypes::tic_t period = BOMB_BOOM_TIME);
 	bool CanRemove();
 	bool Collision(Map* map);
 	GameTypes::tic_t GetAnimationTic();
@@ -1172,13 +1179,15 @@ public:
 		Vec2F* velocity,
 		GameTypes::players_count_t player_master_number,
 		GameTypes::players_count_t player_master_team_number,
-		GameTypes::tic_t animation_tic = BOMB_DEFAULT_BOOM_DELLAY,
+		GameTypes::tic_t start_animation_tic = 0,
 		float angle = 0.0f,
 		float angular_velocity = 0.0f,
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		float force_resistance_air_coefficient = BULLET_DEFAULT_RESISTANCE_AIR_COEFFICIENT,
 		float radius = BOMB_DEFAULT_RADIUS,
 		EngineTypes::Bomb::status_t status = BOMB_STATUS_INACTIVE,
+		GameTypes::tic_t activation_period = BOMB_DEFAULT_ACTIVATION_PERIOD,
+		GameTypes::tic_t blinking_period = BOMB_DEFAULT_BLINKING_PERIOD,
 		bool exist = true);
 	void Update();
 

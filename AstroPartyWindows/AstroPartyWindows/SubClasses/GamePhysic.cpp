@@ -396,13 +396,15 @@ void Game::ShipShoot_LaserBomb(Ship* ship)
 				velocity + direction * SHIP_SUPER_BONUS__BOMBS_LASER_VELOCITY * (float)(SHIP_SUPER_BONUS__BOMBS_IN_LASER / 2 + bomb) / 1.5f / (float)SHIP_SUPER_BONUS__BOMBS_IN_LASER,
 				ship->GetTeamNumber(),
 				ship->GetTeamNumber(),
-				BOMB_DEFAULT_BOOM_DELLAY + bomb,
+				BOMB_DEFAULT_ACTIVATION_PERIOD + bomb,
 				0.0f,
 				0.0f,
 				DEFAULT_FORCE_COLLISION_COEFFICIENT,
 				BULLET_DEFAULT_RESISTANCE_AIR_COEFFICIENT,
 				SHIP_SUPER_BONUS__BOMBS_LASER_RADIUS,
-				BOMB_STATUS_ACTIVE));
+				BOMB_STATUS_ACTIVE,
+				BOMB_DEFAULT_ACTIVATION_PERIOD + bomb,
+				BOMB_DEFAULT_ACTIVATION_PERIOD + bomb));
 	}
 	bombs_array_mtx.unlock();
 	ships_can_shoot_flags[ship->GetPlayerNumber()] += GAME_ADD_DELLAY_BONUS_USE + GAME_ADD_DELLAY_COMBO_USE;
@@ -428,9 +430,6 @@ void Game::ShipShoot_LoopBomb(Ship* ship)
 
 void Game::ShipShoot_LaserKnife(Ship* ship)
 {
-	std::cout << "Laser Knife" << std::endl;
-	ShipShoot_NoBonus(ship);
-
 	Segment local_segment = Segment(Vec2F(0.5f, 0.0f), Vec2F(3.0f, 0.0f));
 	Game::AddEntity(Knife(ship, &local_segment, SHIP_SUPER_BONUS__LONG_KNIFE_HEALTH));
 
@@ -468,13 +467,15 @@ void Game::ShipShoot_BombKnife(Ship* ship)
 			ship->GetVelocity() / 2.0f,
 			ship->GetTeamNumber(),
 			ship->GetTeamNumber(),
-			6000,
+			SHIP_SUPER_BONUS__ANIGILATION_AREA_EXIST_PERIOD,
 			0.0f,
 			0.0f,
 			DEFAULT_FORCE_COLLISION_COEFFICIENT,
 			0.0f,
 			BOMB_DEFAULT_RADIUS,
-			BOMB_STATUS_BOOM));
+			BOMB_STATUS_BOOM,
+			SHIP_SUPER_BONUS__ANIGILATION_AREA_EXIST_PERIOD,
+			SHIP_SUPER_BONUS__ANIGILATION_AREA_EXIST_PERIOD));
 	bombs_array_mtx.unlock();
 	ships_can_shoot_flags[ship->GetPlayerNumber()] += GAME_ADD_DELLAY_BONUS_USE + GAME_ADD_DELLAY_COMBO_USE;
 }
@@ -1053,7 +1054,8 @@ void Game::BombsSpawnedByBulletsAnigilation()
 										BOMB_DEFAULT_RESISTANCE_AIR_COEFFICIENT,
 										BOMB_DEFAULT_RADIUS * BOMB_BOOM_RADIUS_COEF / 3.0f,
 										BOMB_STATUS_BOOM,
-										true));
+										BOMB_BY_BULLET__BOOM_PERIOD,
+										BOMB_BY_BULLET__BOOM_PERIOD));
 								RemoveEntity(temp__bullet1_p);
 								RemoveEntity(temp__bullet2_p);
 								goto end_of_bullet1_cycle;

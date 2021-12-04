@@ -216,6 +216,14 @@ void PhysicsCalculationStarter()
     physics_calculation2.join(); //wait completing of the physic calculation
     physics_calculation3.join(); //wait completing of the physic calculation
 
+    if (glfwWindowShouldClose(window))
+    {
+        main_game->flag_end_match = true;
+        main_game->flag_round_results = false;
+        physic_thread_flag = false;
+        return;
+    }
+
     //waking up point
     std::chrono::system_clock::time_point local_time_point = std::chrono::system_clock::now();
 

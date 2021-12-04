@@ -9,6 +9,8 @@
 class OpenGL
 {
 protected:
+	GLFWwindow* window;
+
 	uint16_t button_commands = 0x0000;
 	GLint window_height;
 	GLint window_width;
@@ -131,6 +133,9 @@ public:
 	Texture2D bonus_laser_texture;
 	Texture2D bonus_loop_texture;
 	Texture2D bonus_revers_texture;
+
+	Texture2D bomb_basic_texture;
+	Texture2D bomb_lighting_texture;
 
 	//textures
 

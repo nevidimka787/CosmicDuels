@@ -138,7 +138,7 @@ void MenuFunctions::SelectShip(GameTypes::players_count_t sheep_number, GameType
 
 void MenuFunctions::Exit()
 {
-	exit(0);
+	exit_game = true;
 }
 
 //Function changes and returns value of option.
@@ -631,6 +631,11 @@ void MenuFunctions::ShipsControlMenuFunction(Vec2F* clk_pos, uint8_t clk_status)
 			current_button->SetStatus(BUTTON_STATUS_SELECT, false);
 		}
 	}
+}
+
+bool MenuFunctions::ShouldExit()
+{
+	return exit_game;
 }
 
 MenuFunctions::~MenuFunctions()

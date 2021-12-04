@@ -2746,8 +2746,11 @@ Bullet Ship::CreateLoop(GameTypes::entities_count_t bullet_number)
 
 Bomb Ship::CreateBomb()
 {
-	Vec2F bomb_position = Vec2F(-0.25f, 0.0f) * model_matrix;
-	return Bomb(&bomb_position, &velocity, player_team_number, player_team_number);
+	return Bomb(
+		Vec2F(-0.25f, 0.0f) * model_matrix,
+		velocity,
+		player_team_number,
+		player_team_number);
 }
 
 Laser Ship::CreateLaser()
@@ -4549,28 +4552,36 @@ Knife::~Knife()
 
 Bomb::Bomb() :
 	KillerEntity(),
-	animation_tic(BOMB_DEFAULT_BOOM_DELLAY),
+	animation_tic(0),
+	activation_period(0),
+	blinking_period(0),
 	status(BOMB_STATUS_INACTIVE)
 {
 }
 
 Bomb::Bomb(const Bomb& bomb) :
 	KillerEntity(bomb),
+	activation_period(bomb.activation_period),
 	animation_tic(bomb.animation_tic),
+	blinking_period(bomb.blinking_period),
 	status(bomb.status)
 {
 }
 
-Bomb::Bomb(Vec2F position, Vec2F velocity, GameTypes::players_count_t master1_team_number, GameTypes::players_count_t master2_team_number, GameTypes::tic_t animation_tic, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, float radius, EngineTypes::Bomb::status_t status, bool exist) :
+Bomb::Bomb(Vec2F position, Vec2F velocity, GameTypes::players_count_t master1_team_number, GameTypes::players_count_t master2_team_number, GameTypes::tic_t animation_tic, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, float radius, EngineTypes::Bomb::status_t status, GameTypes::tic_t activation_period, GameTypes::tic_t blinking_period, bool exist) :
 	KillerEntity(position, velocity, radius, master1_team_number, master2_team_number, angle, angular_velocity, force_collision_coeffisient, force_resistance_air_coefficient, exist),
+	activation_period(activation_period),
 	animation_tic(animation_tic),
+	blinking_period(blinking_period),
 	status(status)
 {
 }
 
-Bomb::Bomb(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t master1_team_number, GameTypes::players_count_t master2_team_number, GameTypes::tic_t animation_tic, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, float radius,EngineTypes::Bomb::status_t status, bool exist) :
+Bomb::Bomb(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t master1_team_number, GameTypes::players_count_t master2_team_number, GameTypes::tic_t animation_tic, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, float radius,EngineTypes::Bomb::status_t status, GameTypes::tic_t activation_period, GameTypes::tic_t blinking_period, bool exist) :
 	KillerEntity(position, velocity, radius, master1_team_number, master2_team_number, angle, angular_velocity, force_collision_coeffisient, force_resistance_air_coefficient, exist),
-	animation_tic(animation_tic), 
+	activation_period(activation_period),
+	animation_tic(animation_tic),
+	blinking_period(blinking_period),
 	status(status)
 {
 }
@@ -4578,11 +4589,14 @@ Bomb::Bomb(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t master1_
 void Bomb::Activate()
 {
 	status |= BOMB_STATUS_ACTIVE;
+	animation_tic = activation_period;
+	blinking_period = activation_period;
 }
 
-void Bomb::Boom()
+void Bomb::Boom(GameTypes::tic_t period)
 {
-	animation_tic = BOMB_BOOM_TIME;
+	animation_tic = period;
+	blinking_period = period;
 	status &= BOMB_STATUS_ALL - BOMB_STATUS_ACTIVE;
 	radius *= BOMB_BOOM_RADIUS_COEF;
 	status |= BOMB_STATUS_BOOM;
@@ -4717,9 +4731,11 @@ bool Bomb::IsAggressiveFor(ControledEntity* host)
 
 void Bomb::Set(Bomb* bomb)
 {
+	activation_period = bomb->activation_period;
 	angle = bomb->angle;
 	angular_velocity = bomb->angular_velocity;
 	animation_tic = bomb->animation_tic;
+	blinking_period = bomb->blinking_period;
 	direction = bomb->direction;
 	exist = bomb->exist;
 	force_collision_coeffisient = bomb->force_collision_coeffisient;
@@ -4732,11 +4748,13 @@ void Bomb::Set(Bomb* bomb)
 	velocity = bomb->velocity;
 }
 
-void Bomb::Set(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t payer_master_number, GameTypes::players_count_t player_master_team_number, GameTypes::tic_t animation_tic, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, float radius, EngineTypes::Bomb::status_t status, bool exist)
+void Bomb::Set(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t payer_master_number, GameTypes::players_count_t player_master_team_number, GameTypes::tic_t animation_tic, float angle, float angular_velocity, float force_collision_coeffisient, float force_resistance_air_coefficient, float radius, EngineTypes::Bomb::status_t status, GameTypes::tic_t activation_period, GameTypes::tic_t blinking_period, bool exist)
 {
+	this->activation_period = activation_period;
 	this->angle = angle;
 	this->angular_velocity = angular_velocity;
 	this->animation_tic = animation_tic;
+	this->blinking_period = blinking_period;
 	UpdateDirection();
 	this->exist = exist;
 	this->force_collision_coeffisient = force_collision_coeffisient;
@@ -4756,9 +4774,12 @@ void Bomb::Update()
 		return;
 	}
 	DynamicEntity::Update();
-	if (status && (BOMB_STATUS_ACTIVE | BOMB_STATUS_BOOM))
+	if (status & (BOMB_STATUS_ACTIVE | BOMB_STATUS_BOOM))
 	{
-		animation_tic--;
+		if (status & BOMB_STATUS_ACTIVE)
+		{
+			angular_velocity += BOMB_DEFAULT_ANGULAR_VELOCITY_INCREMENTATION;
+		}
 		if (animation_tic == 0)
 		{
 			if (status & BOMB_STATUS_BOOM)
@@ -4769,15 +4790,28 @@ void Bomb::Update()
 			Boom();
 			return;
 		}
+		animation_tic--;
+		return;
+	}
+	else
+	{
+		if (animation_tic == 0)
+		{
+			animation_tic = blinking_period;
+			return;
+		}
+		animation_tic--;
 		return;
 	}
 }
 
 void Bomb::operator=(Bomb bomb)
 {
+	activation_period = bomb.activation_period;
 	angle = bomb.angle;
 	angular_velocity = bomb.angular_velocity;
 	animation_tic = bomb.animation_tic;
+	blinking_period = bomb.blinking_period;
 	direction = bomb.direction;
 	exist = bomb.exist;
 	force = bomb.force;
@@ -4793,5 +4827,4 @@ void Bomb::operator=(Bomb bomb)
 
 Bomb::~Bomb()
 {
-
 }

@@ -353,6 +353,9 @@ Asteroid
 //count of health points of knife created by "long knife" ability
 #define SHIP_SUPER_BONUS__LONG_KNIFE_HEALTH	10u
 
+//Count of tick in that anigilation area will be existing.
+#define SHIP_SUPER_BONUS__ANIGILATION_AREA_EXIST_PERIOD	6000u
+
 	//ships super bonuses
 
 	//threads

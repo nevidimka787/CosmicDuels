@@ -115,6 +115,12 @@ void OpenGL::LimitMenuPosition(Menu* menu)
 
 void OpenGL::ProcessInput(GLFWwindow* window)
 {
+    if (object_p__menu_functions->ShouldExit())
+    {
+        glfwSetWindowShouldClose(window, 1);
+        return;
+    }
+
     if (update_menu > 0 && flag_update_menu_can_change)
     {
         update_menu--;
@@ -192,10 +198,6 @@ void OpenGL::ProcessInput(GLFWwindow* window)
             (*game_p__shoot_flags)[PLAYER_3] = false;
         }
     }
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-    {
-        object_p__menu_functions->Exit();
-    }
     if (glfwGetKey(window, GLFW_KEY_BACKSPACE) == GLFW_PRESS && (button_commands & OPEN_GL_REALISATION_COMMAND_BACK) == OPEN_GL_REALISATION_COMMAND_NOTHING)
     {
         update_menu = OPEN_GL_REALISATION_FRAMES_AFTER_CALLBAC_COUNT;
@@ -267,7 +269,7 @@ void OpenGL::ProcessInput(GLFWwindow* window)
 
 GLFWwindow* OpenGL::CreateWindows(int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share, GLFWframebuffersizefun Function)
 {
-    GLFWwindow* window = glfwCreateWindow(width, height, title, NULL, NULL);
+    window = glfwCreateWindow(width, height, title, NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -410,15 +412,18 @@ void OpenGL::InitShaders()
 
 void OpenGL::InitTextures()
 {
-    asteroid_small_texture.Initialisate("Textures/Entities/Asteroid/Basic2.png", GL_RGBA, GL_RGBA);
-    asteroid_medium_texture.Initialisate("Textures/Entities/Asteroid/Basic2.png", GL_RGBA, GL_RGBA);
-    asteroid_large_texture.Initialisate("Textures/Entities/Asteroid/Basic2.png", GL_RGBA, GL_RGBA);
+    asteroid_small_texture.Initialisate("Textures/Entities/Asteroid/Small.png", GL_RGBA, GL_RGBA);
+    asteroid_medium_texture.Initialisate("Textures/Entities/Asteroid/Medium.png", GL_RGBA, GL_RGBA);
+    asteroid_large_texture.Initialisate("Textures/Entities/Asteroid/Large.png", GL_RGBA, GL_RGBA);
 
     bonus_bomb_texture.Initialisate("Textures/Entities/Bonus/Bomb.png", GL_RGBA, GL_RGBA);
     bonus_knife_texture.Initialisate("Textures/Entities/Bonus/Knife.png", GL_RGBA, GL_RGBA);
     bonus_laser_texture.Initialisate("Textures/Entities/Bonus/Laser.png", GL_RGBA, GL_RGBA);
     bonus_loop_texture.Initialisate("Textures/Entities/Bonus/Loop.png", GL_RGBA, GL_RGBA);
     bonus_revers_texture.Initialisate("Textures/Entities/Bonus/Revers.png", GL_RGBA, GL_RGBA);
+
+    bomb_basic_texture.Initialisate("Textures/Entities/Bomb/Basic.png", GL_RGBA, GL_RGBA);
+    bomb_lighting_texture.Initialisate("Textures/Entities/Bomb/Lighting.png", GL_RGBA, GL_RGBA);
 
     symbols_texture.Initialisate("Textures/Menu/Buttons/Symbols.bmp");
 }
@@ -427,6 +432,12 @@ void OpenGL::InitTextures()
 
 void OpenGL::DrawFrame()
 {
+    if (glfwWindowShouldClose(window))
+    {
+        *game_p__play_match = false;
+        *game_p__play_round = false;
+    }
+
     if (*game_p__flag_all_entities_initialisate == false || *game_p__flag_round_results == true)
     {
         glClearColor(0.1f, 0.1f, 0.5f, 1.0f);
@@ -611,6 +622,10 @@ void OpenGL::DrawObject(Bomb* bomb, bool update_shader)
     {
         bomb_buffer.Use();
         bomb_shader.Use();
+        bomb_basic_texture.Use(0);
+        bomb_shader.SetUniform("basic_txtr", 0);
+        bomb_lighting_texture.Use(1);
+        bomb_shader.SetUniform("lighting_txtr", 1);
         bomb_shader.SetUniform("scale", window_scale);
         bomb_shader.SetUniform("camera_position", temp__game__camera_position);
         bomb_shader.SetUniform("camera_size", temp__game__camera_size);
@@ -618,7 +633,8 @@ void OpenGL::DrawObject(Bomb* bomb, bool update_shader)
     bomb_shader.SetUniform("position", bomb->GetPosition());
     bomb_shader.SetUniform("angle", bomb->GetAngle());
     bomb_shader.SetUniform("size", bomb->radius);
-    bomb_shader.SetUniform("animation", (float)bomb->GetAnimationTic() / (float)BOMB_BOOM_TIME);
+    bomb_shader.SetUniform("animation", 1.0f - (float)bomb->GetAnimationTic() / (float)bomb->blinking_period);
+    bomb_shader.SetUniform("status", (int)bomb->IsActive() + (int)bomb->IsBoom() * 2);
     bomb_buffer.Draw();
 }
 
@@ -1051,6 +1067,10 @@ void OpenGL::DrawBombs()
 {
     bomb_buffer.Use();
     bomb_shader.Use();
+    bomb_basic_texture.Use(0);
+    bomb_shader.SetUniform("basic_txtr", 0);
+    bomb_lighting_texture.Use(1);
+    bomb_shader.SetUniform("lighting_txtr", 1);
     bomb_shader.SetUniform("scale", window_scale);
     bomb_shader.SetUniform("camera_position", temp__game__camera_position);
     bomb_shader.SetUniform("camera_size", temp__game__camera_size);

@@ -6,6 +6,7 @@ class MenuFunctions
 {
 private:
 	EngineTypes::Menu::buttons_count_t last_select_button_index;
+	bool exit_game = false;
 public:
 	uint8_t* ships_select_buttons;
 
@@ -41,6 +42,8 @@ public:
 	void MapPullSelectMenuFunction(Vec2F* clk_pos, uint8_t clk_status);
 	void SpawnObjectsSelectMenuFunction(Vec2F* clk_pos, uint8_t clk_status);
 	void ShipsControlMenuFunction(Vec2F* clk_pos, uint8_t clk_status);
+
+	bool ShouldExit();
 
 	~MenuFunctions();
 

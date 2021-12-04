@@ -343,16 +343,13 @@
     <Image Include="Textures\Entities\Bonus\Revers.png">
       <Filter>Textures\Entities\Bonus</Filter>
     </Image>
-    <Image Include="Textures\Entities\Asteroid\Basic.png">
+    <Image Include="Textures\Entities\Asteroid\Large.png">
       <Filter>Textures\Entities\Asteroid</Filter>
     </Image>
-    <Image Include="Textures\Entities\Asteroid\Basic1.png">
+    <Image Include="Textures\Entities\Asteroid\Medium.png">
       <Filter>Textures\Entities\Asteroid</Filter>
     </Image>
-    <Image Include="Textures\Entities\Asteroid\Basic2.png">
-      <Filter>Textures\Entities\Asteroid</Filter>
-    </Image>
-    <Image Include="Textures\Entities\Asteroid\template.png">
+    <Image Include="Textures\Entities\Asteroid\Small.png">
       <Filter>Textures\Entities\Asteroid</Filter>
     </Image>
   </ItemGroup>
