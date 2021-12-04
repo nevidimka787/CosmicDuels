@@ -122,6 +122,10 @@ public:
 	//The texture stores symbols and signs that will be drawn on the buttons.
 	Texture2D symbols_texture;
 
+	Texture2D asteroid_small_texture;
+	Texture2D asteroid_medium_texture;
+	Texture2D asteroid_large_texture;
+
 	Texture2D bonus_bomb_texture;
 	Texture2D bonus_knife_texture;
 	Texture2D bonus_laser_texture;

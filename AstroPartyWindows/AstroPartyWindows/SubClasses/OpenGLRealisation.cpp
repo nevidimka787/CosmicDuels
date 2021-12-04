@@ -410,6 +410,10 @@ void OpenGL::InitShaders()
 
 void OpenGL::InitTextures()
 {
+    asteroid_small_texture.Initialisate("Textures/Entities/Asteroid/Basic2.png", GL_RGBA, GL_RGBA);
+    asteroid_medium_texture.Initialisate("Textures/Entities/Asteroid/Basic2.png", GL_RGBA, GL_RGBA);
+    asteroid_large_texture.Initialisate("Textures/Entities/Asteroid/Basic2.png", GL_RGBA, GL_RGBA);
+
     bonus_bomb_texture.Initialisate("Textures/Entities/Bonus/Bomb.png", GL_RGBA, GL_RGBA);
     bonus_knife_texture.Initialisate("Textures/Entities/Bonus/Knife.png", GL_RGBA, GL_RGBA);
     bonus_laser_texture.Initialisate("Textures/Entities/Bonus/Laser.png", GL_RGBA, GL_RGBA);
@@ -584,12 +588,19 @@ void OpenGL::DrawObject(Asteroid* asteroid, bool update_shader)
     {
         asteroid_buffer.Use();
         asteroid_shader.Use();
+        asteroid_small_texture.Use(0);
+        asteroid_shader.SetUniform("small_txtr", 0);
+        asteroid_medium_texture.Use(1);
+        asteroid_shader.SetUniform("medium_txtr", 1);
+        asteroid_large_texture.Use(2);
+        asteroid_shader.SetUniform("large_txtr", 2);
         asteroid_shader.SetUniform("scale", window_scale);
         asteroid_shader.SetUniform("camera_position", temp__game__camera_position);
         asteroid_shader.SetUniform("camera_size", temp__game__camera_size);
     }
     asteroid_shader.SetUniform("position", asteroid->GetPosition());
-    asteroid_shader.SetUniform("size", asteroid->radius);
+    asteroid_shader.SetUniform("radius", asteroid->radius);
+    asteroid_shader.SetUniform("size", asteroid->GetSize());
     asteroid_shader.SetUniform("inventory", asteroid->bonus_inventory);
     asteroid_buffer.Draw();
 }
@@ -1017,6 +1028,12 @@ void OpenGL::DrawAsteroids()
 {
     asteroid_buffer.Use();
     asteroid_shader.Use();
+    asteroid_small_texture.Use(0);
+    asteroid_shader.SetUniform("small_txtr", 0);
+    asteroid_medium_texture.Use(1);
+    asteroid_shader.SetUniform("medium_txtr", 1);
+    asteroid_large_texture.Use(2);
+    asteroid_shader.SetUniform("large_txtr", 2);
     asteroid_shader.SetUniform("scale", window_scale);
     asteroid_shader.SetUniform("camera_position", temp__game__camera_position);
     asteroid_shader.SetUniform("camera_size", temp__game__camera_size);

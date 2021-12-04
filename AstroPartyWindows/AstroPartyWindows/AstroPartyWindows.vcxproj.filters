@@ -346,5 +346,14 @@
     <Image Include="Textures\Entities\Asteroid\Basic.png">
       <Filter>Textures\Entities\Asteroid</Filter>
     </Image>
+    <Image Include="Textures\Entities\Asteroid\Basic1.png">
+      <Filter>Textures\Entities\Asteroid</Filter>
+    </Image>
+    <Image Include="Textures\Entities\Asteroid\Basic2.png">
+      <Filter>Textures\Entities\Asteroid</Filter>
+    </Image>
+    <Image Include="Textures\Entities\Asteroid\template.png">
+      <Filter>Textures\Entities\Asteroid</Filter>
+    </Image>
   </ItemGroup>
 </Project>

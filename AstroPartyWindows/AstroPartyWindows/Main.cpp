@@ -70,7 +70,7 @@ int main()
     main_linker = new Linker(main_game, main_menu_functions, main_draw_functions); //link Game, MainMenuFunctions and OpenGL
     glEnable(GL_MULTISAMPLE); //enable multisample
     //game cycle
-    while (true)
+    while (!glfwWindowShouldClose(window))
     {
         main_draw_functions->ProcessInput(window); //check input data
         if (main_draw_functions->update_menu > 0) //some event was detected in main_draw_functions->ProcessInput(window)
@@ -82,7 +82,7 @@ int main()
         if (main_game->play_match == true) //flag "playing matc is active"
         {
             main_game->InitMatch();
-            while (main_game->play_match == true) //while winner not detected or player do not wont go to main menu
+            while (main_game->play_match == true && !glfwWindowShouldClose(window)) //while winner not detected or player do not wont go to main menu
             {
                 std::thread timer_thread(InputOutputUpdate); //init console thread
                 while (tik_update_thread_flag == false || physic_thread_flag == false)

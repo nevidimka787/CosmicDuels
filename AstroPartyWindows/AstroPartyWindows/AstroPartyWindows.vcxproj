@@ -247,6 +247,9 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="Textures\Entities\Asteroid\Basic.png" />
+    <Image Include="Textures\Entities\Asteroid\Basic1.png" />
+    <Image Include="Textures\Entities\Asteroid\Basic2.png" />
+    <Image Include="Textures\Entities\Asteroid\template.png" />
     <Image Include="Textures\Entities\Bonus\Bomb.png" />
     <Image Include="Textures\Entities\Bonus\Knife.png" />
     <Image Include="Textures\Entities\Bonus\Laser.png" />
