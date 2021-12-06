@@ -662,6 +662,11 @@ public:
 
 class Ship : public ControledEntity
 {
+private:
+	//value of the variable will not translate to other entities
+	GameTypes::entities_count_t objects_in_loop;
+	//value of the variable will not translate to other entities
+	GameTypes::objects_types_count_t element_type;
 protected:
 	void* burnout_input_value_pointer;
 	EngineTypes::Bonus::inventory_t bonus_inventory;
@@ -701,6 +706,7 @@ public:
 		float power,
 		bool rotate_clockwise,
 		GameTypes::tic_t burnout_period = SHIP_DEFAULT_BURNOUT_PERIOD);
+	bool CanCreatingLoop();
 	Bullet CreateBullet();
 	//The function return dynamic particle.
 	DynamicParticle CreateBurnoutExaust(GameTypes::tic_t current_tic);
@@ -710,6 +716,13 @@ public:
 	DynamicParticle CreateShards(GameTypes::tic_t current_tic);
 	//The function does not check for the presence of a bonus.
 	Bullet CreateTriple(uint8_t bullet_number);
+	//The function print data about loop to ship's memory.
+	//If ship already has the data then the function return false
+	//else the function return true.
+	bool CreatingLoop(
+		GameTypes::entities_count_t objects_in_loop,	//count of objects in creating loop
+		GameTypes::objects_types_count_t element_type	//type of elemnts in creating loop
+	);
 	//The function does not check for the presence of a bonus.
 	Bullet CreateLoop(GameTypes::entities_count_t bullet_number);
 	//The function does not check for the presence of a bonus.
@@ -721,6 +734,10 @@ public:
 	//The function return dynamic particle.
 	Particle CreateShootingExaust(GameTypes::tic_t current_tic);
 	Pilot Destroy();
+	//The function return number of curent element.
+	//Last number of entity is 1.
+	GameTypes::entities_count_t GetElemntFromLoop();
+	GameTypes::objects_types_count_t GetTypeOfElemntInLoop();
 	bool HaveBonus(EngineTypes::Bonus::inventory_t bonus);
 	bool HaveBuff(EngineTypes::Ship::inventory_t buff);
 	bool IsUnbrakable();
@@ -755,6 +772,7 @@ public:
 	bool SpendBuff(EngineTypes::Ship::inventory_t bonus);
 	//The function reduces this buff.
 	void SpendBuffNoCheck(EngineTypes::Ship::inventory_t bonus);
+	void StopCreatingLoop();
 	void TakeBonus(Bonus* bonus, bool as_triple);
 	void Update();
 	void UpdateMatrix();

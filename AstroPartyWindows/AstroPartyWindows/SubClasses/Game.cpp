@@ -20,7 +20,7 @@
 
 void Game::PhysicThread0()
 {
-	opengl_p__draw_lock0_mtx->lock();
+	//opengl_p__draw_lock0_mtx->lock();
 
 	BombsChainReaction();
 	BulletsDestroyAsteroids();
@@ -111,11 +111,13 @@ void Game::PhysicThread0()
 		stuning_timer--;
 	}
 
-	opengl_p__draw_lock0_mtx->unlock();
+	//opengl_p__draw_lock0_mtx->unlock();
 }
 
 void Game::PhysicThread1()
 {
+	//opengl_p__draw_lock1_mtx->lock();
+
 	PortalsTPAsteroids();
 	PortalsTPBombs();
 	PortalsTPBonuses();
@@ -184,10 +186,14 @@ void Game::PhysicThread1()
 	thread_1_update.unlock();
 
 	WaitPhaseNotAll();
+
+	//opengl_p__draw_lock1_mtx->unlock();
 }
 
 void Game::PhysicThread2()
 {
+	//opengl_p__draw_lock2_mtx->lock();
+
 	MegaLasersDetonateBombs();
 	//MegaLasersDestroyMap(); -- not realisated
 	CameraFocusesOnPlayers();
@@ -255,10 +261,14 @@ void Game::PhysicThread2()
 	thread_2_update.unlock();
 
 	WaitPhaseNotAll();
+
+	//opengl_p__draw_lock2_mtx->unlock();
 }
 
 void Game::PhysicThread3()
 {
+	//opengl_p__draw_lock3_mtx->lock();
+
 	KnifesDestroyTurels();
 	LasersDestroyMap();
 	LasersDestroyTurels();
@@ -317,6 +327,8 @@ void Game::PhysicThread3()
 	thread_3_update.unlock();
 
 	WaitPhaseNotAll();
+
+	//opengl_p__draw_lock3_mtx->unlock();
 }
 
 EngineTypes::Bonus::inventory_t Game::GenerateRandomBonus()

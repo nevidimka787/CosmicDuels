@@ -444,6 +444,9 @@ void OpenGL::InitTextures()
 
 void OpenGL::DrawFrame()
 {
+    //draw_lock0_mtx.lock();
+    //game_p__input_values_mtx->lock();
+
     if (glfwWindowShouldClose(window))
     {
         *game_p__play_match = false;
@@ -458,14 +461,6 @@ void OpenGL::DrawFrame()
 
     if (*game_p__flag_all_entities_initialisate == true && *game_p__flag_round_results == false)
     {
-        //main_buffer.Use();
-        //main_buffer.Render();
-
-        draw_lock0_mtx.lock();
-        //draw_lock1_mtx.lock();
-        //draw_lock2_mtx.lock();
-        //draw_lock3_mtx.lock();
-
         game_p__camera_data_mtx->lock();
         temp__game__camera_position = game_p__camera->GetPosition();
         temp__game__camera_size = game_p__camera->GetSize();
@@ -565,23 +560,9 @@ void OpenGL::DrawFrame()
             DrawDecelerationAreas();
         }
         game_p__deceler_areas_array_mtx->unlock();
-
-        draw_lock0_mtx.unlock();
-        //draw_lock1_mtx.unlock();
-        //draw_lock2_mtx.unlock();
-        //draw_lock3_mtx.unlock();
-
-        //main_buffer.Draw();
     }
     else if (*game_p__flag_round_results == true)
     {
-        //main_buffer.Use();
-        //main_buffer.Render();
-
-        draw_lock0_mtx.lock();
-        //draw_lock1_mtx.lock();
-        //draw_lock2_mtx.lock();
-        //draw_lock3_mtx.lock();
 
         game_p__camera_data_mtx->lock();
         temp__game__camera_position = game_p__camera->GetPosition();
@@ -593,16 +574,12 @@ void OpenGL::DrawFrame()
         game_p__ships_array_mtx->lock();
         DrawShips();
         game_p__ships_array_mtx->unlock();
-
-        draw_lock0_mtx.unlock();
-        //draw_lock1_mtx.unlock();
-        //draw_lock2_mtx.unlock();
-        //draw_lock3_mtx.unlock();
-
-        //main_buffer.Draw();
     }
 
     DrawCurrentMenu();
+
+    //game_p__input_values_mtx->unlock();
+    //draw_lock0_mtx.unlock();
 }
 
 void OpenGL::DrawObject(Line* line, bool update_shader)

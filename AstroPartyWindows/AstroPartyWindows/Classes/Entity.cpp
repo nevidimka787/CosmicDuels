@@ -2576,7 +2576,9 @@ Ship::Ship() :
 	buff_inventory(BONUS_NOTHING),
 	burnout(0),
 	burnout_input_value_pointer(nullptr),
-	unbrakable(0)
+	unbrakable(0),
+	objects_in_loop(0),
+	element_type(GAME_OBJECT_TYPE_NULL)
 {
 }
 
@@ -2586,7 +2588,9 @@ Ship::Ship(const Ship& ship) :
 	buff_inventory(ship.buff_inventory),
 	burnout(ship.burnout),
 	burnout_input_value_pointer(ship.burnout_input_value_pointer),
-	unbrakable(ship.unbrakable)
+	unbrakable(ship.unbrakable),
+	objects_in_loop(0),
+	element_type(GAME_OBJECT_TYPE_NULL)
 {
 }
 
@@ -2596,7 +2600,9 @@ Ship::Ship(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t player_n
 	buff_inventory(buff_inventory),
 	burnout(burnout),
 	burnout_input_value_pointer(burnout_input_value_pointer),
-	unbrakable(unbrakable)
+	unbrakable(unbrakable),
+	objects_in_loop(0),
+	element_type(GAME_OBJECT_TYPE_NULL)
 {
 }
 
@@ -2642,6 +2648,11 @@ void Ship::Burnout(float power, bool rotate_clockwise, GameTypes::tic_t burnout_
 	}
 	UpdateDirection();
 	burnout = burnout_period;
+}
+
+bool Ship::CanCreatingLoop()
+{
+	return objects_in_loop > 0;
 }
 
 Bullet Ship::CreateBullet()
@@ -2734,6 +2745,32 @@ Bullet Ship::CreateTriple(uint8_t bullet_number)
 	}
 }
 
+bool Ship::CreatingLoop(
+	GameTypes::entities_count_t objects_in_loop,	//count of objects in creating loop
+	GameTypes::objects_types_count_t element_type	//type of elemnts in creating loop
+)
+{
+	if (this->objects_in_loop > 0)
+	{
+		return false;
+	}
+
+	this->objects_in_loop = objects_in_loop;
+	this->element_type = element_type;
+
+	return true;
+}
+
+GameTypes::entities_count_t Ship::GetElemntFromLoop()
+{
+	if (objects_in_loop == 0)
+	{
+		return 0;
+	}
+	objects_in_loop--;
+	return objects_in_loop + (uint16_t)1;
+}
+
 Bullet Ship::CreateLoop(GameTypes::entities_count_t bullet_number)
 { 
 	Vec2F bullet_velocity = velocity + Vec2F(0.0f, 1.0f).Rotate(2.0f * (float)M_PI / (float)SHIP_BULLETS_IN_LOOP * (float)bullet_number) * BULLET_DEFAULT_VELOCITY;
@@ -2800,6 +2837,11 @@ Pilot Ship::Destroy()
 	Pilot new_pilot = Pilot(&position, &zero_velocity, player_number, player_team_number, rotate_input_value_pointer, shoot_input_value_pointer, PILOT_DEFAULT_RESPAWN_TIMER, nullptr, 0, angle);
 	new_pilot.AddForce(velocity * 1.5f);
 	return new_pilot;
+}
+
+GameTypes::objects_types_count_t Ship::GetTypeOfElemntInLoop()
+{
+	return element_type;
 }
 
 bool Ship::HaveBonus(EngineTypes::Bonus::inventory_t bonus)
@@ -2930,6 +2972,11 @@ bool Ship::SpendBuff(EngineTypes::Ship::inventory_t buff)
 void Ship::SpendBuffNoCheck(EngineTypes::Ship::inventory_t buff)
 {
 	buff_inventory &= SHIP_BUFF_ALL - buff;
+}
+
+void Ship::StopCreatingLoop()
+{
+	objects_in_loop = 0;
 }
 
 void Ship::TakeBonus(Bonus* bonus, bool as_triple)

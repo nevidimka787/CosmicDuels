@@ -247,7 +247,80 @@ template void Game::TeleportEntity<Pilot>(Portal* portal, Pilot* pilot);
 
 void Game::ShipShoot(Ship* ship)
 {
-	if (ships_can_shoot_flags[ship->GetPlayerNumber()] > 0)
+	if (ship->CanCreatingLoop())
+	{
+		GameTypes::objects_types_count_t type = ship->GetTypeOfElemntInLoop();
+		GameTypes::entities_count_t entity_number;
+		float angle;
+		Vec2F r_vec;
+		Segment local_segment;
+		switch (type)
+		{
+		case GAME_OBJECT_TYPE_LOOP_BOMB:
+			return;
+		case GAME_OBJECT_TYPE_LOOP_BULLET:
+			bullets_array_mtx.lock();
+			entity_number = ship->GetElemntFromLoop();
+			angle = (float)(((entity_number - 1u) / 2u) + 0.5f) / (float)SHIP_BONUS__LOOP_BULLETS_IN_LOOP * M_PI * 2.0f;
+			std::cout << "Create bullets: " << angle << std::endl;
+			r_vec = Vec2F(1.0f, 0.0f).RotateClockwise(ship->GetAngle() + angle);
+			AddEntity(
+				Bullet(
+					ship->GetPosition() + r_vec * (ship->radius + SHIP_BONUS__LOOP_BULLETS_RADIUS * 2.0f),
+					ship->GetVelocity() + r_vec * SHIP_BONUS__LOOP_BULLET_VELOCITY,
+					ship->GetPlayerNumber(),
+					ship->GetTeamNumber(),
+					true,
+					ship->GetAngle() + angle,
+					0.0f,
+					DEFAULT_FORCE_COLLISION_COEFFICIENT,
+					BULLET_DEFAULT_RESISTANCE_AIR_COEFFICIENT,
+					SHIP_BONUS__LOOP_BULLETS_RADIUS));
+			
+			entity_number = ship->GetElemntFromLoop();
+			if (entity_number == 0)
+			{
+				bullets_array_mtx.unlock();
+				return;
+			}
+			r_vec = Vec2F(1.0f, 0.0f).RotateClockwise(ship->GetAngle() - angle);
+			AddEntity(
+				Bullet(
+					ship->GetPosition() + r_vec * (ship->radius + SHIP_BONUS__LOOP_BULLETS_RADIUS * 2.0f),
+					ship->GetVelocity() + r_vec * SHIP_BONUS__LOOP_BULLET_VELOCITY,
+					ship->GetPlayerNumber(),
+					ship->GetTeamNumber(),
+					true,
+					ship->GetAngle() - angle,
+					0.0f,
+					DEFAULT_FORCE_COLLISION_COEFFICIENT,
+					BULLET_DEFAULT_RESISTANCE_AIR_COEFFICIENT,
+					SHIP_BONUS__LOOP_BULLETS_RADIUS));
+			bullets_array_mtx.unlock();
+			return;
+		case GAME_OBJECT_TYPE_LOOP_KNIFE:
+			knifes_array_mtx.lock();
+			entity_number = ship->GetElemntFromLoop() - 1;
+			local_segment.Set(
+				Vec2F(0.5f, 0.0f).Rotate(((float)entity_number + 0.5f) / (float)SHIP_SUPER_BONUS__KNIFES_IN_LOOP * (float)M_PI * 2.0f).Scale(Vec2F(1.0f, sqrtf(2.0f))),
+				Vec2F(0.5f, 0.0f).Rotate(((float)entity_number + 1.5f) / (float)SHIP_SUPER_BONUS__KNIFES_IN_LOOP * (float)M_PI * 2.0f).Scale(Vec2F(1.0f, sqrtf(2.0f))),
+				true);
+			AddEntity(Knife(ship, &local_segment, 1u));
+
+			local_segment.Set(
+				Vec2F(0.5f, 0.0f).Rotate(-((float)entity_number + 0.5f) / (float)SHIP_SUPER_BONUS__KNIFES_IN_LOOP * (float)M_PI * 2.0f).Scale(Vec2F(1.0f, sqrtf(2.0f))),
+				Vec2F(0.5f, 0.0f).Rotate(-((float)entity_number + 1.5f) / (float)SHIP_SUPER_BONUS__KNIFES_IN_LOOP * (float)M_PI * 2.0f).Scale(Vec2F(1.0f, sqrtf(2.0f))),
+				true);
+			AddEntity(Knife(ship, &local_segment, 1u));
+			knifes_array_mtx.unlock();
+			return;
+		default:
+			std::cout << "WARNING::ShipShoot::Unknow type " << type << std::endl;
+			return;
+		}
+	}
+
+	if (!shoot_flags[ship->GetPlayerNumber()] || ships_can_shoot_flags[ship->GetPlayerNumber()] > 0)
 	{
 		return;
 	}
@@ -438,24 +511,7 @@ void Game::ShipShoot_LaserKnife(Ship* ship)
 
 void Game::ShipShoot_LoopKnife(Ship* ship)
 {
-	Segment local_segment;
-	knifes_array_mtx.lock();
-	for (GameTypes::entities_count_t knife = 0; knife < SHIP_SUPER_BONUS__KNIFES_IN_LOOP / 2; knife++)
-	{
-		local_segment.Set(
-			Vec2F(0.5f, 0.0f).Rotate(((float)knife + 0.5f) / (float)SHIP_SUPER_BONUS__KNIFES_IN_LOOP * (float)M_PI * 2.0f).Scale(Vec2F(1.0f, sqrtf(2.0f))),
-			Vec2F(0.5f, 0.0f).Rotate(((float)knife + 1.5f) / (float)SHIP_SUPER_BONUS__KNIFES_IN_LOOP * (float)M_PI * 2.0f).Scale(Vec2F(1.0f, sqrtf(2.0f))),
-			true);
-		AddEntity(Knife(ship, &local_segment, 1u));
-
-		local_segment.Set(
-			Vec2F(0.5f, 0.0f).Rotate(-((float)knife + 0.5f) / (float)SHIP_SUPER_BONUS__KNIFES_IN_LOOP * (float)M_PI * 2.0f).Scale(Vec2F(1.0f, sqrtf(2.0f))),
-			Vec2F(0.5f, 0.0f).Rotate(-((float)knife + 1.5f) / (float)SHIP_SUPER_BONUS__KNIFES_IN_LOOP * (float)M_PI * 2.0f).Scale(Vec2F(1.0f, sqrtf(2.0f))),
-			true);
-		AddEntity(Knife(ship, &local_segment, 1u));
-	}
-	knifes_array_mtx.unlock();
-
+	ship->CreatingLoop(SHIP_SUPER_BONUS__KNIFES_IN_LOOP / 2, GAME_OBJECT_TYPE_LOOP_KNIFE);
 	ships_can_shoot_flags[ship->GetPlayerNumber()] += GAME_ADD_DELLAY_BONUS_USE + GAME_ADD_DELLAY_COMBO_USE;
 }
 
@@ -499,13 +555,7 @@ void Game::ShipShoot_Bomb(Ship* ship)
 
 void Game::ShipShoot_Loop(Ship* ship)
 {
-	bullets_array_mtx.lock();
-	for (GameTypes::entities_count_t bullet = 0; bullet < SHIP_BULLETS_IN_LOOP; bullet++)
-	{
-		Game::AddEntity(ship->CreateLoop(bullet));
-	}
-	bullets_array_mtx.unlock();
-	//ships_can_shoot_flags[ship->GetPlayerNumber()] += GAME_ADD_DELLAY_BONUS_USE;
+	ship->CreatingLoop(SHIP_BULLETS_IN_LOOP, GAME_OBJECT_TYPE_LOOP_BULLET);
 	ships_can_shoot_flags[ship->GetPlayerNumber()] += 2;
 }
 
@@ -2498,10 +2548,7 @@ void Game::ShipsShoot()
 		if (temp__ship_p->exist)
 		{
 			input_values_mtx.lock();
-			if (shoot_flags[ship] == true && ships_can_shoot_flags[ship] == 0)
-			{
-				ShipShoot(temp__ship_p);
-			}
+			ShipShoot(temp__ship_p);
 			input_values_mtx.unlock();
 			found_ships++;
 		}

@@ -18,10 +18,19 @@ turels, mega lasers
 */
 #define GAME_ENTITIES_TYPES_COUNT 13
 
-/*
-Asteroid
-*/
-#define GAME_OBJECT_TYPES_COUNT	1
+
+
+#define GAME_OBJECT_TYPES_COUNT		1
+
+#define GAME_OBJECT_TYPE_NULL			0u
+#define GAME_OBJECT_TYPE_ASTEROID		1u
+#define GAME_OBJECT_TYPE_BULLET			2u
+#define GAME_OBJECT_TYPE_BOMB			3u
+#define GAME_OBJECT_TYPE_KNIFE			4u
+#define GAME_OBJECT_TYPE_LOOP_BULLET	5u
+#define GAME_OBJECT_TYPE_LOOP_BOMB		6u
+#define GAME_OBJECT_TYPE_LOOP_KNIFE		7u
+
 
 //tics to next shoot
 #define GAME_DELLAY_BETWEEN_SHOOTS		30
@@ -321,6 +330,14 @@ Asteroid
 #define BUTTON_ID__SELECT_MAP_8	(BUTTON_ID__SELECT_MAP + MAP_BROKEN)
 
 	//select map pull menu
+
+	//ships bonuses
+
+#define SHIP_BONUS__LOOP_BULLETS_IN_LOOP	SHIP_BULLETS_IN_LOOP
+#define SHIP_BONUS__LOOP_BULLETS_RADIUS		(BULLET_DEFAULT_RADIUS / 2.0f)
+#define SHIP_BONUS__LOOP_BULLET_VELOCITY	BULLET_DEFAULT_VELOCITY
+
+	//ships bonuses
 
 	//ships super bonuses
 
