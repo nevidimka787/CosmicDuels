@@ -64,3 +64,79 @@ StaticBuffer::~StaticBuffer()
 {
 	glDeleteBuffers(0, &id);
 }
+
+
+
+FrameBuffer::FrameBuffer()
+	:
+	id(0),
+	buffers_count(0),
+	draw_buffers(nullptr),
+	height(0),
+	width(0)
+{
+	Vec2F points[6] = {Vec2F(-1.0f), Vec2F(-1.0f, 1.0f), Vec2F(1.0f, -1.0f), Vec2F(1.0f), Vec2F(-1.0f, 1.0f), Vec2F(1.0f, -1.0f)};
+	frame.Initialisate(points, 6);
+}
+
+void FrameBuffer::Draw()
+{
+	glDrawBuffers(buffers_count, draw_buffers);
+	frame.Draw();
+}
+
+void FrameBuffer::Render()
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, id);
+	glViewport(0, 0, height, width);
+}
+
+bool FrameBuffer::Initialisate(GLuint width, GLuint height, GLuint buffers_count)
+{
+	if (buffers_count == 0)
+	{
+		return false;
+	}
+
+	this->buffers_count = buffers_count;
+	this->height = height;
+	this->width = width;
+
+	glGenFramebuffers(buffers_count, &id);
+	glBindFramebuffer(GL_FRAMEBUFFER, id);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	draw_buffers = new GLenum[buffers_count];
+	for (GLuint i = 0; i < buffers_count; i++)
+	{
+		draw_buffers[i] = GL_COLOR_ATTACHMENT0 + i;
+	}
+
+	return true;
+}
+
+void FrameBuffer::Resize(GLuint width, GLuint height)
+{
+	this->height = height;
+	this->width = width;
+
+	glBindFramebuffer(GL_FRAMEBUFFER, id);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+
+}
+
+void FrameBuffer::Use()
+{
+	frame.Use();
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, id, 0);
+}
+
+FrameBuffer::~FrameBuffer()
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, id);
+	glDeleteBuffers(buffers_count, draw_buffers);
+	delete[] draw_buffers;
+}

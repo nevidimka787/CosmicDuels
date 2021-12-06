@@ -50,6 +50,24 @@
     <Filter Include="Textures\Entities\Bomb">
       <UniqueIdentifier>{bd9a8249-2cb9-4f69-b567-6ed3a508d66b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders\Vertex\Entityes">
+      <UniqueIdentifier>{f2fab333-9b08-4ab7-a8a0-8d2a347db509}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Vertex\Map">
+      <UniqueIdentifier>{246f8a2f-7033-4f6e-be26-538f2a96aba2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Vertex\Frame">
+      <UniqueIdentifier>{207f1d97-3af1-4583-b5a4-42c26f908bd8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Fragment\Entiryes">
+      <UniqueIdentifier>{dabc8004-1ba6-47b3-ada1-5e54024666c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Fragment\Frame">
+      <UniqueIdentifier>{28faf903-0fa3-4bd3-aa5e-a019d04a8456}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Fragment\Map">
+      <UniqueIdentifier>{f7cf6fe8-f616-4540-82b0-a27465d77487}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -117,125 +135,131 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\Objects\Fragment\Asteroid.glsl">
-      <Filter>Shaders\Fragment</Filter>
-    </None>
-    <None Include="Shaders\Objects\Fragment\Bomb.glsl">
-      <Filter>Shaders\Fragment</Filter>
-    </None>
-    <None Include="Shaders\Objects\Fragment\Bonus.glsl">
-      <Filter>Shaders\Fragment</Filter>
-    </None>
-    <None Include="Shaders\Objects\Fragment\Bullet.glsl">
-      <Filter>Shaders\Fragment</Filter>
-    </None>
-    <None Include="Shaders\Objects\Fragment\Knife.glsl">
-      <Filter>Shaders\Fragment</Filter>
-    </None>
-    <None Include="Shaders\Objects\Fragment\Laser.glsl">
-      <Filter>Shaders\Fragment</Filter>
-    </None>
-    <None Include="Shaders\Objects\Fragment\MegaLaser.glsl">
-      <Filter>Shaders\Fragment</Filter>
-    </None>
-    <None Include="Shaders\Objects\Fragment\Pilot.glsl">
-      <Filter>Shaders\Fragment</Filter>
-    </None>
-    <None Include="Shaders\Objects\Fragment\Ship.glsl">
-      <Filter>Shaders\Fragment</Filter>
-    </None>
-    <None Include="Shaders\Objects\Fragment\Turel.glsl">
-      <Filter>Shaders\Fragment</Filter>
-    </None>
-    <None Include="Shaders\Map\Fragment\Cyrcle.glsl">
-      <Filter>Shaders\Fragment</Filter>
-    </None>
-    <None Include="Shaders\Map\Fragment\Polygon.glsl">
-      <Filter>Shaders\Fragment</Filter>
-    </None>
-    <None Include="Shaders\Map\Fragment\Rectangle.glsl">
-      <Filter>Shaders\Fragment</Filter>
-    </None>
-    <None Include="Shaders\Map\Vertex\Cyrcle.glsl">
-      <Filter>Shaders\Vertex</Filter>
-    </None>
-    <None Include="Shaders\Map\Vertex\Polygon.glsl">
-      <Filter>Shaders\Vertex</Filter>
-    </None>
-    <None Include="Shaders\Map\Vertex\Rectangle.glsl">
-      <Filter>Shaders\Vertex</Filter>
-    </None>
     <None Include="Shaders\Objects\Vertex\Asteroid.glsl">
-      <Filter>Shaders\Vertex</Filter>
+      <Filter>Shaders\Vertex\Entityes</Filter>
     </None>
     <None Include="Shaders\Objects\Vertex\Bomb.glsl">
-      <Filter>Shaders\Vertex</Filter>
+      <Filter>Shaders\Vertex\Entityes</Filter>
     </None>
     <None Include="Shaders\Objects\Vertex\Bonus.glsl">
-      <Filter>Shaders\Vertex</Filter>
+      <Filter>Shaders\Vertex\Entityes</Filter>
     </None>
     <None Include="Shaders\Objects\Vertex\Bullet.glsl">
-      <Filter>Shaders\Vertex</Filter>
-    </None>
-    <None Include="Shaders\Objects\Vertex\Knife.glsl">
-      <Filter>Shaders\Vertex</Filter>
-    </None>
-    <None Include="Shaders\Objects\Vertex\Laser.glsl">
-      <Filter>Shaders\Vertex</Filter>
-    </None>
-    <None Include="Shaders\Objects\Vertex\MegaLaser.glsl">
-      <Filter>Shaders\Vertex</Filter>
-    </None>
-    <None Include="Shaders\Objects\Vertex\Pilot.glsl">
-      <Filter>Shaders\Vertex</Filter>
-    </None>
-    <None Include="Shaders\Objects\Vertex\Ship.glsl">
-      <Filter>Shaders\Vertex</Filter>
-    </None>
-    <None Include="Shaders\Objects\Vertex\Turel.glsl">
-      <Filter>Shaders\Vertex</Filter>
-    </None>
-    <None Include="Shaders\Menu\Vertex\Button.glsl">
-      <Filter>Shaders\Vertex</Filter>
-    </None>
-    <None Include="Shaders\Menu\Fragment\Button.glsl">
-      <Filter>Shaders\Fragment</Filter>
-    </None>
-    <None Include="Shaders\Menu\Fragment\Controler.glsl">
-      <Filter>Shaders\Fragment</Filter>
-    </None>
-    <None Include="Shaders\Menu\Vertex\Controler.glsl">
-      <Filter>Shaders\Vertex</Filter>
-    </None>
-    <None Include="Shaders\Objects\Fragment\Deceler.glsl">
-      <Filter>Shaders\Fragment</Filter>
-    </None>
-    <None Include="Shaders\Objects\Vertex\Deceler.glsl">
-      <Filter>Shaders\Vertex</Filter>
-    </None>
-    <None Include="Shaders\Objects\Fragment\Particle.glsl">
-      <Filter>Shaders\Fragment</Filter>
-    </None>
-    <None Include="Shaders\Objects\Vertex\Particle.glsl">
-      <Filter>Shaders\Vertex</Filter>
-    </None>
-    <None Include="Shaders\Objects\Fragment\DynamicParticle.glsl">
-      <Filter>Shaders\Fragment</Filter>
+      <Filter>Shaders\Vertex\Entityes</Filter>
     </None>
     <None Include="Shaders\Objects\Vertex\DynamicParticle.glsl">
-      <Filter>Shaders\Vertex</Filter>
+      <Filter>Shaders\Vertex\Entityes</Filter>
     </None>
-    <None Include="Shaders\Objects\Fragment\Portal.glsl">
-      <Filter>Shaders\Fragment</Filter>
+    <None Include="Shaders\Objects\Vertex\Knife.glsl">
+      <Filter>Shaders\Vertex\Entityes</Filter>
+    </None>
+    <None Include="Shaders\Objects\Vertex\Laser.glsl">
+      <Filter>Shaders\Vertex\Entityes</Filter>
+    </None>
+    <None Include="Shaders\Objects\Vertex\Particle.glsl">
+      <Filter>Shaders\Vertex\Entityes</Filter>
+    </None>
+    <None Include="Shaders\Objects\Vertex\Pilot.glsl">
+      <Filter>Shaders\Vertex\Entityes</Filter>
+    </None>
+    <None Include="Shaders\Objects\Vertex\Ship.glsl">
+      <Filter>Shaders\Vertex\Entityes</Filter>
+    </None>
+    <None Include="Shaders\Objects\Vertex\Turel.glsl">
+      <Filter>Shaders\Vertex\Map</Filter>
+    </None>
+    <None Include="Shaders\Map\Vertex\Rectangle.glsl">
+      <Filter>Shaders\Vertex\Map</Filter>
     </None>
     <None Include="Shaders\Objects\Vertex\Portal.glsl">
-      <Filter>Shaders\Vertex</Filter>
+      <Filter>Shaders\Vertex\Map</Filter>
     </None>
-    <None Include="Shaders\Objects\Fragment\GravGen.glsl">
-      <Filter>Shaders\Fragment</Filter>
+    <None Include="Shaders\Map\Vertex\Polygon.glsl">
+      <Filter>Shaders\Vertex\Map</Filter>
+    </None>
+    <None Include="Shaders\Objects\Vertex\MegaLaser.glsl">
+      <Filter>Shaders\Vertex\Map</Filter>
     </None>
     <None Include="Shaders\Objects\Vertex\GravGen.glsl">
-      <Filter>Shaders\Vertex</Filter>
+      <Filter>Shaders\Vertex\Map</Filter>
+    </None>
+    <None Include="Shaders\Objects\Vertex\Deceler.glsl">
+      <Filter>Shaders\Vertex\Map</Filter>
+    </None>
+    <None Include="Shaders\Map\Vertex\Cyrcle.glsl">
+      <Filter>Shaders\Vertex\Map</Filter>
+    </None>
+    <None Include="Shaders\Menu\Vertex\Button.glsl">
+      <Filter>Shaders\Vertex\Frame</Filter>
+    </None>
+    <None Include="Shaders\Menu\Vertex\Controler.glsl">
+      <Filter>Shaders\Vertex\Frame</Filter>
+    </None>
+    <None Include="Shaders\Objects\Fragment\Asteroid.glsl">
+      <Filter>Shaders\Fragment\Entiryes</Filter>
+    </None>
+    <None Include="Shaders\Objects\Fragment\Bomb.glsl">
+      <Filter>Shaders\Fragment\Entiryes</Filter>
+    </None>
+    <None Include="Shaders\Objects\Fragment\Bonus.glsl">
+      <Filter>Shaders\Fragment\Entiryes</Filter>
+    </None>
+    <None Include="Shaders\Objects\Fragment\Bullet.glsl">
+      <Filter>Shaders\Fragment\Entiryes</Filter>
+    </None>
+    <None Include="Shaders\Menu\Fragment\Button.glsl">
+      <Filter>Shaders\Fragment\Frame</Filter>
+    </None>
+    <None Include="Shaders\Menu\Fragment\Controler.glsl">
+      <Filter>Shaders\Fragment\Frame</Filter>
+    </None>
+    <None Include="Shaders\Map\Fragment\Cyrcle.glsl">
+      <Filter>Shaders\Fragment\Map</Filter>
+    </None>
+    <None Include="Shaders\Objects\Fragment\Deceler.glsl">
+      <Filter>Shaders\Fragment\Map</Filter>
+    </None>
+    <None Include="Shaders\Objects\Fragment\DynamicParticle.glsl">
+      <Filter>Shaders\Fragment\Entiryes</Filter>
+    </None>
+    <None Include="Shaders\Objects\Fragment\GravGen.glsl">
+      <Filter>Shaders\Fragment\Map</Filter>
+    </None>
+    <None Include="Shaders\Objects\Fragment\MegaLaser.glsl">
+      <Filter>Shaders\Fragment\Map</Filter>
+    </None>
+    <None Include="Shaders\Objects\Fragment\Turel.glsl">
+      <Filter>Shaders\Fragment\Map</Filter>
+    </None>
+    <None Include="Shaders\Map\Fragment\Rectangle.glsl">
+      <Filter>Shaders\Fragment\Map</Filter>
+    </None>
+    <None Include="Shaders\Objects\Fragment\Portal.glsl">
+      <Filter>Shaders\Fragment\Map</Filter>
+    </None>
+    <None Include="Shaders\Map\Fragment\Polygon.glsl">
+      <Filter>Shaders\Fragment\Map</Filter>
+    </None>
+    <None Include="Shaders\Objects\Fragment\Knife.glsl">
+      <Filter>Shaders\Fragment\Entiryes</Filter>
+    </None>
+    <None Include="Shaders\Objects\Fragment\Laser.glsl">
+      <Filter>Shaders\Fragment\Entiryes</Filter>
+    </None>
+    <None Include="Shaders\Objects\Fragment\Particle.glsl">
+      <Filter>Shaders\Fragment\Entiryes</Filter>
+    </None>
+    <None Include="Shaders\Objects\Fragment\Pilot.glsl">
+      <Filter>Shaders\Fragment\Entiryes</Filter>
+    </None>
+    <None Include="Shaders\Objects\Fragment\Ship.glsl">
+      <Filter>Shaders\Fragment\Entiryes</Filter>
+    </None>
+    <None Include="Shaders\Frames\Fragment\GameFrame.glsl">
+      <Filter>Shaders\Fragment\Frame</Filter>
+    </None>
+    <None Include="Shaders\Frames\Vertex\GameFrame.glsl">
+      <Filter>Shaders\Vertex\Frame</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

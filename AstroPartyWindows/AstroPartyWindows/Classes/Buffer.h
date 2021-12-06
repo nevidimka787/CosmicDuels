@@ -24,3 +24,34 @@ public:
 
 	~StaticBuffer();
 };
+
+class FrameBuffer
+{
+private:
+	StaticBuffer frame;
+
+	GLuint id;
+	GLuint buffers_count;
+	GLenum* draw_buffers;
+
+	GLuint height;
+	GLuint width;
+public:
+
+	FrameBuffer();
+
+	//draw buffer to window
+	void Draw();
+	bool Initialisate(
+		GLuint width, 
+		GLuint height,
+		GLuint buffers_count = 1);
+	//The function renders this buffer.
+	void Render();
+	//The function change size of this buffer.
+	void Resize(GLuint width, GLuint height);
+	//OpenGL will work with this buffer.
+	void Use();
+
+	~FrameBuffer();
+};

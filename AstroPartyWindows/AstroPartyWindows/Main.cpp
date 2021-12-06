@@ -68,7 +68,8 @@ unsigned ph3 = 0;
 int main()
 {
     main_linker = new Linker(main_game, main_menu_functions, main_draw_functions); //link Game, MainMenuFunctions and OpenGL
-    glEnable(GL_MULTISAMPLE); //enable multisample
+    //glfwWindowHint(GLFW_SAMPLES, 32);
+    //glEnable(GL_MULTISAMPLE); //enable multisample
     //game cycle
     while (!glfwWindowShouldClose(window))
     {
@@ -275,6 +276,10 @@ void PhysicsCalculation0()
             main_game->PhysicThread0();
             ph0++; //increment count of updates of first thread
         }
+        else if (glfwWindowShouldClose(window))
+        {
+            return;
+        }
         local_time_point += std::chrono::microseconds(THREAD_PHYSIC_TIK_PERIOD); //update waking up point
         std::this_thread::sleep_until(local_time_point); //wait waking up point
     }
@@ -292,6 +297,10 @@ void PhysicsCalculation1()
         {
             main_game->PhysicThread1();
             ph1++; //increment count of updates of second thread
+        }
+        else if (glfwWindowShouldClose(window))
+        {
+            return;
         }
         local_time_point += std::chrono::microseconds(THREAD_PHYSIC_TIK_PERIOD); //update waking up point
         std::this_thread::sleep_until(local_time_point); //wait waking up point
@@ -311,6 +320,10 @@ void PhysicsCalculation2()
             main_game->PhysicThread2();
             ph2++; //increment count of updates of third thread
         }
+        else if (glfwWindowShouldClose(window))
+        {
+            return;
+        }
         local_time_point += std::chrono::microseconds(THREAD_PHYSIC_TIK_PERIOD); //update waking up point
         std::this_thread::sleep_until(local_time_point); //wait waking up point
     }
@@ -328,6 +341,10 @@ void PhysicsCalculation3()
         {
             main_game->PhysicThread3();
             ph3++; //increment count of updates of fourth thread
+        }
+        else if(glfwWindowShouldClose(window))
+        {
+            return;
         }
         local_time_point += std::chrono::microseconds(THREAD_PHYSIC_TIK_PERIOD); //update waking up point
         std::this_thread::sleep_until(local_time_point); //wait waking up point

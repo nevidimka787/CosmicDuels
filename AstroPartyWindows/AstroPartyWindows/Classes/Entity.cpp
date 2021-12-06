@@ -4778,7 +4778,7 @@ void Bomb::Update()
 	{
 		if (status & BOMB_STATUS_ACTIVE)
 		{
-			angular_velocity += BOMB_DEFAULT_ANGULAR_VELOCITY_INCREMENTATION;
+			angular_velocity += BOMB_DEFAULT_ANGULAR_VELOCITY_INCREMENTATION / (float)activation_period;
 		}
 		if (animation_tic == 0)
 		{

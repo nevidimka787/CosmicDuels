@@ -22,6 +22,11 @@ protected:
 	Vec2D* cursore_release_position;
 public:
 
+	std::shared_mutex draw_lock0_mtx;
+	std::shared_mutex draw_lock1_mtx;
+	std::shared_mutex draw_lock2_mtx;
+	std::shared_mutex draw_lock3_mtx;
+
 	//buffers
 
 	StaticBuffer asteroid_buffer;
@@ -46,6 +51,8 @@ public:
 
 	StaticBuffer controler_buffer;
 	StaticBuffer button_buffer;
+
+	//FrameBuffer main_buffer;
 
 	//buffers
 	

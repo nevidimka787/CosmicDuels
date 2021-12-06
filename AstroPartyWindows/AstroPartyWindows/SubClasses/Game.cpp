@@ -20,6 +20,8 @@
 
 void Game::PhysicThread0()
 {
+	opengl_p__draw_lock0_mtx->lock();
+
 	BombsChainReaction();
 	BulletsDestroyAsteroids();
 	KnifesDestroyAsteroids();
@@ -108,6 +110,8 @@ void Game::PhysicThread0()
 	{
 		stuning_timer--;
 	}
+
+	opengl_p__draw_lock0_mtx->unlock();
 }
 
 void Game::PhysicThread1()

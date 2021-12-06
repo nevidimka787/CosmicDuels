@@ -11,6 +11,11 @@ Linker::Linker(Game* game_object, MenuFunctions* menu_functions_object, OpenGL* 
 
 	game_object->object_p__open_gl_realisation = open_gl_object;
 
+	game_object->opengl_p__draw_lock0_mtx = &open_gl_object->draw_lock0_mtx;
+	game_object->opengl_p__draw_lock1_mtx = &open_gl_object->draw_lock1_mtx;
+	game_object->opengl_p__draw_lock2_mtx = &open_gl_object->draw_lock2_mtx;
+	game_object->opengl_p__draw_lock3_mtx = &open_gl_object->draw_lock3_mtx;
+
 	//game object
 
 	//menu functions object

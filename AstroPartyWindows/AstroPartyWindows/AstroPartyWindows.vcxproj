@@ -174,6 +174,8 @@
     <ClCompile Include="SubClasses\OpenGLRealisation.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Shaders\Frames\Fragment\GameFrame.glsl" />
+    <None Include="Shaders\Frames\Vertex\GameFrame.glsl" />
     <None Include="Shaders\Map\Fragment\Cyrcle.glsl" />
     <None Include="Shaders\Map\Fragment\Polygon.glsl" />
     <None Include="Shaders\Map\Fragment\Rectangle.glsl" />

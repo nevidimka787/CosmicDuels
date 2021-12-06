@@ -1079,5 +1079,10 @@ public:
 
 	//open gl pointers
 	OpenGL* object_p__open_gl_realisation;
+
+	std::shared_mutex* opengl_p__draw_lock0_mtx;
+	std::shared_mutex* opengl_p__draw_lock1_mtx;
+	std::shared_mutex* opengl_p__draw_lock2_mtx;
+	std::shared_mutex* opengl_p__draw_lock3_mtx;
 };
 
