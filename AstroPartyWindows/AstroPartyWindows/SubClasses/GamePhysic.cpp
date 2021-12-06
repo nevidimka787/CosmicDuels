@@ -2,7 +2,7 @@
 
 #define M_PI	3.14159265358979323846
 
-
+#pragma warning(disable : 26451)
 
 
 template<typename EntityType>
@@ -256,7 +256,49 @@ void Game::ShipShoot(Ship* ship)
 		Segment local_segment;
 		switch (type)
 		{
+		case GAME_OBJECT_TYPE_LASER_BOMB:
+			bombs_array_mtx.lock();
+			entity_number = ship->GetElemntFromLoop();
+			AddEntity(
+				Bomb(
+					ship->GetPosition(),
+					ship->GetVelocity() + ship->GetDirection() * SHIP_SUPER_BONUS__BOMBS_LASER_VELOCITY * (float)(SHIP_SUPER_BONUS__BOMBS_IN_LASER / 2 + SHIP_SUPER_BONUS__BOMBS_IN_LASER - entity_number) / 1.5f / (float)SHIP_SUPER_BONUS__BOMBS_IN_LASER,
+					ship->GetTeamNumber(),
+					ship->GetTeamNumber(),
+					BOMB_DEFAULT_ACTIVATION_PERIOD + entity_number,
+					0.0f,
+					0.0f,
+					DEFAULT_FORCE_COLLISION_COEFFICIENT,
+					BULLET_DEFAULT_RESISTANCE_AIR_COEFFICIENT,
+					SHIP_SUPER_BONUS__BOMBS_LASER_RADIUS,
+					BOMB_STATUS_ACTIVE,
+					BOMB_DEFAULT_ACTIVATION_PERIOD + entity_number,
+					BOMB_DEFAULT_ACTIVATION_PERIOD + entity_number));
+			bombs_array_mtx.unlock();
+			return;
 		case GAME_OBJECT_TYPE_LOOP_BOMB:
+			bombs_array_mtx.lock();
+			entity_number = (SHIP_SUPER_BONUS__BOMBS_IN_LOOP - ship->GetElemntFromLoop()) / 2;
+			angle = M_PI / 2.0f * (1.0f + (float)(entity_number * 2) / (float)SHIP_SUPER_BONUS__BOMBS_IN_LOOP);
+			AddEntity(
+				Bomb(ship->GetPosition(),
+					ship->GetVelocity() + Vec2F(SHIP_SUPER_BONUS__BOMBS_LOOP_VELOCITY, 0.0f).Rotate(ship->GetAngle() + angle),
+					ship->GetTeamNumber(),
+					ship->GetTeamNumber()));
+
+			if (ship->GetElemntFromLoop() == 0)
+			{
+				bombs_array_mtx.unlock();
+				return;
+			}
+
+			AddEntity(
+				Bomb(ship->GetPosition(),
+					ship->GetVelocity() + Vec2F(SHIP_SUPER_BONUS__BOMBS_LOOP_VELOCITY, 0.0f).Rotate(ship->GetAngle() - angle),
+					ship->GetTeamNumber(),
+					ship->GetTeamNumber()));
+
+			bombs_array_mtx.unlock();
 			return;
 		case GAME_OBJECT_TYPE_LOOP_BULLET:
 			bullets_array_mtx.lock();
@@ -457,47 +499,13 @@ void Game::ShipShoot_LaserLoop(Ship* ship)
 
 void Game::ShipShoot_LaserBomb(Ship* ship)
 {
-	Vec2F direction = ship->GetDirection();
-	Vec2F position = ship->GetPosition();
-	Vec2F velocity = ship->GetVelocity();
-	bombs_array_mtx.lock();
-	for (GameTypes::entities_count_t bomb = 0; bomb < SHIP_SUPER_BONUS__BOMBS_IN_LASER; bomb++)
-	{
-		AddEntity(
-			Bomb(
-				position,
-				velocity + direction * SHIP_SUPER_BONUS__BOMBS_LASER_VELOCITY * (float)(SHIP_SUPER_BONUS__BOMBS_IN_LASER / 2 + bomb) / 1.5f / (float)SHIP_SUPER_BONUS__BOMBS_IN_LASER,
-				ship->GetTeamNumber(),
-				ship->GetTeamNumber(),
-				BOMB_DEFAULT_ACTIVATION_PERIOD + bomb,
-				0.0f,
-				0.0f,
-				DEFAULT_FORCE_COLLISION_COEFFICIENT,
-				BULLET_DEFAULT_RESISTANCE_AIR_COEFFICIENT,
-				SHIP_SUPER_BONUS__BOMBS_LASER_RADIUS,
-				BOMB_STATUS_ACTIVE,
-				BOMB_DEFAULT_ACTIVATION_PERIOD + bomb,
-				BOMB_DEFAULT_ACTIVATION_PERIOD + bomb));
-	}
-	bombs_array_mtx.unlock();
+	ship->CreatingLoop(SHIP_SUPER_BONUS__BOMBS_IN_LASER, GAME_OBJECT_TYPE_LASER_BOMB);
 	ships_can_shoot_flags[ship->GetPlayerNumber()] += GAME_ADD_DELLAY_BONUS_USE + GAME_ADD_DELLAY_COMBO_USE;
 }
 
 void Game::ShipShoot_LoopBomb(Ship* ship)
 {
-	float angle;
-	float ship_angle = ship->GetAngle();
-	Vec2F position = ship->GetPosition();
-	Vec2F velocity = ship->GetVelocity();
-	Vec2F bomb_velocity;
-	bombs_array_mtx.lock();
-	for (GameTypes::entities_count_t bomb = 0; bomb < SHIP_SUPER_BONUS__BOMBS_IN_LOOP; bomb++)
-	{
-		angle = (float)bomb / (float)SHIP_SUPER_BONUS__BOMBS_IN_LOOP * (float)M_PI - 3.0f * (float)M_PI / 2.0f;
-		bomb_velocity = velocity + Vec2F(SHIP_SUPER_BONUS__BOMBS_LOOP_VELOCITY, 0.0f).Rotate(angle + ship_angle);
-		AddEntity(Bomb(&position, &bomb_velocity, ship->GetTeamNumber(), ship->GetTeamNumber()));
-	}
-	bombs_array_mtx.unlock();
+	ship->CreatingLoop(SHIP_SUPER_BONUS__BOMBS_IN_LOOP, GAME_OBJECT_TYPE_LOOP_BOMB);
 	ships_can_shoot_flags[ship->GetPlayerNumber()] += GAME_ADD_DELLAY_BONUS_USE + GAME_ADD_DELLAY_COMBO_USE;
 }
 
