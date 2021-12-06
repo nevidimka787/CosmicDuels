@@ -251,11 +251,16 @@
     <Image Include="Textures\Entities\Asteroid\Large.png" />
     <Image Include="Textures\Entities\Asteroid\Medium.png" />
     <Image Include="Textures\Entities\Asteroid\Small.png" />
+    <Image Include="Textures\Entities\Bomb\Basic.png" />
+    <Image Include="Textures\Entities\Bomb\Lighting.png" />
     <Image Include="Textures\Entities\Bonus\Bomb.png" />
     <Image Include="Textures\Entities\Bonus\Knife.png" />
     <Image Include="Textures\Entities\Bonus\Laser.png" />
     <Image Include="Textures\Entities\Bonus\Loop.png" />
     <Image Include="Textures\Entities\Bonus\Revers.png" />
+    <Image Include="Textures\Entities\Bullet\Large.png" />
+    <Image Include="Textures\Entities\Bullet\Medium.png" />
+    <Image Include="Textures\Entities\Bullet\Small.png" />
     <Image Include="Textures\Menu\Buttons\Symbols.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -424,18 +424,22 @@ void OpenGL::InitShaders()
 
 void OpenGL::InitTextures()
 {
-    asteroid_small_texture.Initialisate("Textures/Entities/Asteroid/Small.png", GL_RGBA, GL_RGBA);
-    asteroid_medium_texture.Initialisate("Textures/Entities/Asteroid/Medium.png", GL_RGBA, GL_RGBA);
-    asteroid_large_texture.Initialisate("Textures/Entities/Asteroid/Large.png", GL_RGBA, GL_RGBA);
+    asteroid_small_texture.Initialisate(    "Textures/Entities/Asteroid/Small.png",     GL_RGBA,    GL_RGBA);
+    asteroid_medium_texture.Initialisate(   "Textures/Entities/Asteroid/Medium.png",    GL_RGBA,    GL_RGBA);
+    asteroid_large_texture.Initialisate(    "Textures/Entities/Asteroid/Large.png",     GL_RGBA,    GL_RGBA);
 
-    bonus_bomb_texture.Initialisate("Textures/Entities/Bonus/Bomb.png", GL_RGBA, GL_RGBA);
-    bonus_knife_texture.Initialisate("Textures/Entities/Bonus/Knife.png", GL_RGBA, GL_RGBA);
-    bonus_laser_texture.Initialisate("Textures/Entities/Bonus/Laser.png", GL_RGBA, GL_RGBA);
-    bonus_loop_texture.Initialisate("Textures/Entities/Bonus/Loop.png", GL_RGBA, GL_RGBA);
-    bonus_revers_texture.Initialisate("Textures/Entities/Bonus/Revers.png", GL_RGBA, GL_RGBA);
+    bonus_bomb_texture.Initialisate(    "Textures/Entities/Bonus/Bomb.png",     GL_RGBA,    GL_RGBA);
+    bonus_knife_texture.Initialisate(   "Textures/Entities/Bonus/Knife.png",    GL_RGBA,    GL_RGBA);
+    bonus_laser_texture.Initialisate(   "Textures/Entities/Bonus/Laser.png",    GL_RGBA,    GL_RGBA);
+    bonus_loop_texture.Initialisate(    "Textures/Entities/Bonus/Loop.png",     GL_RGBA,    GL_RGBA);
+    bonus_revers_texture.Initialisate(  "Textures/Entities/Bonus/Revers.png",   GL_RGBA,    GL_RGBA);
 
-    bomb_basic_texture.Initialisate("Textures/Entities/Bomb/Basic.png", GL_RGBA, GL_RGBA);
-    bomb_lighting_texture.Initialisate("Textures/Entities/Bomb/Lighting.png", GL_RGBA, GL_RGBA);
+    bomb_basic_texture.Initialisate(    "Textures/Entities/Bomb/Basic.png",     GL_RGBA,    GL_RGBA);
+    bomb_lighting_texture.Initialisate( "Textures/Entities/Bomb/Lighting.png",  GL_RGBA,    GL_RGBA);
+
+    bullet_small_texture.Initialisate(  "Textures/Entities/Bullet/Small.png",   GL_RGBA,    GL_RGBA);
+    bullet_medium_texture.Initialisate( "Textures/Entities/Bullet/Medium.png",  GL_RGBA,    GL_RGBA);
+    bullet_large_texture.Initialisate(  "Textures/Entities/Bullet/Large.png",   GL_RGBA,    GL_RGBA);
 
     symbols_texture.Initialisate("Textures/Menu/Buttons/Symbols.bmp");
 }
@@ -690,12 +694,19 @@ void OpenGL::DrawObject(Bullet* bullet, bool update_shader)
     {
         bullet_buffer.Use();
         bullet_shader.Use();
+        bullet_small_texture.Use(0);
+        bullet_shader.SetUniform("small_txtr", 0);
+        bullet_medium_texture.Use(1);
+        bullet_shader.SetUniform("medium_txtr", 1);
+        bullet_large_texture.Use(2);
+        bullet_shader.SetUniform("large_txtr", 2);
         bullet_shader.SetUniform("scale", window_scale);
         bullet_shader.SetUniform("camera_position", temp__game__camera_position);
         bullet_shader.SetUniform("camera_size", temp__game__camera_size);
     }
+    bullet_shader.SetUniform("angle", bullet->GetAngle());
     bullet_shader.SetUniform("position", bullet->GetPosition());
-    bullet_shader.SetUniform("size", bullet->radius);
+    bullet_shader.SetUniform("radius", bullet->radius);
     bullet_buffer.Draw();
 }
 
@@ -1134,6 +1145,12 @@ void OpenGL::DrawBullets()
 {
     bullet_buffer.Use();
     bullet_shader.Use();
+    bullet_small_texture.Use(0);
+    bullet_shader.SetUniform("small_txtr", 0);
+    bullet_medium_texture.Use(1);
+    bullet_shader.SetUniform("medium_txtr", 1);
+    bullet_large_texture.Use(2);
+    bullet_shader.SetUniform("large_txtr", 2);
     bullet_shader.SetUniform("scale", window_scale);
     bullet_shader.SetUniform("camera_position", temp__game__camera_position);
     bullet_shader.SetUniform("camera_size", temp__game__camera_size);

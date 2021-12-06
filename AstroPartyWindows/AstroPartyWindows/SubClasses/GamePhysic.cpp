@@ -266,7 +266,7 @@ void Game::ShipShoot(Ship* ship)
 					ship->GetTeamNumber(),
 					ship->GetTeamNumber(),
 					BOMB_DEFAULT_ACTIVATION_PERIOD + entity_number,
-					0.0f,
+					ship->GetAngle(),
 					0.0f,
 					DEFAULT_FORCE_COLLISION_COEFFICIENT,
 					BULLET_DEFAULT_RESISTANCE_AIR_COEFFICIENT,
@@ -284,7 +284,9 @@ void Game::ShipShoot(Ship* ship)
 				Bomb(ship->GetPosition(),
 					ship->GetVelocity() + Vec2F(SHIP_SUPER_BONUS__BOMBS_LOOP_VELOCITY, 0.0f).Rotate(ship->GetAngle() + angle),
 					ship->GetTeamNumber(),
-					ship->GetTeamNumber()));
+					ship->GetTeamNumber(),
+					0,
+					ship->GetAngle() + angle));
 
 			if (ship->GetElemntFromLoop() == 0)
 			{
@@ -296,7 +298,9 @@ void Game::ShipShoot(Ship* ship)
 				Bomb(ship->GetPosition(),
 					ship->GetVelocity() + Vec2F(SHIP_SUPER_BONUS__BOMBS_LOOP_VELOCITY, 0.0f).Rotate(ship->GetAngle() - angle),
 					ship->GetTeamNumber(),
-					ship->GetTeamNumber()));
+					ship->GetTeamNumber(),
+					0,
+					ship->GetAngle() - angle));
 
 			bombs_array_mtx.unlock();
 			return;

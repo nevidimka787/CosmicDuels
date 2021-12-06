@@ -2657,10 +2657,14 @@ bool Ship::CanCreatingLoop()
 
 Bullet Ship::CreateBullet()
 {
-	Vec2F bullet_position = position +  direction.Normalize() * radius;
-	Vec2F bullet_velosity = direction * BULLET_DEFAULT_VELOCITY + velocity - direction.PerpendicularClockwise() * angular_velocity * radius;
 	AddForceAlongDirection(-SHIP_SHOOT_FORCE);
-	return Bullet(&bullet_position, &bullet_velosity, player_number, player_team_number);
+	return Bullet(
+		position + direction.Normalize() * radius,
+		direction * BULLET_DEFAULT_VELOCITY + velocity - direction.PerpendicularClockwise() * angular_velocity * radius,
+		player_number,
+		player_team_number,
+		true,
+		angle);
 }
 
 DynamicParticle Ship::CreateBurnoutExaust(GameTypes::tic_t current_tic)

@@ -333,45 +333,76 @@ void Game::PhysicThread3()
 
 EngineTypes::Bonus::inventory_t Game::GenerateRandomBonus()
 {
-	unsigned random = rand() % GAME_BONUSES_COUNT + 1;
+	unsigned random = (rand() % GAME_BONUSES_COUNT) + 1;//{1; 2; 3; 4}
+	unsigned last_rand = random;
 	GameTypes::objects_types_count_t bonus = 0;
 	GameTypes::objects_types_count_t select_bonuses_count = 0;
-	for (; random > 0; bonus++)
+
+	while (true)
 	{
-		if (bonus == GAME_BONUSES_COUNT)
-		{
-			bonus = 0;
-		}
 		if (bonus_pull_array[bonus])
 		{
+			if (random == 0)
+			{
+				return 1 << (bonus * 2);
+			}
 			random--;
 		}
+		bonus++;
+		if (bonus >= GAME_BONUSES_COUNT)
+		{
+			if (last_rand == random)
+			{
+				return 0;
+			}
+			bonus = 0;
+		}
 	}
-	return 1 << ((bonus - 1) * 2);
+	/*
+	0000 0000 0000 0001		0x0001	LOOP
+	0000 0000 0000 0100		0x0004	LASER
+	0000 0000 0001 0000		0x0010	BOMB
+	0000 0000 0100 0000		0x0040	KNIFE
+	*/
 }
 
 
 EngineTypes::Bonus::inventory_t Game::GenerateRandomBonusAndRule()
 {
-	unsigned random = rand() % GAME_BONUSES_COUNT + 2;
+	unsigned random = (rand() % (GAME_BONUSES_COUNT + 1)) + 1;//{1; 2; 3; 4; 5}
 	if (random == GAME_BONUSES_COUNT + 1)
 	{
 		return BONUS_RULE_REVERSE;
 	}
+	unsigned last_rand = random;
 	GameTypes::objects_types_count_t bonus = 0;
 	GameTypes::objects_types_count_t select_bonuses_count = 0;
-	for (; random > 0; bonus++)
+	while (true)
 	{
-		if (bonus == GAME_BONUSES_COUNT)
-		{
-			bonus = 0;
-		}
 		if (bonus_pull_array[bonus])
 		{
+			if (random == 0)
+			{
+				return 1 << (bonus * 2);
+			}
 			random--;
 		}
+		bonus++;
+		if (bonus >= GAME_BONUSES_COUNT)
+		{
+			if (last_rand == random)
+			{
+				return 0;
+			}
+			bonus = 0;
+		}
 	}
-	return 1 << ((bonus - 1) * 2);
+	/*
+	0000 0000 0000 0001		0x0001	LOOP
+	0000 0000 0000 0100		0x0004	LASER
+	0000 0000 0001 0000		0x0010	BOMB
+	0000 0000 0100 0000		0x0040	KNIFE
+	*/
 }
 
 GameTypes::maps_count_t Game::GenerateRandomMapId()

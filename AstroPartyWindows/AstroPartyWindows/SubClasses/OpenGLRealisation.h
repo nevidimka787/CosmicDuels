@@ -144,6 +144,10 @@ public:
 	Texture2D bomb_basic_texture;
 	Texture2D bomb_lighting_texture;
 
+	Texture2D bullet_small_texture;
+	Texture2D bullet_medium_texture;
+	Texture2D bullet_large_texture;
+
 	//textures
 
 	OpenGL(int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share, GLFWframebuffersizefun Function, GLFWwindow** window);

@@ -1,7 +1,8 @@
 #version 330 core
 layout (location = 0) in vec2 aPos;
 
-uniform float size;
+uniform float angle;
+uniform float radius;
 uniform vec2 position;
 
 uniform float scale;
@@ -20,7 +21,8 @@ void main()
     pixel_position = aPos;
 
     matrix = 
-        Scale(vec2(size)) * 
+        Scale(vec2(radius)) * 
+        Rotate(angle) *
         Transport(position) * 
         Transport(-camera_position) *
         Scale(vec2(1.0f / camera_size)) *

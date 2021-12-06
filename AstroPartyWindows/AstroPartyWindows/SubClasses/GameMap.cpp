@@ -229,12 +229,10 @@ void Game::Event5()
 
 	map_data_mtx.unlock();
 
-	if (!(global_timer % EVENT5__PERIOD))
+	if (!(global_timer % EVENT5__PERIOD) && asteroids_count == 0)
 	{
-		Vec2F position = Vec2F(EVENT5__CENTER_POSITION, EVENT5__CENTER_POSITION);
-		Vec2F zero_velosity;
 		asteroids_array_mtx.lock();
-		AddEntity(Asteroid(&position, &zero_velosity, GenerateRandomBonusAndRule()));
+		AddEntity(Asteroid(Vec2F(EVENT5__CENTER_POSITION, EVENT5__CENTER_POSITION), Vec2F(), GenerateRandomBonusAndRule()));
 		asteroids_array_mtx.unlock();
 	}
 }

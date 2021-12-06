@@ -59,14 +59,17 @@
     <Filter Include="Shaders\Vertex\Frame">
       <UniqueIdentifier>{207f1d97-3af1-4583-b5a4-42c26f908bd8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shaders\Fragment\Entiryes">
-      <UniqueIdentifier>{dabc8004-1ba6-47b3-ada1-5e54024666c9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Shaders\Fragment\Frame">
       <UniqueIdentifier>{28faf903-0fa3-4bd3-aa5e-a019d04a8456}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shaders\Fragment\Map">
       <UniqueIdentifier>{f7cf6fe8-f616-4540-82b0-a27465d77487}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Fragment\Entityes">
+      <UniqueIdentifier>{dabc8004-1ba6-47b3-ada1-5e54024666c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Textures\Entities\Bullet">
+      <UniqueIdentifier>{795d857a-6074-48ea-b6b5-8af812117c06}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -196,16 +199,16 @@
       <Filter>Shaders\Vertex\Frame</Filter>
     </None>
     <None Include="Shaders\Objects\Fragment\Asteroid.glsl">
-      <Filter>Shaders\Fragment\Entiryes</Filter>
+      <Filter>Shaders\Fragment\Entityes</Filter>
     </None>
     <None Include="Shaders\Objects\Fragment\Bomb.glsl">
-      <Filter>Shaders\Fragment\Entiryes</Filter>
+      <Filter>Shaders\Fragment\Entityes</Filter>
     </None>
     <None Include="Shaders\Objects\Fragment\Bonus.glsl">
-      <Filter>Shaders\Fragment\Entiryes</Filter>
+      <Filter>Shaders\Fragment\Entityes</Filter>
     </None>
     <None Include="Shaders\Objects\Fragment\Bullet.glsl">
-      <Filter>Shaders\Fragment\Entiryes</Filter>
+      <Filter>Shaders\Fragment\Entityes</Filter>
     </None>
     <None Include="Shaders\Menu\Fragment\Button.glsl">
       <Filter>Shaders\Fragment\Frame</Filter>
@@ -220,7 +223,7 @@
       <Filter>Shaders\Fragment\Map</Filter>
     </None>
     <None Include="Shaders\Objects\Fragment\DynamicParticle.glsl">
-      <Filter>Shaders\Fragment\Entiryes</Filter>
+      <Filter>Shaders\Fragment\Entityes</Filter>
     </None>
     <None Include="Shaders\Objects\Fragment\GravGen.glsl">
       <Filter>Shaders\Fragment\Map</Filter>
@@ -241,19 +244,19 @@
       <Filter>Shaders\Fragment\Map</Filter>
     </None>
     <None Include="Shaders\Objects\Fragment\Knife.glsl">
-      <Filter>Shaders\Fragment\Entiryes</Filter>
+      <Filter>Shaders\Fragment\Entityes</Filter>
     </None>
     <None Include="Shaders\Objects\Fragment\Laser.glsl">
-      <Filter>Shaders\Fragment\Entiryes</Filter>
+      <Filter>Shaders\Fragment\Entityes</Filter>
     </None>
     <None Include="Shaders\Objects\Fragment\Particle.glsl">
-      <Filter>Shaders\Fragment\Entiryes</Filter>
+      <Filter>Shaders\Fragment\Entityes</Filter>
     </None>
     <None Include="Shaders\Objects\Fragment\Pilot.glsl">
-      <Filter>Shaders\Fragment\Entiryes</Filter>
+      <Filter>Shaders\Fragment\Entityes</Filter>
     </None>
     <None Include="Shaders\Objects\Fragment\Ship.glsl">
-      <Filter>Shaders\Fragment\Entiryes</Filter>
+      <Filter>Shaders\Fragment\Entityes</Filter>
     </None>
     <None Include="Shaders\Frames\Fragment\GameFrame.glsl">
       <Filter>Shaders\Fragment\Frame</Filter>
@@ -375,6 +378,21 @@
     </Image>
     <Image Include="Textures\Entities\Asteroid\Small.png">
       <Filter>Textures\Entities\Asteroid</Filter>
+    </Image>
+    <Image Include="Textures\Entities\Bullet\Large.png">
+      <Filter>Textures\Entities\Bullet</Filter>
+    </Image>
+    <Image Include="Textures\Entities\Bullet\Medium.png">
+      <Filter>Textures\Entities\Bullet</Filter>
+    </Image>
+    <Image Include="Textures\Entities\Bullet\Small.png">
+      <Filter>Textures\Entities\Bullet</Filter>
+    </Image>
+    <Image Include="Textures\Entities\Bomb\Basic.png">
+      <Filter>Textures\Entities\Bomb</Filter>
+    </Image>
+    <Image Include="Textures\Entities\Bomb\Lighting.png">
+      <Filter>Textures\Entities\Bomb</Filter>
     </Image>
   </ItemGroup>
 </Project>
