@@ -135,11 +135,6 @@ void OpenGL::ProcessInput(GLFWwindow* window)
         update_menu--;
         (*game_p__current_active_menu)->Recalculate();
     }
-    if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
-    {
-        std::cout << "Debug pause." << std::endl;
-        int i = 0;
-    }
     if (*game_p__play_round)
     {
         if (glfwGetKey(window, SHIP_0_ROTATE_BUTTON) == GLFW_PRESS)

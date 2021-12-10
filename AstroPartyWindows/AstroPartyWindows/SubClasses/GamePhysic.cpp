@@ -108,6 +108,43 @@ template void Game::DynamicEntitiesCollisions<Bullet>(Map* map, Bullet* entities
 template void Game::DynamicEntitiesCollisions<Ship>(Map* map, Ship* entities, GameTypes::entities_count_t entities_count);
 template void Game::DynamicEntitiesCollisions<Pilot>(Map* map, Pilot* entities, GameTypes::entities_count_t entities_count);
 
+void Game::DynamicEntitiesCollisions(Map* map, Asteroid* asteroids, GameTypes::entities_count_t asteroids_count)
+{
+	for (GameTypes::entities_count_t found = 0; found < asteroids_count; asteroids++)
+	{
+		if (asteroids->exist)
+		{
+			asteroids->Collision(map);
+			if (!asteroids->exist)//if entity was destroed after collision
+			{
+				asteroids->exist = true;
+				switch (asteroids->GetSize())
+				{
+				case ASTEROID_SIZE_BIG:
+					AddEntity(asteroids->Division());
+					AddEntity(asteroids->Division());
+					AddEntity(asteroids->Division());
+					AddEntity(asteroids->Division());
+					break;
+				case ASTEROID_SIZE_MEDIUM:
+					AddEntity(asteroids->Division());
+					AddEntity(asteroids->Division());
+					break;
+				case ASTEROID_SIZE_SMALL:
+					AddEntity(asteroids->Destroy());
+				default:
+					break;
+				}
+
+				DestroyEntity(asteroids);
+				goto end_of_map_cycle;
+			}
+			found++;
+		}
+	end_of_map_cycle:;
+	}
+}
+
 void Game::DynamicEntitiesCollisions(Map* map, Bomb* bombs_array_p, GameTypes::entities_count_t entities_count)
 {
 	for (GameTypes::entities_count_t found = 0; found < entities_count; bombs_array_p++)
@@ -279,7 +316,7 @@ void Game::ShipShoot(Ship* ship)
 		case GAME_OBJECT_TYPE_LOOP_BOMB:
 			bombs_array_mtx.lock();
 			entity_number = (SHIP_SUPER_BONUS__BOMBS_IN_LOOP - ship->GetElemntFromLoop()) / 2;
-			angle = M_PI / 2.0f * (1.0f + (float)(entity_number * 2) / (float)SHIP_SUPER_BONUS__BOMBS_IN_LOOP);
+			angle = (float)M_PI / 2.0f * (1.0f + (float)(entity_number * 2) / (float)SHIP_SUPER_BONUS__BOMBS_IN_LOOP);
 			AddEntity(
 				Bomb(ship->GetPosition(),
 					ship->GetVelocity() + Vec2F(SHIP_SUPER_BONUS__BOMBS_LOOP_VELOCITY, 0.0f).Rotate(ship->GetAngle() + angle),
@@ -307,8 +344,8 @@ void Game::ShipShoot(Ship* ship)
 		case GAME_OBJECT_TYPE_LOOP_BULLET:
 			bullets_array_mtx.lock();
 			entity_number = ship->GetElemntFromLoop();
-			angle = (float)(((entity_number - 1u) / 2u) + 0.5f) / (float)SHIP_BONUS__LOOP_BULLETS_IN_LOOP * M_PI * 2.0f;
-			std::cout << "Create bullets: " << angle << std::endl;
+			angle = (float)(((entity_number - 1u) / 2u) + 0.5f) / (float)SHIP_BONUS__LOOP_BULLETS_IN_LOOP * (float)M_PI * 2.0f;
+			
 			r_vec = Vec2F(1.0f, 0.0f).RotateClockwise(ship->GetAngle() + angle);
 			AddEntity(
 				Bullet(

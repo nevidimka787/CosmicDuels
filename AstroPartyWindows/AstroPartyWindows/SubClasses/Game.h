@@ -33,6 +33,9 @@ public:
 	//Index of array is ship's player number. Values of array are numbers of teams by every ship.
 	//Array changed in Game::Init::Menus.
 	GameTypes::entities_count_t* teams;
+	//Index of array is ship's player number. Values of array are numbers of teams by every ship.
+	//If player not play in current level, then alue is zero.
+	GameTypes::entities_count_t* playing_teams;
 	//Index is team number
 	//Value is count of exist players in team
 	GameTypes::players_count_t* players_in_team;
@@ -60,10 +63,11 @@ public:
 	GameTypes::score_t* last_match_scores;
 	//Id of the current map of the level.
 	GameTypes::maps_count_t current_map_id;
-	//After each round value decrements.
-	//Final round have number 1.
-	//If after the final of round the winer not defined value not decrements.
-	//If value is 0, the match ends.
+	
+
+	//If player will get end_match_score or high scor then this people will become potencial winner.
+	//This variable is setted by InitMatch function.
+	//This variable chaned in NextLevel function.
 	GameTypes::score_t end_match_score;
 
 	GameTypes::map_elements_count_t deceler_areas_count;
@@ -305,39 +309,30 @@ public:
 	void RemoveEntity(Bomb* deleting_bomb);
 	
 	//Function removes the specified entity from the array.
-	//Not checking nullprt!
 	void RemoveEntity(Bullet* deleting_bullet);
 	
 	//Function adds entity to array that store entities of the same type.
-	//Not checking nullprt!
 	void RemoveEntity(DecelerationArea* new_deceleration_area);
 
 	//Function adds entity to array that store entities of the same type.
-	//Not checking nullprt!
 	void RemoveEntity(DynamicParticle* new_deceleration_area);
 	
 	//Function adds entity to array that store entities of the same type.
-	//Not checking nullprt!
 	void RemoveEntity(GravGen* new_grav_gen);
 	
 	//Function removes the specified entity from the array.
-	//Not checking nullprt!
 	void RemoveEntity(Knife* deleting_knife);
 	
 	//Function removes the specified entity from the array.
-	//Not checking nullprt!
 	void RemoveEntity(Laser* deleting_laser);
 	
 	//Function removes the specified entity from the array.
-	//Not checking nullprt!
 	void RemoveEntity(MegaLaser* deleting_mega_laser);
 	
 	//Function removes the specified entity from the array.
-	//Not checking nullprt!
 	void RemoveEntity(Particle* deleting_particle);
 	
 	//Function removes the specified entity from the array.
-	//Not checking nullprt!
 	void RemoveEntity(Pilot* deleting_particle);
 	
 	//Function removes the specified entity from the array.
@@ -345,7 +340,6 @@ public:
 	void RemoveEntity(Ship* deleting_particle);
 	
 	//Function removes the specified entity from the array.
-	//Not checking nullprt!
 	void RemoveEntity(Turel* deleting_turel);
 
 
@@ -451,6 +445,8 @@ public:
 	//"Portal"
 	void CreateMap9(Vec2F* ships_positions, float* ships_angles);
 
+	void CreateMapRoundResults(GameTypes::players_count_t players_count, GameTypes::score_t max_score, float cell_size);
+
 	//Memory functions
 
 	//Get space from memory for arrays.
@@ -491,6 +487,11 @@ public:
 		Map* map,
 		EntityType* entities,
 		GameTypes::entities_count_t entities_count);
+
+	void DynamicEntitiesCollisions(
+		Map* map,
+		Asteroid* asteroids,
+		GameTypes::entities_count_t asteroid_count);
 	
 	//The function calculates forces of collisions between entities in the array and elements of the map.
 	void DynamicEntitiesCollisions(

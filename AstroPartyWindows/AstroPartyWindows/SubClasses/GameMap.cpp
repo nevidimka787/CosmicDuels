@@ -6,6 +6,7 @@
 
 #define ALL_MAPS__SPAWN_DELTA_ANGLE	0.05f
 
+#pragma warning(disable : 6385)
 #pragma warning(disable : 26451)
 
 void Game::Event0()
@@ -463,14 +464,18 @@ void Game::CreateMap2(Vec2F* ships_positions, float* ships_angles)
 	rectangles[4].Set(&diagonal);
 
 
-	cyrcles[0].Set(Vec2F(MAP_GRAV_GEN__CENTER + MAP_GRAV_GEN__CENTER_POSITION, MAP_GRAV_GEN__CENTER + MAP_GRAV_GEN__CENTER_POSITION), MAP_GRAV_GEN__CYRCLE_SIZE, MAP_PROPERTY_UNBREACABLE);
+	cyrcles[0].Set(
+		Vec2F(MAP_GRAV_GEN__CENTER + MAP_GRAV_GEN__CENTER_POSITION, MAP_GRAV_GEN__CENTER + MAP_GRAV_GEN__CENTER_POSITION),
+		MAP_GRAV_GEN__CYRCLE_SIZE,
+		MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_KILLER | MAP_PROPERTY_AGRESSIVE);
 
 	map.Set(rectangles, MAP_GRAV_GEN__RECTANGLES_COUNT, cyrcles, MAP_GRAV_GEN__CYRCLES_COUNT);
 
 	delete[] rectangles;
 	delete[] cyrcles;
 
-	AddEntity(GravGen(Vec2F(MAP_GRAV_GEN__CENTER + MAP_GRAV_GEN__CENTER_POSITION, MAP_GRAV_GEN__CENTER + MAP_GRAV_GEN__CENTER_POSITION)));
+	AddEntity(GravGen(Vec2F(MAP_GRAV_GEN__CENTER + MAP_GRAV_GEN__CENTER_POSITION, MAP_GRAV_GEN__CENTER + MAP_GRAV_GEN__CENTER_POSITION),
+		-GRAVITY_GENERATOR_DEFAULT_GRAVITY));
 
 	/* Spawn entities */
 
@@ -1486,4 +1491,42 @@ void Game::CreateMap9(Vec2F* ships_positions, float* ships_angles)
 		MAP_DYNAMICAL__CENTER_POSITION + CAMERA_DEFAULT_HIGH_LIMITS);
 	camera.SetPosition(Vec2F(MAP_DYNAMICAL__CENTER_POSITION, MAP_DYNAMICAL__CENTER_POSITION));
 	camera.SetSize(MAP_DYNAMICAL__CAMERA_SIZE);
+}
+
+void Game::CreateMapRoundResults(GameTypes::players_count_t players_count, GameTypes::score_t max_score, float cell_size)
+{
+	GameTypes::score_t score_amplitude = max_score * 2 + 1;
+	GameTypes::map_elements_count_t rectangles_count = players_count + score_amplitude;
+
+	Rectangle* rectangles = new Rectangle[rectangles_count];
+
+	//Create rows
+
+	float row_down_position = -(float)players_count / 2.0f * cell_size;
+	float column_left_position = -(float)score_amplitude / 2.0f * cell_size;
+
+	for (GameTypes::map_elements_count_t row = 0; row < players_count; row++)
+	{
+		float row_position = row_down_position + (float)row * cell_size;
+		Segment diagonal = Segment(
+			Vec2F(column_left_position, row_position),
+			Vec2F(cell_size * (float)score_amplitude, cell_size));
+		rectangles[row].Set(&diagonal);
+	}
+
+	for (GameTypes::map_elements_count_t column = 0; column < score_amplitude; column++)
+	{
+		float column_position = column_left_position + (float)column * cell_size;
+		Segment diagonal = Segment(
+			Vec2F(column_position, row_down_position),
+			Vec2F(cell_size, cell_size * (float)players_count));
+		rectangles[players_count + column].Set(&diagonal);
+	}
+
+	map.Set(rectangles, rectangles_count);
+
+	delete[] rectangles;
+
+	camera.SetPosition(Vec2F());
+	camera.SetSize(5.0f);
 }

@@ -1777,6 +1777,52 @@ DynamicParticle Asteroid::CreateShards(GameTypes::tic_t current_tic)
 		current_tic + PARTICLE_PERIOD_SHARDS_ASTEROID);
 }
 
+bool Asteroid::Collision(const Map* map)
+{
+	bool collision = false;
+	void* element_p;
+	for (uint8_t i = 0; i < map->rectangles_array_length; i++)
+	{
+		element_p = (void*)map->RectanglePointer(i);
+		if (((Rectangle*)element_p)->exist && DynamicEntity::Collision(((Rectangle*)element_p)))
+		{
+			if (((Rectangle*)element_p)->IsAggressive())
+			{
+				exist = false;
+				return true;
+			}
+			collision = true;
+		}
+	}
+	for (uint8_t i = 0; i < map->cyrcles_array_length; i++)
+	{
+		element_p = (void*)map->CyrclePointer(i);
+		if (((Cyrcle*)element_p)->exist && DynamicEntity::Collision(((Cyrcle*)element_p)))
+		{
+			if (((Cyrcle*)element_p)->IsAggressive())
+			{
+				exist = false;
+				return true;
+			}
+			collision = true;
+		}
+	}
+	for (uint8_t i = 0; i < map->polygons_array_length; i++)
+	{
+		element_p = (void*)map->PolygonPointer(i);
+		if (((Polygon*)element_p)->exist && DynamicEntity::Collision(((Polygon*)element_p)))
+		{
+			if (((Rectangle*)element_p)->IsAggressive())
+			{
+				exist = false;
+				return true;
+			}
+			collision = true;
+		}
+	}
+	return collision;
+}
+
 void Asteroid::DecrementSize()
 {
 	if (size > ASTEROID_SIZE_SMALL)
@@ -2657,7 +2703,14 @@ bool Ship::CanCreatingLoop()
 
 Bullet Ship::CreateBullet()
 {
+	if (current_bullets_count == 0)
+	{
+		return Bullet();
+	}
+
 	AddForceAlongDirection(-SHIP_SHOOT_FORCE);
+	current_bullets_count--;
+
 	return Bullet(
 		position + direction.Normalize() * radius,
 		direction * BULLET_DEFAULT_VELOCITY + velocity - direction.PerpendicularClockwise() * angular_velocity * radius,
@@ -3224,6 +3277,7 @@ SupportEntity::SupportEntity(const SupportEntity& support_entity) :
 	local_direction(support_entity.local_direction),
 	local_position(support_entity.local_position)
 {
+	this->position *= *host_matrix_p;
 }
 
 SupportEntity::SupportEntity(ControledEntity* host, Vec2F* position, float radius, float angle, bool exist) :

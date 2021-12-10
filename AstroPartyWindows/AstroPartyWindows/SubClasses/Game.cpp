@@ -135,7 +135,7 @@ void Game::PhysicThread1()
 	LasersDetonateBombs();
 	LasersDestroyKnifes();
 	MegaLasersDestroyBullets();
-	ShipsCreateExaust();
+	//ShipsCreateExaust();
 
 	threads_statuses_mtx.lock();
 	threads_statuses |= THREAD_COMPLETE << THREAD_PHASE_1 << THREAD_1;
@@ -293,19 +293,30 @@ void Game::PhysicThread3()
 
 	pilots_array_mtx.lock();
 	map_data_mtx.lock();
+	dynamic_particles_array_mtx.lock();
 	DynamicEntitiesCollisions(&map, pilots, pilots_count);
+	dynamic_particles_array_mtx.unlock();
 	map_data_mtx.unlock();
 	pilots_array_mtx.unlock();
+
 	ships_array_mtx.lock();
 	map_data_mtx.lock();
+	dynamic_particles_array_mtx.lock();
 	DynamicEntitiesCollisions(&map, ships, ships_count);
+	dynamic_particles_array_mtx.unlock();
 	map_data_mtx.unlock();
 	ships_array_mtx.unlock();
+
 	asteroids_array_mtx.lock();
+	bonuses_array_mtx.lock();
 	map_data_mtx.lock();
+	dynamic_particles_array_mtx.lock();
 	DynamicEntitiesCollisions(&map, asteroids, asteroids_count);
+	dynamic_particles_array_mtx.unlock();
+	bonuses_array_mtx.unlock();
 	map_data_mtx.unlock();
 	asteroids_array_mtx.unlock();
+
 	bombs_array_mtx.lock();
 	map_data_mtx.lock();
 	DynamicEntitiesCollisions(&map, bombs, bombs_count);
@@ -437,9 +448,11 @@ void Game::InitGame()
 	global_timer = 0;
 
 	teams = new GameTypes::entities_count_t[GAME_PLAYERS_MAX_COUNT];
+	playing_teams = new GameTypes::entities_count_t[GAME_PLAYERS_MAX_COUNT];
 	for (GameTypes::players_count_t i = 0; i < GAME_PLAYERS_MAX_COUNT; i++)
 	{
 		teams[i] = 0;
+		playing_teams[i] = 0;
 	}
 	object_pull_array = new bool[GAME_OBJECT_TYPES_COUNT];
 	map_pull_array = new bool[GAME_MAPS_COUNT];
@@ -491,10 +504,12 @@ skip_bonus_pull_set:
 
 	MemoryLock();
 	
-	for (GameTypes::players_count_t player = 0; player < GAME_PLAYERS_MAX_COUNT; player++)
+	for (GameTypes::players_count_t team = 1; team <= GAME_PLAYERS_MAX_COUNT; team++)
 	{
-		scores[player] = 0;
+		scores[team - 1] = 0;
 	}
+	scores[1] = 4;
+	scores[2] = 4;
 
 	selected_maps_id_array_length = 0;
 	for (GameTypes::maps_count_t map_id = 0; map_id < GAME_MAPS_COUNT; map_id++)
@@ -557,14 +572,13 @@ skip_bonus_pull_set:
 			buttons[buttons_count + 1].Set(BUTTON_ID__SHIP1_ROTATE + 2 * player, &positions[player * 2 + 1], &size2, &area, "", 0, BUTTON_STATUS_CUSTOM_RED << (teams[player] - 1));
 			buttons_count += 2;
 		}
+		playing_teams[player] = teams[player];
 	}
 	positions[0].Set(0.0f, 0.0f);
 	size1.Set(1.0f, -1.0f);
 	ships_control_menu.Set(&positions[0], &size1, buttons, buttons_count);
 	delete[] positions;
 	delete[] buttons;
-
-	//create map pull array
 
 	end_match_score = 5;
 }
@@ -738,7 +752,8 @@ void Game::InitLevel()
 	players_count = 0;
 	for (GameTypes::players_count_t player = 0; player < GAME_PLAYERS_MAX_COUNT; player++)
 	{
-		if (teams[player] > 0)
+		printf("Player: %3i\tTeam: %3i\n", player, playing_teams[player]);
+		if (playing_teams[player] > 0)
 		{
 			if (game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_BONUS && game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_DIFFERENT_BONUS)
 			{
@@ -974,25 +989,80 @@ void Game::InitMenus()
 
 void Game::NextLevel()
 {
-	//check draw
-	GameTypes::score_t max_score = 0;
-	bool winner_found = false;
+	/*
+	If team has 5 or more points this team is seted as potential winner team.
+	If count of potential winners more than 1, then math is completed else mach is completed.
+
+	If team has -5 or less points this team is seted as not existing. All players from that team will be not playing in all next rounds.
+	If counts of playing teams is 1 or less then the mach is completed.
+	*/
+
+	bool potential_winner_detected = false;
+
+	//Checking winners
 	for (GameTypes::players_count_t team = 0; team < GAME_PLAYERS_MAX_COUNT; team++)
 	{
-		if (max_score < scores[team])
+		if (scores[team] >= end_match_score)
 		{
-			max_score = scores[team];
-			winner_found = true;
+			potential_winner_detected = true;
 		}
-		else if (max_score == scores[team])
+
+		if (scores[team] <= -end_match_score)
 		{
-			winner_found = false;
+			for (GameTypes::players_count_t player = 0; player < GAME_PLAYERS_MAX_COUNT; player++)
+			{
+				if (playing_teams[player] == team + 1)
+				{
+					playing_teams[player] = SHIPS_SELECT_BUTTONS_NO_TEAM;
+				}
+			}
 		}
 	}
-	if (max_score >= end_match_score && winner_found)
+
+	
+	GameTypes::players_count_t found_players_count = 0;
+
+	if (potential_winner_detected)
 	{
-		flag_end_match = true;
+		GameTypes::players_count_t winners_count = 0;
+		for (GameTypes::players_count_t team = 0; team < GAME_PLAYERS_MAX_COUNT; team++)
+		{
+			if (scores[team] >= end_match_score)
+			{
+				scores[team] = 0;
+				winners_count++;
+			}
+			else
+			{
+				scores[team] = -end_match_score;
+				for (GameTypes::players_count_t player = 0; player < GAME_PLAYERS_MAX_COUNT; player++)
+				{
+					if (playing_teams[player] == team + 1)
+					{
+						playing_teams[player] = SHIPS_SELECT_BUTTONS_NO_TEAM;
+					}
+				}
+			}
+		}
+
+		flag_end_match = (winners_count <= 1);
+		end_match_score = 1;
+		return;
 	}
+
+	GameTypes::players_count_t existing_players_count = 0;
+
+	//Checking loosers.
+ 	for (GameTypes::players_count_t player = 0; player < GAME_PLAYERS_MAX_COUNT; player++)
+	{
+		if (playing_teams[player] != SHIPS_SELECT_BUTTONS_NO_TEAM)
+		{
+			existing_players_count++;
+		}
+	}
+
+	flag_end_match = (existing_players_count <= 1);
+	return;
 }
 
 void Game::EndMatch()
@@ -1031,7 +1101,6 @@ void Game::CheckEndMatch()
 		if (global_timer > end_match_tic)
 		{
 			RoundResultsInit();
-			//NextLevel();
 		}
 	}
 	else if(flag_update_end_match)
@@ -1075,49 +1144,10 @@ void Game::RoundResultsInit()
 	play_round = false;
 	flag_round_results = true;
 
-	GameTypes::players_count_t lines_count = players_count;
-
-	GameTypes::score_t step = end_match_score * 2 + 1;
-
-	Segment segment;
-	Rectangle* rectangles = new Rectangle[lines_count + step];
-
-	float y_border = (float)lines_count / (float)step * ROUND_RESULTS_INIT__MAP_SIZE;
-	
-
-	for (EngineTypes::Map::array_length_t element = 0; element < step; element++)//vertical lines
-	{
-		segment.Set(
-			Vec2F(
-				-ROUND_RESULTS_INIT__MAP_SIZE + (float)element / (float)step * ROUND_RESULTS_INIT__MAP_SIZE_X2,
-				-y_border),
-			Vec2F(
-				-ROUND_RESULTS_INIT__MAP_SIZE + (float)(element + 1) / (float)step * ROUND_RESULTS_INIT__MAP_SIZE_X2,
-				y_border),
-			true);
-
-		rectangles[element].Set(&segment);
-	}
-	for (EngineTypes::Map::array_length_t element = 0; element < lines_count; element++)//horizontal lines
-	{
-		segment.Set(
-			Vec2F(ROUND_RESULTS_INIT__MAP_SIZE,
-				-y_border + (float)element / (float)step * ROUND_RESULTS_INIT__MAP_SIZE_X2),
-			Vec2F(-ROUND_RESULTS_INIT__MAP_SIZE,
-				-y_border + (float)(element + 1) / (float)step * ROUND_RESULTS_INIT__MAP_SIZE_X2),
-			true);
-
-		rectangles[element + step].Set(&segment);
-	}
-
-	map.Set(rectangles, lines_count + step);
+	CreateMapRoundResults(players_count, end_match_score, GAME_POUND_RESULTS_MAP_DEFAUL_CELL_SIZE);
 
 	map_data_mtx.unlock();
 	ships_array_mtx.unlock();
-
-	delete[] rectangles;
-
-	GameTypes::players_count_t y_pos = 0;
 
 	MutexesLock();
 	MemorySetDefault();
@@ -1125,23 +1155,29 @@ void Game::RoundResultsInit()
 
 	ships_array_mtx.lock();
 
+	GameTypes::players_count_t y_pos = 0;
+	float up_y = (float)(players_count - 1) / 2.0f;
+
 	for (GameTypes::players_count_t team = 1; team <= GAME_PLAYERS_MAX_COUNT; team++)
 	{
-		for (GameTypes::players_count_t ship = 0; ship < GAME_PLAYERS_MAX_COUNT; ship++)
+		if (scores[team - 1] > -end_match_score)
 		{
-			if (ships[ship].GetTeamNumber() == team)
+			for (GameTypes::players_count_t ship = 0; ship < GAME_PLAYERS_MAX_COUNT; ship++)
 			{
-				ships[ship].exist = true;
-				ships[ship].SpendBuff(SHIP_BUFF_ALL);
-				ships[ship].SetPosition(
-					Vec2F(
-						((float)scores[team - 1] / ((float)end_match_score + 0.5f) - 0.015f) * ROUND_RESULTS_INIT__MAP_SIZE,
-						-y_border + (((float)y_pos + 0.5f) / (float)step) * ROUND_RESULTS_INIT__MAP_SIZE_X2));
-				ships[ship].radius = SHIP_DEFAULT_RADIUS / (float)step * 5.0f * ROUND_RESULTS_INIT__MAP_SIZE;
-				ships[ship].SetAngle(0.0f);
-				ships[ship].UpdateMatrix();
-				ships_count++;
-				y_pos++;
+				if (ships[ship].GetTeamNumber() == team)
+				{
+					ships[ship].exist = true;
+					ships[ship].SpendBuff(SHIP_BUFF_ALL);
+					ships[ship].SetPosition(
+						Vec2F(
+							(float)scores[ships[ship].GetTeamNumber() - 1] - sqrtf(2.0f) / 12.0f,
+							up_y - (float)y_pos) * GAME_POUND_RESULTS_MAP_DEFAUL_CELL_SIZE);
+					ships[ship].radius = GAME_POUND_RESULTS_MAP_DEFAUL_CELL_SIZE / 5.0f;
+					ships[ship].SetAngle(0.0f);
+					ships[ship].UpdateMatrix();
+					ships_count++;
+					y_pos++;
+				}
 			}
 		}
 	}
@@ -1156,13 +1192,14 @@ bool Game::RoundResults()
 #define ROUND_RESULTS__MAP_SIZE_X025		(ROUND_RESULTS__MAP_SIZE * 0.25f)
 #define ROUND_RESULTS__MAP_SIZE_X2			(ROUND_RESULTS__MAP_SIZE * 2.0f)
 
-
 	if (!logs.HaveData())
 	{
 		return false;
 	}
 
-	GameTypes::score_t step = end_match_score;
+	GameTypes::score_t step = GAME_FULL_MATCH_ROUNDS * 2 + 1;
+
+	float size_coeff = (end_match_score == GAME_FULL_MATCH_ROUNDS) ? 1.0f : 1.0f * (float)step / (float)GAME_FULL_MATCH_ROUNDS;
 
 	EngineTypes::Log::data_t data = logs.PopFromStart();
 
@@ -1174,15 +1211,21 @@ bool Game::RoundResults()
 			{
 				if (((data >> LOG_DATA_SCORE) & LOG_MASK_BITS) == LOG_INCREMENT)
 				{
-					ships[ship].Move(Vec2F(1.0f / ((float)step + ROUND_RESULTS__MAP_SIZE_X025) * ROUND_RESULTS__MAP_SIZE, 0.0f));
-					ships[ship].UpdateMatrix();
-					scores[ships[ship].GetTeamNumber() - 1]++;
+					if (scores[ships[ship].GetTeamNumber() - 1] < end_match_score)
+					{
+						ships[ship].Move(Vec2F(GAME_POUND_RESULTS_MAP_DEFAUL_CELL_SIZE, 0.0f));
+						ships[ship].UpdateMatrix();
+						scores[ships[ship].GetTeamNumber() - 1]++;
+					}
 				}
 				else if (((data >> LOG_DATA_SCORE) & LOG_MASK_BITS) == LOG_DECREMENT)
 				{
-					ships[ship].Move(Vec2F(-1.0f / ((float)step + ROUND_RESULTS__MAP_SIZE_X025) * ROUND_RESULTS__MAP_SIZE, 0.0f));
-					ships[ship].UpdateMatrix();
-					scores[ships[ship].GetTeamNumber() - 1]--;
+					if (scores[ships[ship].GetTeamNumber() - 1] > -end_match_score)
+					{
+						ships[ship].Move(Vec2F(GAME_POUND_RESULTS_MAP_DEFAUL_CELL_SIZE, 0.0f));
+						ships[ship].UpdateMatrix();
+						scores[ships[ship].GetTeamNumber() - 1]--;
+					}
 				}
 			}
 		}

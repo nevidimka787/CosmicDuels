@@ -10,6 +10,7 @@ void Game::AddEntity(Asteroid new_asteroid)
 			{
 				asteroids[asteroid] = new_asteroid;
 				asteroids_count++;
+				//printf("Add asteroid: %u.\tAsteroids count: %u.\n", asteroid, asteroids_count);
 				return;
 			}
 		}

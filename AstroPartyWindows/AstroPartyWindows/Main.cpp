@@ -174,6 +174,10 @@ void InputOutputUpdate()
                 }
             }
         }
+        else if (glfwWindowShouldClose(window))
+        {
+            break;
+        }
 
         local_time_point += std::chrono::milliseconds(THREAD_INPUT_TIK_PERIOD); //set waking up point
         std::this_thread::sleep_until(local_time_point); //wait waking up point

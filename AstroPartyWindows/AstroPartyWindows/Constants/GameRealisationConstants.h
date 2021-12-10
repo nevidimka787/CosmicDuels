@@ -186,6 +186,11 @@ turels, mega lasers
 #define GAME_BONUSES_COUNT						4u
 //How mutch differenc in score need to activating autobalance.
 #define GAME_BALANCE_ACTIVATE_DIFFERENCE_SCORES	3u
+#define GAME_SCORE_START	0
+
+#define GAME_FULL_MATCH_ROUNDS		5
+#define GAME_WINNERS_MATCH_ROUNDS	1
+#define GAME_POUND_RESULTS_MAP_DEFAUL_CELL_SIZE	0.8f
 
 	//matc rules
 

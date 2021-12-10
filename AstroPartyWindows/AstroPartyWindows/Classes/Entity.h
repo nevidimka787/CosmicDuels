@@ -499,6 +499,7 @@ public:
 		bool exist = true);
 
 	DynamicParticle CreateShards(GameTypes::tic_t current_tic);
+	bool Collision(const Map* map);
 	void DecrementSize();
 	Bonus Destroy();
 	/*
@@ -673,6 +674,9 @@ protected:
 	EngineTypes::Ship::inventory_t buff_inventory;
 	GameTypes::tic_t unbrakable;
 	GameTypes::tic_t burnout;
+
+	GameTypes::entities_count_t max_bullets_count;
+	GameTypes::entities_count_t current_bullets_count;
 public:
 	Ship();
 	Ship(const Ship& ship);
@@ -701,11 +705,15 @@ public:
 	//the function activates all buffs that is in the bonus inventory and return true.
 	bool ActivateAvailableBuffs();
 	void ActivateBuffNoCheck(EngineTypes::Ship::inventory_t buff);
+	void AddBullet();
+	void AddBullets(GameTypes::entities_count_t bulles_count);
+	void AddBulletsToMax();
 	EngineTypes::Bonus::inventory_t BonusInfo();
 	void Burnout(
 		float power,
 		bool rotate_clockwise,
 		GameTypes::tic_t burnout_period = SHIP_DEFAULT_BURNOUT_PERIOD);
+	bool CanCreatingBullet();
 	bool CanCreatingLoop();
 	Bullet CreateBullet();
 	//The function return dynamic particle.
@@ -763,6 +771,7 @@ public:
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
 		bool exist = true);
+	void SetMaxBulletsCount(GameTypes::entities_count_t max_bullets_count);
 	void SetUnbrakablePeriod(GameTypes::tic_t period);
 	//If ship have bonus, the function reduces the amount of this bonus and return true.
 	bool SpendBonus(EngineTypes::Bonus::inventory_t bonus);
