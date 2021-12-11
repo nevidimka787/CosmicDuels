@@ -677,6 +677,7 @@ protected:
 
 	GameTypes::entities_count_t max_bullets_count;
 	GameTypes::entities_count_t current_bullets_count;
+	GameTypes::tic_t reoading_dellay = 0;
 public:
 	Ship();
 	Ship(const Ship& ship);
@@ -699,14 +700,19 @@ public:
 		float radius = SHIP_DEFAULT_RADIUS,
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
+		GameTypes::entities_count_t max_bullets_count = SHIP_DEFAULT_MAX_BULLETS_COUNT,
+		GameTypes::entities_count_t start_bullets_count = SHIP_DEFAULT_MAX_BULLETS_COUNT,
 		bool exist = true);
 
 	//If ship have bufs in bonuses invenory,
 	//the function activates all buffs that is in the bonus inventory and return true.
 	bool ActivateAvailableBuffs();
 	void ActivateBuffNoCheck(EngineTypes::Ship::inventory_t buff);
+	//The function adds one bullet to ship's magazine.
 	void AddBullet();
+	//The function adds indicated count of bullets to ship's magazine.
 	void AddBullets(GameTypes::entities_count_t bulles_count);
+	//The function fills ship's magazine with bullets.
 	void AddBulletsToMax();
 	EngineTypes::Bonus::inventory_t BonusInfo();
 	void Burnout(
@@ -770,6 +776,8 @@ public:
 		float radius = SHIP_DEFAULT_RADIUS,
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
+		GameTypes::entities_count_t max_bullets_count = SHIP_DEFAULT_MAX_BULLETS_COUNT,
+		GameTypes::entities_count_t start_bullets_count = SHIP_DEFAULT_MAX_BULLETS_COUNT,
 		bool exist = true);
 	void SetMaxBulletsCount(GameTypes::entities_count_t max_bullets_count);
 	void SetUnbrakablePeriod(GameTypes::tic_t period);

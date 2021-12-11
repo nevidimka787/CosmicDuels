@@ -2622,6 +2622,8 @@ Ship::Ship() :
 	buff_inventory(BONUS_NOTHING),
 	burnout(0),
 	burnout_input_value_pointer(nullptr),
+	current_bullets_count(0),
+	max_bullets_count(0),
 	unbrakable(0),
 	objects_in_loop(0),
 	element_type(GAME_OBJECT_TYPE_NULL)
@@ -2634,18 +2636,59 @@ Ship::Ship(const Ship& ship) :
 	buff_inventory(ship.buff_inventory),
 	burnout(ship.burnout),
 	burnout_input_value_pointer(ship.burnout_input_value_pointer),
+	current_bullets_count(ship.current_bullets_count),
+	max_bullets_count(ship.max_bullets_count),
 	unbrakable(ship.unbrakable),
 	objects_in_loop(0),
 	element_type(GAME_OBJECT_TYPE_NULL)
 {
 }
 
-Ship::Ship(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t player_number, GameTypes::players_count_t player_team_number, void* burnout_input_value_pointer, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* heat_box_vertexes_array, EngineTypes::ControledEntity::heat_box_vertexes_count_t heat_box_vertexes_array_length, float angle, EngineTypes::Bonus::inventory_t bonus_inventory, EngineTypes::Ship::inventory_t buff_inventory, GameTypes::tic_t unbrakable, GameTypes::tic_t burnout, float angular_velocity, float radius, float force_collision_coeffisient, float force_resistance_air_coefficient, bool exist) :
-	ControledEntity(position, velocity, radius, player_number, player_team_number, rotate_input_value_pointer, shoot_input_value_pointer, heat_box_vertexes_array, heat_box_vertexes_array_length, angle, angular_velocity, force_collision_coeffisient, force_resistance_air_coefficient, exist),
+Ship::Ship(
+	Vec2F* position,
+	Vec2F* velocity,
+	GameTypes::players_count_t player_number,
+	GameTypes::players_count_t player_team_number,
+	void* burnout_input_value_pointer,
+	void* rotate_input_value_pointer,
+	void* shoot_input_value_pointer,
+	Vec2F* heat_box_vertexes_array,
+	EngineTypes::ControledEntity::heat_box_vertexes_count_t heat_box_vertexes_array_length,
+	float angle,
+	EngineTypes::Bonus::inventory_t bonus_inventory,
+	EngineTypes::Ship::inventory_t buff_inventory,
+	GameTypes::tic_t unbrakable,
+	GameTypes::tic_t burnout,
+	float angular_velocity,
+	float radius,
+	float force_collision_coeffisient,
+	float force_resistance_air_coefficient,
+	GameTypes::entities_count_t max_bullets_count,
+	GameTypes::entities_count_t start_bullets_count,
+	bool exist)
+	:
+ControledEntity(
+	position,
+	velocity,
+	radius,
+	player_number,
+	player_team_number,
+	rotate_input_value_pointer,
+	shoot_input_value_pointer,
+	heat_box_vertexes_array,
+	heat_box_vertexes_array_length,
+	angle,
+	angular_velocity,
+	force_collision_coeffisient,
+	force_resistance_air_coefficient,
+	exist
+),
 	bonus_inventory(bonus_inventory),
 	buff_inventory(buff_inventory),
 	burnout(burnout),
 	burnout_input_value_pointer(burnout_input_value_pointer),
+	current_bullets_count(start_bullets_count),
+	max_bullets_count(max_bullets_count),
 	unbrakable(unbrakable),
 	objects_in_loop(0),
 	element_type(GAME_OBJECT_TYPE_NULL)
@@ -2675,6 +2718,31 @@ void Ship::ActivateBuffNoCheck(EngineTypes::Ship::inventory_t buff)
 	buff_inventory |= buff;
 }
 
+void Ship::AddBullet()
+{
+	if (current_bullets_count < max_bullets_count)
+	{
+		current_bullets_count++;
+	}
+}
+
+void Ship::AddBullets(GameTypes::entities_count_t bullets_count)
+{
+	if (bullets_count < max_bullets_count - current_bullets_count)
+	{
+		current_bullets_count += bullets_count;
+	}
+	else
+	{
+		current_bullets_count = max_bullets_count;
+	}
+}
+
+void Ship::AddBulletsToMax()
+{
+	current_bullets_count = max_bullets_count;
+}
+
 EngineTypes::Bonus::inventory_t Ship::BonusInfo()
 {
 	return bonus_inventory;
@@ -2696,6 +2764,11 @@ void Ship::Burnout(float power, bool rotate_clockwise, GameTypes::tic_t burnout_
 	burnout = burnout_period;
 }
 
+bool Ship::CanCreatingBullet()
+{
+	return current_bullets_count > 0;
+}
+
 bool Ship::CanCreatingLoop()
 {
 	return objects_in_loop > 0;
@@ -2710,6 +2783,7 @@ Bullet Ship::CreateBullet()
 
 	AddForceAlongDirection(-SHIP_SHOOT_FORCE);
 	current_bullets_count--;
+	reoading_dellay = SHIP_DEFAULT_REALOADING_DELLAY;
 
 	return Bullet(
 		position + direction.Normalize() * radius,
@@ -2956,18 +3030,41 @@ void Ship::Set(Ship* ship)
 	}
 }
 
-void Ship::Set(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t player_number, GameTypes::players_count_t player_team_number, void* burnout_input_value_pointer, void* rotate_input_value_pointer, void* shoot_input_value_pointer, Vec2F* heat_box_vertexes_array, EngineTypes::ControledEntity::heat_box_vertexes_count_t heat_box_vertexes_array_length, float angle, EngineTypes::Bonus::inventory_t bonus_inventory, EngineTypes::Ship::inventory_t buff_inventory, GameTypes::tic_t unbrakable, GameTypes::tic_t burnout, float angular_velocity, float radius, float force_collision_coeffisient, float force_resistance_air_coefficient, bool exist)
+void Ship::Set(
+	Vec2F* position,
+	Vec2F* velocity,
+	GameTypes::players_count_t player_number,
+	GameTypes::players_count_t player_team_number,
+	void* burnout_input_value_pointer,
+	void* rotate_input_value_pointer,
+	void* shoot_input_value_pointer,
+	Vec2F* heat_box_vertexes_array,
+	EngineTypes::ControledEntity::heat_box_vertexes_count_t heat_box_vertexes_array_length,
+	float angle,
+	EngineTypes::Bonus::inventory_t bonus_inventory,
+	EngineTypes::Ship::inventory_t buff_inventory,
+	GameTypes::tic_t unbrakable,
+	GameTypes::tic_t burnout,
+	float angular_velocity,
+	float radius,
+	float force_collision_coeffisient,
+	float force_resistance_air_coefficient,
+	GameTypes::entities_count_t max_bullets_count,
+	GameTypes::entities_count_t current_bullets_count,
+	bool exist)
 {
 	this->angle = angle;
 	this->angular_velocity = angular_velocity;
 	this->bonus_inventory = bonus_inventory;
 	this->buff_inventory = buff_inventory;
 	this->burnout = burnout;
+	this->current_bullets_count = current_bullets_count;
 	UpdateDirection();
 	this->exist = exist;
 	this->force_collision_coeffisient = force_collision_coeffisient;
 	this->force_resistance_air_coefficient = force_resistance_air_coefficient;
 	this->heat_box_vertexes_array_length = heat_box_vertexes_array_length;
+	this->max_bullets_count = max_bullets_count;
 	this->player_number = player_number;
 	this->player_team_number = player_team_number;
 	this->position = *position;
@@ -2993,6 +3090,15 @@ void Ship::Set(Vec2F* position, Vec2F* velocity, GameTypes::players_count_t play
 		{
 			this->heat_box_vertexes_array[vertex] = heat_box_vertexes_array[vertex];
 		}
+	}
+}
+
+void Ship::SetMaxBulletsCount(GameTypes::entities_count_t bullets_count)
+{
+	max_bullets_count = bullets_count;
+	if (current_bullets_count > max_bullets_count)
+	{
+		current_bullets_count = max_bullets_count;
 	}
 }
 
@@ -3085,6 +3191,20 @@ void Ship::Update()
 		unbrakable--;
 	}
 
+	if (reoading_dellay > 0)
+	{
+		reoading_dellay--;
+	}
+	else
+	{
+#if SHIP_DEFAULT_RELOADING_PERIOD == 0
+		AddBulletsToMax();
+#else
+		AddBullet();
+		reoading_dellay = SHIP_DEFAULT_RELOADING_PERIOD;
+#endif
+	}
+
 	DynamicEntity::Update();
 }
 
@@ -3102,12 +3222,14 @@ void Ship::operator=(Ship ship)
 	angular_velocity = ship.angular_velocity;
 	bonus_inventory = ship.bonus_inventory;
 	buff_inventory = ship.buff_inventory;
+	current_bullets_count = ship.current_bullets_count;
 	direction = ship.direction;
 	exist = ship.exist;
 	force = ship.force;
 	force_collision_coeffisient = ship.force_collision_coeffisient;
 	force_resistance_air_coefficient = ship.force_resistance_air_coefficient;
 	heat_box_vertexes_array_length = ship.heat_box_vertexes_array_length;
+	max_bullets_count = ship.max_bullets_count;
 	player_number = ship.player_number;
 	player_team_number = ship.player_team_number;
 	position = ship.position;

@@ -20,6 +20,7 @@
 
 void Game::PhysicThread0()
 {
+	//*opengl_p__drawing_lock = true;
 	//opengl_p__draw_lock0_mtx->lock();
 
 	BombsChainReaction();
@@ -60,6 +61,7 @@ void Game::PhysicThread0()
 		camera.resize_velocity_coefficient *= CAMERA_UPDATE_COEFF_PARAM;
 	}
 	camera_data_mtx.unlock();
+
 	input_values_mtx.lock();
 	if (burnout_double_clk_timer[0] > 0)
 		burnout_double_clk_timer[0]--;
@@ -86,6 +88,8 @@ void Game::PhysicThread0()
 	threads_statuses_mtx.unlock();
 
 	WaitPhaseAllPhases();
+
+	// *opengl_p__drawing_lock = false;
 
 	thread_1_update.lock();
 	thread_2_update.lock();
@@ -508,8 +512,6 @@ skip_bonus_pull_set:
 	{
 		scores[team - 1] = 0;
 	}
-	scores[1] = 4;
-	scores[2] = 4;
 
 	selected_maps_id_array_length = 0;
 	for (GameTypes::maps_count_t map_id = 0; map_id < GAME_MAPS_COUNT; map_id++)

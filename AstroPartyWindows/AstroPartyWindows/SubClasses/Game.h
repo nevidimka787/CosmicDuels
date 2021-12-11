@@ -1085,5 +1085,7 @@ public:
 	std::shared_mutex* opengl_p__draw_lock1_mtx;
 	std::shared_mutex* opengl_p__draw_lock2_mtx;
 	std::shared_mutex* opengl_p__draw_lock3_mtx;
+
+	bool* opengl_p__drawing_lock;
 };
 

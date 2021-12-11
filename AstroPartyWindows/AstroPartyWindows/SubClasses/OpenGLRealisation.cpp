@@ -446,6 +446,11 @@ void OpenGL::DrawFrame()
     //draw_lock0_mtx.lock();
     //game_p__input_values_mtx->lock();
 
+    //while (drawing_lock)
+    //{
+        //std::this_thread::sleep_for(std::chrono::microseconds(10));
+    //}
+
     if (glfwWindowShouldClose(window))
     {
         *game_p__play_match = false;

@@ -403,6 +403,8 @@ public:
 	std::shared_mutex* game_p__ships_array_mtx;
 	std::shared_mutex* game_p__turels_array_mtx;
 
+	bool drawing_lock = false;
+
 
 	//menu functions pointers
 
