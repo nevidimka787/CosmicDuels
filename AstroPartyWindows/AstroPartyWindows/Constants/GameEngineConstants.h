@@ -282,5 +282,5 @@
 
 #define SHIP_DEFAULT_MAX_BULLETS_COUNT		3
 #define SHIP_DEFAULT_START_BULLETS_COUNT	SHIP_DEFAULT_MAX_BULLETS_COUNT
-#define SHIP_DEFAULT_REALOADING_DELLAY				100	//count of tics between last shooting and begin of reloading
-#define SHIP_DEFAULT_RELOADING_PERIOD		20	//count of tics between reloading of two bullets (if it is zero then reloagin is complated in one update)
+#define SHIP_DEFAULT_REALOADING_DELLAY		200	//count of tics between last shooting and begin of reloading
+#define SHIP_DEFAULT_RELOADING_PERIOD		50	//count of tics between reloading of two bullets (if it is zero then reloagin is complated in one update)

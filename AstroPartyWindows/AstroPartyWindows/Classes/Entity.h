@@ -591,6 +591,8 @@ protected:
 	GameTypes::players_count_t player_team_number;
 	void* rotate_input_value_pointer;
 	void* shoot_input_value_pointer;
+
+	void SetDefaultMatrix();
 public:
 	ControledEntity();
 	ControledEntity(const ControledEntity& controled_entity);
@@ -728,6 +730,8 @@ public:
 	DynamicParticle CreateEnginExaust(GameTypes::tic_t current_tic);
 	//The function return dynamic particle.
 	DynamicParticle CreateShards(GameTypes::tic_t current_tic);
+	//Thw ship loses all buffs, bonuses, and bullets.
+	void CleatInventory();
 	//The function does not check for the presence of a bonus.
 	Bullet CreateTriple(uint8_t bullet_number);
 	//The function print data about loop to ship's memory.
@@ -748,6 +752,8 @@ public:
 	//The function return dynamic particle.
 	Particle CreateShootingExaust(GameTypes::tic_t current_tic);
 	Pilot Destroy();
+	int GetBonusInventoryAsBoolList();
+	GameTypes::entities_count_t GetBulletsCountInMagasine();
 	//The function return number of curent element.
 	//Last number of entity is 1.
 	GameTypes::entities_count_t GetElemntFromLoop();

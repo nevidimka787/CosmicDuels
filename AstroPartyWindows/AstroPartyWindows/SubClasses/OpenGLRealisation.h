@@ -43,6 +43,7 @@ public:
 	StaticBuffer portal_buffer;
 	StaticBuffer pilot_buffer;
 	StaticBuffer ship_buffer;
+	StaticBuffer ship_bullet_buffer;
 	StaticBuffer turel_buffer;
 
 	StaticBuffer cyrcle_buffer;
@@ -379,6 +380,7 @@ public:
 	Camera* game_p__camera;
 
 	bool** game_p__rotate_flags;
+	bool* game_p__rotation_inverse;
 	bool** game_p__shoot_flags;
 	int32_t** game_p__burnout_double_clk_timer;
 	bool** game_p__burnout_flag;

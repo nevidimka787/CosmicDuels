@@ -754,7 +754,6 @@ void Game::InitLevel()
 	players_count = 0;
 	for (GameTypes::players_count_t player = 0; player < GAME_PLAYERS_MAX_COUNT; player++)
 	{
-		printf("Player: %3i\tTeam: %3i\n", player, playing_teams[player]);
 		if (playing_teams[player] > 0)
 		{
 			if (game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_BONUS && game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_DIFFERENT_BONUS)
@@ -1169,14 +1168,14 @@ void Game::RoundResultsInit()
 				if (ships[ship].GetTeamNumber() == team)
 				{
 					ships[ship].exist = true;
-					ships[ship].SpendBuff(SHIP_BUFF_ALL);
 					ships[ship].SetPosition(
 						Vec2F(
-							(float)scores[ships[ship].GetTeamNumber() - 1] - sqrtf(2.0f) / 12.0f,
+							(float)scores[ships[ship].GetTeamNumber() - 1],
 							up_y - (float)y_pos) * GAME_POUND_RESULTS_MAP_DEFAUL_CELL_SIZE);
 					ships[ship].radius = GAME_POUND_RESULTS_MAP_DEFAUL_CELL_SIZE / 5.0f;
 					ships[ship].SetAngle(0.0f);
 					ships[ship].UpdateMatrix();
+					ships[ship].CleatInventory();
 					ships_count++;
 					y_pos++;
 				}
@@ -1224,7 +1223,7 @@ bool Game::RoundResults()
 				{
 					if (scores[ships[ship].GetTeamNumber() - 1] > -end_match_score)
 					{
-						ships[ship].Move(Vec2F(GAME_POUND_RESULTS_MAP_DEFAUL_CELL_SIZE, 0.0f));
+						ships[ship].Move(Vec2F(-GAME_POUND_RESULTS_MAP_DEFAUL_CELL_SIZE, 0.0f));
 						ships[ship].UpdateMatrix();
 						scores[ships[ship].GetTeamNumber() - 1]--;
 					}

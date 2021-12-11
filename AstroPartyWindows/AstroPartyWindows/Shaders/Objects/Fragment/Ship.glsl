@@ -4,6 +4,12 @@ out vec4 frag_color;
 
 uniform int player;
 uniform int team;
+uniform int inventory;
+uniform int bullets_count;
+
+uniform int type;
+#define TYPE_SHIP   0
+#define TYPE_BULLET 1
 
 in vec2 pixel_position;
 
@@ -20,8 +26,23 @@ vec3 color;
 #define UNBRAKABLE	0xF000
 #define SHIELD		0x0F00
 
+vec4 DrawBullets(vec2 _pixel_position, int _inventory, int _bullets_count);
+
 void main()
 {
+
+
+	if(type == TYPE_BULLET)
+	{
+		frag_color = DrawBullets(pixel_position, inventory, bullets_count);
+		if(frag_color.w < 0.0f)
+		{
+			discard;
+		}
+
+		return;
+	}
+
 	if(length(pixel_position) > 0.6f)
 	{
 		discard;
@@ -74,4 +95,96 @@ void main()
 		return;
 	}
 	frag_color = vec4(color * 0.9f + 0.1f, 1.0f);
+}
+
+vec4 DrawBullets(vec2 _pixel_position, int _inventory, int _bullets_count)
+{
+#define MAX_RADIUS		1.0f
+#define MIN_RADIUS		0.85f
+#define DELTA_RADIUS	(MAX_RADIUS - MIN_RADIUS)
+#define ORBIT_RADIUS	(MIN_RADIUS + DELTA_RADIUS / 2.0f)
+
+	if(length(_pixel_position) > MAX_RADIUS || length(_pixel_position) < MIN_RADIUS)
+	{
+		return vec4(-1.0f);
+	}
+
+	bool has_loop  = (inventory & 1) != 0;
+	bool has_laser = (inventory & 2) != 0;
+	bool has_bomb  = (inventory & 4) != 0;
+	bool has_knife = (inventory & 8) != 0;
+
+#define LOOP	0
+#define LASER	1
+#define BOMB	2
+#define KNIFE	3
+
+#define LOOP_COLOR	vec4(1.0f, 0.1f, 0.3f, 1.0f)
+#define LASER_COLOR	vec4(0.3f, 0.1f, 1.0f, 1.0f)
+#define BOMB_COLOR	vec4(0.5f, 0.5f, 0.5f, 1.0f)
+#define KNIFE_COLOR	vec4(0.1f, 1.0f, 0.1f, 1.0f)
+
+	int bullets_on_orbit = int(has_loop) + int(has_laser) + int(has_bomb) + int(has_knife);
+	
+	if(bullets_on_orbit == 0)
+	{
+		for(int vertex = 0; vertex < _bullets_count; vertex++)
+		{
+			float angle = radians(float(vertex) / float(bullets_count) * 360.0f);
+			vec2 r_vec = vec2(-sin(angle), cos(angle)) * ORBIT_RADIUS;
+
+			if(length(r_vec - _pixel_position) < DELTA_RADIUS / 2.0f)
+			{
+				return vec4(1.0f, 1.0f, 1.0f, 1.0f);
+			}
+		}
+
+		return vec4(-1.0f);
+	}
+
+
+	for(int vertex = 0; vertex < bullets_on_orbit; vertex++)
+	{
+		float angle = radians(float(vertex) / float(bullets_on_orbit) * 360.0f);
+		vec2 r_vec = vec2(-sin(angle), cos(angle)) * ORBIT_RADIUS;
+
+		if(length(r_vec - _pixel_position) < DELTA_RADIUS / 2.0f)
+		{
+			if(has_loop == true)
+			{
+				if(vertex <= 0)
+				{
+					return LOOP_COLOR;
+				}
+				vertex--;
+			}
+			if(has_laser == true)
+			{
+				if(vertex <= 0)
+				{
+					return LASER_COLOR;
+				}
+				vertex--;
+			}
+			if(has_bomb == true)
+			{
+				if(vertex <= 0)
+				{
+					return BOMB_COLOR;
+				}
+				vertex--;
+			}
+			if(has_knife == true)
+			{
+				if(vertex <= 0)
+				{
+					return KNIFE_COLOR;
+				}
+			}
+
+			return vec4(0.5f);
+		}
+	}
+
+	return vec4(-1.0f);
 }

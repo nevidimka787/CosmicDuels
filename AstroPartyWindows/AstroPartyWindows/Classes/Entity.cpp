@@ -2081,16 +2081,13 @@ KillerEntity::~KillerEntity()
 
 ControledEntity::ControledEntity() :
 	DynamicEntity(),
+	heat_box_vertexes_array(nullptr),
 	player_number(0),
 	rotate_input_value_pointer(nullptr),
 	shoot_input_value_pointer(nullptr),
 	player_team_number(0)
 {
-	heat_box_vertexes_array_length = 3;
-	heat_box_vertexes_array = new Vec2F[3];
-	heat_box_vertexes_array[0].Set(0.5f, 0.0f);
-	heat_box_vertexes_array[1].Set(-0.25f, sqrt(3.0f) / 4.0f);
-	heat_box_vertexes_array[2].Set(-0.25f, sqrt(3.0f) / -4.0f);
+	SetDefaultMatrix();
 }
 
 ControledEntity::ControledEntity(const ControledEntity& controled_entity) :
@@ -2117,11 +2114,8 @@ ControledEntity::ControledEntity(Vec2F* position, Vec2F* velocity, float radius,
 {
 	if (heat_box_vertexes_array_length < 3 || heat_box_vertexes_array == nullptr)
 	{
-		this->heat_box_vertexes_array_length = 3;
-		this->heat_box_vertexes_array = new Vec2F[3];
-		this->heat_box_vertexes_array[0].Set(0.5f, 0.0f);
-		this->heat_box_vertexes_array[1].Set(-0.25f, sqrt(3.0f) / 4.0f);
-		this->heat_box_vertexes_array[2].Set(-0.25f, sqrt(3.0f) / -4.0f);
+		this->heat_box_vertexes_array = nullptr;
+		SetDefaultMatrix();
 		return;
 	}
 
@@ -2576,6 +2570,19 @@ void ControledEntity::Set(Vec2F* position, Vec2F* velocity, float radius, GameTy
 	}
 }
 
+void ControledEntity::SetDefaultMatrix()
+{
+	heat_box_vertexes_array_length = 3;
+	if (heat_box_vertexes_array != nullptr)
+	{
+		delete[] heat_box_vertexes_array;
+	}
+	heat_box_vertexes_array = new Vec2F[3];
+	heat_box_vertexes_array[0].Set(0.40f, 0.0f);
+	heat_box_vertexes_array[1].Set(-0.35f, sqrt(3.0f) / 4.0f);
+	heat_box_vertexes_array[2].Set(-0.35f, sqrt(3.0f) / -4.0f);
+}
+
 void ControledEntity::UpdateMatrix()
 {
 	model_matrix.SetByPosition(position);
@@ -2850,8 +2857,14 @@ DynamicParticle Ship::CreateShards(GameTypes::tic_t current_tic)
 		PARTICLE_PERIOD_SHARDS_SHIP,
 		PARTICLE_POSTPONE_SHARDS_SHIP,
 		current_tic + PARTICLE_PERIOD_SHARDS_SHIP + PARTICLE_POSTPONE_SHARDS_SHIP);
+}
 
-	std::cout << "Ship::CreateShards" << std::endl;
+void Ship::CleatInventory()
+{
+	buff_inventory = 0x0;
+	bonus_inventory = 0x0;
+	current_bullets_count = 0x0;
+	max_bullets_count = SHIP_DEFAULT_MAX_BULLETS_COUNT;
 }
 
 Bullet Ship::CreateTriple(uint8_t bullet_number)
@@ -2937,12 +2950,12 @@ Knife Ship::CreateKnife(uint8_t knife_number)
 	switch (knife_number)
 	{
 	case 0:
-		new_knife_segment = Segment(Vec2F(-0.25f, sqrt(3.0f) / 4.0f), Vec2F(0.75f, 0.0f));
+		new_knife_segment = Segment(Vec2F(-0.35f, sqrt(3.0f) / 4.0f), Vec2F(0.75f, 0.0f));
 		knife = Knife(this, &new_knife_segment);
 		knife.Update();
 		return knife;
 	case 1:
-		new_knife_segment = Segment(Vec2F(-0.25f, sqrt(3.0f) / -4.0f), Vec2F(0.75f, 0.0f));
+		new_knife_segment = Segment(Vec2F(-0.35f, sqrt(3.0f) / -4.0f), Vec2F(0.75f, 0.0f));
 		knife = Knife(this, &new_knife_segment);
 		knife.Update();
 		return knife;
@@ -2968,6 +2981,21 @@ Pilot Ship::Destroy()
 	Pilot new_pilot = Pilot(&position, &zero_velocity, player_number, player_team_number, rotate_input_value_pointer, shoot_input_value_pointer, PILOT_DEFAULT_RESPAWN_TIMER, nullptr, 0, angle);
 	new_pilot.AddForce(velocity * 1.5f);
 	return new_pilot;
+}
+
+int Ship::GetBonusInventoryAsBoolList()
+{
+	return
+		(int)(
+			((bonus_inventory & (BONUS_LOOP * BONUS_CELL)) ? (1u << 0u) : 0u) +		//zero bit is a loop cell
+			((bonus_inventory & (BONUS_LASER * BONUS_CELL)) ? (1u << 1u) : 0u) +	//first bit is a laser cell
+			((bonus_inventory & (BONUS_BOMB * BONUS_CELL)) ? (1u << 2u) : 0u) +		//second bit is a bomb cell
+			((bonus_inventory & (BONUS_KNIFE * BONUS_CELL)) ? (1u << 3u) : 0u));	//third bit is a knife cell
+}
+
+GameTypes::entities_count_t Ship::GetBulletsCountInMagasine()
+{
+	return current_bullets_count;
 }
 
 GameTypes::objects_types_count_t Ship::GetTypeOfElemntInLoop()
@@ -3077,11 +3105,8 @@ void Ship::Set(
 	delete[] this->heat_box_vertexes_array;
 	if (heat_box_vertexes_array_length < 3 || heat_box_vertexes_array == nullptr)
 	{
-		this->heat_box_vertexes_array_length = 3;
-		this->heat_box_vertexes_array = new Vec2F[3];
-		this->heat_box_vertexes_array[0].Set(0.5f, 0.0f);
-		this->heat_box_vertexes_array[1].Set(-0.25f, sqrt(3.0f) / 4.0f);
-		this->heat_box_vertexes_array[2].Set(-0.25f, sqrt(3.0f) / -4.0f);
+		this->heat_box_vertexes_array = nullptr;
+		SetDefaultMatrix();
 	}
 	else
 	{

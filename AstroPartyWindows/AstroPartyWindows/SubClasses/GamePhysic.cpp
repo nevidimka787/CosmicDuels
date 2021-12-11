@@ -552,7 +552,7 @@ void Game::ShipShoot_LoopBomb(Ship* ship)
 
 void Game::ShipShoot_LaserKnife(Ship* ship)
 {
-	Segment local_segment = Segment(Vec2F(0.5f, 0.0f), Vec2F(3.0f, 0.0f));
+	Segment local_segment = Segment(Vec2F(0.4f, 0.0f), Vec2F(3.0f, 0.0f));
 	Game::AddEntity(Knife(ship, &local_segment, SHIP_SUPER_BONUS__LONG_KNIFE_HEALTH));
 
 	ships_can_shoot_flags[ship->GetPlayerNumber()] += GAME_ADD_DELLAY_BONUS_USE + GAME_ADD_DELLAY_COMBO_USE;

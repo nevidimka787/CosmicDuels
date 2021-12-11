@@ -315,6 +315,8 @@ void OpenGL::InitBuffers()
     particle_buffer.Initialisate(points, 6);
     portal_buffer.Initialisate(points, 6);
 
+    ship_bullet_buffer.Initialisate(points, 6);
+
     points[0].Set(1.0f, 1.0f);
     points[1].Set(0.0f, 1.0f);
     points[2].Set(1.0f, -1.0f);
@@ -362,9 +364,9 @@ void OpenGL::InitBuffers()
 
     knife_buffer.Initialisate(points, 6);
 
-    points[0].Set(0.0f, 0.5f);
-    points[1].Set(sqrt(3.0f) / 4.0f, -0.25f);
-    points[2].Set(-points[1].x, -0.25f);
+    points[0].Set(0.0f, 0.40f);
+    points[1].Set(sqrt(3.0f) / 4.0f, -0.35f);
+    points[2].Set(-points[1].x, -0.35f);
 
     pilot_buffer.Initialisate(points, 3);
     ship_buffer.Initialisate(points, 3);
@@ -884,12 +886,14 @@ void OpenGL::DrawObject(Ship* ship, bool update_shader)
 #define PLAYER_SHIELD 0x0F00
     if (update_shader)
     {
-        ship_buffer.Use();
+        //ship_buffer.Use();//Every draw buffer is resseted.
         ship_shader.Use();
         ship_shader.SetUniform("scale", window_scale);
         ship_shader.SetUniform("camera_position", temp__game__camera_position);
         ship_shader.SetUniform("camera_size", temp__game__camera_size);
     }
+
+    ship_buffer.Use();
 
     GameTypes::players_count_t number_of_player_in_team = 0;
     for (GameTypes::players_count_t player = 0; player < GAME_PLAYERS_MAX_COUNT; player++)
@@ -907,7 +911,13 @@ void OpenGL::DrawObject(Ship* ship, bool update_shader)
     ship_shader.SetUniform("model", ship->GetModelMatrixPointer());
     ship_shader.SetUniform("team", ship->GetTeamNumber());
 
+    ship_shader.SetUniform("current_tic", (int)((*game_p__global_timer) & ((1u << 31u) - 1u)));
+    ship_shader.SetUniform("inventory", ship->GetBonusInventoryAsBoolList() + ((*game_p__rotation_inverse) ? 256 : 0));
+    ship_shader.SetUniform("bullets_count", ship->GetBulletsCountInMagasine());
+
     ship_shader.SetUniform("player", number_of_player_in_team | (ship->IsUnbrakable() ? 0xF000 : 0x0000));
+
+    ship_shader.SetUniform("type", (int)0);//0 - is ship
     ship_buffer.Draw();
 
     if (ship->HaveBuff(SHIP_BUFF_SHIELD))
@@ -915,6 +925,11 @@ void OpenGL::DrawObject(Ship* ship, bool update_shader)
         ship_shader.SetUniform("player", PLAYER_SHIELD);
         ship_buffer.Draw();
     }
+
+    ship_bullet_buffer.Use();
+    ship_shader.SetUniform("position", ship->GetPosition());
+    ship_shader.SetUniform("type", (int)1);//1 - is bullets
+    ship_bullet_buffer.Draw();
 }
 
 void OpenGL::DrawObject(Turel* turel, bool update_shader)
@@ -1325,7 +1340,7 @@ void OpenGL::DrawPilots()
 
 void OpenGL::DrawShips()
 {
-    ship_buffer.Use();
+    //ship_buffer.Use();//Every draw buffer is resseted.
     ship_shader.Use();
     ship_shader.SetUniform("scale", window_scale);
     ship_shader.SetUniform("camera_position", temp__game__camera_position);
