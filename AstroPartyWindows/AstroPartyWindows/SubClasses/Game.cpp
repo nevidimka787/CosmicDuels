@@ -139,7 +139,7 @@ void Game::PhysicThread1()
 	LasersDetonateBombs();
 	LasersDestroyKnifes();
 	MegaLasersDestroyBullets();
-	//ShipsCreateExaust();
+	ShipsCreateExaust();
 
 	threads_statuses_mtx.lock();
 	threads_statuses |= THREAD_COMPLETE << THREAD_PHASE_1 << THREAD_1;
@@ -420,6 +420,81 @@ EngineTypes::Bonus::inventory_t Game::GenerateRandomBonusAndRule()
 	*/
 }
 
+EngineTypes::Bonus::inventory_t Game::GenerateRandomInventory(
+	EngineTypes::Bonus::inventory_t inventory_template,
+	GameTypes::objects_types_count_t min_objects_count,
+	GameTypes::objects_types_count_t max_objects_count,
+	GameTypes::objects_types_count_t min_objects_types_count,
+	GameTypes::objects_types_count_t max_objects_types_count)
+{
+	//Objec list Analys
+
+	GameTypes::objects_types_count_t objects_types_count_in_list = 0;
+
+	for (EngineTypes::Bonus::inventory_t cell = 0; cell < 8; cell++)
+	{
+		if (inventory_template & (BONUS_CELL << (cell * 2)))
+		{
+			objects_types_count_in_list++;
+		}
+	}
+
+	if (min_objects_count > max_objects_count)
+	{
+		GameTypes::objects_types_count_t buff = min_objects_count;
+		min_objects_count = max_objects_count;
+		max_objects_count = buff;
+	}
+	if (min_objects_types_count > max_objects_types_count)
+	{
+		GameTypes::objects_types_count_t buff = min_objects_types_count;
+		min_objects_types_count = max_objects_types_count;
+		max_objects_types_count = buff;
+	}
+
+	if (min_objects_types_count > objects_types_count_in_list)
+	{
+		min_objects_types_count = objects_types_count_in_list;
+		max_objects_types_count = objects_types_count_in_list;
+	}
+
+	if (min_objects_count < 1)
+	{
+		min_objects_count = 1;
+	}
+
+	
+	//Inventory generation
+
+	GameTypes::objects_types_count_t objects_types_count = min_objects_types_count + rand() % (max_objects_types_count - min_objects_types_count + 1);
+
+	GameTypes::objects_types_count_t checknig_objects_types_count = 0;
+	GameTypes::objects_types_count_t filling_objects_types_count = 0;
+
+	EngineTypes::Bonus::inventory_t inventory = BONUS_NOTHING;
+
+	for (EngineTypes::Bonus::inventory_t cell = 0; cell < 8; cell++)
+	{
+		if (inventory_template & (BONUS_CELL << (cell * 2)))
+		{
+			if (objects_types_count_in_list <= checknig_objects_types_count || objects_types_count_in_list <= filling_objects_types_count)
+			{
+				break;
+			}
+
+			if (rand() % (objects_types_count_in_list - checknig_objects_types_count) < objects_types_count - filling_objects_types_count)
+			{
+				filling_objects_types_count++;
+
+				inventory += (min_objects_count + rand() % (max_objects_count - min_objects_count + 1)) << (cell * 2);
+			}
+			checknig_objects_types_count++;
+		}
+	}
+
+	return inventory;
+}
+
 GameTypes::maps_count_t Game::GenerateRandomMapId()
 {
 	return selected_maps_id_array[rand() % selected_maps_id_array_length];
@@ -671,7 +746,7 @@ void Game::InitLevel()
 			0.0f,							//angle
 			101.0f,							//radius
 			PARTICLE_PERIOD_BACKGROUND,		//type
-			Color3F(67.0f / 256.0f, 45.0f / 256.0f, 93.0f / 256.0f),
+			Color3F(67.0f / 256.0f, 45.0f / 256.0f, 93.0f / 256.0f) / 2.0f,
 			1000,							//period
 			0,								//postpone
 			PARTICLE_ANIMATION_NOT_FINISH)	//finish tic
@@ -684,7 +759,7 @@ void Game::InitLevel()
 			0.0f,							//angle
 			21.0f,							//radius
 			PARTICLE_PERIOD_BACKGROUND,		//type
-			Color3F(57.0f / 256.0f, 40.0f / 256.0f, 93.0f / 256.0f),
+			Color3F(57.0f / 256.0f, 40.0f / 256.0f, 93.0f / 256.0f) / 2.0f,
 			1000,							//period
 			0,								//postpone
 			PARTICLE_ANIMATION_NOT_FINISH)	//finish tic
@@ -697,7 +772,7 @@ void Game::InitLevel()
 			0.0f,							//angle
 			7.0f,							//radius
 			PARTICLE_PERIOD_BACKGROUND,		//type
-			Color3F(57.0f / 256.0f, 40.0f / 256.0f, 93.0f / 256.0f),
+			Color3F(57.0f / 256.0f, 40.0f / 256.0f, 93.0f / 256.0f) / 2.0f,
 			1000,							//period
 			0,								//postpone
 			PARTICLE_ANIMATION_NOT_FINISH)	//finish tic

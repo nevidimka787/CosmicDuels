@@ -2515,7 +2515,7 @@ void Game::ShipsInfluenceToBonuses()
 					{
 						if (temp__bonus_p->IsCollision(temp__ship_p))
 						{
-							if (temp__bonus_p->bonus_inventory & BONUS_RULE_REVERSE)
+							if (temp__bonus_p->bonus_inventory & (BONUS_RULE_REVERSE * BONUS_CELL))
 							{
 								if (rotation_inverse)
 								{
@@ -2526,8 +2526,12 @@ void Game::ShipsInfluenceToBonuses()
 									rotation_inverse = true;
 								}
 								rotate_inverse_chage_tic = global_timer;
-								temp__bonus_p->bonus_inventory &= BONUS_ALL - BONUS_RULE_REVERSE;
 							}
+							if (temp__bonus_p->bonus_inventory & (BONUS_BUFF_STREAM * BONUS_CELL))
+							{
+								temp__ship_p->IncrementSizeOfMagazine();
+							}
+							temp__bonus_p->bonus_inventory &= BONUS_ALL - ((BONUS_RULE_REVERSE * BONUS_CELL) | (BONUS_BUFF_STREAM * BONUS_CELL));
 							temp__ship_p->TakeBonus(temp__bonus_p, game_rules & GAME_RULE_TRIPLE_BONUSES);
 							RemoveEntity(temp__bonus_p);
 							goto end_of_bonus_cycle;

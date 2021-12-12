@@ -65,7 +65,7 @@ void Game::Event0()
 	{
 		if (asteroids_count == 0)
 		{
-			AddEntity(Asteroid(Vec2F(EVENT0__CENTER_POSITION), Vec2F(), BONUS_RULE_REVERSE, ASTEROID_MAX_SIZE));
+			AddEntity(Asteroid(Vec2F(EVENT0__CENTER_POSITION), Vec2F(), GenerateRandomInventory(BONUS_BUFF_STREAM, 3, 3, 1, 1) | GenerateRandomInventory(BONUS_LOOP | BONUS_LASER | BONUS_BOMB | BONUS_KNIFE, 1, 1, 1, 4), ASTEROID_MAX_SIZE));
 		}
 	}
 }
@@ -82,18 +82,12 @@ void Game::Event1()
 	if (object_pull_array[GAME_OBJECT_ASTEROID] && !(global_timer % 1000) && asteroids_count == 0)
 	{
 		asteroids_array_mtx.unlock();
-		Vec2F positions[4];
 #define EVENT1_SQUARE_SIZE 0.7f
-		positions[0].Set(-EVENT1_SQUARE_SIZE, -EVENT1_SQUARE_SIZE);
-		positions[1].Set(-EVENT1_SQUARE_SIZE, EVENT1_SQUARE_SIZE);
-		positions[2].Set(EVENT1_SQUARE_SIZE, -EVENT1_SQUARE_SIZE);
-		positions[3].Set(EVENT1_SQUARE_SIZE, EVENT1_SQUARE_SIZE);
-		Vec2F zero_velocity;
 		asteroids_array_mtx.lock();
-		AddEntity(Asteroid(&positions[0], &zero_velocity, GenerateRandomBonus() + GenerateRandomBonus(), ASTEROID_DEFAULT_SIZE));
-		AddEntity(Asteroid(&positions[1], &zero_velocity, GenerateRandomBonus() + GenerateRandomBonus(), ASTEROID_DEFAULT_SIZE));
-		AddEntity(Asteroid(&positions[2], &zero_velocity, GenerateRandomBonus() + GenerateRandomBonus(), ASTEROID_DEFAULT_SIZE));
-		AddEntity(Asteroid(&positions[3], &zero_velocity, GenerateRandomBonus() + GenerateRandomBonus(), ASTEROID_DEFAULT_SIZE));
+		AddEntity(Asteroid(Vec2F(-EVENT1_SQUARE_SIZE, -EVENT1_SQUARE_SIZE), Vec2F(), GenerateRandomBonus() + GenerateRandomBonus(), ASTEROID_DEFAULT_SIZE));
+		AddEntity(Asteroid(Vec2F(-EVENT1_SQUARE_SIZE, EVENT1_SQUARE_SIZE), Vec2F(), GenerateRandomBonus() + GenerateRandomBonus(), ASTEROID_DEFAULT_SIZE));
+		AddEntity(Asteroid(Vec2F(EVENT1_SQUARE_SIZE, -EVENT1_SQUARE_SIZE), Vec2F(), GenerateRandomBonus() + GenerateRandomBonus(), ASTEROID_DEFAULT_SIZE));
+		AddEntity(Asteroid(Vec2F(EVENT1_SQUARE_SIZE, EVENT1_SQUARE_SIZE), Vec2F(), GenerateRandomBonus() + GenerateRandomBonus(), ASTEROID_DEFAULT_SIZE));
 	}
 	asteroids_array_mtx.unlock();
 }
@@ -799,23 +793,26 @@ void Game::CreateMap6(Vec2F* ships_positions, float* ships_angles)
 #define MAP_DESTRUCTUBLE__IN_RECTANGLE_POSITION		MAP_DESTRUCTUBLE__OUT_RECTANGLE_POSITION_X
 
 #define MAP_DESTRUCTIBLE__RECTANGLES_COUNT			17u
-#define MAP_DESTRUCTIBLE__FRAME_RECTANGLE			0u
-#define MAP_DESTRUCTABLE__OUT_UP_RIGHT_RECTANGLE	1u
-#define MAP_DESTRUCTABLE__OUT_RIGHT_UP_RECTANGLE	2u
-#define MAP_DESTRUCTABLE__OUT_RIGHT_DOWN_RECTANGLE	3u
-#define MAP_DESTRUCTABLE__OUT_DOWN_RIGHT_RECTANGLE	4u
-#define MAP_DESTRUCTABLE__OUT_DOWN_LEFT_RECTANGLE	5u
-#define MAP_DESTRUCTABLE__OUT_LEFT_DOWN_RECTANGLE	6u
-#define MAP_DESTRUCTABLE__OUT_LEFT_UP_RECTANGLE		7u
-#define MAP_DESTRUCTABLE__OUT_UP_LEFT_RECTANGLE		8u
-#define MAP_DESTRUCTABLE__UP_RIGHT_RECTANGLE		9u
-#define MAP_DESTRUCTABLE__DOWN_RIGHT_RECTANGLE		10u
-#define MAP_DESTRUCTABLE__DOWN_LEFT_RECTANGLE		11u
-#define MAP_DESTRUCTABLE__UP_LEFT_RECTANGLE			12u
-#define MAP_DESTRUCTABLE__UP_RECTANGLE				13u
-#define MAP_DESTRUCTABLE__RIGHT_RECTANGLE			14u
-#define MAP_DESTRUCTABLE__DOWN_RECTANGLE			15u
-#define MAP_DESTRUCTABLE__LEFT_RECTANGLE			16u
+
+
+#define MAP_DESTRUCTABLE__OUT_UP_RIGHT_RECTANGLE	0u
+#define MAP_DESTRUCTABLE__OUT_RIGHT_UP_RECTANGLE	1u
+#define MAP_DESTRUCTABLE__OUT_RIGHT_DOWN_RECTANGLE	2u
+#define MAP_DESTRUCTABLE__OUT_DOWN_RIGHT_RECTANGLE	3u
+#define MAP_DESTRUCTABLE__OUT_DOWN_LEFT_RECTANGLE	4u
+#define MAP_DESTRUCTABLE__OUT_LEFT_DOWN_RECTANGLE	5u
+#define MAP_DESTRUCTABLE__OUT_LEFT_UP_RECTANGLE		6u
+#define MAP_DESTRUCTABLE__OUT_UP_LEFT_RECTANGLE		7u
+#define MAP_DESTRUCTABLE__UP_RECTANGLE				8u
+#define MAP_DESTRUCTABLE__RIGHT_RECTANGLE			9u
+#define MAP_DESTRUCTABLE__DOWN_RECTANGLE			10u
+#define MAP_DESTRUCTABLE__LEFT_RECTANGLE			11u
+
+#define MAP_DESTRUCTIBLE__FRAME_RECTANGLE			12u
+#define MAP_DESTRUCTABLE__UP_RIGHT_RECTANGLE		13u
+#define MAP_DESTRUCTABLE__DOWN_RIGHT_RECTANGLE		14u
+#define MAP_DESTRUCTABLE__DOWN_LEFT_RECTANGLE		15u
+#define MAP_DESTRUCTABLE__UP_LEFT_RECTANGLE			16u
 
 	/* Create map */
 

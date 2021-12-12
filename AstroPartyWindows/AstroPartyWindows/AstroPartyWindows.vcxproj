@@ -258,6 +258,9 @@
     <Image Include="Textures\Entities\Bonus\Laser.png" />
     <Image Include="Textures\Entities\Bonus\Loop.png" />
     <Image Include="Textures\Entities\Bonus\Revers.png" />
+    <Image Include="Textures\Entities\Bonus\Shield.png" />
+    <Image Include="Textures\Entities\Bonus\Stream.png" />
+    <Image Include="Textures\Entities\Bonus\Triple.png" />
     <Image Include="Textures\Entities\Bullet\Large.png" />
     <Image Include="Textures\Entities\Bullet\Medium.png" />
     <Image Include="Textures\Entities\Bullet\Small.png" />

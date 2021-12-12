@@ -9,9 +9,10 @@ float radius;
 
 #define BORDER			0.02f
 
+#define BASIC_COLOR			vec4(0.6f, 0.1f, 0.2f, 1.0f)
 #define UBBREAKABLE_COLOR	vec4(0.4f, 0.4f, 0.1f, 1.0f)
 #define KILLER_COLLOR		vec4(0.0f, 0.5f, 0.1f, 1.0f)
-#define AGGRESSIVE_COLOR	vec4(0.0f, 0.0f, 0.8f, 1.0f)
+#define AGGRESSIVE_COLOR	vec4(0.6f, 0.1f, 0.8f, 1.0f)
 
 #define UNBREAKABLE		0x01
 #define KILLER			0x02
@@ -23,7 +24,16 @@ void main()
 	{
 		discard;
 	}
-	frag_color = vec4(vec3(0.1f), 1.0f);
+
+	if((properties & (UNBREAKABLE | KILLER | AGGRESSIVE)) == UNBREAKABLE)
+	{
+		frag_color = BASIC_COLOR;
+		return;
+	}
+	else
+	{
+		frag_color = vec4(0.0f);
+	}
 	
 	if((properties & UNBREAKABLE) == 0)
 	{
@@ -37,4 +47,6 @@ void main()
 	{
 		frag_color += AGGRESSIVE_COLOR;
 	}
+
+	return;
 }

@@ -135,11 +135,15 @@ public:
 	Texture2D asteroid_small_texture;
 	Texture2D asteroid_medium_texture;
 	Texture2D asteroid_large_texture;
+	Texture2D asteroid_sublimation_texture;
 
 	Texture2D bonus_bomb_texture;
 	Texture2D bonus_knife_texture;
 	Texture2D bonus_laser_texture;
 	Texture2D bonus_loop_texture;
+	Texture2D bonus_shield_texture;
+	Texture2D bonus_stream_texture;
+	Texture2D bonus_triple_texture;
 	Texture2D bonus_revers_texture;
 
 	Texture2D bomb_basic_texture;

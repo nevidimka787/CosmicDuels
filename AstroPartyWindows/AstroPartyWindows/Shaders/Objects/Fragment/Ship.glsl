@@ -6,6 +6,7 @@ uniform int player;
 uniform int team;
 uniform int inventory;
 uniform int bullets_count;
+uniform int magazine_size;
 
 uniform int type;
 #define TYPE_SHIP   0
@@ -119,6 +120,11 @@ vec4 DrawBullets(vec2 _pixel_position, int _inventory, int _bullets_count)
 #define BOMB	2
 #define KNIFE	3
 
+#define MAX_BULLETS_COUNT 10
+
+#define BULLET_COLOR			vec4(1.0f, 1.0f, 1.0f, 1.0f)
+#define FULL_BULLETS_COLOR		vec4(0.0f, 1.0f, 1.0f, 1.0f)
+
 #define LOOP_COLOR	vec4(1.0f, 0.1f, 0.3f, 1.0f)
 #define LASER_COLOR	vec4(0.3f, 0.1f, 1.0f, 1.0f)
 #define BOMB_COLOR	vec4(0.5f, 0.5f, 0.5f, 1.0f)
@@ -135,7 +141,11 @@ vec4 DrawBullets(vec2 _pixel_position, int _inventory, int _bullets_count)
 
 			if(length(r_vec - _pixel_position) < DELTA_RADIUS / 2.0f)
 			{
-				return vec4(1.0f, 1.0f, 1.0f, 1.0f);
+				if(_bullets_count < magazine_size)
+				{
+					return BULLET_COLOR;
+				}
+				return FULL_BULLETS_COLOR;
 			}
 		}
 

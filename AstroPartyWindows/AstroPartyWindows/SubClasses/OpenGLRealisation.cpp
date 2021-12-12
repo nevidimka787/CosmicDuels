@@ -424,11 +424,15 @@ void OpenGL::InitTextures()
     asteroid_small_texture.Initialisate(    "Textures/Entities/Asteroid/Small.png",     GL_RGBA,    GL_RGBA);
     asteroid_medium_texture.Initialisate(   "Textures/Entities/Asteroid/Medium.png",    GL_RGBA,    GL_RGBA);
     asteroid_large_texture.Initialisate(    "Textures/Entities/Asteroid/Large.png",     GL_RGBA,    GL_RGBA);
+    asteroid_sublimation_texture.Initialisate("Textures/Entities/Asteroid/Sublimation.png",GL_RGBA, GL_RGBA);
 
     bonus_bomb_texture.Initialisate(    "Textures/Entities/Bonus/Bomb.png",     GL_RGBA,    GL_RGBA);
     bonus_knife_texture.Initialisate(   "Textures/Entities/Bonus/Knife.png",    GL_RGBA,    GL_RGBA);
     bonus_laser_texture.Initialisate(   "Textures/Entities/Bonus/Laser.png",    GL_RGBA,    GL_RGBA);
     bonus_loop_texture.Initialisate(    "Textures/Entities/Bonus/Loop.png",     GL_RGBA,    GL_RGBA);
+    bonus_shield_texture.Initialisate(  "Textures/Entities/Bonus/Shield.png",   GL_RGBA,    GL_RGBA);
+    bonus_stream_texture.Initialisate(  "Textures/Entities/Bonus/Stream.png",   GL_RGBA,    GL_RGBA);
+    bonus_triple_texture.Initialisate(  "Textures/Entities/Bonus/Triple.png",   GL_RGBA,    GL_RGBA);
     bonus_revers_texture.Initialisate(  "Textures/Entities/Bonus/Revers.png",   GL_RGBA,    GL_RGBA);
 
     bomb_basic_texture.Initialisate(    "Textures/Entities/Bomb/Basic.png",     GL_RGBA,    GL_RGBA);
@@ -630,6 +634,8 @@ void OpenGL::DrawObject(Asteroid* asteroid, bool update_shader)
         asteroid_shader.SetUniform("medium_txtr", 1);
         asteroid_large_texture.Use(2);
         asteroid_shader.SetUniform("large_txtr", 2);
+        asteroid_sublimation_texture.Use(3);
+        asteroid_shader.SetUniform("sblmtn_txtr", 3);
         asteroid_shader.SetUniform("scale", window_scale);
         asteroid_shader.SetUniform("camera_position", temp__game__camera_position);
         asteroid_shader.SetUniform("camera_size", temp__game__camera_size);
@@ -677,8 +683,14 @@ void OpenGL::DrawObject(Bonus* bonus, bool update_shader)
         bonus_shader.SetUniform("laser_texture", 2);
         bonus_loop_texture.Use(3);
         bonus_shader.SetUniform("loop_texture", 3);
-        bonus_revers_texture.Use(4);
-        bonus_shader.SetUniform("revers_texture", 4);
+        bonus_shield_texture.Use(4);
+        bonus_shader.SetUniform("shield_texture", 4);
+        bonus_stream_texture.Use(5);
+        bonus_shader.SetUniform("stream_texture", 5);
+        bonus_triple_texture.Use(6);
+        bonus_shader.SetUniform("triple_texture", 6);
+        bonus_revers_texture.Use(7);
+        bonus_shader.SetUniform("revers_texture", 7);
         bonus_shader.SetUniform("scale", window_scale);
         bonus_shader.SetUniform("camera_position", temp__game__camera_position);
         bonus_shader.SetUniform("camera_size", temp__game__camera_size);
@@ -914,6 +926,7 @@ void OpenGL::DrawObject(Ship* ship, bool update_shader)
     ship_shader.SetUniform("current_tic", (int)((*game_p__global_timer) & ((1u << 31u) - 1u)));
     ship_shader.SetUniform("inventory", ship->GetBonusInventoryAsBoolList() + ((*game_p__rotation_inverse) ? 256 : 0));
     ship_shader.SetUniform("bullets_count", ship->GetBulletsCountInMagasine());
+    ship_shader.SetUniform("magazine_size", ship->GetSizeOfMagazine());
 
     ship_shader.SetUniform("player", number_of_player_in_team | (ship->IsUnbrakable() ? 0xF000 : 0x0000));
 
@@ -1095,6 +1108,8 @@ void OpenGL::DrawAsteroids()
     asteroid_shader.SetUniform("medium_txtr", 1);
     asteroid_large_texture.Use(2);
     asteroid_shader.SetUniform("large_txtr", 2);
+    asteroid_sublimation_texture.Use(3);
+    asteroid_shader.SetUniform("sblmtn_txtr", 3);
     asteroid_shader.SetUniform("scale", window_scale);
     asteroid_shader.SetUniform("camera_position", temp__game__camera_position);
     asteroid_shader.SetUniform("camera_size", temp__game__camera_size);
@@ -1141,8 +1156,14 @@ void OpenGL::DrawBonuses()
     bonus_shader.SetUniform("laser_texture", 2);
     bonus_loop_texture.Use(3);
     bonus_shader.SetUniform("loop_texture", 3);
-    bonus_revers_texture.Use(4);
-    bonus_shader.SetUniform("revers_texture", 4);
+    bonus_shield_texture.Use(4);
+    bonus_shader.SetUniform("shield_texture", 4);
+    bonus_stream_texture.Use(5);
+    bonus_shader.SetUniform("stream_texture", 5);
+    bonus_triple_texture.Use(6);
+    bonus_shader.SetUniform("triple_texture", 6);
+    bonus_revers_texture.Use(7);
+    bonus_shader.SetUniform("revers_texture", 7);
     bonus_shader.SetUniform("scale", window_scale);
     bonus_shader.SetUniform("camera_position", temp__game__camera_position);
     bonus_shader.SetUniform("camera_size", temp__game__camera_size);

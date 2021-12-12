@@ -1742,6 +1742,24 @@ Asteroid::Asteroid(const Vec2F* position, const Vec2F* velocity, EngineTypes::Bo
 
 DynamicParticle Asteroid::CreateShards(GameTypes::tic_t current_tic)
 {
+	if (bonus_inventory & BONUS_BUFF)
+	{
+		return DynamicParticle(
+			current_tic,
+			position,
+			velocity,
+			radius,
+			angle,
+			angular_velocity,
+			force_collision_coeffisient,
+			force_resistance_air_coefficient,
+			PARTICLE_TYPE_SHARDS_ASTEROID_POWERED,
+			DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_GRAVITY_GENERATORS | DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_AIR_RESISTANCE,
+			Color3F(0.0f, 0.7f, 0.7f),
+			PARTICLE_PERIOD_SHARDS_ASTEROID_POWERED,
+			PARTICLE_POSTPONE_SHARDS_ASTEROID_POWERED,
+			current_tic + PARTICLE_PERIOD_SHARDS_ASTEROID_POWERED);
+	}
 	if (bonus_inventory)
 	{
 		return DynamicParticle(
@@ -1834,9 +1852,9 @@ void Asteroid::DecrementSize()
 
 Bonus Asteroid::Destroy()
 {
-	if (bonus_inventory & (BONUS_BONUS | BONUS_RULE_REVERSE))
+	if (bonus_inventory)
 	{
-		return Bonus(&position, &velocity, bonus_inventory & (BONUS_BONUS | BONUS_RULE_REVERSE));
+		return Bonus(&position, &velocity, bonus_inventory);
 	}
 	return Bonus();
 }
@@ -1854,28 +1872,34 @@ Asteroid Asteroid::Division()
 	switch (size)
 	{
 	case ASTEROID_SIZE_MEDIUM:
-		for (uint8_t i = BONUS_BONUS_FIRST_CELL; i <= BONUS_BONUS_LAST_CELL; i++)
+		for (EngineTypes::Bonus::inventory_t cell = 0; cell < 8; cell++)
 		{
-			if (bonus_inventory & BONUS_CELL << (i * 2))
+			if (bonus_inventory & (BONUS_CELL << (cell * 2)))
 			{
-				return_bonus = 1 << (i * 2);
-				bonus_inventory -= return_bonus;
-				break;
+				bonus_inventory -= 1 << (cell * 2);
+				return_bonus += 1 << (cell * 2);
+				found_bonuses_count++;
+				if (found_bonuses_count >= 1)
+				{
+					break;
+				}
+				cell--;
 			}
 		}
 		break;
 	case ASTEROID_SIZE_BIG:
-		for (uint8_t i = BONUS_BONUS_FIRST_CELL; i <= BONUS_BONUS_LAST_CELL; i++)
+		for (EngineTypes::Bonus::inventory_t cell = 0; cell < 8; cell++)
 		{
-			if (bonus_inventory & BONUS_CELL << (i * 2))
+			if (bonus_inventory & (BONUS_CELL << (cell * 2)))
 			{
-				return_bonus += 1 << (i * 2);
-				bonus_inventory -= return_bonus;
+				bonus_inventory -= 1 << (cell * 2);
+				return_bonus += 1 << (cell * 2);
 				found_bonuses_count++;
 				if (found_bonuses_count >= 2)
 				{
-					i = BONUS_BONUS_LAST_CELL + 1;
+					break;
 				}
+				cell--;
 			}
 		}
 		break;
@@ -1884,9 +1908,12 @@ Asteroid Asteroid::Division()
 	}
 
 	Vec2F asteroid_velocity = direction.Rotate(((float)rand() / (float)RAND_MAX) * (float)M_PI * 2.0f) * ASTEROID_DEEFAULT_VELOCITY;
-	Vec2F asteroid_position = position + asteroid_velocity.Normalize() * radius;
 	
-	return Asteroid(&asteroid_position, &asteroid_velocity, return_bonus, size - 1);
+	return Asteroid(
+		position + asteroid_velocity.Normalize() * radius,
+		asteroid_velocity,
+		return_bonus,
+		size - 1);
 }
 
 EngineTypes::Asteroid::size_t Asteroid::GetSize()
@@ -2629,8 +2656,8 @@ Ship::Ship() :
 	buff_inventory(BONUS_NOTHING),
 	burnout(0),
 	burnout_input_value_pointer(nullptr),
-	current_bullets_count(0),
-	max_bullets_count(0),
+	bullets_in_magazine(0),
+	magazine_size(0),
 	unbrakable(0),
 	objects_in_loop(0),
 	element_type(GAME_OBJECT_TYPE_NULL)
@@ -2643,8 +2670,8 @@ Ship::Ship(const Ship& ship) :
 	buff_inventory(ship.buff_inventory),
 	burnout(ship.burnout),
 	burnout_input_value_pointer(ship.burnout_input_value_pointer),
-	current_bullets_count(ship.current_bullets_count),
-	max_bullets_count(ship.max_bullets_count),
+	bullets_in_magazine(ship.bullets_in_magazine),
+	magazine_size(ship.magazine_size),
 	unbrakable(ship.unbrakable),
 	objects_in_loop(0),
 	element_type(GAME_OBJECT_TYPE_NULL)
@@ -2694,8 +2721,8 @@ ControledEntity(
 	buff_inventory(buff_inventory),
 	burnout(burnout),
 	burnout_input_value_pointer(burnout_input_value_pointer),
-	current_bullets_count(start_bullets_count),
-	max_bullets_count(max_bullets_count),
+	bullets_in_magazine(start_bullets_count),
+	magazine_size(max_bullets_count),
 	unbrakable(unbrakable),
 	objects_in_loop(0),
 	element_type(GAME_OBJECT_TYPE_NULL)
@@ -2727,27 +2754,27 @@ void Ship::ActivateBuffNoCheck(EngineTypes::Ship::inventory_t buff)
 
 void Ship::AddBullet()
 {
-	if (current_bullets_count < max_bullets_count)
+	if (bullets_in_magazine < magazine_size)
 	{
-		current_bullets_count++;
+		bullets_in_magazine++;
 	}
 }
 
 void Ship::AddBullets(GameTypes::entities_count_t bullets_count)
 {
-	if (bullets_count < max_bullets_count - current_bullets_count)
+	if (bullets_count < magazine_size - bullets_in_magazine)
 	{
-		current_bullets_count += bullets_count;
+		bullets_in_magazine += bullets_count;
 	}
 	else
 	{
-		current_bullets_count = max_bullets_count;
+		bullets_in_magazine = magazine_size;
 	}
 }
 
 void Ship::AddBulletsToMax()
 {
-	current_bullets_count = max_bullets_count;
+	bullets_in_magazine = magazine_size;
 }
 
 EngineTypes::Bonus::inventory_t Ship::BonusInfo()
@@ -2773,7 +2800,7 @@ void Ship::Burnout(float power, bool rotate_clockwise, GameTypes::tic_t burnout_
 
 bool Ship::CanCreatingBullet()
 {
-	return current_bullets_count > 0;
+	return bullets_in_magazine > 0;
 }
 
 bool Ship::CanCreatingLoop()
@@ -2783,13 +2810,13 @@ bool Ship::CanCreatingLoop()
 
 Bullet Ship::CreateBullet()
 {
-	if (current_bullets_count == 0)
+	if (bullets_in_magazine == 0)
 	{
 		return Bullet();
 	}
 
 	AddForceAlongDirection(-SHIP_SHOOT_FORCE);
-	current_bullets_count--;
+	bullets_in_magazine--;
 	reoading_dellay = SHIP_DEFAULT_REALOADING_DELLAY;
 
 	return Bullet(
@@ -2863,12 +2890,16 @@ void Ship::CleatInventory()
 {
 	buff_inventory = 0x0;
 	bonus_inventory = 0x0;
-	current_bullets_count = 0x0;
-	max_bullets_count = SHIP_DEFAULT_MAX_BULLETS_COUNT;
+	bullets_in_magazine = 0x0;
+	magazine_size = SHIP_DEFAULT_MAGAZINE_SIZE;
 }
 
 Bullet Ship::CreateTriple(uint8_t bullet_number)
 {
+	if (bullets_in_magazine < 3)
+	{
+		return Bullet();
+	}
 	Vec2F bullet_velocity, bullet_position;
 	switch (bullet_number)
 	{
@@ -2883,6 +2914,7 @@ Bullet Ship::CreateTriple(uint8_t bullet_number)
 	case 2:
 		bullet_position = position + direction.PerpendicularClockwise() * radius;
 		bullet_velocity = direction * BULLET_DEFAULT_VELOCITY + velocity;
+		bullets_in_magazine -= 3;
 		return Bullet(&bullet_position, &bullet_velocity, player_number, player_team_number);
 	default:
 		return Bullet();
@@ -2964,8 +2996,6 @@ Knife Ship::CreateKnife(uint8_t knife_number)
 	}
 }
 
-
-
 Particle Ship::CreateShootingExaust(GameTypes::tic_t current_tic)
 {
 	return Particle(
@@ -2973,6 +3003,17 @@ Particle Ship::CreateShootingExaust(GameTypes::tic_t current_tic)
 		this,
 		PARTICLE_TYPE_EXAUST_SHOOT,
 		Color3F(1.0f, 0.0f, 0.0f));
+}
+
+void Ship::DecrementSizeOfMagasize(GameTypes::entities_count_t cells_count)
+{
+	if (magazine_size >= cells_count)
+	{
+		magazine_size -= cells_count;
+		return;
+	}
+	magazine_size = 0;
+	return;
 }
 
 Pilot Ship::Destroy()
@@ -2995,7 +3036,12 @@ int Ship::GetBonusInventoryAsBoolList()
 
 GameTypes::entities_count_t Ship::GetBulletsCountInMagasine()
 {
-	return current_bullets_count;
+	return bullets_in_magazine;
+}
+
+GameTypes::entities_count_t Ship::GetSizeOfMagazine()
+{
+	return magazine_size;
 }
 
 GameTypes::objects_types_count_t Ship::GetTypeOfElemntInLoop()
@@ -3011,6 +3057,17 @@ bool Ship::HaveBonus(EngineTypes::Bonus::inventory_t bonus)
 bool Ship::HaveBuff(EngineTypes::Ship::inventory_t buff)
 {
 	return buff_inventory & buff;
+}
+
+void Ship::IncrementSizeOfMagazine(GameTypes::entities_count_t cells_count)
+{
+	if (magazine_size <= SHIP_MAGAZINE_MAX_SIZE - cells_count)
+	{
+		magazine_size += cells_count;
+		return;
+	}
+	magazine_size = SHIP_MAGAZINE_MAX_SIZE;
+	return;
 }
 
 bool Ship::IsUnbrakable()
@@ -3086,13 +3143,13 @@ void Ship::Set(
 	this->bonus_inventory = bonus_inventory;
 	this->buff_inventory = buff_inventory;
 	this->burnout = burnout;
-	this->current_bullets_count = current_bullets_count;
+	this->bullets_in_magazine = current_bullets_count;
 	UpdateDirection();
 	this->exist = exist;
 	this->force_collision_coeffisient = force_collision_coeffisient;
 	this->force_resistance_air_coefficient = force_resistance_air_coefficient;
 	this->heat_box_vertexes_array_length = heat_box_vertexes_array_length;
-	this->max_bullets_count = max_bullets_count;
+	this->magazine_size = max_bullets_count;
 	this->player_number = player_number;
 	this->player_team_number = player_team_number;
 	this->position = *position;
@@ -3118,12 +3175,12 @@ void Ship::Set(
 	}
 }
 
-void Ship::SetMaxBulletsCount(GameTypes::entities_count_t bullets_count)
+void Ship::SetSizeOfMagazine(GameTypes::entities_count_t bullets_count)
 {
-	max_bullets_count = bullets_count;
-	if (current_bullets_count > max_bullets_count)
+	magazine_size = bullets_count;
+	if (bullets_in_magazine > magazine_size)
 	{
-		current_bullets_count = max_bullets_count;
+		bullets_in_magazine = magazine_size;
 	}
 }
 
@@ -3247,14 +3304,14 @@ void Ship::operator=(Ship ship)
 	angular_velocity = ship.angular_velocity;
 	bonus_inventory = ship.bonus_inventory;
 	buff_inventory = ship.buff_inventory;
-	current_bullets_count = ship.current_bullets_count;
+	bullets_in_magazine = ship.bullets_in_magazine;
 	direction = ship.direction;
 	exist = ship.exist;
 	force = ship.force;
 	force_collision_coeffisient = ship.force_collision_coeffisient;
 	force_resistance_air_coefficient = ship.force_resistance_air_coefficient;
 	heat_box_vertexes_array_length = ship.heat_box_vertexes_array_length;
-	max_bullets_count = ship.max_bullets_count;
+	magazine_size = ship.magazine_size;
 	player_number = ship.player_number;
 	player_team_number = ship.player_team_number;
 	position = ship.position;

@@ -394,5 +394,14 @@
     <Image Include="Textures\Entities\Bomb\Lighting.png">
       <Filter>Textures\Entities\Bomb</Filter>
     </Image>
+    <Image Include="Textures\Entities\Bonus\Shield.png">
+      <Filter>Textures\Entities\Bonus</Filter>
+    </Image>
+    <Image Include="Textures\Entities\Bonus\Stream.png">
+      <Filter>Textures\Entities\Bonus</Filter>
+    </Image>
+    <Image Include="Textures\Entities\Bonus\Triple.png">
+      <Filter>Textures\Entities\Bonus</Filter>
+    </Image>
   </ItemGroup>
 </Project>

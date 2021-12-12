@@ -1066,6 +1066,22 @@ public:
 	//The function returns a random bonus type.
 	EngineTypes::Bonus::inventory_t GenerateRandomBonus();
 	EngineTypes::Bonus::inventory_t GenerateRandomBonusAndRule();
+
+	/*
+	The function return random inventory.
+	There are no objects in inventory that not be indicated in the objects list.
+	The inventory will have a objects' types count that large than minimun objects' types count and
+	less than maximun objects' types count.
+	The inventory will have a objects count of every type large than minimun objects count and
+	less than maximun objects count.
+	*/
+	EngineTypes::Bonus::inventory_t GenerateRandomInventory(
+		EngineTypes::Bonus::inventory_t objects_list,
+		GameTypes::objects_types_count_t min_objects_count,
+		GameTypes::objects_types_count_t max_objects_count,
+		GameTypes::objects_types_count_t min_objects_types_count,
+		GameTypes::objects_types_count_t max_objects_types_count);
+
 	//The function returns a random id of map that is in the selected_maps_id_array.
 	GameTypes::maps_count_t GenerateRandomMapId();
 	//The function return the maximum score of all players.

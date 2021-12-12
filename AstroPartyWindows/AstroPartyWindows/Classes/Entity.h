@@ -677,8 +677,8 @@ protected:
 	GameTypes::tic_t unbrakable;
 	GameTypes::tic_t burnout;
 
-	GameTypes::entities_count_t max_bullets_count;
-	GameTypes::entities_count_t current_bullets_count;
+	GameTypes::entities_count_t magazine_size;
+	GameTypes::entities_count_t bullets_in_magazine;
 	GameTypes::tic_t reoading_dellay = 0;
 public:
 	Ship();
@@ -702,8 +702,8 @@ public:
 		float radius = SHIP_DEFAULT_RADIUS,
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
-		GameTypes::entities_count_t max_bullets_count = SHIP_DEFAULT_MAX_BULLETS_COUNT,
-		GameTypes::entities_count_t start_bullets_count = SHIP_DEFAULT_MAX_BULLETS_COUNT,
+		GameTypes::entities_count_t max_bullets_count = SHIP_DEFAULT_MAGAZINE_SIZE,
+		GameTypes::entities_count_t start_bullets_count = SHIP_DEFAULT_MAGAZINE_SIZE,
 		bool exist = true);
 
 	//If ship have bufs in bonuses invenory,
@@ -751,15 +751,18 @@ public:
 	Knife CreateKnife(uint8_t knife_number);
 	//The function return dynamic particle.
 	Particle CreateShootingExaust(GameTypes::tic_t current_tic);
+	void DecrementSizeOfMagasize(GameTypes::entities_count_t cells_count = 1);
 	Pilot Destroy();
 	int GetBonusInventoryAsBoolList();
 	GameTypes::entities_count_t GetBulletsCountInMagasine();
+	GameTypes::entities_count_t GetSizeOfMagazine();
 	//The function return number of curent element.
 	//Last number of entity is 1.
 	GameTypes::entities_count_t GetElemntFromLoop();
 	GameTypes::objects_types_count_t GetTypeOfElemntInLoop();
 	bool HaveBonus(EngineTypes::Bonus::inventory_t bonus);
 	bool HaveBuff(EngineTypes::Ship::inventory_t buff);
+	void IncrementSizeOfMagazine(GameTypes::entities_count_t cells_count = 1);
 	bool IsUnbrakable();
 	Bonus LoseBonus();
 	void Set(Ship* entity);
@@ -782,10 +785,10 @@ public:
 		float radius = SHIP_DEFAULT_RADIUS,
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
-		GameTypes::entities_count_t max_bullets_count = SHIP_DEFAULT_MAX_BULLETS_COUNT,
-		GameTypes::entities_count_t start_bullets_count = SHIP_DEFAULT_MAX_BULLETS_COUNT,
+		GameTypes::entities_count_t max_bullets_count = SHIP_DEFAULT_MAGAZINE_SIZE,
+		GameTypes::entities_count_t start_bullets_count = SHIP_DEFAULT_MAGAZINE_SIZE,
 		bool exist = true);
-	void SetMaxBulletsCount(GameTypes::entities_count_t max_bullets_count);
+	void SetSizeOfMagazine(GameTypes::entities_count_t cells_count = SHIP_DEFAULT_MAGAZINE_SIZE);
 	void SetUnbrakablePeriod(GameTypes::tic_t period);
 	//If ship have bonus, the function reduces the amount of this bonus and return true.
 	bool SpendBonus(EngineTypes::Bonus::inventory_t bonus);
