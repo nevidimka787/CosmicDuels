@@ -737,7 +737,7 @@ public:
 	//The function print data about loop to ship's memory.
 	//If ship already has the data then the function return false
 	//else the function return true.
-	bool CreatingLoop(
+	bool CreatingEntities(
 		GameTypes::entities_count_t objects_in_loop,	//count of objects in creating loop
 		GameTypes::objects_types_count_t element_type	//type of elemnts in creating loop
 	);
@@ -758,7 +758,7 @@ public:
 	GameTypes::entities_count_t GetSizeOfMagazine();
 	//The function return number of curent element.
 	//Last number of entity is 1.
-	GameTypes::entities_count_t GetElemntFromLoop();
+	GameTypes::entities_count_t GetElemntFromList();
 	GameTypes::objects_types_count_t GetTypeOfElemntInLoop();
 	bool HaveBonus(EngineTypes::Bonus::inventory_t bonus);
 	bool HaveBuff(EngineTypes::Ship::inventory_t buff);
@@ -1336,7 +1336,7 @@ protected:
 public:
 	float width;
 	//if laser destroy powered asredoid and flag is active then will be create loop
-	bool can_create_loops;
+	EngineTypes::Laser::property_t properties;
 
 	Laser();
 	Laser(const Laser& laser);
@@ -1345,7 +1345,7 @@ public:
 		Beam* local_beam,
 		float width = LASER_DEFAULT_WIDTH,
 		GameTypes::tic_t shoot_time = LASER_DEFAULT_SHOOT_TIME,
-		bool can_create_loops = false,
+		EngineTypes::Laser::property_t properties = LASER_PROPERTY_NOTHING,
 		bool exist = true);
 
 	//The function checks collision between knife and all map's elemnts.
@@ -1357,6 +1357,7 @@ public:
 	GameTypes::tic_t GetLifeTime();
 	GameTypes::players_count_t GetPlayerMasterNumber();
 	GameTypes::players_count_t GetPlayerMasterTeamNumber();
+	bool GetProperty(EngineTypes::Laser::property_t property);
 	bool IsCollision(Beam* beam);
 	bool IsCollision(Line* line);
 	bool IsCollision(Segment* segment);

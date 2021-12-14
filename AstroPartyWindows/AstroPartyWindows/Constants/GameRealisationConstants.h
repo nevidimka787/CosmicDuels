@@ -32,6 +32,10 @@ turels, mega lasers
 #define GAME_OBJECT_TYPE_LOOP_BOMB		7u
 #define GAME_OBJECT_TYPE_LOOP_KNIFE		8u
 
+#define GAME_OBJECT_TYPE_LOOP_BOMB_KNIFE	9u
+#define GAME_OBJECT_TYPE_LASER_BOMB_KNIFE	10u
+#define GAME_OBJECT_TYPE_LOOP_LASER_KNIFE	11u
+
 
 //tics to next shoot
 #define GAME_DELLAY_BETWEEN_SHOOTS		30
@@ -88,13 +92,22 @@ turels, mega lasers
 	//bonus pull
 
 //bonus id
-#define GAME_BONUS_LOOP		0u
+#define GAME_BONUS_ID_LOOP		0u
 //bonus id
-#define GAME_BONUS_LASER	1u
+#define GAME_BONUS_ID_LASER		1u
 //bonus id
-#define GAME_BONUS_BOMB		2u
+#define GAME_BONUS_ID_BOMB		2u
 //bonus id
-#define GAME_BONUS_KNIFE	3u
+#define GAME_BONUS_ID_KNIFE		3u
+//buff id
+#define GAME_BONUS_ID_TRIPLE	4u
+//buff id
+#define GAME_BONUS_ID_SHIELD	5u
+//buff id
+#define GAME_BONUS_ID_STREAM	6u
+//rule id
+#define GAME_BONUS_ID_REVERS	7u
+
 
 	//bonus pull
 
@@ -183,7 +196,7 @@ turels, mega lasers
 //count of objects types
 #define GAME_OBJECTS_COUNT						1u
 //count og bonuses types
-#define GAME_BONUSES_COUNT						4u
+#define GAME_BONUS_INVENTORY_SIZE				8u
 //How mutch differenc in score need to activating autobalance.
 #define GAME_BALANCE_ACTIVATE_DIFFERENCE_SCORES	3u
 #define GAME_SCORE_START	0
@@ -377,7 +390,16 @@ turels, mega lasers
 #define SHIP_SUPER_BONUS__LONG_KNIFE_HEALTH	10u
 
 //Count of tick in that anigilation area will be existing.
-#define SHIP_SUPER_BONUS__ANIGILATION_AREA_EXIST_PERIOD	6000u
+#define SHIP_SUPER_BONUS__ANIGILATION_AREA_EXIST_PERIOD	600u
+
+#define SHIP_SUPER_BONUS__ANIGILATORS_IN_LOOP	24
+#define SHIP_SUPER_BONUS__ANIGILATORS_IN_LOOP_DEFAULT_VELOCITY		(BULLET_DEFAULT_VELOCITY * 1.0f)
+
+#define SHIP_SUPER_BONUS__ANIGILATORS_IN_LASER	25
+#define SHIP_SUPER_BONUS__ANIGILATORS_IN_LASER_DEFAULT_VELOCITY		(BULLET_DEFAULT_VELOCITY * 1.0f)
+
+#define SHIP_SUPER_BONUS__LONG_KNIFES_IN_LOOP	10
+
 
 	//ships super bonuses
 

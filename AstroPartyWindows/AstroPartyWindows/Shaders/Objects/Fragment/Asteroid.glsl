@@ -43,14 +43,14 @@ void main()
 		break;
 	}
 
-	if(inventory & 0x3F00)//has any buff
+	if((inventory & 0x3F00) != 0)//has any buff
 	{
 		if(texture(sblmtn_txtr, texel_position).z > 0.5f)//is blue
 		{
 			frag_color *= SUPER_POWERED_COLOR;
 		}
 	}
-	if(inventory & 0xC0FF)//has any bonus
+	if((inventory & 0xC0FF) != 0)//has any bonus
 	{
 		if(texture(sblmtn_txtr, texel_position).x > 0.5f)//is red
 		{

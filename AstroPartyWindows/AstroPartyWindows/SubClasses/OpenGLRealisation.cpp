@@ -802,7 +802,7 @@ void OpenGL::DrawObject(Laser* laser, bool update_shader)
     laser_shader.SetUniform("beam", laser->GetBeam());
     laser_shader.SetUniform("life", (float)laser->GetLifeTime() / (float)LASER_DEFAULT_SHOOT_TIME);
     laser_shader.SetUniform("width", laser->width);
-    laser_shader.SetUniform("power", laser->can_create_loops);
+    laser_shader.SetUniform("properties", (int)laser->properties);
     laser_buffer.Draw();
 }
 

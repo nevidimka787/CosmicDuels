@@ -348,7 +348,9 @@ void Game::PhysicThread3()
 
 EngineTypes::Bonus::inventory_t Game::GenerateRandomBonus()
 {
-	unsigned random = (rand() % GAME_BONUSES_COUNT) + 1;//{1; 2; 3; 4}
+	printf("Warning::GenerateRandomBonus()::Function outdated. Use GenerateRandomInventory()\n");
+
+	unsigned random = (rand() % GAME_BONUS_INVENTORY_SIZE) + 1;//{1; 2; 3; 4}
 	unsigned last_rand = random;
 	GameTypes::objects_types_count_t bonus = 0;
 	GameTypes::objects_types_count_t select_bonuses_count = 0;
@@ -364,7 +366,7 @@ EngineTypes::Bonus::inventory_t Game::GenerateRandomBonus()
 			random--;
 		}
 		bonus++;
-		if (bonus >= GAME_BONUSES_COUNT)
+		if (bonus >= GAME_BONUS_INVENTORY_SIZE)
 		{
 			if (last_rand == random)
 			{
@@ -384,8 +386,10 @@ EngineTypes::Bonus::inventory_t Game::GenerateRandomBonus()
 
 EngineTypes::Bonus::inventory_t Game::GenerateRandomBonusAndRule()
 {
-	unsigned random = (rand() % (GAME_BONUSES_COUNT + 1)) + 1;//{1; 2; 3; 4; 5}
-	if (random == GAME_BONUSES_COUNT + 1)
+	printf("Warning::GenerateRandomBonusAndRule()::Function outdated. Use GenerateRandomInventory()\n");
+
+	unsigned random = (rand() % (GAME_BONUS_INVENTORY_SIZE + 1)) + 1;//{1; 2; 3; 4; 5}
+	if (random == GAME_BONUS_INVENTORY_SIZE + 1)
 	{
 		return BONUS_RULE_REVERSE;
 	}
@@ -403,7 +407,7 @@ EngineTypes::Bonus::inventory_t Game::GenerateRandomBonusAndRule()
 			random--;
 		}
 		bonus++;
-		if (bonus >= GAME_BONUSES_COUNT)
+		if (bonus >= GAME_BONUS_INVENTORY_SIZE)
 		{
 			if (last_rand == random)
 			{
@@ -427,7 +431,17 @@ EngineTypes::Bonus::inventory_t Game::GenerateRandomInventory(
 	GameTypes::objects_types_count_t min_objects_types_count,
 	GameTypes::objects_types_count_t max_objects_types_count)
 {
-	//Objec list Analys
+	//Bonus luup analys
+
+	for (EngineTypes::Bonus::inventory_t cell = 0; cell < 8; cell++)
+	{
+		if (!bonus_pull_array[cell])
+		{
+			inventory_template &= BONUS_ALL - (BONUS_CELL << (cell * 2));
+		}
+	}
+
+	//Objec list analys
 
 	GameTypes::objects_types_count_t objects_types_count_in_list = 0;
 
@@ -535,7 +549,7 @@ void Game::InitGame()
 	}
 	object_pull_array = new bool[GAME_OBJECT_TYPES_COUNT];
 	map_pull_array = new bool[GAME_MAPS_COUNT];
-	bonus_pull_array = new bool[GAME_BONUSES_COUNT];
+	bonus_pull_array = new bool[GAME_BONUS_INVENTORY_SIZE];
 	for (GameTypes::objects_types_count_t i = 0; i < GAME_OBJECT_TYPES_COUNT; i++)
 	{
 		object_pull_array[i] = true;
@@ -544,7 +558,7 @@ void Game::InitGame()
 	{
 		map_pull_array[i] = true;
 	}
-	for (GameTypes::objects_types_count_t i = 0; i < GAME_BONUSES_COUNT; i++)
+	for (GameTypes::objects_types_count_t i = 0; i < GAME_BONUS_INVENTORY_SIZE; i++)
 	{
 		bonus_pull_array[i] = true;
 	}
@@ -566,14 +580,14 @@ void Game::InitMatch()
 
 	//Set bonus pull
 
-	for (GameTypes::entities_types_count_t bonus = 0; bonus < GAME_BONUSES_COUNT; bonus++)
+	for (GameTypes::entities_types_count_t bonus = 0; bonus < GAME_BONUS_INVENTORY_SIZE; bonus++)
 	{
 		if (bonus_pull_array[bonus])
 		{
 			goto skip_bonus_pull_set;//skip second cycle
 		}
 	}
-	for (GameTypes::entities_types_count_t bonus = 0; bonus < GAME_BONUSES_COUNT; bonus++)
+	for (GameTypes::entities_types_count_t bonus = 0; bonus < GAME_BONUS_INVENTORY_SIZE; bonus++)
 	{
 		bonus_pull_array[bonus] = true;
 	}
@@ -1036,21 +1050,25 @@ void Game::InitMenus()
 	delete[] buttons;
 
 	//spawning bonuses select menu
-	buttons = new Button[GAME_BONUSES_COUNT];
+	buttons = new Button[GAME_BONUS_INVENTORY_SIZE];
 	size.Set(0.5f, -0.25f);
-	for (uint8_t bonus = 0; bonus < GAME_BONUSES_COUNT; bonus++)
+	for (uint8_t bonus = 0; bonus < GAME_BONUS_INVENTORY_SIZE; bonus++)
 	{
 		position.Set(-0.5f + (float)(bonus % 2) * GAME_PULL_MENU_RIGHT_BORDER, GAME_PULL_MENU_UP_Y -(float)(bonus / 2) * GAME_PULL_MENU_DOWN_BORDER);
 		buttons[bonus].Set(BUTTON_ID__SELECT_BONUS + bonus, &position, &size, area, "", 7, (bonus_pull_array[bonus] == true) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE);
 		buttons[bonus].status |= BUTTON_STATUS_ACTIVE;
 	}
-	buttons[GAME_BONUS_LOOP].SetText("Loop");
-	buttons[GAME_BONUS_LASER].SetText("Laser");
-	buttons[GAME_BONUS_BOMB].SetText("Bomb");
-	buttons[GAME_BONUS_KNIFE].SetText("Knife");
+	buttons[GAME_BONUS_ID_LOOP].SetText("Loop");
+	buttons[GAME_BONUS_ID_LASER].SetText("Laser");
+	buttons[GAME_BONUS_ID_BOMB].SetText("Bomb");
+	buttons[GAME_BONUS_ID_KNIFE].SetText("Knife");
+	buttons[GAME_BONUS_ID_TRIPLE].SetText("Triple");
+	buttons[GAME_BONUS_ID_SHIELD].SetText("Shield");
+	buttons[GAME_BONUS_ID_STREAM].SetText("Stream");
+	buttons[GAME_BONUS_ID_REVERS].SetText("Revers");
 	position.Set(0.0f, 0.0f);
-	size.Set(1.0f, GAME_PULL_MENU_RIGHT_BORDER * (float)(((GAME_BONUSES_COUNT + 1) / 2) + 1));
-	bonus_pull_select_menu.Set(&position, &size, buttons, GAME_BONUSES_COUNT);
+	size.Set(1.0f, -GAME_PULL_MENU_DOWN_BORDER * (float)(((GAME_BONUS_INVENTORY_SIZE + 1) / 2) + 1));
+	bonus_pull_select_menu.Set(&position, &size, buttons, GAME_BONUS_INVENTORY_SIZE);
 	delete[] buttons;
 
 	//ship control menu

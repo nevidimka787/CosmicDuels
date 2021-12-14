@@ -34,13 +34,13 @@ void main()
 {
 	vec2 texel_position = (pixel_position + 1.0f) / 2.0f;
 
-	if(inventory & BONUS)
+	if((inventory & BONUS) != 0)
 	{
 		//LOOP | LASER | BOMB | KNIFE
-		if(inventory & (LOOP | LASER))
+		if((inventory & (LOOP | LASER)) != 0)
 		{
 			//LOOP | LASER
-			if(inventory & LOOP)
+			if((inventory & LOOP) != 0)
 			{
 				//LOOP
 				fragment_color = texture(loop_texture, texel_position);
@@ -51,7 +51,7 @@ void main()
 			return;
 		}
 		//BOMB | KNIFE
-		if(inventory & BOMB)
+		if((inventory & BOMB) != 0)
 		{
 			//BOMB
 			fragment_color = texture(bomb_texture, texel_position);
@@ -62,10 +62,10 @@ void main()
 		return;
 	}
 	//TRIPLE | SHIELD | STREAM | REVERS
-	if(inventory & (TRIPLE | SHIELD))
+	if((inventory & (TRIPLE | SHIELD)) != 0)
 	{
 		//TRIPLE | SHIELD
-		if(inventory & TRIPLE)
+		if((inventory & TRIPLE) != 0)
 		{
 			//TRIPLE
 			fragment_color = texture(triple_texture, texel_position);
@@ -76,7 +76,7 @@ void main()
 		return;
 	}
 	//STREAM | REVERS
-	if(inventory & STREAM)
+	if((inventory & STREAM) != 0)
 	{
 		//STREAM
 		fragment_color = texture(stream_texture, texel_position);

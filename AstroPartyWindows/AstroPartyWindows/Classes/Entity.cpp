@@ -2921,7 +2921,7 @@ Bullet Ship::CreateTriple(uint8_t bullet_number)
 	}
 }
 
-bool Ship::CreatingLoop(
+bool Ship::CreatingEntities(
 	GameTypes::entities_count_t objects_in_loop,	//count of objects in creating loop
 	GameTypes::objects_types_count_t element_type	//type of elemnts in creating loop
 )
@@ -2937,7 +2937,7 @@ bool Ship::CreatingLoop(
 	return true;
 }
 
-GameTypes::entities_count_t Ship::GetElemntFromLoop()
+GameTypes::entities_count_t Ship::GetElemntFromList()
 {
 	if (objects_in_loop == 0)
 	{
@@ -2970,27 +2970,20 @@ Laser Ship::CreateLaser()
 {
 	Beam laser_beam = LASER_DEFAULT_LOCAL_BEAM;
 	AddForceAlongDirection(-SHIP_SHOOT_FORCE * 4.0f);
-	Laser laser = Laser(this, &laser_beam);
-	laser.Update();
-	return laser;
+	return Laser(this, &laser_beam);
 }
 
 Knife Ship::CreateKnife(uint8_t knife_number)
 {
 	Segment new_knife_segment;
-	Knife knife;
 	switch (knife_number)
 	{
 	case 0:
 		new_knife_segment = Segment(Vec2F(-0.35f, sqrt(3.0f) / 4.0f), Vec2F(0.75f, 0.0f));
-		knife = Knife(this, &new_knife_segment);
-		knife.Update();
-		return knife;
+		return Knife(this, &new_knife_segment);
 	case 1:
 		new_knife_segment = Segment(Vec2F(-0.35f, sqrt(3.0f) / -4.0f), Vec2F(0.75f, 0.0f));
-		knife = Knife(this, &new_knife_segment);
-		knife.Update();
-		return knife;
+		return Knife(this, &new_knife_segment);
 	default:
 		return Knife();
 	}
@@ -4370,7 +4363,7 @@ MegaLaser::~MegaLaser()
 
 Laser::Laser() :
 	SupportEntity(),
-	can_create_loops(false),
+	properties(false),
 	shoot_time(0),
 	width(0.0f)
 {
@@ -4378,18 +4371,20 @@ Laser::Laser() :
 
 Laser::Laser(const Laser& laser) :
 	SupportEntity(laser),
-	can_create_loops(laser.can_create_loops),
+	properties(laser.properties),
 	shoot_time(laser.shoot_time),
 	width(laser.width)
 {
+	Update();
 }
 
-Laser::Laser(ControledEntity* host, Beam* local_beam, float width, GameTypes::tic_t shoot_time, bool can_create_loops, bool exist) :
+Laser::Laser(ControledEntity* host, Beam* local_beam, float width, GameTypes::tic_t shoot_time, EngineTypes::Laser::property_t properties, bool exist) :
 	SupportEntity(host, &local_beam->point, 0.0f, local_beam->vector.AbsoluteAngle(), exist),
-	can_create_loops(can_create_loops),
+	properties(properties),
 	shoot_time(shoot_time),
 	width(width)
 {
+	Update();
 }
 
 bool Laser::Collision(Map* map)
@@ -4467,6 +4462,11 @@ GameTypes::players_count_t Laser::GetPlayerMasterTeamNumber()
 	return host_team;
 }
 
+bool Laser::GetProperty(EngineTypes::Laser::property_t property)
+{
+	return (properties & property) != LASER_PROPERTY_NOTHING;
+}
+
 bool Laser::IsCollision(Beam* beam)
 {
 	return GetBeam().Distance(beam) < width;
@@ -4485,7 +4485,6 @@ bool Laser::IsCollision(Segment* segment)
 void Laser::Set(Laser* laser)
 {
 	angle = laser->angle;
-	can_create_loops = laser->can_create_loops;
 	direction = laser->direction;
 	exist = laser->exist;
 	host_matrix_p = laser->host_matrix_p;
@@ -4497,6 +4496,7 @@ void Laser::Set(Laser* laser)
 	local_direction = laser->local_direction;
 	local_position = laser->local_position;
 	position = laser->position;
+	properties = laser->properties;
 	shoot_time = laser->shoot_time;
 	width = laser->width;
 }
@@ -4504,7 +4504,7 @@ void Laser::Set(Laser* laser)
 void Laser::Set(ControledEntity* host, Beam* local_beam, float width, GameTypes::tic_t shoot_time, bool can_create_loops, bool exist)
 {
 	UpdateDirection();
-	this->can_create_loops = can_create_loops;
+	this->properties = can_create_loops;
 	this->exist = exist;
 	this->host_number = host_number;
 	this->host_team = host_team;
@@ -4534,7 +4534,6 @@ void Laser::Update()
 void Laser::operator=(Laser laser)
 {
 	angle = laser.angle;
-	can_create_loops = laser.can_create_loops;
 	direction = laser.direction;
 	exist = laser.exist;
 	host_matrix_p = laser.host_matrix_p;
@@ -4546,6 +4545,7 @@ void Laser::operator=(Laser laser)
 	local_direction = laser.local_direction;
 	local_position = laser.local_position;
 	position = laser.position;
+	properties = laser.properties;
 	shoot_time = laser.shoot_time;
 	width = laser.width;
 }
@@ -4699,18 +4699,21 @@ Knife::Knife() :
 	SupportEntity(),
 	health(KNIFE_DEFAULT_HEALTH)
 {
+	Update();
 }
 
 Knife::Knife(const Knife& knife) :
 	SupportEntity(knife),
 	health(knife.health)
 {
+	Update();
 }
 
 Knife::Knife(ControledEntity* host, Segment* local_segment, EngineTypes::Knife::knife_health_t health, bool exist) :
 	SupportEntity(host, &local_segment->point, local_segment->vector.Length(), local_segment->vector.AbsoluteAngleClockwise(), exist),
 	health(health)
 {
+	Update();
 }
 
 bool Knife::Collision(Map* map)

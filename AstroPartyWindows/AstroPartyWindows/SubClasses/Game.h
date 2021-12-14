@@ -132,7 +132,7 @@ public:
 	GameTypes::maps_count_t* selected_maps_id_array;
 	//This array contains objects that will be spawned in the current match.
 	bool* object_pull_array;
-	//This array contains bonuses that will be spawned in the current match.
+	//This array contains bonuses, buffs and rules that will be spawned in the current match.
 	bool* bonus_pull_array;
 
 	//game lists
@@ -1054,9 +1054,13 @@ public:
 	//mtx: bullet
 	void ShipShoot_NoBonus(Ship* ship);
 
+	//bomb by laser's host is created by asteroid
+	//need mtx: laser -> bomb -> asteroid
+	void CreateBomb(Laser* creator, Asteroid* producer);
+
 	//loop by laser's host is created by asteroid
 	//need mtx: laser -> bullet -> asteroid
-	void CreateLoop(Laser* laser, Asteroid* asteroid);
+	void CreateLoop(Laser* creator, Asteroid* producer);
 
 	void IncrementScore(GameTypes::players_count_t team_number);
 	void DecrementScore(GameTypes::players_count_t team_number);

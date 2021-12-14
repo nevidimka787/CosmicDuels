@@ -63,6 +63,11 @@ namespace EngineTypes
 		typedef uint8_t knife_health_t;
 	}
 
+	namespace Laser
+	{
+		typedef uint8_t property_t;
+	}
+
 	namespace Log
 	{
 		typedef uint8_t header_t;

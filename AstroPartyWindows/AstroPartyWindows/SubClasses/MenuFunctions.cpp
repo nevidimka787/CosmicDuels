@@ -208,7 +208,7 @@ void MenuFunctions::BonusPullSelectMenuFunction(Vec2F* clk_pos, uint8_t clk_stat
 					return;
 				}
 				EngineTypes::Button::id_t id = game_p__bonus_pull_select_menu->current_buttons[i].GetId() - BUTTON_ID__SELECT_BONUS;
-				if (id < GAME_BONUSES_COUNT)
+				if (id < GAME_BONUS_INVENTORY_SIZE)
 				{
 					if ((*game_p__bonus_pull_array)[id])
 					{
