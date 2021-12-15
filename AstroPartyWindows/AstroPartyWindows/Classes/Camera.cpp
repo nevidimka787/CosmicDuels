@@ -18,7 +18,7 @@ Camera::Camera(const Camera& camera) :
 {
 }
 
-Camera::Camera(Vec2F* position, float size, float scale, float margin, float move_velocity_coefficient, float resize_velocity_coefficient, Mat2F* hight_limits, Vec2F* low_limits) :
+Camera::Camera(const Vec2F* position, float size, float scale, float margin, float move_velocity_coefficient, float resize_velocity_coefficient, Mat2F* hight_limits, Vec2F* low_limits) :
 	margin(margin),
 	move_velocity_coefficient(move_velocity_coefficient),
 	resize_velocity_coefficient(resize_velocity_coefficient),
@@ -40,22 +40,22 @@ Camera::Camera(Vec2F* position, float size, float scale, float margin, float mov
 	this->view_area_size_x = size;
 }
 
-Mat2F Camera::GetLimits()
+Mat2F Camera::GetLimits() const
 {
 	return hight_limits;
 }
 
-Vec2F Camera::GetPosition()
+Vec2F Camera::GetPosition() const
 {
 	return position;
 }
 
-float Camera::GetSize()
+float Camera::GetSize() const
 {
 	return view_area_size_x;
 }
 
-float Camera::GetScale()
+float Camera::GetScale() const
 {
 	return scale;
 }

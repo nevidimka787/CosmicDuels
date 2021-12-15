@@ -53,7 +53,7 @@ public:
 
 	Camera(const Camera& camera);
 	Camera(
-		Vec2F* position = nullptr,
+		const Vec2F* position = nullptr,
 		float size = 1.1f,
 		float scale = 16.0f / 9.0f,
 		float margin = CAMERA_DEFAULT_MARGIN,
@@ -62,10 +62,10 @@ public:
 		Mat2F* hight_limits = nullptr,
 		Vec2F* low_limits = nullptr);
 
-	Mat2F GetLimits();
-	Vec2F GetPosition();
-	float GetSize();
-	float GetScale();
+	Mat2F GetLimits() const;
+	Vec2F GetPosition() const;
+	float GetSize() const;
+	float GetScale() const;
 	//All ships and pilots will be show in the camera.
 	void Focus(
 		Ship* ships_array,

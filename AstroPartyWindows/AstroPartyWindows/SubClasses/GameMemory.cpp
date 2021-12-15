@@ -590,7 +590,7 @@ void Game::DestroyEntity(Knife* destroyer, Ship* entity)
 	}
 	if (!(game_rules && GAME_RULE_NEED_KILL_PILOT))
 	{
-		if (destroyer->CreatedByTeam(entity))
+		if (destroyer->IsCreatedByTeam(entity))
 		{
 			DecrementScore(entity->GetTeamNumber());
 		}
@@ -620,7 +620,7 @@ void Game::DestroyEntity(Knife* destroyer, Pilot* entity)
 	}
 	if (game_rules && GAME_RULE_NEED_KILL_PILOT)
 	{
-		if (destroyer->CreatedByTeam(entity))
+		if (destroyer->IsCreatedByTeam(entity))
 		{
 			DecrementScore(entity->GetTeamNumber());
 		}
@@ -692,7 +692,7 @@ void Game::DestroyEntity(Laser* destroyer, Ship* entity)
 	}
 	if (!(game_rules && GAME_RULE_NEED_KILL_PILOT))
 	{
-		if (destroyer->CreatedByTeam(entity))
+		if (destroyer->IsCreatedByTeam(entity))
 		{
 			DecrementScore(entity->GetTeamNumber());
 		}
@@ -727,7 +727,7 @@ void Game::DestroyEntity(Laser* destroyer, Pilot* entity)
 	}
 	if (game_rules && GAME_RULE_NEED_KILL_PILOT)
 	{
-		if (destroyer->CreatedByTeam(entity))
+		if (destroyer->IsCreatedByTeam(entity))
 		{
 			DecrementScore(entity->GetTeamNumber());
 		}
@@ -841,7 +841,7 @@ void Game::DestroyEntity(Ship* destroyer, Pilot* entity)
 	}
 	if (game_rules && GAME_RULE_NEED_KILL_PILOT)
 	{
-		if (destroyer->SameTeams(entity))
+		if (destroyer->IsSameTeams(entity))
 		{
 			DecrementScore(destroyer->GetTeamNumber());
 		}
@@ -925,7 +925,7 @@ void Game::DestroySupportEntitiesBy(ControledEntity* produser)
 	{
 		if (knifes[knife].exist)
 		{
-			if (knifes[knife].CreatedBy(produser))
+			if (knifes[knife].IsCreatedBy(produser))
 			{
 				RemoveEntity(&knifes[knife]);
 			}

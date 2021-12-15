@@ -32,12 +32,12 @@ public:
 		EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
 		bool exist = true);
 
-	Vec2F Position();
-	EngineTypes::Map::property_t Prorerties();
-	Vec2F Velocity();
-	bool IsKiller();
-	bool IsAggressive();
-	bool IsUnbreacable();
+	Vec2F GetPosition() const;
+	EngineTypes::Map::property_t Prorerties() const;
+	Vec2F GetVelocity() const;
+	bool IsKiller() const;
+	bool IsAggressive() const;
+	bool IsUnbreacable() const;
 	void Move(Vec2F move_vector);
 	void Move(const Vec2F* move_vector);
 	void SetPosition(Vec2F position);
@@ -133,7 +133,7 @@ public:
 	bool IsCollision(const Beam* beam) const;
 	bool IsCollision(const Line* line) const;
 	bool IsCollision(const Segment* segment) const;
-	float Radius() const;
+	float GetRadius() const;
 	void SetRadius(float radius);
 	void Set(const Cyrcle* cyrcle);
 	void Set(
@@ -195,15 +195,23 @@ public:
 	bool IsCollision(const Beam* beam) const;
 	bool IsCollision(const Line* line) const;
 	bool IsCollision(const Segment* segment) const;
-	bool IsNeedUpdate() const;
-	void NeedUpdate();
+	//If polygon should update enges then function returns true.
+	bool IsShouldUpdate() const;
+	//The function set flag that indicated that should update edges of the polygon.
+	void ShouldUpdate();
 	//The function return resize velocity.
 	Vec2F DynamicalProperties() const;
+	//The function returns dynamic properties of the polygon.
 	void DynamicalProperties(float* angular_velocty) const;
+	//The function returns dynamic properties of the polygon.
 	void DynamicalProperties(Vec2F* velocity) const;
+	//The function returns dynamic properties of the polygon.
 	void DynamicalProperties(float* angular_velocty, Vec2F* resize_velocity) const;
+	//The function returns dynamic properties of the polygon.
 	void DynamicalProperties(Vec2F* velocity, Vec2F* resize_velocity) const;
+	//The function returns dynamic properties of the polygon.
 	void DynamicalProperties(Vec2F* velocity, float* angular_velocty) const;
+	//The function returns dynamic properties of the polygon.
 	void DynamicalProperties(Vec2F* velocity, float* angular_velocty, Vec2F* resize_velocity) const;
 	EngineTypes::Polygon::points_array_length_t PointsCount() const;
 	void Set(const Polygon* parent);

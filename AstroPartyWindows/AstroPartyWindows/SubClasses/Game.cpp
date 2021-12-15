@@ -1268,7 +1268,7 @@ void Game::RoundResultsInit()
 					ships[ship].radius = GAME_POUND_RESULTS_MAP_DEFAUL_CELL_SIZE / 5.0f;
 					ships[ship].SetAngle(0.0f);
 					ships[ship].UpdateMatrix();
-					ships[ship].CleatInventory();
+					ships[ship].ClearInventory();
 					ships_count++;
 					y_pos++;
 				}

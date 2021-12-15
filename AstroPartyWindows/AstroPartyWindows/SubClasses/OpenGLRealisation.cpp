@@ -592,37 +592,37 @@ void OpenGL::DrawFrame()
     //draw_lock0_mtx.unlock();
 }
 
-void OpenGL::DrawObject(Line* line, bool update_shader)
+void OpenGL::DrawObject(const Line* line, bool update_shader)
 {
 
 }
 
-void OpenGL::DrawObject(Beam* beam, bool update_shader)
+void OpenGL::DrawObject(const Beam* beam, bool update_shader)
 {
 
 }
 
-void OpenGL::DrawObject(Segment* segment, bool update_shader)
+void OpenGL::DrawObject(const Segment* segment, bool update_shader)
 {
 
 }
 
-void OpenGL::DrawObject(Entity* entity, bool update_shader)
+void OpenGL::DrawObject(const Entity* entity, bool update_shader)
 {
 
 }
 
-void OpenGL::DrawObject(StaticEntity* static_entity, bool update_shader)
+void OpenGL::DrawObject(const StaticEntity* static_entity, bool update_shader)
 {
 
 }
 
-void OpenGL::DrawObject(DynamicEntity* dynamic_entity, bool update_shader)
+void OpenGL::DrawObject(const DynamicEntity* dynamic_entity, bool update_shader)
 {
 
 }
 
-void OpenGL::DrawObject(Asteroid* asteroid, bool update_shader)
+void OpenGL::DrawObject(const Asteroid* asteroid, bool update_shader)
 {
     if (update_shader)
     {
@@ -647,7 +647,7 @@ void OpenGL::DrawObject(Asteroid* asteroid, bool update_shader)
     asteroid_buffer.Draw();
 }
 
-void OpenGL::DrawObject(Bomb* bomb, bool update_shader)
+void OpenGL::DrawObject(const Bomb* bomb, bool update_shader)
 {
     if (update_shader)
     {
@@ -669,7 +669,7 @@ void OpenGL::DrawObject(Bomb* bomb, bool update_shader)
     bomb_buffer.Draw();
 }
 
-void OpenGL::DrawObject(Bonus* bonus, bool update_shader)
+void OpenGL::DrawObject(const Bonus* bonus, bool update_shader)
 {
     if (update_shader)
     {
@@ -702,7 +702,7 @@ void OpenGL::DrawObject(Bonus* bonus, bool update_shader)
     bonus_buffer.Draw();
 }
 
-void OpenGL::DrawObject(Bullet* bullet, bool update_shader)
+void OpenGL::DrawObject(const Bullet* bullet, bool update_shader)
 {
     if (update_shader)
     {
@@ -724,7 +724,7 @@ void OpenGL::DrawObject(Bullet* bullet, bool update_shader)
     bullet_buffer.Draw();
 }
 
-void OpenGL::DrawObject(DecelerationArea* deceler_area, bool update_shader)
+void OpenGL::DrawObject(const DecelerationArea* deceler_area, bool update_shader)
 {
     if (update_shader)
     {
@@ -739,7 +739,7 @@ void OpenGL::DrawObject(DecelerationArea* deceler_area, bool update_shader)
     deceler_area_buffer.Draw();
 }
 
-void OpenGL::DrawObject(DynamicParticle* dynamic_particle, bool update_shader)
+void OpenGL::DrawObject(const DynamicParticle* dynamic_particle, bool update_shader)
 {
     if (update_shader)
     {
@@ -759,7 +759,7 @@ void OpenGL::DrawObject(DynamicParticle* dynamic_particle, bool update_shader)
     dynamic_particle_buffer.Draw();
 }
 
-void OpenGL::DrawObject(GravGen* grav_gen, bool update_shader)
+void OpenGL::DrawObject(const GravGen* grav_gen, bool update_shader)
 {
     if (update_shader)
     {
@@ -775,7 +775,7 @@ void OpenGL::DrawObject(GravGen* grav_gen, bool update_shader)
     grav_gen_buffer.Draw();
 }
 
-void OpenGL::DrawObject(Knife* knife, bool update_shader)
+void OpenGL::DrawObject(const Knife* knife, bool update_shader)
 {
     if (update_shader)
     {
@@ -789,7 +789,7 @@ void OpenGL::DrawObject(Knife* knife, bool update_shader)
     knife_buffer.Draw();
 }
 
-void OpenGL::DrawObject(Laser* laser, bool update_shader)
+void OpenGL::DrawObject(const Laser* laser, bool update_shader)
 {
     if (update_shader)
     {
@@ -806,7 +806,7 @@ void OpenGL::DrawObject(Laser* laser, bool update_shader)
     laser_buffer.Draw();
 }
 
-void OpenGL::DrawObject(MegaLaser* mega_laser, bool update_shader)
+void OpenGL::DrawObject(const MegaLaser* mega_laser, bool update_shader)
 {
     if (update_shader)
     {
@@ -824,7 +824,7 @@ void OpenGL::DrawObject(MegaLaser* mega_laser, bool update_shader)
     mega_laser_buffer.Draw();
 }
 
-void OpenGL::DrawObject(Particle* particle, bool update_shader)
+void OpenGL::DrawObject(const Particle* particle, bool update_shader)
 {
     if (update_shader)
     {
@@ -844,7 +844,7 @@ void OpenGL::DrawObject(Particle* particle, bool update_shader)
     particle_buffer.Draw();
 }
 
-void OpenGL::DrawObject(Portal* portal, bool update_shader)
+void OpenGL::DrawObject(const Portal* portal, bool update_shader)
 {
     if (update_shader)
     {
@@ -863,7 +863,7 @@ void OpenGL::DrawObject(Portal* portal, bool update_shader)
     portal_buffer.Draw();
 }
 
-void OpenGL::DrawObject(Pilot* pilot, bool update_shader)
+void OpenGL::DrawObject(const Pilot* pilot, bool update_shader)
 {
     if (update_shader)
     {
@@ -893,7 +893,7 @@ void OpenGL::DrawObject(Pilot* pilot, bool update_shader)
     pilot_buffer.Draw();
 }
 
-void OpenGL::DrawObject(Ship* ship, bool update_shader)
+void OpenGL::DrawObject(const Ship* ship, bool update_shader)
 {
 #define PLAYER_SHIELD 0x0F00
     if (update_shader)
@@ -933,7 +933,7 @@ void OpenGL::DrawObject(Ship* ship, bool update_shader)
     ship_shader.SetUniform("type", (int)0);//0 - is ship
     ship_buffer.Draw();
 
-    if (ship->HaveBuff(SHIP_BUFF_SHIELD))
+    if (ship->IsHaveBuff(SHIP_BUFF_SHIELD))
     {
         ship_shader.SetUniform("player", PLAYER_SHIELD);
         ship_buffer.Draw();
@@ -945,7 +945,7 @@ void OpenGL::DrawObject(Ship* ship, bool update_shader)
     ship_bullet_buffer.Draw();
 }
 
-void OpenGL::DrawObject(Turel* turel, bool update_shader)
+void OpenGL::DrawObject(const Turel* turel, bool update_shader)
 {
 
     if (update_shader)
@@ -962,7 +962,7 @@ void OpenGL::DrawObject(Turel* turel, bool update_shader)
     turel_buffer.Draw();
 }
 
-void OpenGL::DrawObject(Rectangle* rectangle, bool update_shader)
+void OpenGL::DrawObject(const Rectangle* rectangle, bool update_shader)
 {
     if (update_shader)
     {
@@ -977,7 +977,7 @@ void OpenGL::DrawObject(Rectangle* rectangle, bool update_shader)
     rectangle_buffer.Draw();
 }
 
-void OpenGL::DrawObject(Cyrcle* cyrcle, bool update_shader)
+void OpenGL::DrawObject(const Cyrcle* cyrcle, bool update_shader)
 {
     if (update_shader)
     {
@@ -987,12 +987,12 @@ void OpenGL::DrawObject(Cyrcle* cyrcle, bool update_shader)
         cyrcle_shader.SetUniform("camera_size", temp__game__camera_size);
     }
     cyrcle_shader.SetUniform("properties", cyrcle->Prorerties());
-    cyrcle_shader.SetUniform("position", cyrcle->Position());
-    cyrcle_shader.SetUniform("size", cyrcle->Radius());
+    cyrcle_shader.SetUniform("position", cyrcle->GetPosition());
+    cyrcle_shader.SetUniform("size", cyrcle->GetRadius());
     cyrcle_buffer.Draw();
 }
 
-void OpenGL::DrawObject(Polygon* polygon, bool update_shader)
+void OpenGL::DrawObject(const Polygon* polygon, bool update_shader)
 {
     if (update_shader)
     {

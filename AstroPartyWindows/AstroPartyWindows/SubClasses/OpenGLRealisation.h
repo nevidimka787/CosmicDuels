@@ -174,56 +174,56 @@ public:
 	void DrawFrame();
 
 	//The function draw line.
-	void DrawObject(Line* line, bool update_shader = false);
+	void DrawObject(const Line* line, bool update_shader = false);
 	//The function draw beam.
-	void DrawObject(Beam* beam, bool update_shader = false);
+	void DrawObject(const Beam* beam, bool update_shader = false);
 	//The function draw segment.
-	void DrawObject(Segment* segment, bool update_shader = false);
+	void DrawObject(const Segment* segment, bool update_shader = false);
 
 	//The function draw entity as vague object.
-	void DrawObject(Entity* entity, bool update_shader = false);
+	void DrawObject(const Entity* entity, bool update_shader = false);
 	//The function draw static entity as vague object.
-	void DrawObject(StaticEntity* static_entity, bool update_shader = false);
+	void DrawObject(const StaticEntity* static_entity, bool update_shader = false);
 	//The function draw dynamic entity as vague object.
-	void DrawObject(DynamicEntity* dynamic_entity, bool update_shader = false);
+	void DrawObject(const DynamicEntity* dynamic_entity, bool update_shader = false);
 
 	//The function draw asteroid.
-	void DrawObject(Asteroid* asteroid, bool update_shader = false);
+	void DrawObject(const Asteroid* asteroid, bool update_shader = false);
 	//The function draw asteroid.
-	void DrawObject(Bomb* bomb, bool update_shader = false);
+	void DrawObject(const Bomb* bomb, bool update_shader = false);
 	//The function draw bonus.
-	void DrawObject(Bonus* bonus, bool update_shader = false);
+	void DrawObject(const Bonus* bonus, bool update_shader = false);
 	//The function draw bullet.
-	void DrawObject(Bullet* bullet, bool update_shader = false);
+	void DrawObject(const Bullet* bullet, bool update_shader = false);
 	//The function draw deceleration area.
-	void DrawObject(DecelerationArea* deceler_area, bool update_shader = false);
+	void DrawObject(const DecelerationArea* deceler_area, bool update_shader = false);
 	//The function draw dynamic particle.
-	void DrawObject(DynamicParticle* dynamic_particle, bool update_shader = false);
+	void DrawObject(const DynamicParticle* dynamic_particle, bool update_shader = false);
 	//The function draw gravity generator.
-	void DrawObject(GravGen* grav_gen, bool update_shader = false);
+	void DrawObject(const GravGen* grav_gen, bool update_shader = false);
 	//The function draw knife.
-	void DrawObject(Knife* knife, bool update_shader = false);
+	void DrawObject(const Knife* knife, bool update_shader = false);
 	//The function draw laser.
-	void DrawObject(Laser* mega_laser, bool update_shader = false);
+	void DrawObject(const Laser* mega_laser, bool update_shader = false);
 	//The function draw mega laser.
-	void DrawObject(MegaLaser* mega_laser, bool update_shader = false);
+	void DrawObject(const MegaLaser* mega_laser, bool update_shader = false);
 	//The function draw particle.
-	void DrawObject(Particle* particle, bool update_shader = false);
+	void DrawObject(const Particle* particle, bool update_shader = false);
 	//The function draw portal.
-	void DrawObject(Portal* portal, bool update_shader = false);
+	void DrawObject(const Portal* portal, bool update_shader = false);
 	//The function draw pilot.
-	void DrawObject(Pilot* pilot, bool update_shader = false);
+	void DrawObject(const Pilot* pilot, bool update_shader = false);
 	//The function draw ship.
-	void DrawObject(Ship* ship, bool update_shader = false);
+	void DrawObject(const Ship* ship, bool update_shader = false);
 	//The function draw turel.
-	void DrawObject(Turel* turel, bool update_shader = false);
+	void DrawObject(const Turel* turel, bool update_shader = false);
 
 	//The function draw map's rectangle.
-	void DrawObject(Rectangle* rectangle, bool update_shader = false);
+	void DrawObject(const Rectangle* rectangle, bool update_shader = false);
 	//The function draw map's cyrcle.
-	void DrawObject(Cyrcle* cyrcle, bool update_shader = false);
+	void DrawObject(const Cyrcle* cyrcle, bool update_shader = false);
 	//The function draw map's polygon.
-	void DrawObject(Polygon* polygon, bool update_shader = false);
+	void DrawObject(const Polygon* polygon, bool update_shader = false);
 
 	//The function draw menu's button.
 	void DrawObject(Button* button, bool button_is_controller = false, bool update_shader = false);

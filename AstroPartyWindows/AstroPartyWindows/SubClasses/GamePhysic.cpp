@@ -807,7 +807,7 @@ void Game::ShipShoot_NoBonus(Ship* ship)
 	//return;
 
 	bullets_array_mtx.lock();
-	if (ship->HaveBuff(SHIP_BUFF_TRIPLE))
+	if (ship->IsHaveBuff(SHIP_BUFF_TRIPLE))
 	{
 		AddEntity(ship->CreateTriple(0));
 		AddEntity(ship->CreateTriple(1));
@@ -2549,7 +2549,7 @@ void Game::PilotsKilledByKnifes()
 				if (temp__knife_p->exist)
 				{
 					temp__segment = temp__knife_p->GetSegment();
-					if (!(game_rules & GAME_RULE_FRENDLY_FIRE && temp__knife_p->CreatedByTeam(temp__pilot_p)) &&
+					if (!(game_rules & GAME_RULE_FRENDLY_FIRE && temp__knife_p->IsCreatedByTeam(temp__pilot_p)) &&
 						temp__pilot_p->IsCollision(&temp__segment))
 					{
 						dynamic_particles_array_mtx.lock();
@@ -2589,7 +2589,7 @@ void Game::PilotsKilledByLasers()
 				temp__laser_p = &lasers[laser];
 				if (temp__laser_p->exist)
 				{
-					if (!(game_rules & GAME_RULE_FRENDLY_FIRE && temp__laser_p->CreatedByTeam(temp__pilot_p)) &&
+					if (!(game_rules & GAME_RULE_FRENDLY_FIRE && temp__laser_p->IsCreatedByTeam(temp__pilot_p)) &&
 						temp__pilot_p->IsCollision(temp__laser_p))
 					{
 						dynamic_particles_array_mtx.lock();
@@ -2834,12 +2834,12 @@ void Game::ShipsRespawnOrDestroyPilots()
 				temp__pilot_p = &pilots[pilot];
 				if (temp__pilot_p->exist)
 				{
-					if (game_rules & GAME_RULE_FRIEDNLY_SHEEP_CAN_RESTORE && temp__pilot_p->SameTeams(temp__ship_p))
+					if (game_rules & GAME_RULE_FRIEDNLY_SHEEP_CAN_RESTORE && temp__pilot_p->IsSameTeams(temp__ship_p))
 					{
 						SpawnEntity(temp__ship_p, temp__pilot_p);
 						goto end_of_pilot_cycle;
 					}
-					else if (!(game_rules & GAME_RULE_FRENDLY_FIRE && temp__pilot_p->SameTeams(temp__ship_p)) &&
+					else if (!(game_rules & GAME_RULE_FRENDLY_FIRE && temp__pilot_p->IsSameTeams(temp__ship_p)) &&
 						temp__ship_p->DynamicEntity::IsCollision(temp__pilot_p))
 					{
 						log_data_mtx.lock();
@@ -2888,7 +2888,7 @@ void Game::ShipsDestroedByBombsOrActivateBombs()
 						pilots_array_mtx.unlock();
 						goto end_of_ship_cycle;
 					}
-					else if (!temp__bomb_p->IsActive() && !temp__bomb_p->CreatedByTeam(temp__ship_p) && temp__ship_p->GetDistance(temp__bomb_p) < temp__bomb_p->radius * BOMB_ACTIVATION_RADIUS_COEF)
+					else if (!temp__bomb_p->IsActive() && !temp__bomb_p->IsCreatedByTeam(temp__ship_p) && temp__ship_p->GetDistance(temp__bomb_p) < temp__bomb_p->radius * BOMB_ACTIVATION_RADIUS_COEF)
 					{
 						temp__bomb_p->Activate();
 					}
@@ -2937,7 +2937,7 @@ void Game::ShipsDestroedByBullets()
 							RemoveEntity(temp__bullet_p);
 							goto end_of_bullet_cycle;
 						}
-						if (temp__ship_p->HaveBuff(SHIP_BUFF_SHIELD))
+						if (temp__ship_p->IsHaveBuff(SHIP_BUFF_SHIELD))
 						{
 							temp__ship_p->SetUnbrakablePeriod(SHIP_DEFAULT_UNBRAKABLE_PERIOD);
 							temp__ship_p->SpendBuffNoCheck(SHIP_BUFF_SHIELD);
@@ -2992,9 +2992,9 @@ void Game::ShipsDestroedByKnifes()
 				temp__segment = temp__knife_p->GetSegment();
 				if (temp__knife_p->exist)
 				{
-					if (!(game_rules & GAME_RULE_FRENDLY_FIRE && temp__knife_p->CreatedByTeam(temp__ship_p)) &&
+					if (!(game_rules & GAME_RULE_FRENDLY_FIRE && temp__knife_p->IsCreatedByTeam(temp__ship_p)) &&
 						!temp__ship_p->IsUnbrakable() &&
-						!temp__knife_p->CreatedBy(temp__ship_p) &&
+						!temp__knife_p->IsCreatedBy(temp__ship_p) &&
 						temp__ship_p->IsCollision(&temp__segment))
 					{
 						bonuses_array_mtx.lock();
@@ -3040,7 +3040,7 @@ void Game::ShipsDestroedByLasers()
 				temp__laser_p = &lasers[laser];
 				if (temp__laser_p->exist)
 				{
-					if (!(game_rules & GAME_RULE_FRENDLY_FIRE && temp__laser_p->CreatedByTeam(temp__ship_p)) &&
+					if (!(game_rules & GAME_RULE_FRENDLY_FIRE && temp__laser_p->IsCreatedByTeam(temp__ship_p)) &&
 						!temp__ship_p->IsUnbrakable() &&
 						!temp__laser_p->CreatedBy(temp__ship_p) &&
 						temp__ship_p->IsCollision(temp__laser_p))

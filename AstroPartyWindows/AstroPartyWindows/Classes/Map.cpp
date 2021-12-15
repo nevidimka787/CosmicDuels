@@ -33,32 +33,32 @@ MapElement::MapElement(const Vec2F* position, EngineTypes::Map::property_t prope
 {
 }
 
-Vec2F MapElement::Position()
+Vec2F MapElement::GetPosition() const
 {
 	return position;
 }
 
-EngineTypes::Map::property_t MapElement::Prorerties()
+EngineTypes::Map::property_t MapElement::Prorerties() const
 {
 	return properties;
 }
 
-Vec2F MapElement::Velocity()
+Vec2F MapElement::GetVelocity() const
 {
 	return position - last_position;
 }
 
-bool MapElement::IsAggressive()
+bool MapElement::IsAggressive() const
 {
 	return properties & MAP_PROPERTY_AGRESSIVE;
 }
 
-bool MapElement::IsKiller()
+bool MapElement::IsKiller() const
 {
 	return properties & MAP_PROPERTY_KILLER;
 }
 
-bool MapElement::IsUnbreacable()
+bool MapElement::IsUnbreacable() const
 {
 	return properties & MAP_PROPERTY_UNBREACABLE;
 }
@@ -434,7 +434,7 @@ bool Cyrcle::IsCollision(const Segment* segment) const
 	return segment->Distance(position) < radius;
 }
 
-float Cyrcle::Radius() const
+float Cyrcle::GetRadius() const
 {
 	return radius;
 }
@@ -672,12 +672,12 @@ bool Polygon::IsCollision(const Segment* segment) const
 	return false;
 }
 
-bool Polygon::IsNeedUpdate() const
+bool Polygon::IsShouldUpdate() const
 {
 	return need_update;
 }
 
-void Polygon::NeedUpdate()
+void Polygon::ShouldUpdate()
 {
 	need_update = true;
 }

@@ -1326,21 +1326,21 @@ void Mat3x2D::TransportThis(const Vec2D* vector)
 		0.0f, 1.0f, vector->y);
 }
 
-Mat3x2D::operator Mat3x2F()
+Mat3x2D::operator Mat3x2F() const
 {
 	return Mat3x2F(
 		(float)a11, (float)a12, (float)a13,
 		(float)a21, (float)a22, (float)a23);
 }
 
-Mat3x2D::operator Mat2D()
+Mat3x2D::operator Mat2D() const
 {
 	return Mat2D(
 		a11, a12,
 		a21, a22);
 }
 
-Mat3x2D::operator Mat2F()
+Mat3x2D::operator Mat2F() const
 {
 	return Mat2D(
 		(float)a11, (float)a12,
@@ -1669,21 +1669,21 @@ void Mat3x2F::TransportThis(const Vec2F* vector)
 		0.0f, 1.0f, vector->y);
 }
 
-Mat3x2F::operator Mat3x2D()
+Mat3x2F::operator Mat3x2D() const
 {
 	return Mat3x2D(
 		(double)a11, (double)a12, (double)a13,
 		(double)a21, (double)a22, (double)a23);
 }
 
-Mat3x2F::operator Mat2D()
+Mat3x2F::operator Mat2D() const
 {
 	return Mat2D(
 		(double)a11, (double)a12,
 		(double)a21, (double)a22);
 }
 
-Mat3x2F::operator Mat2F()
+Mat3x2F::operator Mat2F() const
 {
 	return Mat2D(
 		a11, a12,

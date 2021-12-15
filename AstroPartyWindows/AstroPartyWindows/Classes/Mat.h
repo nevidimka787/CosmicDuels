@@ -291,9 +291,9 @@ public:
 	void operator/=(double value);
 	bool operator==(Mat3x2D vector) const;
 
-	operator Mat3x2F();
-	operator Mat2D();
-	operator Mat2F();
+	operator Mat3x2F() const;
+	operator Mat2D() const;
+	operator Mat2F() const;
 
 	double Determinant() const;
 	Mat3x2D Rotate(double angle) const;
@@ -351,9 +351,9 @@ public:
 	void operator/=(float value);
 	bool operator==(Mat3x2F vector) const;
 
-	operator Mat3x2D();
-	operator Mat2D();
-	operator Mat2F();
+	operator Mat3x2D() const;
+	operator Mat2D() const;
+	operator Mat2F() const;
 
 	float Determinant() const;
 	Mat3x2F Rotate(float angle) const;

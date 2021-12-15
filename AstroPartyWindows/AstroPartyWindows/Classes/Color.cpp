@@ -15,32 +15,32 @@ Color3F::Color3F(float red, float green, float blue) : red(red), green(green), b
 
 }
 
-float Color3F::GetLength()
+float Color3F::GetLength() const
 {
 	return sqrtf(red * red + green * green + blue * blue);
 }
 
-float Color3F::GetLengthSquare()
+float Color3F::GetLengthSquare() const
 {
 	return red * red + green * green + blue * blue;
 }
 
-float Color3F::GetMaxComponentValue()
+float Color3F::GetMaxComponentValue() const
 {
 	return fmaxf(fmaxf(red, green), blue);
 }
 
-float Color3F::GetMinComponentValue()
+float Color3F::GetMinComponentValue() const
 {
 	return fminf(fminf(red, green), blue);
 }
 
-float Color3F::GetSumOfComponents()
+float Color3F::GetSumOfComponents() const
 {
 	return red + green + blue;
 }
 
-Color3F Color3F::Log2()
+Color3F Color3F::Log2() const
 {
 	return Color3F((red > 0) ? log2f(red) : -log2f(-red), (green > 0) ? log2f(green) : -log2f(-green), (blue > 0) ? log2f(blue) : -log2f(-blue));
 }
@@ -85,7 +85,7 @@ void Color3F::Set(float red, float green, float blue)
 	this->blue = blue;
 }
 
-Color3F Color3F::NormalizeAsColor()
+Color3F Color3F::NormalizeAsColor() const
 {
 	Color3F return_color = Color3F(*this);
 	float min = GetMinComponentValue();
@@ -115,7 +115,7 @@ void Color3F::NormalizeAsColorThis()
 	}
 }
 
-Color3F Color3F::NormalizeAsVector()
+Color3F Color3F::NormalizeAsVector() const
 {
 	return *this / GetLength();
 }
@@ -125,22 +125,22 @@ void Color3F::NormalizeAsVectorThis()
 	*this /= GetLength();
 }
 
-Color3F Color3F::operator+(Color3F color)
+Color3F Color3F::operator+(Color3F color) const
 {
 	return Color3F(red + color.red, green + color.green, blue + color.blue);
 }
 
-Color3F Color3F::operator-(Color3F color)
+Color3F Color3F::operator-(Color3F color) const
 {
 	return Color3F(red - color.red, green - color.green, blue - color.blue);
 }
 
-Color3F Color3F::operator+(float value)
+Color3F Color3F::operator+(float value) const
 {
 	return Color3F(red + value, green + value, blue + value);
 }
 
-Color3F Color3F::operator-(float value)
+Color3F Color3F::operator-(float value) const
 {
 	return Color3F(red - value, green - value, blue - value);
 }
@@ -173,22 +173,22 @@ void Color3F::operator-=(float value)
 	blue -= value;
 }
 
-Color3F Color3F::operator*(Color3F color)
+Color3F Color3F::operator*(Color3F color) const
 {
 	return Color3F(red * color.red, green * color.green, blue * color.blue);
 }
 
-Color3F Color3F::operator/(Color3F color)
+Color3F Color3F::operator/(Color3F color) const
 {
 	return Color3F(red / color.red, green / color.green, blue / color.blue);
 }
 
-Color3F Color3F::operator*(float value)
+Color3F Color3F::operator*(float value) const
 {
 	return Color3F(red * value, green * value, blue * value);
 }
 
-Color3F Color3F::operator/(float value)
+Color3F Color3F::operator/(float value) const
 {
 	return Color3F(red / value, green / value, blue / value);
 }
