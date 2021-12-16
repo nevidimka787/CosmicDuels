@@ -6,6 +6,8 @@ uniform int player;
 uniform int team;
 uniform float life;
 
+uniform sampler2D txtr;
+
 vec3 color;
 
 #define RED		1
@@ -16,8 +18,16 @@ vec3 color;
 #define PLAUER_COLOR	0.35f
 #define TEAM_COLOR		0.65f
 
+vec3 pos_neg_alpha;
+
+in vec2 pixel_position;
+in vec2 texel_position;
+
 void main()
 {
+
+	pos_neg_alpha = texture(txtr, texel_position).xzw;
+
 	switch(team)
 	{
 	case RED:
@@ -54,5 +64,6 @@ void main()
 		color = vec3(1.0f);
 		break;
 	}
-	frag_color = vec4(color, 1.0f - life / 2.0f);
+
+	frag_color = vec4((color * pos_neg_alpha.x + (1.0f - color) * pos_neg_alpha.y) * 0.9f + 0.1f, pos_neg_alpha.z);
 }

@@ -37,6 +37,8 @@ bool StaticBuffer::Initialisate(const Vec2F* points_array, EngineTypes::Buffer::
 		vertexes[i * 2 + 1] = points_array[i].y;
 	}
 
+	GLuint buffer_id;
+
 	glGenVertexArrays(1, &id);
 	glGenBuffers(1, &buffer_id);
 
@@ -79,6 +81,8 @@ bool StaticBuffer::Initialisate(const Vec2F* points_array, const Vec2F* points_s
 		vertexes[i * 4 + 2] = points_second_array[i].x;
 		vertexes[i * 4 + 3] = points_second_array[i].y;
 	}
+
+	GLuint buffer_id;
 
 	glGenVertexArrays(1, &id);
 	glGenBuffers(1, &buffer_id);

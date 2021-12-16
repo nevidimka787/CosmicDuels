@@ -12,7 +12,6 @@ class StaticBuffer
 private:
 	GLuint id;
 	EngineTypes::Buffer::array_length_t points_count;
-	GLuint buffer_id;
 public:
 	StaticBuffer();
 

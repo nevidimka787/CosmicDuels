@@ -43,7 +43,11 @@ void Game::PhysicThread0()
 	threads_statuses |= THREAD_COMPLETE << THREAD_PHASE_1 << THREAD_0;
 	threads_statuses_mtx.unlock();
 
-	WaitPhase1();
+	//WaitPhase1();
+	while ((threads_statuses & THREAD_PHASE_1_COMPLETE) != THREAD_PHASE_1_COMPLETE)
+	{
+		th0_p0_w++;
+	}
 
 	UpdateGravGensPhase2();
 	UpdateDecelerAreasPhase2();
@@ -87,7 +91,11 @@ void Game::PhysicThread0()
 	threads_statuses |= THREAD_COMPLETE << THREAD_PHASE_2 << THREAD_0;
 	threads_statuses_mtx.unlock();
 
-	WaitPhaseAllPhases();
+	//WaitPhaseAllPhases();
+	while ((threads_statuses & THREAD_ALL_PHASE_COMPLETE) != THREAD_ALL_PHASE_COMPLETE)
+	{
+		th0_p1_w++;
+	}
 
 	// *opengl_p__drawing_lock = false;
 
@@ -145,7 +153,11 @@ void Game::PhysicThread1()
 	threads_statuses |= THREAD_COMPLETE << THREAD_PHASE_1 << THREAD_1;
 	threads_statuses_mtx.unlock();
 
-	WaitPhase1();
+	//WaitPhase1();
+	while ((threads_statuses & THREAD_PHASE_1_COMPLETE) != THREAD_PHASE_1_COMPLETE)
+	{
+		th1_p0_w++;
+	}
 
 	ships_array_mtx.lock();
 	asteroids_array_mtx.lock();
@@ -185,11 +197,19 @@ void Game::PhysicThread1()
 	threads_statuses |= THREAD_COMPLETE << THREAD_PHASE_2 << THREAD_1;
 	threads_statuses_mtx.unlock();
 
-	WaitPhaseAllPhases();
+	//WaitPhaseAllPhases();
+	while ((threads_statuses & THREAD_ALL_PHASE_COMPLETE) != THREAD_ALL_PHASE_COMPLETE)
+	{
+		th1_p1_w++;
+	}
 
 	thread_1_update.unlock();
 
-	WaitPhaseNotAll();
+	//WaitPhaseNotAll();
+	while ((threads_statuses & THREAD_ALL_PHASE_COMPLETE) == THREAD_ALL_PHASE_COMPLETE)
+	{
+		th1_pA_w++;
+	}
 
 	//opengl_p__draw_lock1_mtx->unlock();
 }
@@ -218,7 +238,11 @@ void Game::PhysicThread2()
 	threads_statuses |= THREAD_COMPLETE << THREAD_PHASE_1 << THREAD_2;
 	threads_statuses_mtx.unlock();
 
-	WaitPhase1();
+	//WaitPhase1();
+	while ((threads_statuses & THREAD_PHASE_1_COMPLETE) != THREAD_PHASE_1_COMPLETE)
+	{
+		th2_p0_w++;
+	}
 
 	pilots_array_mtx.lock();
 	DynamicEntitiesCollisions(pilots, pilots_count);
@@ -260,11 +284,19 @@ void Game::PhysicThread2()
 	threads_statuses |= THREAD_COMPLETE << THREAD_PHASE_2 << THREAD_2;
 	threads_statuses_mtx.unlock();
 
-	WaitPhaseAllPhases();
+	//WaitPhaseAllPhases();
+	while ((threads_statuses & THREAD_ALL_PHASE_COMPLETE) != THREAD_ALL_PHASE_COMPLETE)
+	{
+		th2_p1_w++;
+	}
 
 	thread_2_update.unlock();
 
-	WaitPhaseNotAll();
+	//WaitPhaseNotAll();
+	while ((threads_statuses & THREAD_ALL_PHASE_COMPLETE) == THREAD_ALL_PHASE_COMPLETE)
+	{
+		th2_pA_w++;
+	}
 
 	//opengl_p__draw_lock2_mtx->unlock();
 }
@@ -293,7 +325,11 @@ void Game::PhysicThread3()
 	threads_statuses |= THREAD_COMPLETE << THREAD_PHASE_1 << THREAD_3;
 	threads_statuses_mtx.unlock();
 
-	WaitPhase1();
+	//WaitPhase1();
+	while ((threads_statuses & THREAD_PHASE_1_COMPLETE) != THREAD_PHASE_1_COMPLETE)
+	{
+		th3_p0_w++;
+	}
 
 	pilots_array_mtx.lock();
 	map_data_mtx.lock();
@@ -337,11 +373,19 @@ void Game::PhysicThread3()
 	threads_statuses |= THREAD_COMPLETE << THREAD_PHASE_2 << THREAD_3;
 	threads_statuses_mtx.unlock();
 
-	WaitPhaseAllPhases();
+	//WaitPhaseAllPhases();
+	while ((threads_statuses & THREAD_ALL_PHASE_COMPLETE) != THREAD_ALL_PHASE_COMPLETE)
+	{
+		th3_p1_w++;
+	}
 
 	thread_3_update.unlock();
 
-	WaitPhaseNotAll();
+	//WaitPhaseNotAll();
+	while ((threads_statuses & THREAD_ALL_PHASE_COMPLETE) == THREAD_ALL_PHASE_COMPLETE)
+	{
+		th3_pA_w++;
+	}
 
 	//opengl_p__draw_lock3_mtx->unlock();
 }
@@ -1346,12 +1390,13 @@ void Game::DecrementScore(GameTypes::players_count_t team_number)
 
 
 
-//deceler_area -> grav_gen -> camera -> ship -> pilot -> input_values ->  mega_laser -> laser ->  bomb -> knife -> turel -> bullet -> asteroid -> bonus -> map -> particle -> log
+//deceler_area -> grav_gen -> camera -> portal -> ship -> pilot -> input_values ->  mega_laser -> laser ->  bomb -> knife -> turel -> bullet -> asteroid -> bonus -> map -> particle -> dynamic_particle -> log
 void Game::MutexesLock()
 {
 	deceler_areas_array_mtx.lock();
 	grav_gens_array_mtx.lock();
 	camera_data_mtx.lock();
+	portals_array_mtx.lock();
 	ships_array_mtx.lock();
 	pilots_array_mtx.lock();
 	input_values_mtx.lock();
@@ -1375,6 +1420,7 @@ void Game::MutexesUnlock()
 	deceler_areas_array_mtx.unlock();
 	grav_gens_array_mtx.unlock();
 	camera_data_mtx.unlock();
+	portals_array_mtx.unlock();
 	ships_array_mtx.unlock();
 	pilots_array_mtx.unlock();
 	input_values_mtx.unlock();

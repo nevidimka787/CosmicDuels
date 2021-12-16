@@ -2996,22 +2996,28 @@ Bullet Ship::CreateTriple(uint8_t bullet_number)
 	{
 		return Bullet();
 	}
-	Vec2F bullet_velocity, bullet_position;
+
 	switch (bullet_number)
 	{
 	case 0:
-		bullet_position = position + direction * radius;
-		bullet_velocity = direction * BULLET_DEFAULT_VELOCITY + velocity;
-		return Bullet(&bullet_position, &bullet_velocity, player_number, player_team_number);
+		return Bullet(
+			position + direction * radius,
+			direction * BULLET_DEFAULT_VELOCITY + velocity,
+			player_number,
+			player_team_number);
 	case 1:
-		bullet_position = position - direction.PerpendicularClockwise() * radius;
-		bullet_velocity = direction * BULLET_DEFAULT_VELOCITY + velocity;
-		return Bullet(&bullet_position, &bullet_velocity, player_number, player_team_number);
+		return Bullet(
+			position - direction.PerpendicularClockwise() * radius * 0.75f,
+			direction * BULLET_DEFAULT_VELOCITY + velocity,
+			player_number,
+			player_team_number);
 	case 2:
-		bullet_position = position + direction.PerpendicularClockwise() * radius;
-		bullet_velocity = direction * BULLET_DEFAULT_VELOCITY + velocity;
 		bullets_in_magazine -= 3;
-		return Bullet(&bullet_position, &bullet_velocity, player_number, player_team_number);
+		return Bullet(
+			position + direction.PerpendicularClockwise() * radius * 0.75f,
+			direction * BULLET_DEFAULT_VELOCITY + velocity,
+			player_number,
+			player_team_number);
 	default:
 		return Bullet();
 	}

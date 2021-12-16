@@ -16,6 +16,21 @@ class Game
 
 	//game variables
 public:
+	uint64_t th0_p0_w = 0;
+	uint64_t th1_p0_w = 0;
+	uint64_t th2_p0_w = 0;
+	uint64_t th3_p0_w = 0;
+	uint64_t th0_p1_w = 0;
+	uint64_t th1_p1_w = 0;
+	uint64_t th2_p1_w = 0;
+	uint64_t th3_p1_w = 0;
+	uint64_t th0_pA_w = 0;
+	uint64_t th1_pA_w = 0;
+	uint64_t th2_pA_w = 0;
+	uint64_t th3_pA_w = 0;
+
+
+
 	//Global tic value. Not use by functions.
 	GameTypes::tic_t global_timer;
 	//Global tic value when inverse flag was change value.

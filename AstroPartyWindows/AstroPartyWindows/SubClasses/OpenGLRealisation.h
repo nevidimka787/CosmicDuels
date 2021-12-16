@@ -153,6 +153,8 @@ public:
 	Texture2D bullet_medium_texture;
 	Texture2D bullet_large_texture;
 
+	Texture2D pilot_basic_texture;
+
 	Texture2D ship_basic_texture;
 	Texture2D ship_triple_texture;
 

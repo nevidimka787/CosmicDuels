@@ -364,12 +364,6 @@ void OpenGL::InitBuffers()
 
     knife_buffer.Initialisate(points, 6);
 
-    points[0].Set(0.0f, 0.40f);
-    points[1].Set(sqrt(3.0f) / 4.0f, -0.35f);
-    points[2].Set(-points[1].x, -0.35f);
-
-    pilot_buffer.Initialisate(points, 3);
-
     points[0].Set(sqrt(3.0f) / 4.0f, 0.40f);
     points[1].Set(sqrt(3.0f) / 4.0f, -0.35f);
     points[2].Set(-points[1].x, -0.35f);
@@ -387,6 +381,7 @@ void OpenGL::InitBuffers()
         Vec2F(0.0f, 1.0f)
     };
 
+    pilot_buffer.Initialisate(points, t_points, 6);
     ship_buffer.Initialisate(points, t_points, 6);
 
 
@@ -459,6 +454,8 @@ void OpenGL::InitTextures()
     bullet_small_texture.Initialisate(  "Textures/Entities/Bullet/Small.png",   GL_RGBA,    GL_RGBA);
     bullet_medium_texture.Initialisate( "Textures/Entities/Bullet/Medium.png",  GL_RGBA,    GL_RGBA);
     bullet_large_texture.Initialisate(  "Textures/Entities/Bullet/Large.png",   GL_RGBA,    GL_RGBA);
+
+    pilot_basic_texture.Initialisate(   "Textures/Entities/Pilot/Basic.png",    GL_RGBA,    GL_RGBA);
 
     ship_basic_texture.Initialisate(    "Textures/Entities/Ship/Basic.png",     GL_RGBA,    GL_RGBA);
     ship_triple_texture.Initialisate(   "Textures/Entities/Ship/Triple.png",    GL_RGBA,    GL_RGBA);
@@ -890,6 +887,7 @@ void OpenGL::DrawObject(const Pilot* pilot, bool update_shader)
     {
         pilot_buffer.Use();
         pilot_shader.Use();
+        pilot_basic_texture.Use();
         pilot_shader.SetUniform("scale", window_scale);
         pilot_shader.SetUniform("camera_position", temp__game__camera_position);
         pilot_shader.SetUniform("camera_size", temp__game__camera_size);
@@ -1377,6 +1375,7 @@ void OpenGL::DrawPilots()
 {
     pilot_buffer.Use();
     pilot_shader.Use();
+    pilot_basic_texture.Use();
     pilot_shader.SetUniform("scale", window_scale);
     pilot_shader.SetUniform("camera_position", temp__game__camera_position);
     pilot_shader.SetUniform("camera_size", temp__game__camera_size);

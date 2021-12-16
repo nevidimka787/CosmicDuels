@@ -1,5 +1,6 @@
 #version 330 core
 layout (location = 0) in vec2 aPos;
+layout (location = 1) in vec2 tPos;
 
 uniform float scale;
 
@@ -7,6 +8,9 @@ uniform mat3 model;
 
 uniform vec2 camera_position;
 uniform float camera_size;
+
+out vec2 pixel_position;
+out vec2 texel_position;
 
 mat3 Rotate(mat3 matrix, float angel);
 mat3 Transport(mat3 matrix, vec2 vector);
@@ -20,6 +24,9 @@ mat3 matrix;
 vec3 _position;
 void main()
 {
+    pixel_position = aPos;
+    texel_position = tPos;
+
     matrix = 
         Rotate(radians(-90.0f)) *
         model *
