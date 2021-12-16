@@ -12,15 +12,21 @@ class StaticBuffer
 private:
 	GLuint id;
 	EngineTypes::Buffer::array_length_t points_count;
+	GLuint buffer_id;
 public:
 	StaticBuffer();
 
-	void Draw();
+	void Draw() const;
 	bool Initialisate(
-		Vec2F* points_array = nullptr,
+		const Vec2F* points_array = nullptr,
 		EngineTypes::Buffer::array_length_t array_length = 0,
 		bool delete_last_buffer = false);
-	void Use();
+	bool Initialisate(
+		const Vec2F* points_array = nullptr,
+		const Vec2F* points_second_array = nullptr,
+		EngineTypes::Buffer::array_length_t array_length = 0,
+		bool delete_last_buffer = false);
+	void Use() const;
 
 	~StaticBuffer();
 };

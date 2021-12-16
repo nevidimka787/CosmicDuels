@@ -8,13 +8,17 @@ uniform int inventory;
 uniform int bullets_count;
 uniform int magazine_size;
 
+uniform sampler2D txtr;
+
 uniform int type;
 #define TYPE_SHIP   0
 #define TYPE_BULLET 1
 
 in vec2 pixel_position;
+in vec2 texel_position;
 
 vec3 color;
+vec3 pos_neg_alpha;
 
 #define RED		1
 #define GREEN	2
@@ -31,7 +35,7 @@ vec4 DrawBullets(vec2 _pixel_position, int _inventory, int _bullets_count);
 
 void main()
 {
-
+	pos_neg_alpha = texture(txtr, texel_position).xzw;
 
 	if(type == TYPE_BULLET)
 	{
@@ -43,14 +47,9 @@ void main()
 
 		return;
 	}
-
-	if(length(pixel_position) > 0.6f)
-	{
-		discard;
-	}
 	if((player & SHIELD) != 0x0000)
 	{
-		frag_color = vec4(0.5f, 0.5f, 1.0f, 0.4f);
+		frag_color = vec4(0.5f, 0.5f, 1.0f, 0.4f * pos_neg_alpha.z);
 		return;
 	}
 
@@ -90,13 +89,17 @@ void main()
 		color = vec3(1.0f);
 		break;
 	}
+
 	if((player & UNBRAKABLE) != 0x0000)
 	{
-		frag_color = vec4(color, 0.4f);
+		frag_color = vec4((color * pos_neg_alpha.x + (1.0f - color) * pos_neg_alpha.y) * 0.9f + 0.1f, pos_neg_alpha.z * 0.4f);
 		return;
 	}
-	frag_color = vec4(color * 0.9f + 0.1f, 1.0f);
+	
+	frag_color = vec4((color * pos_neg_alpha.x + (1.0f - color) * pos_neg_alpha.y) * 0.9f + 0.1f, pos_neg_alpha.z);
 }
+
+
 
 vec4 DrawBullets(vec2 _pixel_position, int _inventory, int _bullets_count)
 {

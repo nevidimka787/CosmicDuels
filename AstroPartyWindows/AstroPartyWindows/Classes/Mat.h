@@ -93,9 +93,11 @@ public:
 	Vec2F(float x, float y);
 
 	Vec2F operator+(Vec2F vector) const;
+	Vec2F operator+(float value) const;
 	void operator+=(Vec2F vector);
 	Vec2F operator-() const;
 	Vec2F operator-(Vec2F vector) const;
+	Vec2F operator-(float value) const;
 	void operator-=(Vec2F vector);
 	Vec2F operator*(float value) const;
 	float operator*(Vec2F vector) const;

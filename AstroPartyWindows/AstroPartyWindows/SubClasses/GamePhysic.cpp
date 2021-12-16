@@ -2842,9 +2842,11 @@ void Game::ShipsRespawnOrDestroyPilots()
 					else if (!(game_rules & GAME_RULE_FRENDLY_FIRE && temp__pilot_p->IsSameTeams(temp__ship_p)) &&
 						temp__ship_p->DynamicEntity::IsCollision(temp__pilot_p))
 					{
+						dynamic_particles_array_mtx.lock();
 						log_data_mtx.lock();
 						DestroyEntity(temp__ship_p, temp__pilot_p);
 						log_data_mtx.unlock();
+						dynamic_particles_array_mtx.unlock();
 						goto end_of_pilot_cycle;
 					}
 					found_pilots++;

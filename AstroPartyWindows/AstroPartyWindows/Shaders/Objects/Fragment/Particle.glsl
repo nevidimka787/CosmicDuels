@@ -182,12 +182,13 @@ bool PositionInTriangle(vec2 _position, float _triangle_side, float _triangle_an
 
 void ExaustEngine()
 {
-#define POS0 (vec2(0.0f, 0.75f) * 2.0f - 1.0f)
-#define POS1 (vec2(1.0f / 3.0f, 0.80f) * 2.0f - 1.0f)
-#define POS2 (vec2(2.0f / 3.0f, 0.70f) * 2.0f - 1.0f)
-#define POS3 (vec2(0.0f, 0.25f) * 2.0f - 1.0f)
-#define POS4 (vec2(2.0f / 3.0f, 0.30f) * 2.0f - 1.0f)
-#define POS5 (vec2(1.0f / 3.0f, 0.20f) * 2.0f - 1.0f)
+#define POS0 (vec2(0.0f,		0.79f) * 2.0f - 1.0f)
+#define POS1 (vec2(1.0f / 3.0f, 0.84f) * 2.0f - 1.0f)
+#define POS2 (vec2(2.0f / 3.0f, 0.74f) * 2.0f - 1.0f)
+
+#define POS3 (vec2(0.0f,		0.21f) * 2.0f - 1.0f)
+#define POS4 (vec2(2.0f / 3.0f, 0.26f) * 2.0f - 1.0f)
+#define POS5 (vec2(1.0f / 3.0f, 0.16f) * 2.0f - 1.0f)
 #define RADIUS	0.1f
 
 	if(

@@ -348,41 +348,121 @@ void Game::Event8()
 void Game::Event9()
 {
 #define EVENT9__CENTER_POSITION 6.0f
-#define EVENT9__ANGLE_PORTAL_TP_POSITION	-0.30f
+#define EVENT9__ANGLE_PORTAL_TP_POSITION	0.30f
 	if (object_pull_array[GAME_OBJECT_ASTEROID])
 	{
 		asteroids_array_mtx.lock();
-		if (!((global_timer + 1) % 100) && asteroids_count < 3)
+		if (!(global_timer % 500) && asteroids_count < 10)
 		{
-			AddEntity(Asteroid(
-				Vec2F(-EVENT9__ANGLE_PORTAL_TP_POSITION + EVENT9__CENTER_POSITION, EVENT9__ANGLE_PORTAL_TP_POSITION + EVENT9__CENTER_POSITION),
-				Vec2F(),
-				GenerateRandomInventory(BONUS_BONUS, 1, 1, 1, 1) | GenerateRandomInventory(BONUS_BUFF | BONUS_RULE_REVERSE, 1, 1, 1, 1),
-				ASTEROID_SIZE_MEDIUM));
-		}
-		if (!((global_timer + 2) % 100) && asteroids_count < 4)
-		{
-			AddEntity(Asteroid(
-				Vec2F(-EVENT9__ANGLE_PORTAL_TP_POSITION + EVENT9__CENTER_POSITION),
-				Vec2F(),
-				GenerateRandomInventory(BONUS_BONUS, 1, 1, 1, 1) | GenerateRandomInventory(BONUS_BUFF | BONUS_RULE_REVERSE, 1, 1, 1, 1),
-				ASTEROID_SIZE_MEDIUM));
-		}
-		if (!((global_timer + 3) % 100) && asteroids_count < 5)
-		{
-			AddEntity(Asteroid(
-				Vec2F(EVENT9__ANGLE_PORTAL_TP_POSITION + EVENT9__CENTER_POSITION, -EVENT9__ANGLE_PORTAL_TP_POSITION + EVENT9__CENTER_POSITION),
-				Vec2F(),
-				GenerateRandomInventory(BONUS_BONUS, 1, 1, 1, 1) | GenerateRandomInventory(BONUS_BUFF | BONUS_RULE_REVERSE, 1, 1, 1, 1),
-				ASTEROID_SIZE_MEDIUM));
-		}
-		if (!((global_timer + 4) % 100) && asteroids_count < 6)
-		{
-			AddEntity(Asteroid(
-				Vec2F(-EVENT9__ANGLE_PORTAL_TP_POSITION + EVENT9__CENTER_POSITION, EVENT9__ANGLE_PORTAL_TP_POSITION + EVENT9__CENTER_POSITION),
-				Vec2F(),
-				GenerateRandomInventory(BONUS_BONUS, 1, 1, 1, 1) | GenerateRandomInventory(BONUS_BUFF | BONUS_RULE_REVERSE, 1, 1, 1, 1),
-				ASTEROID_SIZE_MEDIUM));
+			uint8_t spawn = 0x0F;//0000 1111
+			Asteroid* temp__asteroid_p = asteroids;
+			for (GameTypes::entities_count_t found_asteroids = 0; found_asteroids < asteroids_count; temp__asteroid_p++)
+			{
+				if (temp__asteroid_p->exist)
+				{
+					Vec2F position = temp__asteroid_p->GetPosition() - EVENT9__CENTER_POSITION;
+					if (spawn & 0x03 && position.x > 0.0f && position.x < EVENT9__ANGLE_PORTAL_TP_POSITION * 2.0f)
+					{
+						if (position.y > 0.0f && position.y < EVENT9__ANGLE_PORTAL_TP_POSITION * 2.0f)
+						{
+							spawn &= 0xFF - 0x01;//up right
+						}
+						else if (position.y < 0.0f && position.y > EVENT9__ANGLE_PORTAL_TP_POSITION * -2.0f)
+						{
+							spawn &= 0xFF - 0x02;//down right
+						}
+					}
+					else if (spawn & 0x0C && position.x < 0.0f && position.x > EVENT9__ANGLE_PORTAL_TP_POSITION * -2.0f)
+					{
+						if (position.y > 0.0f && position.y < EVENT9__ANGLE_PORTAL_TP_POSITION * 2.0f)
+						{
+							spawn &= 0xFF - 0x04;//up left
+						}
+						else if (position.y < 0.0f && position.y > EVENT9__ANGLE_PORTAL_TP_POSITION * -2.0f)
+						{
+							spawn &= 0xFF - 0x08;//down left
+						}
+					}
+
+					if (!(spawn & 0x0F))
+					{
+						break;
+					}
+
+					found_asteroids++;
+				}
+			}
+
+			Ship* temp__ship_p = ships;
+			for (GameTypes::entities_count_t found_ships = 0; found_ships < ships_count; temp__ship_p++)
+			{
+				if (temp__ship_p->exist)
+				{
+					Vec2F position = temp__ship_p->GetPosition() - EVENT9__CENTER_POSITION;
+					if (spawn & 0x03 && position.x > 0.0f && position.x < EVENT9__ANGLE_PORTAL_TP_POSITION * 2.0f)
+					{
+						if (position.y > 0.0f && position.y < EVENT9__ANGLE_PORTAL_TP_POSITION * 2.0f)
+						{
+							spawn &= 0xFF - 0x01;//up right
+						}
+						else if (position.y < 0.0f && position.y > EVENT9__ANGLE_PORTAL_TP_POSITION * -2.0f)
+						{
+							spawn &= 0xFF - 0x02;//down right
+						}
+					}
+					else if (spawn & 0x0C && position.x < 0.0f && position.x > EVENT9__ANGLE_PORTAL_TP_POSITION * -2.0f)
+					{
+						if (position.y > 0.0f && position.y < EVENT9__ANGLE_PORTAL_TP_POSITION * 2.0f)
+						{
+							spawn &= 0xFF - 0x04;//up left
+						}
+						else if (position.y < 0.0f && position.y > EVENT9__ANGLE_PORTAL_TP_POSITION * -2.0f)
+						{
+							spawn &= 0xFF - 0x08;//down left
+						}
+					}
+
+					if (!(spawn & 0x0F))
+					{
+						break;
+					}
+
+					found_ships++;
+				}
+			}
+
+			if (spawn & 0x01)//up right
+			{
+				AddEntity(Asteroid(
+					Vec2F(EVENT9__ANGLE_PORTAL_TP_POSITION + EVENT9__CENTER_POSITION),
+					Vec2F(),
+					GenerateRandomInventory(BONUS_BONUS, 1, 1, 1, 1) | GenerateRandomInventory(BONUS_BUFF | BONUS_RULE_REVERSE, 1, 1, 1, 1),
+					ASTEROID_SIZE_MEDIUM));
+			}
+			if (spawn & 0x02)//down right
+			{
+				AddEntity(Asteroid(
+					Vec2F(EVENT9__ANGLE_PORTAL_TP_POSITION + EVENT9__CENTER_POSITION, -EVENT9__ANGLE_PORTAL_TP_POSITION + EVENT9__CENTER_POSITION),
+					Vec2F(),
+					GenerateRandomInventory(BONUS_BONUS, 1, 1, 1, 1) | GenerateRandomInventory(BONUS_BUFF | BONUS_RULE_REVERSE, 1, 1, 1, 1),
+					ASTEROID_SIZE_MEDIUM));
+			}
+			if (spawn & 0x04)//up left
+			{
+				AddEntity(Asteroid(
+					Vec2F(-EVENT9__ANGLE_PORTAL_TP_POSITION + EVENT9__CENTER_POSITION, EVENT9__ANGLE_PORTAL_TP_POSITION + EVENT9__CENTER_POSITION),
+					Vec2F(),
+					GenerateRandomInventory(BONUS_BONUS, 1, 1, 1, 1) | GenerateRandomInventory(BONUS_BUFF | BONUS_RULE_REVERSE, 1, 1, 1, 1),
+					ASTEROID_SIZE_MEDIUM));
+			}
+			if (spawn & 0x08)//donw left
+			{
+				AddEntity(Asteroid(
+					Vec2F(-EVENT9__ANGLE_PORTAL_TP_POSITION + EVENT9__CENTER_POSITION),
+					Vec2F(),
+					GenerateRandomInventory(BONUS_BONUS, 1, 1, 1, 1) | GenerateRandomInventory(BONUS_BUFF | BONUS_RULE_REVERSE, 1, 1, 1, 1),
+					ASTEROID_SIZE_MEDIUM));
+			}
 		}
 		asteroids_array_mtx.unlock();
 	}
@@ -1371,7 +1451,7 @@ void Game::CreateMap9(Vec2F* ships_positions, float* ships_angles)
 #define MAP_PORTAL__SIDE_PORTAL_TP_POSITION_X	-0.80f
 #define MAP_PORTAL__SIDE_PORTAL_TP_POSITION_Y	1.87f
 #define MAP_PORTAL__ANGLE_PORTAL_POSITION		1.87f
-#define MAP_PORTAL__ANGLE_PORTAL_TP_POSITION	EVENT9__ANGLE_PORTAL_TP_POSITION
+#define MAP_PORTAL__ANGLE_PORTAL_TP_POSITION	(-EVENT9__ANGLE_PORTAL_TP_POSITION)
 
 #define MAP_PORTAL__RECTANGLES_COUNT			12
 

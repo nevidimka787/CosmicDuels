@@ -5,6 +5,7 @@
 #include "Math.h"
 #include "Map.h"
 #include "Color.h"
+#include "Buffer.h"
 
 #include "../Types/AllTypes.h"
 #include "../Constants/AllConstants.h"

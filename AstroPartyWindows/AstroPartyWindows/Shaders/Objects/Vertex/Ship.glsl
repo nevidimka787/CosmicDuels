@@ -1,5 +1,6 @@
 #version 330 core
 layout (location = 0) in vec2 aPos;
+layout (location = 1) in vec2 tPos;
 
 uniform float scale;
 
@@ -33,10 +34,17 @@ vec3 _position;
 
 #define SHIELD		0x0F00
 
+#define TEXTURE_MULT 1.0f
+
 out vec2 pixel_position;
+out vec2 texel_position;
 
 void main()
 {
+
+
+    texel_position = (tPos - 0.5f) * TEXTURE_MULT + 0.5f;
+
     if(type == TYPE_SHIP)
     {
         matrix = 
@@ -75,7 +83,7 @@ void main()
         Scale(vec2(1.0f, scale));
 
     pixel_position = aPos;
- 
+
     gl_Position = vec4(vec3(pixel_position, 1.0f) * matrix, 1.0f);
     return;
 }

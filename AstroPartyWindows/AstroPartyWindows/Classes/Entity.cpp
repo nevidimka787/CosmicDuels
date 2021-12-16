@@ -2498,7 +2498,7 @@ bool ControledEntity::IsCollision(const Segment* segment) const
 		point2 = heat_box_vertexes_array[0] * model_matrix;
 
 	ce_side.Set(point1, point2, true);
-	if (segment->Distance(&ce_side) < radius)
+	if (segment->IsIntersection(&ce_side))
 	{
 		return true;
 	}
@@ -2507,7 +2507,7 @@ bool ControledEntity::IsCollision(const Segment* segment) const
 		point1 = point2;
 		point2 = heat_box_vertexes_array[vertex] * model_matrix;
 		ce_side.Set(point1, point2, true);
-		if (segment->Distance(&ce_side) < radius)
+		if (segment->IsIntersection(&ce_side))
 		{
 			return true;
 		}

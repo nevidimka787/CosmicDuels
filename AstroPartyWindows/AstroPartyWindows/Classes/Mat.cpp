@@ -354,9 +354,19 @@ Vec2F Vec2F::operator+(Vec2F vector) const
 	return Vec2F(x + vector.x, y + vector.y);
 }
 
+Vec2F Vec2F::operator+(float value) const
+{
+	return Vec2F(x + value, y + value);
+}
+
 Vec2F Vec2F::operator-(Vec2F vector) const
 {
 	return Vec2F(x - vector.x, y - vector.y);
+}
+
+Vec2F Vec2F::operator-(float value) const
+{
+	return Vec2F(x - value, y - value);
 }
 
 Vec2F Vec2F::operator-() const

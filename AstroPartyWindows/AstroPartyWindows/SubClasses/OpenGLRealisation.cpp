@@ -369,7 +369,25 @@ void OpenGL::InitBuffers()
     points[2].Set(-points[1].x, -0.35f);
 
     pilot_buffer.Initialisate(points, 3);
-    ship_buffer.Initialisate(points, 3);
+
+    points[0].Set(sqrt(3.0f) / 4.0f, 0.40f);
+    points[1].Set(sqrt(3.0f) / 4.0f, -0.35f);
+    points[2].Set(-points[1].x, -0.35f);
+    points[3].Set(sqrt(3.0f) / 4.0f, 0.40f);
+    points[4].Set(-sqrt(3.0f) / 4.0f, 0.35f);
+    points[5].Set(-points[3].x, -0.35f);
+
+    Vec2F t_points[6] =
+    {
+        Vec2F(1.0f, 0.0f),
+        Vec2F(1.0f, 1.0f),
+        Vec2F(0.0f, 1.0f),
+        Vec2F(1.0f, 0.0f),
+        Vec2F(0.0f, 0.0f),
+        Vec2F(0.0f, 1.0f)
+    };
+
+    ship_buffer.Initialisate(points, t_points, 6);
 
 
     //main_buffer.Initialisate(window_width, window_height);
@@ -441,6 +459,9 @@ void OpenGL::InitTextures()
     bullet_small_texture.Initialisate(  "Textures/Entities/Bullet/Small.png",   GL_RGBA,    GL_RGBA);
     bullet_medium_texture.Initialisate( "Textures/Entities/Bullet/Medium.png",  GL_RGBA,    GL_RGBA);
     bullet_large_texture.Initialisate(  "Textures/Entities/Bullet/Large.png",   GL_RGBA,    GL_RGBA);
+
+    ship_basic_texture.Initialisate(    "Textures/Entities/Ship/Basic.png",     GL_RGBA,    GL_RGBA);
+    ship_triple_texture.Initialisate(   "Textures/Entities/Ship/Triple.png",    GL_RGBA,    GL_RGBA);
 
     symbols_texture.Initialisate("Textures/Menu/Buttons/Symbols.bmp");
 }
@@ -931,6 +952,16 @@ void OpenGL::DrawObject(const Ship* ship, bool update_shader)
     ship_shader.SetUniform("player", number_of_player_in_team | (ship->IsUnbrakable() ? 0xF000 : 0x0000));
 
     ship_shader.SetUniform("type", (int)0);//0 - is ship
+
+    if (ship->IsHaveBuff(SHIP_BUFF_TRIPLE))
+    {
+        ship_triple_texture.Use();
+    }
+    else
+    {
+        ship_basic_texture.Use();
+    }
+
     ship_buffer.Draw();
 
     if (ship->IsHaveBuff(SHIP_BUFF_SHIELD))
