@@ -158,6 +158,8 @@ public:
 	Texture2D ship_basic_texture;
 	Texture2D ship_triple_texture;
 
+	Texture2D turel_basic_texture;
+
 	//textures
 
 	OpenGL(int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share, GLFWframebuffersizefun Function, GLFWwindow** window);

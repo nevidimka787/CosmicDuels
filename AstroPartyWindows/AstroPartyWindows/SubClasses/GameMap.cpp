@@ -118,40 +118,43 @@ void Game::Event1()
 void Game::Event2()
 {
 #define EVENT2_SQUARE_SIZE 1.5f
-	asteroids_array_mtx.lock();
-	if (object_pull_array[GAME_OBJECT_ASTEROID] && !((global_timer + 1) % 1000) && asteroids_count < 2)
+	if (object_pull_array[GAME_OBJECT_ASTEROID])
 	{
-		AddEntity(Asteroid(
-			Vec2F(-EVENT1_SQUARE_SIZE, -EVENT1_SQUARE_SIZE),
-			Vec2F(),
-			GenerateRandomInventory(BONUS_BONUS, 1, 2, 2, 4) | GenerateRandomInventory(BONUS_BUFF_STREAM, 0, 3, 1, 1) | GenerateRandomInventory(BONUS_RULE_REVERSE, 0, 1, 0, 1),
-			ASTEROID_SIZE_BIG));
+		asteroids_array_mtx.lock();
+		if (!((global_timer + 1) % 1000) && asteroids_count < 5)
+		{
+			AddEntity(Asteroid(
+				Vec2F(-EVENT1_SQUARE_SIZE, -EVENT1_SQUARE_SIZE),
+				Vec2F(),
+				GenerateRandomInventory(BONUS_BONUS, 1, 2, 2, 4) | GenerateRandomInventory(BONUS_BUFF_STREAM, 0, 3, 1, 1) | GenerateRandomInventory(BONUS_RULE_REVERSE, 0, 1, 0, 1),
+				ASTEROID_SIZE_BIG));
+		}
+		if (!((global_timer + 2) % 1000) && asteroids_count < 6)
+		{
+			AddEntity(Asteroid(
+				Vec2F(-EVENT1_SQUARE_SIZE, EVENT1_SQUARE_SIZE),
+				Vec2F(),
+				GenerateRandomInventory(BONUS_BONUS, 1, 2, 2, 4) | GenerateRandomInventory(BONUS_BUFF_STREAM, 0, 3, 1, 1) | GenerateRandomInventory(BONUS_RULE_REVERSE, 0, 1, 0, 1),
+				ASTEROID_SIZE_BIG));
+		}
+		if (!((global_timer + 3) % 1000) && asteroids_count < 7)
+		{
+			AddEntity(Asteroid(
+				Vec2F(EVENT1_SQUARE_SIZE, -EVENT1_SQUARE_SIZE),
+				Vec2F(),
+				GenerateRandomInventory(BONUS_BONUS, 1, 2, 2, 4) | GenerateRandomInventory(BONUS_BUFF_STREAM, 0, 3, 1, 1) | GenerateRandomInventory(BONUS_RULE_REVERSE, 0, 1, 0, 1),
+				ASTEROID_SIZE_BIG));
+		}
+		if (!((global_timer + 4) % 1000) && asteroids_count < 8)
+		{
+			AddEntity(Asteroid(
+				Vec2F(EVENT1_SQUARE_SIZE, EVENT1_SQUARE_SIZE),
+				Vec2F(),
+				GenerateRandomInventory(BONUS_BONUS, 1, 2, 2, 4) | GenerateRandomInventory(BONUS_BUFF_STREAM, 0, 3, 1, 1) | GenerateRandomInventory(BONUS_RULE_REVERSE, 0, 1, 0, 1),
+				ASTEROID_SIZE_BIG));
+		}
+		asteroids_array_mtx.unlock();
 	}
-	if (object_pull_array[GAME_OBJECT_ASTEROID] && !((global_timer + 2) % 1000) && asteroids_count < 3)
-	{
-		AddEntity(Asteroid(
-			Vec2F(-EVENT1_SQUARE_SIZE, EVENT1_SQUARE_SIZE),
-			Vec2F(),
-			GenerateRandomInventory(BONUS_BONUS, 1, 2, 2, 4) | GenerateRandomInventory(BONUS_BUFF_STREAM, 0, 3, 1, 1) | GenerateRandomInventory(BONUS_RULE_REVERSE, 0, 1, 0, 1),
-			ASTEROID_SIZE_BIG));
-	}
-	if (object_pull_array[GAME_OBJECT_ASTEROID] && !((global_timer + 3) % 1000) && asteroids_count < 4)
-	{
-		AddEntity(Asteroid(
-			Vec2F(EVENT1_SQUARE_SIZE, -EVENT1_SQUARE_SIZE),
-			Vec2F(),
-			GenerateRandomInventory(BONUS_BONUS, 1, 2, 2, 4) | GenerateRandomInventory(BONUS_BUFF_STREAM, 0, 3, 1, 1) | GenerateRandomInventory(BONUS_RULE_REVERSE, 0, 1, 0, 1),
-			ASTEROID_SIZE_BIG));
-	}
-	if (object_pull_array[GAME_OBJECT_ASTEROID] && !((global_timer + 4) % 1000) && asteroids_count < 5)
-	{
-		AddEntity(Asteroid(
-			Vec2F(EVENT1_SQUARE_SIZE, EVENT1_SQUARE_SIZE),
-			Vec2F(),
-			GenerateRandomInventory(BONUS_BONUS, 1, 2, 2, 4) | GenerateRandomInventory(BONUS_BUFF_STREAM, 0, 3, 1, 1) | GenerateRandomInventory(BONUS_RULE_REVERSE, 0, 1, 0, 1),
-			ASTEROID_SIZE_BIG));
-	}
-	asteroids_array_mtx.unlock();
 }
 
 void Game::Event3()

@@ -10,7 +10,10 @@
 #include "../Types/AllTypes.h"
 #include "../Constants/AllConstants.h"
 
+#define M_PI 3.14159265358979323846
+
 class AggressiveEntity;
+class AnigAreaGenerator;
 class Bomb;
 class Bonus;
 class Bullet;
@@ -29,6 +32,7 @@ class Pilot;
 class Portal;
 class Ship;
 class StaticEntity;
+class SupportEntity;
 class Turel;
 
 class Entity
@@ -112,9 +116,14 @@ public:
 	//If distance between two objects is less then zero, the function return true.
 	bool IsCollision(Vec2F* point) const;
 	void Rotate(float angle);
-	void Set(Entity* entity);
+	void Set(const Entity* entity);
 	void Set(
-		Vec2F* position,
+		Vec2F position,
+		float radius,
+		float angle = 0.0f,
+		bool exist = true);
+	void Set(
+		const Vec2F* position,
 		float radius,
 		float angle = 0.0f,
 		bool exist = true);
@@ -147,7 +156,6 @@ protected:
 public:
 	float force_collision_coeffisient;
 	//the distance the ship will be pushed to the side
-	float force_collision_delta = DEFAULT_FORCE_COLLISION_DELTA;
 	float force_resistance_air_coefficient;
 	DynamicEntity();
 	DynamicEntity(const DynamicEntity& dynamic_entity);
@@ -171,13 +179,13 @@ public:
 		bool exist = true);
 
 	void AddForce(Vec2F force);
-	void AddForce(Vec2F* force);
+	void AddForce(const Vec2F* force);
 	void AddForceAlongDirection(float force);
 	void AddAngularVelocity(float angulat_velocity);
-	void AddGravityForce(float gravity_coeffisient, Vec2F* forced_point);
 	void AddGravityForce(float gravity_coeffisient, Vec2F forced_point);
+	void AddGravityForce(float gravity_coeffisient, const Vec2F* forced_point);
 	void AddVelocity(Vec2F velocity);
-	void AddVelocity(Vec2F* velocity);
+	void AddVelocity(const Vec2F* velocity);
 	//The function sets the sum of all forces those affecting to this entity to zero.
 	void ClearForce();
 	/*
@@ -524,10 +532,20 @@ public:
 	Asteroid Division();
 	EngineTypes::Asteroid::size_t GetSize() const;
 	EngineTypes::Bonus::inventory_t GetBuffBonus() const;
-	void Set(Asteroid* asteroid);
+	void Set(const Asteroid* asteroid);
 	void Set(
-		Vec2F* position,
-		Vec2F* velocity,
+		Vec2F position,
+		Vec2F velocity,
+		EngineTypes::Bonus::inventory_t bonus_type,
+		EngineTypes::Asteroid::size_t size = ASTEROID_DEFAULT_SIZE,
+		float angle = 0.0f,
+		float angular_velocity = 0.0f,
+		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
+		bool exist = true);
+	void Set(
+		const Vec2F* position,
+		const Vec2F* velocity,
 		EngineTypes::Bonus::inventory_t bonus_type,
 		EngineTypes::Asteroid::size_t size = ASTEROID_DEFAULT_SIZE,
 		float angle = 0.0f,
@@ -580,8 +598,19 @@ public:
 	bool SameTeam(KillerEntity* killer_entity);
 	void Set(KillerEntity* killer_entity);
 	void Set(
-		Vec2F* position,
-		Vec2F* velocity,
+		Vec2F position,
+		Vec2F velocity,
+		float radius,
+		GameTypes::players_count_t player_master_number,
+		GameTypes::players_count_t player_master_team_number,
+		float angle = 0.0f,
+		float angular_velocity = 0.0f,
+		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
+		bool exist = true);
+	void Set(
+		const Vec2F* position,
+		const Vec2F* velocity,
 		float radius,
 		GameTypes::players_count_t player_master_number,
 		GameTypes::players_count_t player_master_team_number,
@@ -604,8 +633,8 @@ protected:
 	EngineTypes::ControledEntity::heat_box_vertexes_count_t heat_box_vertexes_array_length;
 	GameTypes::players_count_t player_number;
 	GameTypes::players_count_t player_team_number;
-	void* rotate_input_value_pointer;
-	void* shoot_input_value_pointer;
+	const void* rotate_input_value_pointer;
+	const void* shoot_input_value_pointer;
 
 	void SetDefaultMatrix();
 public:
@@ -617,8 +646,8 @@ public:
 		float radius,
 		GameTypes::players_count_t player_number,
 		GameTypes::players_count_t player_team_number,
-		void* rotate_input_value_pointer,
-		void* shoot_input_value_pointer,
+		const void* rotate_input_value_pointer,
+		const void* shoot_input_value_pointer,
 		Vec2F* heat_box_vertexes = nullptr,
 		EngineTypes::ControledEntity::heat_box_vertexes_count_t heat_box_vertexes_count = 0,
 		float angle = 0.0f,
@@ -632,8 +661,8 @@ public:
 		float radius,
 		GameTypes::players_count_t player_number,
 		GameTypes::players_count_t player_team_number,
-		void* rotate_input_value_pointer,
-		void* shoot_input_value_pointer,
+		const void* rotate_input_value_pointer,
+		const void* shoot_input_value_pointer,
 		Vec2F* heat_box_vertexes = nullptr,
 		EngineTypes::ControledEntity::heat_box_vertexes_count_t heat_box_vertexes_count = 0,
 		float angle = 0.0f,
@@ -672,13 +701,13 @@ public:
 	bool IsSameTeams(const ControledEntity* second_entity) const;
 	void Set(const ControledEntity* entity);
 	void Set(
-		Vec2F* position,
-		Vec2F* velocity,
+		Vec2F position,
+		Vec2F velocity,
 		float radius,
 		GameTypes::players_count_t player_number,
 		GameTypes::players_count_t player_team_number,
-		void* rotate_input_value_pointer,
-		void* shoot_input_value_pointer,
+		const void* rotate_input_value_pointer,
+		const void* shoot_input_value_pointer,
 		Vec2F* heat_box_vertexes = nullptr,
 		EngineTypes::ControledEntity::heat_box_vertexes_count_t heat_box_vertexes_count = 0,
 		float angle = 0.0f,
@@ -686,6 +715,23 @@ public:
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
 		bool exist = true);
+	void Set(
+		const Vec2F* position,
+		const Vec2F* velocity,
+		float radius,
+		GameTypes::players_count_t player_number,
+		GameTypes::players_count_t player_team_number,
+		const void* rotate_input_value_pointer,
+		const void* shoot_input_value_pointer,
+		Vec2F* heat_box_vertexes = nullptr,
+		EngineTypes::ControledEntity::heat_box_vertexes_count_t heat_box_vertexes_count = 0,
+		float angle = 0.0f,
+		float angular_velocity = 0.0f,
+		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
+		bool exist = true);
+	bool ShouldRotate();
+	bool ShouldShoot();
 	void UpdateMatrix();
 
 	void operator=(ControledEntity entity);
@@ -700,8 +746,10 @@ private:
 	GameTypes::entities_count_t objects_in_loop;
 	//value of the variable will not translate to other entities
 	GameTypes::objects_types_count_t element_type;
+
+	GameTypes::tic_t shoot_cooldown_time = GAME_DELLAY_BETWEEN_SHOOTS;
 protected:
-	void* burnout_input_value_pointer;
+	const void* burnout_input_value_pointer;
 	EngineTypes::Bonus::inventory_t bonus_inventory;
 	EngineTypes::Ship::inventory_t buff_inventory;
 	GameTypes::tic_t unbrakable;
@@ -718,9 +766,9 @@ public:
 		Vec2F velocity,
 		GameTypes::players_count_t player_number,
 		GameTypes::players_count_t player_team_number,
-		void* burnout_input_value_pointer,
-		void* rotate_input_value_pointer,
-		void* shoot_input_value_pointer,
+		const void* burnout_input_value_pointer,
+		const void* rotate_input_value_pointer,
+		const void* shoot_input_value_pointer,
 		Vec2F* heat_box_vertexes = nullptr,
 		EngineTypes::ControledEntity::heat_box_vertexes_count_t heat_box_vertexes_count = 0,
 		float angle = 0.0f,
@@ -740,9 +788,9 @@ public:
 		const Vec2F* velocity,
 		GameTypes::players_count_t player_number,
 		GameTypes::players_count_t player_team_number,
-		void* burnout_input_value_pointer,
-		void* rotate_input_value_pointer,
-		void* shoot_input_value_pointer,
+		const void* burnout_input_value_pointer,
+		const void* rotate_input_value_pointer,
+		const void* shoot_input_value_pointer,
 		Vec2F* heat_box_vertexes = nullptr,
 		EngineTypes::ControledEntity::heat_box_vertexes_count_t heat_box_vertexes_count = 0,
 		float angle = 0.0f,
@@ -823,9 +871,9 @@ public:
 		Vec2F velocity,
 		GameTypes::players_count_t player_number,
 		GameTypes::players_count_t player_team_number,
-		void* burnout_input_value_pointer,
-		void* rotate_input_value_pointer,
-		void* shoot_input_value_pointer,
+		const void* burnout_input_value_pointer,
+		const void* rotate_input_value_pointer,
+		const void* shoot_input_value_pointer,
 		Vec2F* heat_box_vertexes = nullptr,
 		EngineTypes::ControledEntity::heat_box_vertexes_count_t heat_box_vertexes_count = 0,
 		float angle = 0.0f,
@@ -845,9 +893,9 @@ public:
 		const Vec2F* velocity,
 		GameTypes::players_count_t player_number,
 		GameTypes::players_count_t player_team_number,
-		void* burnout_input_value_pointer,
-		void* rotate_input_value_pointer,
-		void* shoot_input_value_pointer,
+		const void* burnout_input_value_pointer,
+		const void* rotate_input_value_pointer,
+		const void* shoot_input_value_pointer,
 		Vec2F* heat_box_vertexes = nullptr,
 		EngineTypes::ControledEntity::heat_box_vertexes_count_t heat_box_vertexes_count = 0,
 		float angle = 0.0f,
@@ -864,6 +912,7 @@ public:
 		bool exist = true);
 	void SetSizeOfMagazine(GameTypes::entities_count_t cells_count = SHIP_DEFAULT_MAGAZINE_SIZE);
 	void SetUnbrakablePeriod(GameTypes::tic_t period);
+	bool ShouldBurnout();
 	//If ship have bonus, the function reduces the amount of this bonus and return true.
 	bool SpendBonus(EngineTypes::Bonus::inventory_t bonus);
 	//The function reduces the amount of this bonus.
@@ -894,8 +943,8 @@ public:
 		Vec2F velocity,
 		GameTypes::players_count_t player_number,
 		GameTypes::players_count_t player_team_number,
-		void* rotate_input_value_pointer,
-		void* shoot_input_value_pointer,
+		const void* rotate_input_value_pointer,
+		const void* shoot_input_value_pointer,
 		GameTypes::tic_t respawn_timer = PILOT_DEFAULT_RESPAWN_TIMER,
 		Vec2F* heat_box_vertexes = nullptr,
 		EngineTypes::ControledEntity::heat_box_vertexes_count_t heat_box_vertexes_count = 0,
@@ -913,8 +962,8 @@ public:
 		const Vec2F* velocity,
 		GameTypes::players_count_t player_number,
 		GameTypes::players_count_t player_team_number,
-		void* rotate_input_value_pointer,
-		void* shoot_input_value_pointer,
+		const void* rotate_input_value_pointer,
+		const void* shoot_input_value_pointer,
 		GameTypes::tic_t respawn_timer = PILOT_DEFAULT_RESPAWN_TIMER,
 		Vec2F* heat_box_vertexes = nullptr,
 		EngineTypes::ControledEntity::heat_box_vertexes_count_t heat_box_vertexes_count = 0,
@@ -932,7 +981,45 @@ public:
 	DynamicParticle CreateShards(GameTypes::tic_t current_tic);
 	GameTypes::tic_t GetRespawnDellay() const;
 	Ship Respawn();
-	void Set(Pilot* entity);
+	void Set(const Pilot* entity);
+	void Set(
+		Vec2F position,
+		Vec2F velocity,
+		GameTypes::players_count_t player_number,
+		GameTypes::players_count_t player_team_number,
+		const void* rotate_input_value_pointer,
+		const void* shoot_input_value_pointer,
+		GameTypes::tic_t respawn_timer = PILOT_DEFAULT_RESPAWN_TIMER,
+		Vec2F* heat_box_vertexes = nullptr,
+		EngineTypes::ControledEntity::heat_box_vertexes_count_t heat_box_vertexes_count = 0,
+		float angle = 0.0f,
+		EngineTypes::Bonus::inventory_t buffs_bonuses = BONUS_NOTHING,
+		EngineTypes::Bonus::inventory_t active_baffs = BONUS_NOTHING,
+		GameTypes::tic_t unbrakable = SHIP_DEFAULT_UNBRAKABLE_PERIOD,
+		float angular_velocity = 0.0f,
+		float radius = PILOT_DEFAULT_RADIUS,
+		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_resistance_air_coefficient = PILOT_DEFAULT_FORCE_RESISTANCE_AIR_COEFFISIENT,
+		bool exist = true);
+	void Set(
+		const Vec2F* position,
+		const Vec2F* velocity,
+		GameTypes::players_count_t player_number,
+		GameTypes::players_count_t player_team_number,
+		const void* rotate_input_value_pointer,
+		const void* shoot_input_value_pointer,
+		GameTypes::tic_t respawn_timer = PILOT_DEFAULT_RESPAWN_TIMER,
+		Vec2F* heat_box_vertexes = nullptr,
+		EngineTypes::ControledEntity::heat_box_vertexes_count_t heat_box_vertexes_count = 0,
+		float angle = 0.0f,
+		EngineTypes::Bonus::inventory_t buffs_bonuses = BONUS_NOTHING,
+		EngineTypes::Bonus::inventory_t active_baffs = BONUS_NOTHING,
+		GameTypes::tic_t unbrakable = SHIP_DEFAULT_UNBRAKABLE_PERIOD,
+		float angular_velocity = 0.0f,
+		float radius = PILOT_DEFAULT_RADIUS,
+		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_resistance_air_coefficient = PILOT_DEFAULT_FORCE_RESISTANCE_AIR_COEFFISIENT,
+		bool exist = true);
 	void Update();
 	void UpdateMatrix();
 
@@ -1073,6 +1160,37 @@ public:
 	void operator=(AggressiveEntity entity);
 
 	~AggressiveEntity();
+};
+
+class AnigAreaGenerator : public SupportEntity
+{
+private:
+	EngineTypes::Ship::inventory_t buff_inventory;
+	bool from_rigth_side;
+public:
+	AnigAreaGenerator();
+	AnigAreaGenerator(const AnigAreaGenerator& anig_area_generator);
+	AnigAreaGenerator(
+		const ControledEntity* host,
+		Vec2F position,
+		EngineTypes::Ship::inventory_t buff_inventory,
+		bool from_rigth_side,
+		float radius = 0.0f,
+		float angle = 0.0f,
+		bool exist = true);
+	AnigAreaGenerator(
+		const ControledEntity* host,
+		const Vec2F* position,
+		EngineTypes::Ship::inventory_t buff_inventory,
+		bool from_rigth_side,
+		float radius = 0.0f,
+		float angle = 0.0f,
+		bool exist = true);
+
+	bool IsHaveShield();
+	Bomb Shoot();
+
+	~AnigAreaGenerator();
 };
 
 class DecelerationArea : public StaticEntity

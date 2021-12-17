@@ -460,6 +460,8 @@ void OpenGL::InitTextures()
     ship_basic_texture.Initialisate(    "Textures/Entities/Ship/Basic.png",     GL_RGBA,    GL_RGBA);
     ship_triple_texture.Initialisate(   "Textures/Entities/Ship/Triple.png",    GL_RGBA,    GL_RGBA);
 
+    turel_basic_texture.Initialisate(   "Textures/Entities/Turel/Basic.png",    GL_RGBA,    GL_RGBA);
+
     symbols_texture.Initialisate("Textures/Menu/Buttons/Symbols.bmp");
 }
 
@@ -981,6 +983,7 @@ void OpenGL::DrawObject(const Turel* turel, bool update_shader)
     {
         turel_buffer.Use();
         turel_shader.Use();
+        turel_basic_texture.Use();
         turel_shader.SetUniform("scale", window_scale);
         turel_shader.SetUniform("camera_position", temp__game__camera_position);
         turel_shader.SetUniform("camera_size", temp__game__camera_size);
@@ -1410,6 +1413,7 @@ void OpenGL::DrawTurels()
 {
     turel_buffer.Use();
     turel_shader.Use();
+    turel_basic_texture.Use();
     turel_shader.SetUniform("scale", window_scale);
     turel_shader.SetUniform("camera_position", temp__game__camera_position);
     turel_shader.SetUniform("camera_size", temp__game__camera_size);

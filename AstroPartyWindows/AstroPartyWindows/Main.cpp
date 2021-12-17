@@ -71,6 +71,9 @@ int main()
     //glfwWindowHint(GLFW_SAMPLES, 32);
     //glEnable(GL_MULTISAMPLE); //enable multisample
     //game cycle
+
+    printf("-------------------\n");
+
     while (!glfwWindowShouldClose(window))
     {
         main_draw_functions->ProcessInput(window); //check input data

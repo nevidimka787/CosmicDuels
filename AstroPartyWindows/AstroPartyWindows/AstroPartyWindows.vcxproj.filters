@@ -71,6 +71,9 @@
     <Filter Include="Textures\Entities\Bullet">
       <UniqueIdentifier>{795d857a-6074-48ea-b6b5-8af812117c06}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Classes\Файлы ресурсов\Entities">
+      <UniqueIdentifier>{5a37d09f-a626-4f04-8eb6-f4be861f5120}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -115,9 +118,6 @@
     <ClCompile Include="Classes\Camera.cpp">
       <Filter>Classes\Файлы ресурсов</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Entity.cpp">
-      <Filter>Classes\Файлы ресурсов</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Map.cpp">
       <Filter>Classes\Файлы ресурсов</Filter>
     </ClCompile>
@@ -135,6 +135,75 @@
     </ClCompile>
     <ClCompile Include="SubClasses\GameMap.cpp">
       <Filter>Classes\Файлы ресурсов</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Entities\AggressiveEntity.cpp">
+      <Filter>Classes\Файлы ресурсов\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Entities\AnigAreaGenerator.cpp">
+      <Filter>Classes\Файлы ресурсов\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Entities\Asteroid.cpp">
+      <Filter>Classes\Файлы ресурсов\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Entities\Bomb.cpp">
+      <Filter>Classes\Файлы ресурсов\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Entities\Bonus.cpp">
+      <Filter>Classes\Файлы ресурсов\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Entities\Bullet.cpp">
+      <Filter>Classes\Файлы ресурсов\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Entities\ControledEntity.cpp">
+      <Filter>Classes\Файлы ресурсов\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Entities\DecelerationArea.cpp">
+      <Filter>Classes\Файлы ресурсов\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Entities\DynamicEntity.cpp">
+      <Filter>Classes\Файлы ресурсов\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Entities\DynamicParticle.cpp">
+      <Filter>Classes\Файлы ресурсов\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Entities\Entity.cpp">
+      <Filter>Classes\Файлы ресурсов\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Entities\GravGen.cpp">
+      <Filter>Classes\Файлы ресурсов\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Entities\KillerEntity.cpp">
+      <Filter>Classes\Файлы ресурсов\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Entities\Knife.cpp">
+      <Filter>Classes\Файлы ресурсов\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Entities\Laser.cpp">
+      <Filter>Classes\Файлы ресурсов\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Entities\MegaLaser.cpp">
+      <Filter>Classes\Файлы ресурсов\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Entities\Particle.cpp">
+      <Filter>Classes\Файлы ресурсов\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Entities\Pilot.cpp">
+      <Filter>Classes\Файлы ресурсов\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Entities\Portal.cpp">
+      <Filter>Classes\Файлы ресурсов\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Entities\Ship.cpp">
+      <Filter>Classes\Файлы ресурсов\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Entities\StaticEntity.cpp">
+      <Filter>Classes\Файлы ресурсов\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Entities\Turel.cpp">
+      <Filter>Classes\Файлы ресурсов\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Entities\SupportEntity.cpp">
+      <Filter>Classes\Файлы ресурсов\Entities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

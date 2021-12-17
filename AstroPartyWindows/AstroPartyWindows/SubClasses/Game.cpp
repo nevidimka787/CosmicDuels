@@ -870,7 +870,7 @@ void Game::InitLevel()
 	start_bonus = BONUS_NOTHING;
 	if (game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_TRIPLE)
 	{
-		start_bonus |= (game_rules & GAME_RULE_TRIPLE_BONUSES) ? BONUS_BUFF_TRIPLE * 3 : BONUS_BUFF_TRIPLE;
+		start_bonus |= BONUS_BUFF_TRIPLE;
 	}
 	if (game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_SHIELD)
 	{
@@ -878,7 +878,7 @@ void Game::InitLevel()
 	}
 	if (game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_BONUS && !(game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_DIFFERENT_BONUS))
 	{
-		start_bonus |= GenerateRandomBonus() * ((game_rules & GAME_RULE_TRIPLE_BONUSES) ? 3 : 1);
+		start_bonus |= GenerateRandomInventory(BONUS_BONUS, 1, 1, 1, 1) * ((game_rules & GAME_RULE_TRIPLE_BONUSES) ? BONUS_CELL : 1);
 	}
 
 	//Set start bonus
@@ -892,13 +892,13 @@ void Game::InitLevel()
 			if (game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_BONUS && game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_DIFFERENT_BONUS)
 			{
 				start_bonus &= BONUS_ALL - BONUS_BONUS;
-				start_bonus |= GenerateRandomBonus();
+				start_bonus |= GenerateRandomInventory(BONUS_BONUS, 1, 1, 1, 1) * ((game_rules & GAME_RULE_TRIPLE_BONUSES) ? BONUS_CELL : 1);
 			}
 
 			AddEntity(
 				Ship(
-					&ships_positions[player],		//position
-					&zero_velocity,					//velocity
+					ships_positions[player],		//position
+					Vec2F(),						//velocity
 					player,							//player number
 					teams[player],					//team number
 					(void*)&rotate_flags[player],	//nothing
