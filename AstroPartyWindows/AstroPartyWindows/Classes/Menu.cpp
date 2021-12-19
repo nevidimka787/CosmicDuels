@@ -44,36 +44,24 @@ Area::Area(Vec2F* points, EngineTypes::Area::points_count_t points_count) :
 	}
 }
 
-bool Area::HavePointInside(Vec2F* point)
+bool Area::HavePointInside(Vec2F* point) const
 {
-	temp__beam1.Set(point, &horisontal_vector);
-	intersections_count = 0;
+	Beam temp__beam = Beam(point, &horisontal_vector);
+	unsigned intersections_count = 0;
+	Segment temp__segment = Segment(&points[points_count - 1], &points[0], true);
+	if (temp__segment.IsIntersection(&temp__beam))
+	{
+		intersections_count++;
+	}
 	for (EngineTypes::Area::points_count_t segment = 1; segment < points_count; segment++)
 	{
-		temp__segment1.Set(&points[segment - 1], &points[segment], true);
-		if (temp__beam1.IsIntersection(&temp__segment1))
+		temp__segment.Set(&points[segment - 1], &points[segment], true);
+		if (temp__beam.IsIntersection(&temp__segment))
 		{
 			intersections_count++;
 		}
 	}
-	temp__segment1.Set(&points[points_count - 1], &points[0], true);
-	if (temp__segment1.IsIntersection(&temp__beam1))
-	{
-		intersections_count++;
-	}
 	return (intersections_count % 2);
-}
-
-void Area::Set(Area* area)
-{
-	delete[] points;
-	points = new Vec2F[area->points_count];
-	points_count = area->points_count;
-
-	for (EngineTypes::Area::points_count_t point = 0; point < points_count; point++)
-	{
-		points[point] = area->points[point];
-	}
 }
 
 void Area::Set(const Area* area)
@@ -88,7 +76,7 @@ void Area::Set(const Area* area)
 	}
 }
 
-void Area::Set(Vec2F* points, EngineTypes::Area::points_count_t points_count)
+void Area::Set(const Vec2F* points, EngineTypes::Area::points_count_t points_count)
 {
 	delete[] this->points;
 	if (points_count < 3)
@@ -138,7 +126,15 @@ Button::Button(const Button& button) :
 	}
 }
 
-Button::Button(EngineTypes::Button::id_t id, Vec2F* position, Vec2F* size, Area* area, const char* text, EngineTypes::Button::text_size_t text_size, EngineTypes::Button::status_t status) :
+Button::Button(
+	EngineTypes::Button::id_t id,
+	const Vec2F* position,
+	const Vec2F* size,
+	const Area* area,
+	const char* text,
+	EngineTypes::Button::text_size_t text_size,
+	EngineTypes::Button::status_t status) 
+	:
 	id(id), 
 	position(*position), 
 	size(*size),
@@ -156,32 +152,32 @@ Button::Button(EngineTypes::Button::id_t id, Vec2F* position, Vec2F* size, Area*
 	}
 }
 
-EngineTypes::Button::id_t Button::GetId()
+EngineTypes::Button::id_t Button::GetId() const
 {
 	return id;
 }
 
-Vec2F Button::GetPosition()
+Vec2F Button::GetPosition() const
 {
 	return position;
 }
 
-Vec2F Button::GetSize()
+Vec2F Button::GetSize() const
 {
 	return size;
 }
 
-bool Button::GetStatus(EngineTypes::Button::status_t status_mask)
+bool Button::GetStatus(EngineTypes::Button::status_t status_mask) const
 {
 	return status & status_mask;
 }
 
-EngineTypes::Button::text_t* Button::GetText()
+EngineTypes::Button::text_t* Button::GetText() const
 {
 	return text;
 }
 
-char* Button::GetTextC()
+char* Button::GetTextC() const
 {
 	char* return_text = new char[text_length + 1];
 	for (EngineTypes::Button::text_length_t i = 0; i <= text_length; i++)
@@ -191,7 +187,7 @@ char* Button::GetTextC()
 	return return_text;
 }
 
-EngineTypes::Button::text_t* Button::GetTextU()
+EngineTypes::Button::text_t* Button::GetTextU() const
 {
 	EngineTypes::Button::text_t* return_text = new EngineTypes::Button::text_t[text_length + 1];
 	for (EngineTypes::Button::text_length_t i = 0; i <= text_length; i++)
@@ -201,12 +197,12 @@ EngineTypes::Button::text_t* Button::GetTextU()
 	return return_text;
 }
 
-uint16_t Button::GetTextLength()
+uint16_t Button::GetTextLength() const
 {
 	return text_length;
 }
 
-bool Button::HavePoint(Vec2F* point)
+bool Button::HavePoint(const Vec2F* point) const
 {
 	/*
 	if (size.x > 0.0f)
@@ -233,12 +229,12 @@ bool Button::HavePoint(Vec2F* point)
 	//*/
 }
 
-void Button::Move(Vec2F* move_vector)
+void Button::Move(const Vec2F* move_vector)
 {
 	position += *move_vector;
 }
 
-void Button::Set(Button* button)
+void Button::Set(const Button* button)
 {
 	area.Set(&button->area);
 	id = button->id;
@@ -457,17 +453,17 @@ void Menu::DeleteButton(EngineTypes::Menu::buttons_count_t button_number)
 	HardRecalculate();
 }
 
-EngineTypes::Menu::buttons_count_t Menu::GetButtonsCount()
+EngineTypes::Menu::buttons_count_t Menu::GetButtonsCount() const
 {
 	return buttons_count;
 }
 
-Vec2F Menu::GetPosition()
+Vec2F Menu::GetPosition() const
 {
 	return position;
 }
 
-Vec2F Menu::GetSize()
+Vec2F Menu::GetSize() const
 {
 	return size;
 }

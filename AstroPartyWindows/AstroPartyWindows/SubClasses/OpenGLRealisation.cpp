@@ -301,6 +301,7 @@ void OpenGL::InitBuffers()
     points[4].Set(-1.0f, 1.0f);
     points[5].Set(1.0f, -1.0f);
 
+    anig_area_generator_buffer.Initialisate(points, 6);
     asteroid_buffer.Initialisate(points, 6);
     bomb_buffer.Initialisate(points, 6);
     bonus_buffer.Initialisate(points, 6);
@@ -408,6 +409,7 @@ void OpenGL::InitOpenGL()
 
 void OpenGL::InitShaders()
 {
+    anig_area_gen_shader.Initialisate(      "Shaders/Objects/Vertex/AnigAreaGen.glsl"       ,   "Shaders/Objects/Fragment/AnigAreaGen.glsl");
     asteroid_shader.Initialisate(           "Shaders/Objects/Vertex/Asteroid.glsl"          ,   "Shaders/Objects/Fragment/Asteroid.glsl");
     bomb_shader.Initialisate(               "Shaders/Objects/Vertex/Bomb.glsl"              ,   "Shaders/Objects/Fragment/Bomb.glsl");
     bonus_shader.Initialisate(              "Shaders/Objects/Vertex/Bonus.glsl"             ,   "Shaders/Objects/Fragment/Bonus.glsl");
@@ -434,6 +436,8 @@ void OpenGL::InitShaders()
 
 void OpenGL::InitTextures()
 {
+    anig_area_gen_basic_texture.Initialisate("Textures/Entities/AnigAreaGen/Basic.png", GL_RGBA,    GL_RGBA);
+
     asteroid_small_texture.Initialisate(    "Textures/Entities/Asteroid/Small.png",     GL_RGBA,    GL_RGBA);
     asteroid_medium_texture.Initialisate(   "Textures/Entities/Asteroid/Medium.png",    GL_RGBA,    GL_RGBA);
     asteroid_large_texture.Initialisate(    "Textures/Entities/Asteroid/Large.png",     GL_RGBA,    GL_RGBA);
@@ -584,6 +588,12 @@ void OpenGL::DrawFrame()
             DrawShips();
         }
         game_p__ships_array_mtx->unlock();
+        game_p__anig_area_gens_array_mtx->lock();
+        if (*game_p__anig_area_gens_count > 0)
+        {
+            DrawAnigAreaGens();
+        }
+        game_p__anig_area_gens_array_mtx->unlock();
         game_p__deceler_areas_array_mtx->lock();
         if (*game_p__deceler_areas_count > 0)
         {
@@ -640,6 +650,31 @@ void OpenGL::DrawObject(const StaticEntity* static_entity, bool update_shader)
 void OpenGL::DrawObject(const DynamicEntity* dynamic_entity, bool update_shader)
 {
 
+}
+
+void OpenGL::DrawObject(const AnigAreaGen* anig_area_gen, bool update_shader)
+{
+    if(update_shader)
+    {
+        anig_area_generator_buffer.Use();
+        anig_area_gen_shader.Use();
+        anig_area_gen_basic_texture.Use();
+        anig_area_gen_shader.SetUniform("scale", window_scale);
+        anig_area_gen_shader.SetUniform("camera_position", temp__game__camera_position);
+        anig_area_gen_shader.SetUniform("camera_size", temp__game__camera_size);
+    }
+    anig_area_gen_shader.SetUniform("shield", 0);
+    anig_area_gen_shader.SetUniform("position", anig_area_gen->GetGlobalPosition());
+    anig_area_gen_shader.SetUniform("angle", anig_area_gen->GetGlobalAngle());
+    anig_area_gen_shader.SetUniform("radius", anig_area_gen->radius);
+    anig_area_generator_buffer.Draw();
+
+    if (anig_area_gen->IsHaveShield())
+    {
+        anig_area_gen_shader.SetUniform("shield", 1);
+        anig_area_gen_shader.SetUniform("radius", anig_area_gen->radius * 1.1f);
+        anig_area_generator_buffer.Draw();
+    }
 }
 
 void OpenGL::DrawObject(const Asteroid* asteroid, bool update_shader)
@@ -1130,6 +1165,24 @@ void OpenGL::DrawObject(Button* button, bool button_is_controller, bool update_s
 
 //Multydraw functions
 
+void OpenGL::DrawAnigAreaGens()
+{
+    anig_area_generator_buffer.Use();
+    anig_area_gen_shader.Use();
+    anig_area_gen_basic_texture.Use();
+    anig_area_gen_shader.SetUniform("scale", window_scale);
+    anig_area_gen_shader.SetUniform("camera_position", temp__game__camera_position);
+    anig_area_gen_shader.SetUniform("camera_size", temp__game__camera_size);
+    for (GameTypes::entities_count_t anig_area_gen = 0, found_anig_area_gens = 0; found_anig_area_gens < *game_p__anig_area_gens_count; anig_area_gen++)
+    {
+        if ((*game_p__anig_area_gens)[anig_area_gen].exist)
+        {
+            found_anig_area_gens++;
+            DrawObject(&(*game_p__anig_area_gens)[anig_area_gen]);
+        }
+    }
+}
+
 void OpenGL::DrawAsteroids()
 {
     asteroid_buffer.Use();
@@ -1442,7 +1495,7 @@ void OpenGL::DrawCurrentMenu()
     DrawIndicatedMenu(*game_p__current_active_menu);
 }
 
-void OpenGL::DrawIndicatedMap(Map* map)
+void OpenGL::DrawIndicatedMap(const Map* map)
 {
     void* map_element_p;
     if (map->rectangles_array_length > 0)
@@ -1497,7 +1550,7 @@ void OpenGL::DrawIndicatedMap(Map* map)
     }
 }
 
-void OpenGL::DrawIndicatedMenu(Menu* menu)
+void OpenGL::DrawIndicatedMenu(const Menu* menu)
 {
     if (menu == game_p__ships_control_menu)
     {

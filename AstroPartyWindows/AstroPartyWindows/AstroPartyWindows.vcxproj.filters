@@ -333,6 +333,12 @@
     <None Include="Shaders\Frames\Vertex\GameFrame.glsl">
       <Filter>Shaders\Vertex\Frame</Filter>
     </None>
+    <None Include="Shaders\Objects\Fragment\AnigAreaGen.glsl">
+      <Filter>Shaders\Fragment\Entityes</Filter>
+    </None>
+    <None Include="Shaders\Objects\Vertex\AnigAreaGen.glsl">
+      <Filter>Shaders\Vertex\Entityes</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\GameEngine.h">

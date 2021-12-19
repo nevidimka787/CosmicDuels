@@ -184,7 +184,8 @@ void InputOutputUpdate()
                 {
                     std::cout << "Thread lock detected." << std::endl;
                     std::cout << "Checking mutexes..." << std::endl;
-                    main_game->DebugLog__CheckMutexeslLock();
+                    //main_game->DebugLog__CheckMutexeslLock();
+                    std::cout << "WARNING::Checking mutexes function was disabled." << std::endl;
                 }
             }
             else if (!((lock_timer + 90) % 100)) //every second

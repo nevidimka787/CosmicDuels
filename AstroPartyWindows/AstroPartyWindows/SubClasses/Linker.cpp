@@ -46,6 +46,9 @@ Linker::Linker(Game* game_object, MenuFunctions* menu_functions_object, OpenGL* 
 
 	open_gl_object->object_p__menu_functions = menu_functions_object;
 
+	open_gl_object->game_p__anig_area_gens = &game_object->anig_area_gens;
+	open_gl_object->game_p__anig_area_gens_array_mtx = &game_object->anig_area_gens_array_mtx;
+	open_gl_object->game_p__anig_area_gens_count = &game_object->anig_area_gens_count;
 	open_gl_object->game_p__asteroids = &game_object->asteroids;
 	open_gl_object->game_p__asteroids_array_mtx = &game_object->asteroids_array_mtx;
 	open_gl_object->game_p__asteroids_count = &game_object->asteroids_count;

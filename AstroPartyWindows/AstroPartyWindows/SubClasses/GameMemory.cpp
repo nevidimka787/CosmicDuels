@@ -1,5 +1,24 @@
 #include "Game.h"
 
+
+
+void Game::AddEntity(AnigAreaGen new_anig_area_gen)
+{
+	if (new_anig_area_gen.exist)
+	{
+		for (GameTypes::entities_count_t anig_area_gen = 0; anig_area_gen < GAME_ANIG_AREAS_GENS_MAX_COUNT; anig_area_gen++)
+		{
+			if (anig_area_gens[anig_area_gen].exist == false)
+			{
+				anig_area_gens[anig_area_gen] = new_anig_area_gen;
+				anig_area_gens_count++;
+				return;
+				//printf("void Game::AddEntity(AnigAreaGen)::anig_area_gens_count:%3u\n", anig_area_gens_count);
+			}
+		}
+	}
+}
+
 void Game::AddEntity(Asteroid new_asteroid)
 {
 	if (new_asteroid.exist)
@@ -222,7 +241,6 @@ void Game::AddEntity(Pilot new_pilot)
 	}
 }
 
-
 void Game::AddEntity(Ship new_ship)
 {
 	if (new_ship.exist)
@@ -236,12 +254,21 @@ void Game::AddEntity(Ship new_ship)
 	}
 }
 
+void Game::RemoveEntity(AnigAreaGen* deleting_anig_area_gen)
+{
+	if (deleting_anig_area_gen->exist)
+	{
+		deleting_anig_area_gen->exist = false;
+		anig_area_gens_count--;
+	}
+}
+
 void Game::RemoveEntity(Asteroid* deleting_asteroid)
 {
 	if (deleting_asteroid->exist)
 	{
 		deleting_asteroid->exist = false;
-		Game::asteroids_count--;
+		asteroids_count--;
 	}
 }
 
@@ -250,7 +277,7 @@ void Game::RemoveEntity(Bomb* deleting_bomb)
 	if (deleting_bomb->exist)
 	{
 		deleting_bomb->exist = false;
-		Game::bombs_count--;
+		bombs_count--;
 	}
 }
 
@@ -259,7 +286,7 @@ void Game::RemoveEntity(Bonus* deleting_bonus)
 	if (deleting_bonus->exist)
 	{
 		deleting_bonus->exist = false;
-		Game::bonuses_count--;
+		bonuses_count--;
 	}
 }
 
@@ -268,7 +295,7 @@ void Game::RemoveEntity(Bullet* deleting_bullet)
 	if (deleting_bullet->exist)
 	{
 		deleting_bullet->exist = false;
-		Game::bullets_count--;
+		bullets_count--;
 	}
 }
 
@@ -277,7 +304,7 @@ void Game::RemoveEntity(DecelerationArea* deleting_deceler_area)
 	if (deleting_deceler_area->exist)
 	{
 		deleting_deceler_area->exist = false;
-		Game::deceler_areas_count--;
+		deceler_areas_count--;
 	}
 }
 
@@ -286,7 +313,7 @@ void Game::RemoveEntity(DynamicParticle* deleting_dynamic_particle)
 	if (deleting_dynamic_particle->exist)
 	{
 		deleting_dynamic_particle->exist = false;
-		Game::dynamic_particles_count--;
+		dynamic_particles_count--;
 	}
 }
 
@@ -295,7 +322,7 @@ void Game::RemoveEntity(GravGen* deleting_grav_gen)
 	if (deleting_grav_gen->exist)
 	{
 		deleting_grav_gen->exist = false;
-		Game::grav_gens_count--;
+		grav_gens_count--;
 	}
 }
 
@@ -304,7 +331,7 @@ void Game::RemoveEntity(Knife* deleting_knife)
 	if (deleting_knife->exist)
 	{
 		deleting_knife->exist = false;
-		Game::knifes_count--;
+		knifes_count--;
 	}
 }
 
@@ -313,7 +340,7 @@ void Game::RemoveEntity(Laser* deleting_lazer)
 	if (deleting_lazer->exist)
 	{
 		deleting_lazer->exist = false;
-		Game::lasers_count--;
+		lasers_count--;
 	}
 }
 
@@ -322,7 +349,7 @@ void Game::RemoveEntity(MegaLaser* deleting_mega_lazer)
 	if (deleting_mega_lazer->exist)
 	{
 		deleting_mega_lazer->exist = false;
-		Game::mega_lasers_count--;
+		mega_lasers_count--;
 	}
 }
 
@@ -331,7 +358,7 @@ void Game::RemoveEntity(Turel* deleting_turel)
 	if (deleting_turel->exist)
 	{
 		deleting_turel->exist = false;
-		Game::turels_count--;
+		turels_count--;
 	}
 }
 
@@ -340,7 +367,7 @@ void Game::RemoveEntity(Particle* deleting_particle)
 	if (deleting_particle->exist)
 	{
 		deleting_particle->exist = false;
-		Game::particles_count--;
+		particles_count--;
 	}
 }
 
@@ -935,6 +962,21 @@ void Game::DestroySupportEntitiesBy(ControledEntity* produser)
 			}
 		}
 	}
+	for (GameTypes::entities_count_t anig_area_gen = 0, found_anig_area_gens = 0; found_anig_area_gens < anig_area_gens_count; anig_area_gen++)
+	{
+		if (anig_area_gens[anig_area_gen].exist)
+		{
+			if (anig_area_gens[anig_area_gen].IsCreatedBy(produser))
+			{
+				//found_anig_area_gens++;
+				RemoveEntity(&anig_area_gens[anig_area_gen]);
+			}
+			else
+			{
+				found_anig_area_gens++;
+			}
+		}
+	}
 }
 
 
@@ -970,6 +1012,8 @@ void Game::AddBonuses(Ship* spawner)
 
 void Game::MemoryLock()
 {
+	anig_area_gens = new AnigAreaGen[GAME_ANIG_AREAS_GENS_MAX_COUNT];
+	anig_area_gens_count = 0;
 	asteroids = new Asteroid[GAME_ASTEROIDS_MAX_COUNT];
 	asteroids_count = 0;
 	bombs = new Bomb[GAME_BOMBS_MAX_COUNT];
@@ -1003,6 +1047,7 @@ void Game::MemoryLock()
 
 	burnout_flags = new bool[GAME_PLAYERS_MAX_COUNT];
 	burnout_double_clk_timer = new int32_t[GAME_PLAYERS_MAX_COUNT];
+	ships_shooting_flags = new bool[GAME_PLAYERS_MAX_COUNT];
 	shoot_flags = new bool[GAME_PLAYERS_MAX_COUNT];
 	rotate_flags = new bool[GAME_PLAYERS_MAX_COUNT];
 	ships_can_shoot_flags = new GameTypes::tic_t[GAME_PLAYERS_MAX_COUNT];
@@ -1021,6 +1066,7 @@ void Game::MemorySetDefault()
 	camera.SetLowLimits();
 	camera.SetScale(object_p__open_gl_realisation->GetScale());
 
+	anig_area_gens_count = 0;
 	asteroids_count = 0;
 	bombs_count = 0;
 	bonuses_count = 0;
@@ -1039,6 +1085,10 @@ void Game::MemorySetDefault()
 
 	for (GameTypes::entities_count_t entity = 0; entity < UINT16_MAX - 1; entity++)
 	{
+		if (entity < GAME_ANIG_AREAS_GENS_MAX_COUNT && anig_area_gens[entity].exist)
+		{
+			anig_area_gens[entity].exist = false;
+		}
 		if (entity < GAME_ASTEROIDS_MAX_COUNT && asteroids[entity].exist)
 		{
 			asteroids[entity].exist = false;
@@ -1111,6 +1161,8 @@ void Game::MemorySetDefault()
 
 void Game::MemoryFree()
 {
+	delete[] anig_area_gens;
+	anig_area_gens_count = 0;
 	delete[] asteroids;
 	asteroids_count = 0;
 	delete[] bombs;
@@ -1145,10 +1197,19 @@ void Game::MemoryFree()
 
 	delete[] burnout_flags;
 	delete[] burnout_double_clk_timer;
+	delete[] ships_shooting_flags;
 	delete[] shoot_flags;
 	delete[] rotate_flags;
 	delete[] ships_can_shoot_flags;
 	delete[] scores;
+}
+
+void Game::ClearShipsShootingFlags()
+{
+	for (GameTypes::players_count_t ship = 0; ship < GAME_PLAYERS_MAX_COUNT; ship++)
+	{
+		ships_shooting_flags[ship] = false;
+	}
 }
 
 //Memory functions.

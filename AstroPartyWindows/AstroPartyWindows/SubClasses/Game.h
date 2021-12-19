@@ -85,6 +85,9 @@ public:
 	//This variable chaned in NextLevel function.
 	GameTypes::score_t end_match_score;
 
+	//Count of anigilation area generators on the map.
+	GameTypes::entities_count_t anig_area_gens_count;
+	//Count of deceler areas on the map.
 	GameTypes::map_elements_count_t deceler_areas_count;
 	//Count of gravity generators on the map.
 	GameTypes::map_elements_count_t grav_gens_count;
@@ -129,7 +132,8 @@ public:
 
 	//game lists
 
-
+	//Array of flags store data about shoots of ships in current tic.
+	bool* ships_shooting_flags;
 	//Controled entities refer to this array.
 	bool* shoot_flags;
 	//Controled entities refer to this array.
@@ -138,8 +142,7 @@ public:
 	int32_t* burnout_double_clk_timer;
 	//Controled entities refer to this array.
 	bool* burnout_flags;
-	//true - The sheep can shoot one time.
-	//false - The sheep can't shoot.
+	//If value in the array then ship can shoot.
 	GameTypes::tic_t* ships_can_shoot_flags;
 	//This array contains flags for maps that will be used in the current match.
 	bool* map_pull_array;
@@ -161,6 +164,7 @@ public:
 	//Array of pilots.
 	Pilot* pilots;
 
+	AnigAreaGen* anig_area_gens;
 	//Array of asteroids.
 	Asteroid* asteroids;
 	//Array of bonuses.
@@ -197,6 +201,7 @@ public:
 
 	//game mutexes
 
+	std::shared_mutex anig_area_gens_array_mtx;
 	std::shared_mutex asteroids_array_mtx;
 	std::shared_mutex bombs_array_mtx;
 	std::shared_mutex bonuses_array_mtx;
@@ -253,50 +258,43 @@ public:
 
 	//menu objects
 
-	
+	//Function adds entity to array that store entities of the same type.
+	void AddEntity(AnigAreaGen anig_area_gen);
+
+	//Function adds entity to array that store entities of the same type.
+	void AddEntity(Asteroid new_asteroid);
+
 	//Function adds entity to array that store entities of the same type.
 	void AddEntity(Bonus new_bonus);
 	
 	//Function adds entity to array that store entities of the same type.
-	//Not checking nullprt!
-	void AddEntity(Asteroid new_asteroid);
-	
-	//Function adds entity to array that store entities of the same type.
-	//Not checking nullprt!
 	void AddEntity(Bullet new_bullet);
 	
 	//Function adds entity to array that store entities of the same type.
-	//Not checking nullprt!
 	void AddEntity(DecelerationArea new_deceleration_area);
 
 	//Function adds entity to array that store entities of the same type.
-	//Not checking nullprt!
 	void AddEntity(DynamicParticle new_particle);
 	
 	//Function adds entity to array that store entities of the same type.
-	//Not checking nullprt!
 	void AddEntity(GravGen new_grav_gen);
 	
 	//Function adds entity to array that store entities of the same type.
 	void AddEntity(Knife new_knife);
 	
 	//Function adds entity to array that store entities of the same type.
-	//Not checking nullprt!
 	void AddEntity(Bomb new_bomb);
 	
 	//Function adds entity to array that store entities of the same type.
-	//Not checking nullprt!
 	void AddEntity(Laser new_lazsr);
 	
 	//Function adds entity to array that store entities of the same type.
-	//Not checking nullprt!
 	void AddEntity(MegaLaser new_laser);
 	
 	//Function adds entity to array that store entities of the same type.
 	void AddEntity(Particle new_particle);
 
 	//Function adds entity to array that store entities of the same type.
-	//Not checking nullprt!
 	void AddEntity(Portal new_portal);
 	
 	//Function adds entity to array that store entities of the same type.
@@ -306,21 +304,19 @@ public:
 	void AddEntity(Ship new_particle);
 	
 	//Function adds entity to array that store entities of the same type.
-	//Not checking nullprt!
 	void AddEntity(Turel new_lazer);
 
 
+	//Function removes the specified entity from the array.
+	void RemoveEntity(AnigAreaGen* anig_area_gen);
+	
+	//Function removes the specified entity from the array.
+	void RemoveEntity(Asteroid* deleting_asteroid);
 
 	//Function removes the specified entity from the array.
-	//Not checking nullprt!
 	void RemoveEntity(Bonus* deleting_bonus);
 	
 	//Function removes the specified entity from the array.
-	//Not checking nullprt!
-	void RemoveEntity(Asteroid* deleting_asteroid);
-	
-	//Function removes the specified entity from the array.
-	//Not checking nullprt!
 	void RemoveEntity(Bomb* deleting_bomb);
 	
 	//Function removes the specified entity from the array.
@@ -351,7 +347,6 @@ public:
 	void RemoveEntity(Pilot* deleting_particle);
 	
 	//Function removes the specified entity from the array.
-	//Not checking nullprt!
 	void RemoveEntity(Ship* deleting_particle);
 	
 	//Function removes the specified entity from the array.
@@ -476,6 +471,8 @@ public:
 	//Update values that was linking with arrays.
 	void MemoryFree();
 
+	void ClearShipsShootingFlags();
+
 	//Memory functions
 	
 
@@ -562,20 +559,22 @@ public:
 	 3. portal
 	 4. ship
 	 5. pilot
-	 6. input_values
-	 7. mega_laser
-	 8. laser
-	 9. bomb
-	10. knife
-	11. turel
-	12. bullet
-	13. asteroid
-	14. bonus
-	15. map
-	16. particle
-	17. log
+	 6. anig_area_gen
+	 7. input_values
+	 8. mega_laser
+	 9. laser
+	10. bomb
+	11. knife
+	12. turel
+	13. bullet
+	14. asteroid
+	15. bonus
+	16. map
+	17. particle
+	18. dynamic_particle
+	19. log
 	
-	//deceler_area -> grav_gen -> camera -> portal -> ship -> pilot -> input_values ->  mega_laser -> laser ->  bomb -> knife -> turel -> bullet -> asteroid -> bonus -> map -> particle -> dynamic_particle -> log
+	//deceler_area -> grav_gen -> camera -> portal -> ship -> pilot -> anig_area_generator -> input_values ->  mega_laser -> laser ->  bomb -> knife -> turel -> bullet -> asteroid -> bonus -> map -> particle -> dynamic_particle -> log
 
 	bomb										bomb chain reaction
 	bomb -> asteroid -> bonus					bomb destroys asteroid after that bonus spawns
@@ -638,6 +637,10 @@ public:
 	*/
 
 	//entity update events
+
+	//mtx: anig_area_generator
+	//t = n
+	void AnigAreaGensShoot();
 
 	//mtx: bomb
 	//t = (n - 1) / 2 * n
@@ -864,6 +867,11 @@ public:
 	void UpdateMapPhase2();
 
 	//Update the position and velocity of entity.
+	//mtx: ship- > anig_areaa_gen
+	//t = n
+	void UpdateAnigAreaGensPhase2();
+
+	//Update the position and velocity of entity.
 	//mtx: asteroid
 	//t = n
 	void UpdateAsteroidsPhase2();
@@ -1035,7 +1043,9 @@ public:
 
 	void AddBonuses(Ship* spawner);
 		
-	
+	//mtx: anig_area_gen -> bomb
+	void AnigAreaGenShoot(AnigAreaGen* anig_area_gen);
+
 	//Not checking nullprt!
 	//mtx: laser -> bomb -> knife -> bullet
 	void ShipShoot(Ship* ship);

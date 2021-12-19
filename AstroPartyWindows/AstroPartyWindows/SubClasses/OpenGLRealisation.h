@@ -29,6 +29,7 @@ public:
 
 	//buffers
 
+	StaticBuffer anig_area_generator_buffer;
 	StaticBuffer asteroid_buffer;
 	StaticBuffer bomb_buffer;
 	StaticBuffer bonus_buffer;
@@ -82,6 +83,8 @@ public:
 
 	//shaders
 
+	//The shader use for draw anigilatio area generator.
+	Shader anig_area_gen_shader;
 	//The shader use for draw asteroids.
 	Shader asteroid_shader;
 	//The shader use for draw bombs.
@@ -131,6 +134,8 @@ public:
 
 	//The texture stores symbols and signs that will be drawn on the buttons.
 	Texture2D symbols_texture;
+
+	Texture2D anig_area_gen_basic_texture;
 
 	Texture2D asteroid_small_texture;
 	Texture2D asteroid_medium_texture;
@@ -194,6 +199,8 @@ public:
 	//The function draw dynamic entity as vague object.
 	void DrawObject(const DynamicEntity* dynamic_entity, bool update_shader = false);
 
+	//The function draw anigilation area generator..
+	void DrawObject(const AnigAreaGen* anig_area_gen, bool update_shader = false);
 	//The function draw asteroid.
 	void DrawObject(const Asteroid* asteroid, bool update_shader = false);
 	//The function draw asteroid.
@@ -239,6 +246,8 @@ public:
 
 	//Multydraw functions
 
+	//The function draw all anigilation area generators on the map.
+	void DrawAnigAreaGens();
 	//The function draw all asteroids on the map.
 	void DrawAsteroids();
 	//The function draw all bombs on the map.
@@ -275,9 +284,9 @@ public:
 	//The function draw current menu.
 	void DrawCurrentMenu();
 	//The function draww indicated map.
-	void DrawIndicatedMap(Map* map);
+	void DrawIndicatedMap(const Map* map);
 	//The function draw indicated menu.
-	void DrawIndicatedMenu(Menu* menu);
+	void DrawIndicatedMenu(const Menu* menu);
 
 	//Multydraw functions
 
@@ -304,45 +313,49 @@ public:
 
 	bool* game_p__play_match;
 	bool* game_p__play_round;
-	bool* game_p__flag_all_entities_initialisate;
-	bool* game_p__flag_round_results;
+	const bool* game_p__flag_all_entities_initialisate;
+	const bool* game_p__flag_round_results;
 
 	GameTypes::tic_t* game_p__global_timer;
 	GameTypes::tic_t* game_p__stuning_timer;
 
+	//Count of anigilation area generators on the map.
+	const GameTypes::entities_count_t* game_p__anig_area_gens_count;
 	//Count of asteroids on the map.
-	GameTypes::entities_count_t* game_p__asteroids_count;
+	const GameTypes::entities_count_t* game_p__asteroids_count;
 	//Count of bombs on the map.
-	GameTypes::entities_count_t* game_p__bombs_count;
+	const GameTypes::entities_count_t* game_p__bombs_count;
 	//Count of bonuses on the map.
-	GameTypes::entities_count_t* game_p__bonuses_count;
+	const GameTypes::entities_count_t* game_p__bonuses_count;
 	//Count of bullets on the map.
-	GameTypes::entities_count_t* game_p__bullets_count;
+	const GameTypes::entities_count_t* game_p__bullets_count;
 	//Count of deceleration areas on the map.
-	GameTypes::map_elements_count_t* game_p__deceler_areas_count;
+	const GameTypes::map_elements_count_t* game_p__deceler_areas_count;
 	//Count of particles on the map.
-	GameTypes::entities_count_t* game_p__dynamic_particles_count;
+	const GameTypes::entities_count_t* game_p__dynamic_particles_count;
 	//Count of gravity generators on the map.
-	GameTypes::map_elements_count_t* game_p__grav_gens_count;
+	const GameTypes::map_elements_count_t* game_p__grav_gens_count;
 	//Count of knifes on the map.
-	GameTypes::entities_count_t* game_p__knifes_count;
+	const GameTypes::entities_count_t* game_p__knifes_count;
 	//Count of lazers on the map.
-	GameTypes::entities_count_t* game_p__lasers_count;
+	const GameTypes::entities_count_t* game_p__lasers_count;
 	//Count of map's lazers on the map.
-	GameTypes::map_elements_count_t* game_p__mega_lasers_count;
+	const GameTypes::map_elements_count_t* game_p__mega_lasers_count;
 	//Count of particles on the map.
-	GameTypes::entities_count_t* game_p__particles_count;
+	const GameTypes::entities_count_t* game_p__particles_count;
 	//Count of portals on the map.
-	GameTypes::map_elements_count_t* game_p__portals_count;
+	const GameTypes::map_elements_count_t* game_p__portals_count;
 	//Count of pilots on the map.
-	GameTypes::players_count_t* game_p__pilots_count;
+	const GameTypes::players_count_t* game_p__pilots_count;
 	//Count of players on the map.
-	GameTypes::players_count_t* game_p__players_count;
+	const GameTypes::players_count_t* game_p__players_count;
 	//Count of ships on the map.
-	GameTypes::players_count_t* game_p__ships_count;
+	const GameTypes::players_count_t* game_p__ships_count;
 	//Count of turels on the map.
-	GameTypes::map_elements_count_t* game_p__turels_count;
+	const GameTypes::map_elements_count_t* game_p__turels_count;
 
+	//Array of anigilation area generators.
+	AnigAreaGen** game_p__anig_area_gens;
 	//Array of asteroids.
 	Asteroid** game_p__asteroids;
 	//Array of bombs.
@@ -379,23 +392,24 @@ public:
 
 	Menu** game_p__current_active_menu;
 
-	Menu* game_p__bonus_pull_menu;
-	Menu* game_p__main_menu;
-	Menu* game_p__map_pull_select_menu;
-	Menu* game_p__option_menu;
-	Menu* game_p__pause_menu;
-	Menu* game_p__ships_select_menu;
-	Menu* game_p__ships_control_menu;
-	Menu* game_p__spawning_objects_select_menu;
+	const Menu* game_p__bonus_pull_menu;
+	const Menu* game_p__main_menu;
+	const Menu* game_p__map_pull_select_menu;
+	const Menu* game_p__option_menu;
+	const Menu* game_p__pause_menu;
+	const Menu* game_p__ships_select_menu;
+	const Menu* game_p__ships_control_menu;
+	const Menu* game_p__spawning_objects_select_menu;
 
 	Camera* game_p__camera;
 
 	bool** game_p__rotate_flags;
-	bool* game_p__rotation_inverse;
+	const bool* game_p__rotation_inverse;
 	bool** game_p__shoot_flags;
 	int32_t** game_p__burnout_double_clk_timer;
 	bool** game_p__burnout_flag;
 
+	std::shared_mutex* game_p__anig_area_gens_array_mtx;
 	std::shared_mutex* game_p__asteroids_array_mtx;
 	std::shared_mutex* game_p__bombs_array_mtx;
 	std::shared_mutex* game_p__bonuses_array_mtx;

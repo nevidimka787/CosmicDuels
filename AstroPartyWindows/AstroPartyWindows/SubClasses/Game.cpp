@@ -363,6 +363,7 @@ void Game::PhysicThread3()
 	map_data_mtx.unlock();
 	bombs_array_mtx.unlock();
 
+	UpdateAnigAreaGensPhase2();
 	UpdateBombsPhase2();
 	UpdateAsteroidsPhase2();
 	UpdateDynamicParticlesPhase2();
@@ -1581,6 +1582,13 @@ void Th_11(std::shared_mutex* mtx_p, bool* return_data)
 	*return_data = false;
 }
 
+void Th_12(std::shared_mutex* mtx_p, bool* return_data)
+{
+	mtx_p->lock();
+	mtx_p->unlock();
+	*return_data = false;
+}
+
 void Game::DebugLog__CheckMutexeslLock()
 {
 	std::shared_mutex* mtx_00 = &deceler_areas_array_mtx;
@@ -1588,21 +1596,22 @@ void Game::DebugLog__CheckMutexeslLock()
 	std::shared_mutex* mtx_02 = &camera_data_mtx;
 	std::shared_mutex* mtx_03 = &ships_array_mtx;
 	std::shared_mutex* mtx_04 = &pilots_array_mtx;
-	std::shared_mutex* mtx_05 = &input_values_mtx;
-	std::shared_mutex* mtx_06 = &mega_lasers_array_mtx;
-	std::shared_mutex* mtx_07 = &lasers_array_mtx;
-	std::shared_mutex* mtx_08 = &bombs_array_mtx;
-	std::shared_mutex* mtx_09 = &knifes_array_mtx;
-	std::shared_mutex* mtx_0A = &turels_array_mtx;
-	std::shared_mutex* mtx_0B = &bullets_array_mtx;
-	std::shared_mutex* mtx_0C = &asteroids_array_mtx;
-	std::shared_mutex* mtx_0D = &bonuses_array_mtx;
-	std::shared_mutex* mtx_0E = &map_data_mtx;
-	std::shared_mutex* mtx_0F = &particles_array_mtx;
-	std::shared_mutex* mtx_10 = &dynamic_particles_array_mtx;
-	std::shared_mutex* mtx_11 = &log_data_mtx;
+	std::shared_mutex* mtx_05 = &anig_area_gens_array_mtx;
+	std::shared_mutex* mtx_06 = &input_values_mtx;
+	std::shared_mutex* mtx_07 = &mega_lasers_array_mtx;
+	std::shared_mutex* mtx_08 = &lasers_array_mtx;
+	std::shared_mutex* mtx_09 = &bombs_array_mtx;
+	std::shared_mutex* mtx_0A = &knifes_array_mtx;
+	std::shared_mutex* mtx_0B = &turels_array_mtx;
+	std::shared_mutex* mtx_0C = &bullets_array_mtx;
+	std::shared_mutex* mtx_0D = &asteroids_array_mtx;
+	std::shared_mutex* mtx_0E = &bonuses_array_mtx;
+	std::shared_mutex* mtx_0F = &map_data_mtx;
+	std::shared_mutex* mtx_10 = &particles_array_mtx;
+	std::shared_mutex* mtx_11 = &dynamic_particles_array_mtx;
+	std::shared_mutex* mtx_12 = &log_data_mtx;
 
-	bool data[18];
+	bool data[19];
 	for (uint8_t i = 0; i < 18; i++)
 	{
 		data[i] = true;
@@ -1613,19 +1622,20 @@ void Game::DebugLog__CheckMutexeslLock()
 	std::thread th_02(Th_02, mtx_02, &data[0x02]);//camera
 	std::thread th_03(Th_03, mtx_03, &data[0x03]);//ship
 	std::thread th_04(Th_04, mtx_04, &data[0x04]);//pilot
-	std::thread th_05(Th_05, mtx_05, &data[0x05]);//input
-	std::thread th_06(Th_06, mtx_06, &data[0x06]);//mega laser
-	std::thread th_07(Th_07, mtx_07, &data[0x07]);//laser
-	std::thread th_08(Th_08, mtx_08, &data[0x08]);//bomb
-	std::thread th_09(Th_09, mtx_09, &data[0x09]);//knife
-	std::thread th_0A(Th_0A, mtx_0A, &data[0x0A]);//turel
-	std::thread th_0B(Th_0B, mtx_0B, &data[0x0B]);//bullet
-	std::thread th_0C(Th_0C, mtx_0C, &data[0x0C]);//asteroid
-	std::thread th_0D(Th_0D, mtx_0D, &data[0x0D]);//bonus
-	std::thread th_0E(Th_0E, mtx_0E, &data[0x0E]);//map
-	std::thread th_0F(Th_0F, mtx_0F, &data[0x0F]);//particle
-	std::thread th_10(Th_10, mtx_10, &data[0x10]);//dynamic particle
-	std::thread th_11(Th_11, mtx_11, &data[0x11]);//log
+	std::thread th_05(Th_05, mtx_11, &data[0x05]);//anig_area_gen
+	std::thread th_06(Th_06, mtx_05, &data[0x06]);//input
+	std::thread th_07(Th_07, mtx_06, &data[0x07]);//mega laser
+	std::thread th_08(Th_08, mtx_07, &data[0x08]);//laser
+	std::thread th_09(Th_09, mtx_08, &data[0x09]);//bomb
+	std::thread th_0A(Th_0A, mtx_09, &data[0x0A]);//knife
+	std::thread th_0B(Th_0B, mtx_0A, &data[0x0B]);//turel
+	std::thread th_0C(Th_0C, mtx_0B, &data[0x0C]);//bullet
+	std::thread th_0D(Th_0D, mtx_0C, &data[0x0D]);//asteroid
+	std::thread th_0E(Th_0E, mtx_0D, &data[0x0E]);//bonus
+	std::thread th_0F(Th_0F, mtx_0E, &data[0x0F]);//map
+	std::thread th_10(Th_10, mtx_0F, &data[0x10]);//particle
+	std::thread th_11(Th_11, mtx_10, &data[0x11]);//dynamic particle
+	std::thread th_12(Th_12, mtx_11, &data[0x12]);//log
 
 	std::this_thread::sleep_for(std::chrono::seconds(1));
 
@@ -1661,6 +1671,7 @@ end_of_cycle:
 		th_0F.join();
 		th_10.join();
 		th_11.join();
+		th_12.join();
 
 		std::cout << "All mutexes are not locked." << std::endl;
 		return;
@@ -1711,7 +1722,7 @@ end_of_cycle:
 	{
 		printf("unlock\n");
 	}
-	printf(" 5. Input values:  ");
+	printf(" 5. AnigAreaGens:  ");
 	if (data[0x05])
 	{
 		printf("lock\n");
@@ -1720,7 +1731,7 @@ end_of_cycle:
 	{
 		printf("unlock\n");
 	}
-	printf(" 6. Mega lasers:   ");
+	printf(" 6. Input values:  ");
 	if (data[0x06])
 	{
 		printf("lock\n");
@@ -1729,7 +1740,7 @@ end_of_cycle:
 	{
 		printf("unlock\n");
 	}
-	printf(" 7. Lasers:        ");
+	printf(" 7. Mega lasers:   ");
 	if (data[0x07])
 	{
 		printf("lock\n");
@@ -1738,7 +1749,7 @@ end_of_cycle:
 	{
 		printf("unlock\n");
 	}
-	printf(" 8. Bombs:         ");
+	printf(" 8. Lasers:        ");
 	if (data[0x08])
 	{
 		printf("lock\n");
@@ -1747,7 +1758,7 @@ end_of_cycle:
 	{
 		printf("unlock\n");
 	}
-	printf(" 9. Knifes:        ");
+	printf(" 9. Bombs:         ");
 	if (data[0x09])
 	{
 		printf("lock\n");
@@ -1756,7 +1767,7 @@ end_of_cycle:
 	{
 		printf("unlock\n");
 	}
-	printf("10. Turels:        ");
+	printf("10. Knifes:        ");
 	if (data[0x0A])
 	{
 		printf("lock\n");
@@ -1765,7 +1776,7 @@ end_of_cycle:
 	{
 		printf("unlock\n");
 	}
-	printf("11. Bullets:       ");
+	printf("11. Turels:        ");
 	if (data[0x0B])
 	{
 		printf("lock\n");
@@ -1774,7 +1785,7 @@ end_of_cycle:
 	{
 		printf("unlock\n");
 	}
-	printf("12. Asteroids:     ");
+	printf("12. Bullets:       ");
 	if (data[0x0C])
 	{
 		printf("lock\n");
@@ -1783,7 +1794,7 @@ end_of_cycle:
 	{
 		printf("unlock\n");
 	}
-	printf("13. Bonuses:       ");
+	printf("13. Asteroids:     ");
 	if (data[0x0D])
 	{
 		printf("lock\n");
@@ -1792,7 +1803,7 @@ end_of_cycle:
 	{
 		printf("unlock\n");
 	}
-	printf("14. Map:           ");
+	printf("14. Bonuses:       ");
 	if (data[0x0E])
 	{
 		printf("lock\n");
@@ -1801,7 +1812,7 @@ end_of_cycle:
 	{
 		printf("unlock\n");
 	}
-	printf("15. Particles:     ");
+	printf("15. Map:           ");
 	if (data[0x0F])
 	{
 		printf("lock\n");
@@ -1810,7 +1821,7 @@ end_of_cycle:
 	{
 		printf("unlock\n");
 	}
-	printf("16. Dynam part-es: ");
+	printf("16. Particles:     ");
 	if (data[0x10])
 	{
 		printf("lock\n");
@@ -1819,8 +1830,17 @@ end_of_cycle:
 	{
 		printf("unlock\n");
 	}
-	printf("17. Logs:          ");
+	printf("17. Dynam part-es: ");
 	if (data[0x11])
+	{
+		printf("lock\n");
+	}
+	else
+	{
+		printf("unlock\n");
+	}
+	printf("18. Logs:          ");
+	if (data[0x12])
 	{
 		printf("lock\n");
 	}
@@ -1847,4 +1867,5 @@ end_of_cycle:
 	th_0F.join();
 	th_10.join();
 	th_11.join();
+	th_12.join();
 }

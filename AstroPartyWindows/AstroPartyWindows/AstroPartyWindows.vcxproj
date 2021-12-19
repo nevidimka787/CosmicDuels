@@ -208,6 +208,7 @@
     <None Include="Shaders\Menu\Fragment\Controler.glsl" />
     <None Include="Shaders\Menu\Vertex\Button.glsl" />
     <None Include="Shaders\Menu\Vertex\Controler.glsl" />
+    <None Include="Shaders\Objects\Fragment\AnigAreaGen.glsl" />
     <None Include="Shaders\Objects\Fragment\Asteroid.glsl" />
     <None Include="Shaders\Objects\Fragment\Bomb.glsl" />
     <None Include="Shaders\Objects\Fragment\Bonus.glsl" />
@@ -223,6 +224,7 @@
     <None Include="Shaders\Objects\Fragment\Portal.glsl" />
     <None Include="Shaders\Objects\Fragment\Ship.glsl" />
     <None Include="Shaders\Objects\Fragment\Turel.glsl" />
+    <None Include="Shaders\Objects\Vertex\AnigAreaGen.glsl" />
     <None Include="Shaders\Objects\Vertex\Asteroid.glsl" />
     <None Include="Shaders\Objects\Vertex\Bomb.glsl" />
     <None Include="Shaders\Objects\Vertex\Bonus.glsl" />

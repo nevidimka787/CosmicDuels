@@ -91,6 +91,21 @@ Vec2F SupportEntity::GetDirection() const
 	return local_direction;
 }
 
+Vec2F SupportEntity::GetGlobalAngle() const
+{
+	return angle;
+}
+
+Vec2F SupportEntity::GetGlobalPosition() const
+{
+	return position;
+}
+
+const ControledEntity* SupportEntity::GetHostP()
+{
+	return host_p;
+}
+
 Vec2F SupportEntity::GetNormalizeDirection() const
 {
 	return local_direction.Normalize();

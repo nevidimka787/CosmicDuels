@@ -61,6 +61,8 @@ turels, mega lasers
 #define GAME_MEGA_LASERS_MAX_COUNT	32
 //The maximum possible count of asteroids on the map.
 #define GAME_ASTEROIDS_MAX_COUNT	32
+//The maximum possible count of anigilation area generators on the map.
+#define GAME_ANIG_AREAS_GENS_MAX_COUNT	16
 //The maximum possible count of bonuses on the map.
 #define GAME_BONUSES_MAX_COUNT		32
 //The maximum possible count of bullets on the map.

@@ -3,6 +3,7 @@
 //Size of the area in that calculate all collisions.
 #define GAME_ENGINE_AREA_SIZE 10.0f
 
+#define ANIG_AREA_GEN_DEFAULT_RADIUS	0.02f
 
 #define AGGRESIVE_ENTITY_DEFAULT_ATTACK_DELLAY			0
 #define AGGRESIVE_ENTITY_DEFAULT_ATTACK_PERIOD			100

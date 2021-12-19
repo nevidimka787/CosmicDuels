@@ -282,6 +282,15 @@ template void Game::TeleportEntity<DynamicParticle>(Portal* portal, DynamicParti
 template void Game::TeleportEntity<Ship>(Portal* portal, Ship* ship);
 template void Game::TeleportEntity<Pilot>(Portal* portal, Pilot* pilot);
 
+void Game::AnigAreaGenShoot(AnigAreaGen* anig_area_gen)
+{
+	const ControledEntity* host_p = anig_area_gen->GetHostP();
+	if (host_p->GetShootInputValue() && ships_shooting_flags[host_p->GetPlayerNumber()])
+	{
+		AddEntity(anig_area_gen->Shoot());
+	}
+}
+
 void Game::ShipShoot(Ship* ship)
 {
 	if (ship->CanCreatingLoop())
@@ -679,8 +688,10 @@ void Game::ShipShoot(Ship* ship)
 
 void Game::ShipShoot_LaserLoopBombKnife(Ship* ship)
 {
-	std::cout << "Laser Loop Bomb Knife" << std::endl;
-	ShipShoot_NoBonus(ship);
+	anig_area_gens_array_mtx.lock();
+	AddEntity(AnigAreaGen(ship, Vec2F(0.0f, 1.0f), SHIP_BUFF_SHIELD));
+	AddEntity(AnigAreaGen(ship, Vec2F(0.0f, -1.0f), SHIP_BUFF_SHIELD));
+	anig_area_gens_array_mtx.unlock();
 	ships_can_shoot_flags[ship->GetPlayerNumber()] += GAME_ADD_DELLAY_BONUS_USE + GAME_ADD_DELLAY_COMBO_USE * 3;
 }
 
@@ -803,9 +814,6 @@ void Game::ShipShoot_Laser(Ship* ship)
 
 void Game::ShipShoot_NoBonus(Ship* ship)
 {
-	//ShipShoot_Loop(ship);
-	//return;
-
 	bullets_array_mtx.lock();
 	if (ship->IsHaveBuff(SHIP_BUFF_TRIPLE))
 	{
@@ -819,6 +827,8 @@ void Game::ShipShoot_NoBonus(Ship* ship)
 		AddEntity(ship->CreateBullet());
 	}
 	bullets_array_mtx.unlock();
+
+	ships_shooting_flags[ship->GetPlayerNumber()] = true;
 }
 
 void Game::CreateBomb(Laser* creator, Asteroid* producer)
@@ -871,6 +881,23 @@ void Game::CreateLoop(Laser* creator, Asteroid* producer)
 				BULLET_DEFAULT_RESISTANCE_AIR_COEFFICIENT,
 				bullets_radius));
 	}
+}
+
+void Game::UpdateAnigAreaGensPhase2()
+{
+	AnigAreaGen* temp__anig_area_gen_p = anig_area_gens;
+	ships_array_mtx.lock();
+	anig_area_gens_array_mtx.lock();
+	for (GameTypes::entities_count_t found_anig_area_gens = 0; found_anig_area_gens < anig_area_gens_count; temp__anig_area_gen_p++)
+	{
+		if (temp__anig_area_gen_p->exist)
+		{
+			temp__anig_area_gen_p->Update();
+			found_anig_area_gens++;
+		}
+	}
+	anig_area_gens_array_mtx.unlock();
+	ships_array_mtx.unlock();
 }
 
 void Game::UpdateAsteroidsPhase2()
@@ -1155,6 +1182,22 @@ void Game::UpdateMapPhase2()
 		}
 	}
 	map_data_mtx.unlock();
+}
+
+void Game::AnigAreaGensShoot()
+{
+	anig_area_gens_array_mtx.lock();
+	AnigAreaGen* temp__anig_area_gen_p = anig_area_gens;
+
+	for (GameTypes::entities_count_t found_anig_area_gens = 0; found_anig_area_gens < anig_area_gens_count; temp__anig_area_gen_p++)
+	{
+		if (temp__anig_area_gen_p->exist)
+		{
+			AnigAreaGenShoot(temp__anig_area_gen_p);
+			found_anig_area_gens++;
+		}
+	}
+	anig_area_gens_array_mtx.unlock();
 }
 
 void Game::BombsChainReaction()
@@ -2814,6 +2857,9 @@ void Game::ShipsShoot()
 		}
 	}
 	ships_array_mtx.unlock();
+
+	AnigAreaGensShoot();
+	ClearShipsShootingFlags();
 }
 
 void Game::ShipsRespawnOrDestroyPilots()
@@ -2880,6 +2926,7 @@ void Game::ShipsDestroedByBombsOrActivateBombs()
 				{
 					if (temp__bomb_p->IsBoom() && temp__ship_p->IsCollision(temp__bomb_p))
 					{
+						anig_area_gens_array_mtx.lock();
 						bonuses_array_mtx.lock();
 						dynamic_particles_array_mtx.lock();
 						log_data_mtx.lock();
@@ -2888,6 +2935,7 @@ void Game::ShipsDestroedByBombsOrActivateBombs()
 						bonuses_array_mtx.unlock();
 						dynamic_particles_array_mtx.unlock();
 						pilots_array_mtx.unlock();
+						anig_area_gens_array_mtx.unlock();
 						goto end_of_ship_cycle;
 					}
 					else if (!temp__bomb_p->IsActive() && !temp__bomb_p->IsCreatedByTeam(temp__ship_p) && temp__ship_p->GetDistance(temp__bomb_p) < temp__bomb_p->radius * BOMB_ACTIVATION_RADIUS_COEF)
@@ -2918,6 +2966,7 @@ void Game::ShipsDestroedByBullets()
 		if (temp__ship_p->exist)
 		{
 			pilots_array_mtx.lock();
+			anig_area_gens_array_mtx.lock();
 			bullets_array_mtx.lock();
 			for (bullet = 0, found_bullets = 0; found_bullets < bullets_count; bullet++)
 			{
@@ -2967,6 +3016,7 @@ void Game::ShipsDestroedByBullets()
 			found_ships++;
 		end_of_ship_cycle:
 			bullets_array_mtx.unlock();
+			anig_area_gens_array_mtx.unlock();
 			pilots_array_mtx.unlock();
 		}
 	}
@@ -2987,6 +3037,7 @@ void Game::ShipsDestroedByKnifes()
 		if (temp__ship_p->exist)
 		{
 			pilots_array_mtx.lock();
+			anig_area_gens_array_mtx.lock();
 			knifes_array_mtx.lock();
 			for (knife = 0, found_knifes = 0; found_knifes < knifes_count; knife++)
 			{
@@ -3008,6 +3059,7 @@ void Game::ShipsDestroedByKnifes()
 						dynamic_particles_array_mtx.unlock();
 						bonuses_array_mtx.unlock();
 						knifes_array_mtx.unlock();
+						anig_area_gens_array_mtx.unlock();
 						pilots_array_mtx.unlock();
 						goto end_of_ship_cycle;
 					}
@@ -3015,6 +3067,7 @@ void Game::ShipsDestroedByKnifes()
 				}
 			}
 			knifes_array_mtx.unlock();
+			anig_area_gens_array_mtx.unlock();
 			pilots_array_mtx.unlock();
 			found_ships++;
 		}
@@ -3036,6 +3089,7 @@ void Game::ShipsDestroedByLasers()
 		if (temp__ship_p->exist)
 		{
 			pilots_array_mtx.lock();
+			anig_area_gens_array_mtx.lock();
 			lasers_array_mtx.lock();
 			for (laser = 0, found_lasers = 0; found_lasers < lasers_count; laser++)
 			{
@@ -3055,6 +3109,7 @@ void Game::ShipsDestroedByLasers()
 						dynamic_particles_array_mtx.unlock();
 						bonuses_array_mtx.unlock();
 						lasers_array_mtx.unlock();
+						anig_area_gens_array_mtx.unlock();
 						pilots_array_mtx.unlock();
 						goto end_of_ship_cycle;
 					}
@@ -3062,6 +3117,7 @@ void Game::ShipsDestroedByLasers()
 				}
 			}
 			lasers_array_mtx.unlock();
+			anig_area_gens_array_mtx.unlock();
 			pilots_array_mtx.unlock();
 			found_ships++;
 		}
@@ -3082,6 +3138,7 @@ void Game::ShipsDestroedByMegaLasers()
 		temp__ship_p = &ships[ship];
 		if (temp__ship_p->exist)
 		{
+			anig_area_gens_array_mtx.lock();
 			mega_lasers_array_mtx.lock();
 			for (mega_laser = 0, found_mega_lasers = 0; found_mega_lasers < mega_lasers_count; mega_laser++)
 			{
@@ -3108,6 +3165,7 @@ void Game::ShipsDestroedByMegaLasers()
 			found_ships++;
 		end_of_ship_cycle:
 			mega_lasers_array_mtx.unlock();
+			anig_area_gens_array_mtx.unlock();
 		}
 	}
 	ships_array_mtx.unlock();

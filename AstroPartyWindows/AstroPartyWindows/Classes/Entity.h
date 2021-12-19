@@ -13,7 +13,7 @@
 #define M_PI 3.14159265358979323846
 
 class AggressiveEntity;
-class AnigAreaGenerator;
+class AnigAreaGen;
 class Bomb;
 class Bonus;
 class Bullet;
@@ -1060,6 +1060,10 @@ public:
 	float GetAngle() const;
 	//return local direction
 	Vec2F GetDirection() const;
+	Vec2F GetGlobalAngle() const;
+	Vec2F GetGlobalPosition() const;
+	//return pointer to host
+	const ControledEntity* GetHostP();
 	//return local direction
 	Vec2F GetNormalizeDirection() const;
 	GameTypes::players_count_t GetPlayerMasterNumber() const;
@@ -1162,35 +1166,34 @@ public:
 	~AggressiveEntity();
 };
 
-class AnigAreaGenerator : public SupportEntity
+class AnigAreaGen : public SupportEntity
 {
 private:
 	EngineTypes::Ship::inventory_t buff_inventory;
-	bool from_rigth_side;
 public:
-	AnigAreaGenerator();
-	AnigAreaGenerator(const AnigAreaGenerator& anig_area_generator);
-	AnigAreaGenerator(
+	AnigAreaGen();
+	AnigAreaGen(const AnigAreaGen& anig_area_generator);
+	AnigAreaGen(
 		const ControledEntity* host,
 		Vec2F position,
 		EngineTypes::Ship::inventory_t buff_inventory,
-		bool from_rigth_side,
-		float radius = 0.0f,
+		float radius = ANIG_AREA_GEN_DEFAULT_RADIUS,
 		float angle = 0.0f,
 		bool exist = true);
-	AnigAreaGenerator(
+	AnigAreaGen(
 		const ControledEntity* host,
 		const Vec2F* position,
 		EngineTypes::Ship::inventory_t buff_inventory,
-		bool from_rigth_side,
-		float radius = 0.0f,
+		float radius = ANIG_AREA_GEN_DEFAULT_RADIUS,
 		float angle = 0.0f,
 		bool exist = true);
 
-	bool IsHaveShield();
+	bool IsHaveShield() const;
 	Bomb Shoot();
+	
+	void operator=(AnigAreaGen anig_area_gen);
 
-	~AnigAreaGenerator();
+	~AnigAreaGen();
 };
 
 class DecelerationArea : public StaticEntity
