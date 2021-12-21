@@ -363,22 +363,22 @@ Button::~Button()
 
 
 Menu::Menu() :
-	default_buttons(new Button[1]),
-	current_buttons(new Button[1]),
-	buttons_count(1)
+	default_buttons(nullptr),
+	current_buttons(nullptr),
+	buttons_count(0)
 {
 }
 
 Menu::Menu(const Menu& menu):
-	default_buttons(new Button[menu.buttons_count]),
-	current_buttons(new Button[menu.buttons_count]),
 	buttons_count(menu.buttons_count),
+	current_buttons(menu.buttons_count > 0 ? new Button[menu.buttons_count] : nullptr),
+	default_buttons(menu.buttons_count > 0 ? new Button[menu.buttons_count] : nullptr),
 	position(menu.position),
 	size(menu.size)
 {
 	for (EngineTypes::Menu::buttons_count_t i = 0; i < buttons_count; i++)
 	{
-		default_buttons[i].Set(&menu.default_buttons[i]);
+		default_buttons[i].Set(&default_buttons[i]);
 	}
 	HardRecalculate();
 }
@@ -386,23 +386,13 @@ Menu::Menu(const Menu& menu):
 Menu::Menu(Vec2F* position, Vec2F* size, Button* buttons, EngineTypes::Menu::buttons_count_t buttons_count) :
 	position(*position),
 	size(*size),
-	buttons_count(buttons_count)
+	buttons_count(buttons_count),
+	current_buttons(buttons_count > 0 ? new Button[buttons_count] : nullptr),
+	default_buttons(buttons_count > 0 ? new Button[buttons_count] : nullptr)
 {
-	if (buttons_count == 0)
+	for (EngineTypes::Menu::buttons_count_t i = 0; i < buttons_count; i++)
 	{
-		buttons_count = 1;
-		current_buttons = new Button[1];
-		default_buttons = new Button[1];
-	}
-	else
-	{
-		current_buttons = new Button[buttons_count];
-		default_buttons = new Button[buttons_count];
-
-		for (EngineTypes::Menu::buttons_count_t i = 0; i < buttons_count; i++)
-		{
-			default_buttons[i].Set(&buttons[i]);
-		}
+		default_buttons[i].Set(&buttons[i]);
 	}
 	HardRecalculate();
 }
@@ -494,18 +484,30 @@ void Menu::Recalculate()
 
 void Menu::Set(Menu* menu)
 {
-	buttons_count = menu->buttons_count;
 	position = menu->position;
 	size = menu->size;
 
-	delete[] default_buttons;
-	delete[] current_buttons;
-
-	default_buttons = new Button[buttons_count];
-	current_buttons = new Button[buttons_count];
-	for (EngineTypes::Menu::buttons_count_t i = 0; i < buttons_count; i++)
+	if (buttons_count > 0)
 	{
-		default_buttons[i].Set(&menu->default_buttons[i]);
+		delete[] default_buttons;
+		delete[] current_buttons;
+	}
+
+	buttons_count = menu->buttons_count;
+
+	if (buttons_count > 0)
+	{
+		default_buttons = new Button[buttons_count];
+		current_buttons = new Button[buttons_count];
+		for (EngineTypes::Menu::buttons_count_t i = 0; i < buttons_count; i++)
+		{
+			default_buttons[i].Set(&menu->default_buttons[i]);
+		}
+	}
+	else
+	{
+		default_buttons = nullptr;
+		current_buttons = nullptr;
 	}
 	HardRecalculate();
 }
@@ -514,18 +516,16 @@ void Menu::Set(Vec2F* position, Vec2F* size, Button* buttons, EngineTypes::Menu:
 {
 	this->position = *position;
 	this->size = *size;
-	
-	delete[] this->current_buttons;
-	delete[] this->default_buttons;
-	if (buttons_count == 0)
+	if (this->buttons_count > 0)
 	{
-		this->buttons_count = 1;
-		current_buttons = new Button[1];
-		default_buttons = new Button[1];
+		delete[] this->current_buttons;
+		delete[] this->default_buttons;
 	}
-	else
+
+	this->buttons_count = buttons_count;
+
+	if (buttons_count > 0)
 	{
-		this->buttons_count = buttons_count;
 		current_buttons = new Button[buttons_count];
 		default_buttons = new Button[buttons_count];
 
@@ -533,6 +533,11 @@ void Menu::Set(Vec2F* position, Vec2F* size, Button* buttons, EngineTypes::Menu:
 		{
 			default_buttons[i].Set(&buttons[i]);
 		}
+	}
+	else
+	{
+		default_buttons = nullptr;
+		current_buttons = nullptr;
 	}
 	HardRecalculate();
 }
@@ -555,6 +560,9 @@ void Menu::UpdateDefaultButtons()
 
 Menu::~Menu()
 {
-	delete[] default_buttons;
-	delete[] current_buttons;
+	if (buttons_count > 0)
+	{
+		delete[] default_buttons;
+		delete[] current_buttons;
+	}
 }

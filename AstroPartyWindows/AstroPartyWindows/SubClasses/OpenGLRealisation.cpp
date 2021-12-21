@@ -1029,7 +1029,7 @@ void OpenGL::DrawObject(const Turel* turel, bool update_shader)
     turel_buffer.Draw();
 }
 
-void OpenGL::DrawObject(const Rectangle* rectangle, bool update_shader)
+void OpenGL::DrawObject(const Map::Rectangle* rectangle, bool update_shader)
 {
     if (update_shader)
     {
@@ -1044,7 +1044,7 @@ void OpenGL::DrawObject(const Rectangle* rectangle, bool update_shader)
     rectangle_buffer.Draw();
 }
 
-void OpenGL::DrawObject(const Cyrcle* cyrcle, bool update_shader)
+void OpenGL::DrawObject(const Map::Cyrcle* cyrcle, bool update_shader)
 {
     if (update_shader)
     {
@@ -1059,7 +1059,7 @@ void OpenGL::DrawObject(const Cyrcle* cyrcle, bool update_shader)
     cyrcle_buffer.Draw();
 }
 
-void OpenGL::DrawObject(const Polygon* polygon, bool update_shader)
+void OpenGL::DrawObject(const Map::Polygon* polygon, bool update_shader)
 {
     if (update_shader)
     {
@@ -1495,7 +1495,7 @@ void OpenGL::DrawCurrentMenu()
     DrawIndicatedMenu(*game_p__current_active_menu);
 }
 
-void OpenGL::DrawIndicatedMap(const Map* map)
+void OpenGL::DrawIndicatedMap(const Map::MapData* map)
 {
     void* map_element_p;
     if (map->rectangles_array_length > 0)
@@ -1508,9 +1508,9 @@ void OpenGL::DrawIndicatedMap(const Map* map)
         for (EngineTypes::Map::array_length_t rectangle = 0; rectangle < map->rectangles_array_length; rectangle++)
         {
             map_element_p = (void*)map->RectanglePointer(rectangle);
-            if (((Rectangle*)map_element_p)->exist)
+            if (((Map::Rectangle*)map_element_p)->exist)
             {
-                DrawObject((Rectangle*)map_element_p);
+                DrawObject((Map::Rectangle*)map_element_p);
             }
         }
     }
@@ -1525,9 +1525,9 @@ void OpenGL::DrawIndicatedMap(const Map* map)
         for (EngineTypes::Map::array_length_t cyrcle = 0; cyrcle < map->cyrcles_array_length; cyrcle++)
         {
             map_element_p = (void*)map->CyrclePointer(cyrcle);
-            if (((Cyrcle*)map_element_p)->exist)
+            if (((Map::Cyrcle*)map_element_p)->exist)
             {
-                DrawObject((Cyrcle*)map_element_p);
+                DrawObject((Map::Cyrcle*)map_element_p);
             }
         }
     }
@@ -1542,9 +1542,9 @@ void OpenGL::DrawIndicatedMap(const Map* map)
         for (EngineTypes::Map::array_length_t polygon = 0; polygon < map->polygons_array_length; polygon++)
         {
             map_element_p = (void*)map->PolygonPointer(polygon);
-            if (((Polygon*)map_element_p)->exist)
+            if (((Map::Polygon*)map_element_p)->exist)
             {
-                DrawObject((Polygon*)map_element_p);
+                DrawObject((Map::Polygon*)map_element_p);
             }
         }
     }

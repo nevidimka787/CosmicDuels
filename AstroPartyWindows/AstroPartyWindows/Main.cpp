@@ -145,38 +145,12 @@ void InputOutputUpdate()
             lock_timer++;//update local timer of console
             if (!(lock_timer % 100)) //every second
             {//draw data to console
-                std::cout << "Frame: " << frame << std::endl;
-                printf("P0\tTh0:%10llu\tTh1:%10llu\tTh2:%10llu\tTh3:%10llu\nP1\tTh0:%10llu\tTh1:%10llu\tTh2:%10llu\tTh3:%10llu\nPA\tTh0:%10llu\tTh1:%10llu\tTh2:%10llu\tTh3:%10llu\n\n",
-                    main_game->th0_p0_w, main_game->th1_p0_w, main_game->th2_p0_w, main_game->th3_p0_w,
-                    main_game->th0_p1_w, main_game->th1_p1_w, main_game->th2_p1_w, main_game->th3_p1_w,
-                    main_game->th0_pA_w, main_game->th1_pA_w, main_game->th2_pA_w, main_game->th3_pA_w);
-                uint64_t sum0 = main_game->th0_p0_w + main_game->th0_p1_w + main_game->th0_pA_w;
-                uint64_t sum1 = main_game->th1_p0_w + main_game->th1_p1_w + main_game->th1_pA_w;
-                uint64_t sum2 = main_game->th2_p0_w + main_game->th2_p1_w + main_game->th2_pA_w;
-                uint64_t sum3 = main_game->th3_p0_w + main_game->th3_p1_w + main_game->th3_pA_w;
-                uint64_t sum = sum0 + sum1 + sum2 + sum3;
-                printf("PS\tTh0:%10.0lf\tTh1:%10.0lf\tTh2:%10.0lf\tTh3:%10.0lf\n\n\n",
-                    (double)sum0 / (double)sum * 100.0, (double)sum1 / (double)sum * 100.0, (double)sum2 / (double)sum * 100.0, (double)sum3 / (double)sum * 100.0);
-
                 //reset counters
                 frame = 0;
                 ph0 = 0;
                 ph1 = 0;
                 ph2 = 0;
                 ph3 = 0;
-
-                main_game->th0_p0_w = 0;
-                main_game->th1_p0_w = 0;
-                main_game->th2_p0_w = 0;
-                main_game->th3_p0_w = 0;
-                main_game->th0_p1_w = 0;
-                main_game->th1_p1_w = 0;
-                main_game->th2_p1_w = 0;
-                main_game->th3_p1_w = 0;
-                main_game->th0_pA_w = 0;
-                main_game->th1_pA_w = 0;
-                main_game->th2_pA_w = 0;
-                main_game->th3_pA_w = 0;
             }
             else if (!((lock_timer + 60) % 100)) //every second
             {//check thread lock

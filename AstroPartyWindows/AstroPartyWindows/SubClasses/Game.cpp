@@ -1,5 +1,4 @@
 #include "Game.h"
-#include <math.h>
 
 #pragma warning(disable : 4244)
 #pragma warning(disable : 4302)
@@ -20,8 +19,7 @@
 
 void Game::PhysicThread0()
 {
-	//*opengl_p__drawing_lock = true;
-	//opengl_p__draw_lock0_mtx->lock();
+	//printf("0\t0\n");
 
 	BombsChainReaction();
 	BulletsDestroyAsteroids();
@@ -39,15 +37,15 @@ void Game::PhysicThread0()
 	ShipsRespawnOrDestroyPilots();
 	ShipsDestroedByBombsOrActivateBombs();
 
-	threads_statuses_mtx.lock();
-	threads_statuses |= THREAD_COMPLETE << THREAD_PHASE_1 << THREAD_0;
-	threads_statuses_mtx.unlock();
+	SetEvent(thread_event[0][1][0]);
+	SetEvent(thread_event[0][2][0]);
+	SetEvent(thread_event[0][3][0]);
 
-	//WaitPhase1();
-	while ((threads_statuses & THREAD_PHASE_1_COMPLETE) != THREAD_PHASE_1_COMPLETE)
-	{
-		th0_p0_w++;
-	}
+	WaitForSingleObject(thread_event[1][0][0], INFINITE);
+	WaitForSingleObject(thread_event[2][0][0], INFINITE);
+	WaitForSingleObject(thread_event[3][0][0], INFINITE);
+
+	//printf("0\t1\n");
 
 	UpdateGravGensPhase2();
 	UpdateDecelerAreasPhase2();
@@ -87,21 +85,34 @@ void Game::PhysicThread0()
 
 	PollEvents();
 
-	threads_statuses_mtx.lock();
-	threads_statuses |= THREAD_COMPLETE << THREAD_PHASE_2 << THREAD_0;
-	threads_statuses_mtx.unlock();
+	SetEvent(thread_event[0][1][1]);
+	SetEvent(thread_event[0][2][1]);
+	SetEvent(thread_event[0][3][1]);
 
-	//WaitPhaseAllPhases();
-	while ((threads_statuses & THREAD_ALL_PHASE_COMPLETE) != THREAD_ALL_PHASE_COMPLETE)
+	WaitForSingleObject(thread_event[1][0][1], INFINITE);
+	WaitForSingleObject(thread_event[2][0][1], INFINITE);
+	WaitForSingleObject(thread_event[3][0][1], INFINITE);
+
+	WaitForSingleObject(thread_event[1][1][0], INFINITE);
+	WaitForSingleObject(thread_event[2][2][0], INFINITE);
+	WaitForSingleObject(thread_event[3][3][0], INFINITE);
+
+	//printf("0\t2\n\n");
+
+	for (uint8_t th = 1, ev = 1; true; ev++)
 	{
-		th0_p1_w++;
+		if (ev >= 4)
+		{
+			if (th >= 3)
+			{
+				break;
+			}
+			ev = 0;
+			th++;
+		}
+		ResetEvent(thread_event[th][ev][0]);
+		ResetEvent(thread_event[th][ev][1]);
 	}
-
-	// *opengl_p__drawing_lock = false;
-
-	thread_1_update.lock();
-	thread_2_update.lock();
-	thread_3_update.lock();
 
 	CheckEndMatch();
 	if (flag_end_match)
@@ -109,26 +120,20 @@ void Game::PhysicThread0()
 		play_round = false;
 	}
 
-	threads_statuses_mtx.lock();
-	threads_statuses &= THREAD_MASK_NULL;
-	threads_statuses_mtx.unlock();
-
-	thread_1_update.unlock();
-	thread_2_update.unlock();
-	thread_3_update.unlock();
-
 	global_timer++;
 	if (stuning_timer > 0)
 	{
 		stuning_timer--;
 	}
 
-	//opengl_p__draw_lock0_mtx->unlock();
+	SetEvent(thread_event[0][0][0]);
+	SetEvent(thread_event[0][0][0]);
+	SetEvent(thread_event[0][0][0]);
 }
 
 void Game::PhysicThread1()
 {
-	//opengl_p__draw_lock1_mtx->lock();
+	//printf("1\t0\n");
 
 	PortalsTPAsteroids();
 	PortalsTPBombs();
@@ -149,15 +154,15 @@ void Game::PhysicThread1()
 	MegaLasersDestroyBullets();
 	ShipsCreateExaust();
 
-	threads_statuses_mtx.lock();
-	threads_statuses |= THREAD_COMPLETE << THREAD_PHASE_1 << THREAD_1;
-	threads_statuses_mtx.unlock();
+	SetEvent(thread_event[1][0][0]);
+	SetEvent(thread_event[1][2][0]);
+	SetEvent(thread_event[1][3][0]);
 
-	//WaitPhase1();
-	while ((threads_statuses & THREAD_PHASE_1_COMPLETE) != THREAD_PHASE_1_COMPLETE)
-	{
-		th1_p0_w++;
-	}
+	WaitForSingleObject(thread_event[0][1][0], INFINITE);
+	WaitForSingleObject(thread_event[2][1][0], INFINITE);
+	WaitForSingleObject(thread_event[3][1][0], INFINITE);
+
+	//printf("1\t1\n");
 
 	ships_array_mtx.lock();
 	asteroids_array_mtx.lock();
@@ -191,32 +196,22 @@ void Game::PhysicThread1()
 	UpdateBonusesPhase2();
 	UpdatePilotsPhase2();
 
-	thread_1_update.lock();
+	SetEvent(thread_event[1][0][1]);
+	SetEvent(thread_event[1][2][1]);
+	SetEvent(thread_event[1][3][1]);
 
-	threads_statuses_mtx.lock();
-	threads_statuses |= THREAD_COMPLETE << THREAD_PHASE_2 << THREAD_1;
-	threads_statuses_mtx.unlock();
+	WaitForSingleObject(thread_event[0][1][1], INFINITE);
+	WaitForSingleObject(thread_event[2][1][1], INFINITE);
+	WaitForSingleObject(thread_event[3][1][1], INFINITE);
 
-	//WaitPhaseAllPhases();
-	while ((threads_statuses & THREAD_ALL_PHASE_COMPLETE) != THREAD_ALL_PHASE_COMPLETE)
-	{
-		th1_p1_w++;
-	}
+	SetEvent(thread_event[1][1][0]);
 
-	thread_1_update.unlock();
-
-	//WaitPhaseNotAll();
-	while ((threads_statuses & THREAD_ALL_PHASE_COMPLETE) == THREAD_ALL_PHASE_COMPLETE)
-	{
-		th1_pA_w++;
-	}
-
-	//opengl_p__draw_lock1_mtx->unlock();
+	WaitForSingleObject(thread_event[0][0][0], INFINITE);
 }
 
 void Game::PhysicThread2()
 {
-	//opengl_p__draw_lock2_mtx->lock();
+	//printf("2\t0\n");
 
 	MegaLasersDetonateBombs();
 	//MegaLasersDestroyMap(); -- not realisated
@@ -234,15 +229,15 @@ void Game::PhysicThread2()
 	LasersDestroyAsteroids();
 	LasersDestroyBullets();
 
-	threads_statuses_mtx.lock();
-	threads_statuses |= THREAD_COMPLETE << THREAD_PHASE_1 << THREAD_2;
-	threads_statuses_mtx.unlock();
+	SetEvent(thread_event[2][0][0]);
+	SetEvent(thread_event[2][1][0]);
+	SetEvent(thread_event[2][3][0]);
 
-	//WaitPhase1();
-	while ((threads_statuses & THREAD_PHASE_1_COMPLETE) != THREAD_PHASE_1_COMPLETE)
-	{
-		th2_p0_w++;
-	}
+	WaitForSingleObject(thread_event[0][2][0], INFINITE);
+	WaitForSingleObject(thread_event[1][2][0], INFINITE);
+	WaitForSingleObject(thread_event[3][2][0], INFINITE);
+
+	//printf("2\t1\n");
 
 	pilots_array_mtx.lock();
 	DynamicEntitiesCollisions(pilots, pilots_count);
@@ -278,32 +273,22 @@ void Game::PhysicThread2()
 	UpdateKnifesPhase2();
 	UpdateLasersPhase2();
 
-	thread_2_update.lock();
+	SetEvent(thread_event[2][0][1]);
+	SetEvent(thread_event[2][1][1]);
+	SetEvent(thread_event[2][3][1]);
 
-	threads_statuses_mtx.lock();
-	threads_statuses |= THREAD_COMPLETE << THREAD_PHASE_2 << THREAD_2;
-	threads_statuses_mtx.unlock();
+	WaitForSingleObject(thread_event[0][2][1], INFINITE);
+	WaitForSingleObject(thread_event[1][2][1], INFINITE);
+	WaitForSingleObject(thread_event[3][2][1], INFINITE);
 
-	//WaitPhaseAllPhases();
-	while ((threads_statuses & THREAD_ALL_PHASE_COMPLETE) != THREAD_ALL_PHASE_COMPLETE)
-	{
-		th2_p1_w++;
-	}
+	SetEvent(thread_event[2][2][0]);
 
-	thread_2_update.unlock();
-
-	//WaitPhaseNotAll();
-	while ((threads_statuses & THREAD_ALL_PHASE_COMPLETE) == THREAD_ALL_PHASE_COMPLETE)
-	{
-		th2_pA_w++;
-	}
-
-	//opengl_p__draw_lock2_mtx->unlock();
+	WaitForSingleObject(thread_event[0][0][0], INFINITE);
 }
 
 void Game::PhysicThread3()
 {
-	//opengl_p__draw_lock3_mtx->lock();
+	//printf("3\t0\n");
 
 	KnifesDestroyTurels();
 	LasersDestroyMap();
@@ -321,15 +306,15 @@ void Game::PhysicThread3()
 	BombsDestroyKnifes();
 	BombsDestroyTurels();
 
-	threads_statuses_mtx.lock();
-	threads_statuses |= THREAD_COMPLETE << THREAD_PHASE_1 << THREAD_3;
-	threads_statuses_mtx.unlock();
+	SetEvent(thread_event[3][0][0]);
+	SetEvent(thread_event[3][1][0]);
+	SetEvent(thread_event[3][2][0]);
 
-	//WaitPhase1();
-	while ((threads_statuses & THREAD_PHASE_1_COMPLETE) != THREAD_PHASE_1_COMPLETE)
-	{
-		th3_p0_w++;
-	}
+	WaitForSingleObject(thread_event[0][3][0], INFINITE);
+	WaitForSingleObject(thread_event[1][3][0], INFINITE);
+	WaitForSingleObject(thread_event[2][3][0], INFINITE);
+
+	//printf("3\t1\n");
 
 	pilots_array_mtx.lock();
 	map_data_mtx.lock();
@@ -368,27 +353,17 @@ void Game::PhysicThread3()
 	UpdateAsteroidsPhase2();
 	UpdateDynamicParticlesPhase2();
 
-	thread_3_update.lock();
+	SetEvent(thread_event[3][0][1]);
+	SetEvent(thread_event[3][1][1]);
+	SetEvent(thread_event[3][2][1]);
 
-	threads_statuses_mtx.lock();
-	threads_statuses |= THREAD_COMPLETE << THREAD_PHASE_2 << THREAD_3;
-	threads_statuses_mtx.unlock();
+	WaitForSingleObject(thread_event[0][3][1], INFINITE);
+	WaitForSingleObject(thread_event[1][3][1], INFINITE);
+	WaitForSingleObject(thread_event[2][3][1], INFINITE);
 
-	//WaitPhaseAllPhases();
-	while ((threads_statuses & THREAD_ALL_PHASE_COMPLETE) != THREAD_ALL_PHASE_COMPLETE)
-	{
-		th3_p1_w++;
-	}
+	SetEvent(thread_event[3][3][0]);
 
-	thread_3_update.unlock();
-
-	//WaitPhaseNotAll();
-	while ((threads_statuses & THREAD_ALL_PHASE_COMPLETE) == THREAD_ALL_PHASE_COMPLETE)
-	{
-		th3_pA_w++;
-	}
-
-	//opengl_p__draw_lock3_mtx->unlock();
+	WaitForSingleObject(thread_event[0][0][0], INFINITE);
 }
 
 EngineTypes::Bonus::inventory_t Game::GenerateRandomBonus()
@@ -574,6 +549,22 @@ GameTypes::score_t Game::GetMaxScore()
 
 Game::Game()
 {
+	thread_event[0][0][0] = CreateEvent(NULL, false, false, NULL);
+	for (uint8_t th = 1, ev = 1; true; ev++)
+	{
+		if (ev >= 4)
+		{
+			if (th >= 3)
+			{
+				break;
+			}
+			th++;
+			ev = 0;
+		}
+		thread_event[th][ev][0] = CreateEvent(NULL, true, false, NULL);
+		thread_event[th][ev][1] = CreateEvent(NULL, true, false, NULL);
+	}
+
 	InitGame();
 	InitMenus();
 }
@@ -739,7 +730,7 @@ void Game::PollEvents()
 void Game::InitLevel()
 {
 	MutexesLock();
-	threads_statuses = THREAD_MASK_NULL;
+	//ResetAllThreadEvents();
 	srand(time(0));
 	play_round = true;
 	flag_round_results = false;
@@ -919,9 +910,7 @@ void Game::InitLevel()
 
 	MutexesUnlock();
 
-	threads_statuses_mtx.lock();
-	threads_statuses = THREAD_NEW_CYCLE;
-	threads_statuses_mtx.unlock();
+	//ResetAllThreadEvents();
 }
 
 void Game::InitMenus()
@@ -1439,19 +1428,25 @@ void Game::MutexesUnlock()
 	log_data_mtx.unlock();
 }
 
-void Game::WaitPhase1()
+void Game::ResetAllThreadEvents()
 {
-	while ((threads_statuses & THREAD_PHASE_1_COMPLETE) != THREAD_PHASE_1_COMPLETE);// std::this_thread::sleep_for(std::chrono::nanoseconds(THREAD_PHYSIC_WAIT_PERIOD));
-}
+	uint8_t th = 0, ev = 0;
 
-void Game::WaitPhaseAllPhases()
-{
-	while ((threads_statuses & THREAD_ALL_PHASE_COMPLETE) != THREAD_ALL_PHASE_COMPLETE);// std::this_thread::sleep_for(std::chrono::nanoseconds(THREAD_PHYSIC_WAIT_PERIOD));
-}
+	Start:
 
-void Game::WaitPhaseNotAll()
-{
-	while ((threads_statuses & THREAD_ALL_PHASE_COMPLETE) == THREAD_ALL_PHASE_COMPLETE);// std::this_thread::sleep_for(std::chrono::nanoseconds(THREAD_PHYSIC_WAIT_PERIOD));
+	if (ev >= 3)
+	{
+		if (th >= 3)
+		{
+			return;
+		}
+		ev = 0;
+		th++;
+	}
+	ResetEvent(thread_event[th][ev][0]);
+	ResetEvent(thread_event[th][ev][1]);
+
+	goto Start;
 }
 
 

@@ -215,7 +215,7 @@ void Game::Event5()
 
 	if (rotation_inverse)
 	{
-		Rectangle* rectangle_p = map.RectanglePointer(EVENT5__UP_RECTANGLE);
+		Map::Rectangle* rectangle_p = map.RectanglePointer(EVENT5__UP_RECTANGLE);
 		if (rectangle_p->Position().x < EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE)
 		{
 			//up rectangle
@@ -238,7 +238,7 @@ void Game::Event5()
 	}
 	else
 	{
-		Rectangle* rectangle_p = map.RectanglePointer(EVENT5__UP_RECTANGLE);
+		Map::Rectangle* rectangle_p = map.RectanglePointer(EVENT5__UP_RECTANGLE);
 
 		if (rectangle_p->Position().x > EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE)
 		{
@@ -315,7 +315,7 @@ void Game::Event8()
 #define EVENT8__MAX_SIZE		1.5f
 #define EVENT8__MIN_SIZE		0.5f
 
-	Polygon* temp__polygon_p;
+	Map::Polygon* temp__polygon_p;
 	float temp__angle = (float)(global_timer % EVENT8__PERIOD) / (float)EVENT8__PERIOD * (float)M_PI * 2.0f;
 	float temp__size = (sinf(temp__angle * 4.0f) / 2.0f + 0.5f) * (EVENT8__MAX_SIZE - EVENT8__MIN_SIZE);
 
@@ -483,7 +483,7 @@ void Game::CreateMap0(Vec2F* ships_positions, float* ships_angles)
 
 	/* Create map */
 
-	Rectangle* rectangles = new Rectangle[MAP_TEST_MAP__RECTANGLES_COUNT];
+	Map::Rectangle* rectangles = new Map::Rectangle[MAP_TEST_MAP__RECTANGLES_COUNT];
 
 	new_segment.Set(
 		Vec2F(MAP_TEST_MAP__CENTER_POSITION - MAP_TEST_MAP__FRAME_SIZE, MAP_TEST_MAP__CENTER_POSITION - MAP_TEST_MAP__FRAME_SIZE),
@@ -539,7 +539,7 @@ void Game::CreateMap1(Vec2F* ships_positions, float* ships_angles)
 
 	/* Create map */
 
-	Rectangle* rectangles = new Rectangle[MAP_TUREL_ON_CENTER__RECTANGLE_COUNT];
+	Map::Rectangle* rectangles = new Map::Rectangle[MAP_TUREL_ON_CENTER__RECTANGLE_COUNT];
 
 	new_segment.Set(
 		Vec2F(-MAP_TUREL_ON_CENTER__FRAME_SIZE + MAP_TUREL_ON_CENTER__CENTER_POSITION),
@@ -615,8 +615,8 @@ void Game::CreateMap2(Vec2F* ships_positions, float* ships_angles)
 
 	/* Create map */
 
-	Rectangle* rectangles = new Rectangle[MAP_GRAV_GEN__RECTANGLES_COUNT];
-	Cyrcle* cyrcles = new Cyrcle[MAP_GRAV_GEN__CYRCLES_COUNT];
+	Map::Rectangle* rectangles = new Map::Rectangle[MAP_GRAV_GEN__RECTANGLES_COUNT];
+	Map::Cyrcle* cyrcles = new Map::Cyrcle[MAP_GRAV_GEN__CYRCLES_COUNT];
 
 	diagonal.Set(
 		Vec2F(-MAP_GRAV_GEN__FRAME_SIZE + MAP_GRAV_GEN__CENTER_POSITION, -MAP_GRAV_GEN__FRAME_SIZE + MAP_GRAV_GEN__CENTER_POSITION),
@@ -690,7 +690,7 @@ void Game::CreateMap3(Vec2F* ships_positions, float* ships_angles)
 #define MAP_DECELERATION_AREA__LEFT_RECTANGEL_ID	4
 #define MAP_DECELERATION_AREA__RECTANGLES_COUNT		5
 
-	Rectangle* rectangles = new Rectangle[MAP_DECELERATION_AREA__RECTANGLES_COUNT];
+	Map::Rectangle* rectangles = new Map::Rectangle[MAP_DECELERATION_AREA__RECTANGLES_COUNT];
 
 	new_segment.Set(
 		Vec2F(-MAP_DECELERATION_AREA__FRAME_SIZE, -MAP_DECELERATION_AREA__FRAME_SIZE),
@@ -788,7 +788,7 @@ void Game::CreateMap4(Vec2F* ships_positions, float* ships_angles)
 
 	/* Create map */
 
-	Rectangle* rectangles = new Rectangle[MAP_MEGA_LASERS__RECTANGLES_COUNT];
+	Map::Rectangle* rectangles = new Map::Rectangle[MAP_MEGA_LASERS__RECTANGLES_COUNT];
 
 	Segment diagonal = Segment(
 		Vec2F(MAP_MEGA_LASERS__CENTER_POSITION + MAP_MEGA_LASERS__FRAME_SIZE, MAP_MEGA_LASERS__CENTER_POSITION + MAP_MEGA_LASERS__FRAME_SIZE),
@@ -888,7 +888,7 @@ void Game::CreateMap5(Vec2F* ships_positions, float* ships_angles)
 
 	/* Create map */
 
-	Rectangle* rectangles = new Rectangle[MAP_DYNAMICAL__RECTANGLES_COUNT];
+	Map::Rectangle* rectangles = new Map::Rectangle[MAP_DYNAMICAL__RECTANGLES_COUNT];
 
 	Segment diagonal = Segment(
 		Vec2F(
@@ -1003,7 +1003,7 @@ void Game::CreateMap6(Vec2F* ships_positions, float* ships_angles)
 
 	/* Create map */
 
-	Rectangle* rectangles = new Rectangle[MAP_DESTRUCTIBLE__RECTANGLES_COUNT];
+	Map::Rectangle* rectangles = new Map::Rectangle[MAP_DESTRUCTIBLE__RECTANGLES_COUNT];
 	Segment diagonal = Segment(
 		Vec2F(
 			-MAP_DESTRUCTIBLE__FRAME_SIZE + MAP_DESTRUCTIBLE__CENTER_POSTION,
@@ -1220,7 +1220,7 @@ void Game::CreateMap7(Vec2F* ships_positions, float* ships_angles)
 
 	/* Create map */
 
-	Rectangle* rectangles = new Rectangle[MAP_AGGRESSIVE__RECTANGLES_COUNT];
+	Map::Rectangle* rectangles = new Map::Rectangle[MAP_AGGRESSIVE__RECTANGLES_COUNT];
 	Segment diagonal = Segment(
 		Vec2F(MAP_AGGRESSIVE__CENTER_POSITION - MAP_AGGRESSIVE__FRAME_SIZE),
 		Vec2F(MAP_AGGRESSIVE__CENTER_POSITION + MAP_AGGRESSIVE__FRAME_SIZE),
@@ -1361,8 +1361,8 @@ void Game::CreateMap8(Vec2F* ships_positions, float* ships_angles)
 
 	/* Create map */
 
-	Rectangle* rectangles = new Rectangle[MAP_BROKEN__RECTANGLES_COUNT];
-	Polygon* polygons = new Polygon[MAP_BROKEN__POLYGONS_COUNT];
+	Map::Rectangle* rectangles = new Map::Rectangle[MAP_BROKEN__RECTANGLES_COUNT];
+	Map::Polygon* polygons = new Map::Polygon[MAP_BROKEN__POLYGONS_COUNT];
 	Vec2F* points = new Vec2F[MAP_BROKEN__STAR_POLYGON__POINTS_COUNT];
 
 	Segment diagonal = Segment(
@@ -1474,7 +1474,7 @@ void Game::CreateMap9(Vec2F* ships_positions, float* ships_angles)
 
 	/* Create map */
 
-	Rectangle* rectangles = new Rectangle[MAP_PORTAL__RECTANGLES_COUNT];
+	Map::Rectangle* rectangles = new Map::Rectangle[MAP_PORTAL__RECTANGLES_COUNT];
 
 	Segment segment = Segment(
 		Vec2F(MAP_PORTAL__CENTER_POSITION + MAP_PORTAL__FRAME_SIZE),
@@ -1682,7 +1682,7 @@ void Game::CreateMapRoundResults(GameTypes::players_count_t players_count, GameT
 	GameTypes::score_t score_amplitude = max_score * 2 + 1;
 	GameTypes::map_elements_count_t rectangles_count = players_count + score_amplitude;
 
-	Rectangle* rectangles = new Rectangle[rectangles_count];
+	Map::Rectangle* rectangles = new Map::Rectangle[rectangles_count];
 
 	//Create rows
 

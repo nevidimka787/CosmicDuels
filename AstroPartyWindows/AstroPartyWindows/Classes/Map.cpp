@@ -3,6 +3,8 @@
 #pragma warning(disable : 6384)
 #pragma warning(disable : 6385)
 
+using namespace Map;
+
 MapElement::MapElement() :
 	exist(true),
 	properties(MAP_DEFAULT_PROPERTIES)
@@ -141,7 +143,7 @@ Rectangle::Rectangle(const Segment* diagonal, EngineTypes::Map::property_t prope
 {
 }
 
-Rectangle::Rectangle(Vec2F point1, Vec2F point2, EngineTypes::Map::property_t properties, bool exist):
+Rectangle::Rectangle(Vec2F point1, Vec2F point2, EngineTypes::Map::property_t properties, bool exist) :
 	MapElement(point1, properties, exist),
 	point2(point2)
 {
@@ -932,7 +934,7 @@ Polygon::~Polygon()
 
 
 
-Map::Map(const Map& map) :
+MapData::MapData(const MapData& map) :
 	cyrcles_array_length(map.cyrcles_array_length),
 	polygons_array_length(map.polygons_array_length),
 	rectangles_array_length(map.rectangles_array_length)
@@ -978,7 +980,7 @@ Map::Map(const Map& map) :
 
 }
 
-Map::Map(const Rectangle* rectangles_array, EngineTypes::Map::array_length_t rectangles_array_length, const Cyrcle* cyrcles_array, EngineTypes::Map::array_length_t cyrcles_array_length, const Polygon* polygons_array, EngineTypes::Map::array_length_t polygons_array_length) :
+MapData::MapData(const Rectangle* rectangles_array, EngineTypes::Map::array_length_t rectangles_array_length, const Cyrcle* cyrcles_array, EngineTypes::Map::array_length_t cyrcles_array_length, const Polygon* polygons_array, EngineTypes::Map::array_length_t polygons_array_length) :
 	cyrcles_array_length(cyrcles_array_length),
 	polygons_array_length(polygons_array_length),
 	rectangles_array_length(rectangles_array_length)
@@ -1023,7 +1025,7 @@ Map::Map(const Rectangle* rectangles_array, EngineTypes::Map::array_length_t rec
 	}
 }
 
-Rectangle Map::GetRectangle(EngineTypes::Map::array_length_t number) const
+Rectangle MapData::GetRectangle(EngineTypes::Map::array_length_t number) const
 {
 	if (number >= rectangles_array_length)
 	{
@@ -1032,7 +1034,7 @@ Rectangle Map::GetRectangle(EngineTypes::Map::array_length_t number) const
 	return rectangles_array[number];
 }
 
-Cyrcle Map::GetCyrcle(EngineTypes::Map::array_length_t number) const
+Cyrcle MapData::GetCyrcle(EngineTypes::Map::array_length_t number) const
 {
 	if (number >= cyrcles_array_length)
 	{
@@ -1041,7 +1043,7 @@ Cyrcle Map::GetCyrcle(EngineTypes::Map::array_length_t number) const
 	return cyrcles_array[number];
 }
 
-Polygon Map::GetPolygon(EngineTypes::Map::array_length_t number) const
+Polygon MapData::GetPolygon(EngineTypes::Map::array_length_t number) const
 {
 	if (number >= polygons_array_length)
 	{
@@ -1050,7 +1052,7 @@ Polygon Map::GetPolygon(EngineTypes::Map::array_length_t number) const
 	return polygons_array[number];
 }
 
-Rectangle* Map::RectanglePointer(EngineTypes::Map::array_length_t number) const
+Rectangle* MapData::RectanglePointer(EngineTypes::Map::array_length_t number) const
 {
 	if (number >= rectangles_array_length)
 	{
@@ -1059,7 +1061,7 @@ Rectangle* Map::RectanglePointer(EngineTypes::Map::array_length_t number) const
 	return &rectangles_array[number];
 }
 
-Cyrcle* Map::CyrclePointer(EngineTypes::Map::array_length_t number) const
+Cyrcle* MapData::CyrclePointer(EngineTypes::Map::array_length_t number) const
 {
 	if (number >= cyrcles_array_length)
 	{
@@ -1068,7 +1070,7 @@ Cyrcle* Map::CyrclePointer(EngineTypes::Map::array_length_t number) const
 	return &cyrcles_array[number];
 }
 
-Polygon* Map::PolygonPointer(EngineTypes::Map::array_length_t number) const
+Polygon* MapData::PolygonPointer(EngineTypes::Map::array_length_t number) const
 {
 	if (number >= polygons_array_length)
 	{
@@ -1077,7 +1079,7 @@ Polygon* Map::PolygonPointer(EngineTypes::Map::array_length_t number) const
 	return &polygons_array[number];
 }
 
-void Map::Set(const Map* map)
+void MapData::Set(const MapData* map)
 {
 	if (cyrcles_array_length > 0)
 	{
@@ -1124,7 +1126,7 @@ void Map::Set(const Map* map)
 	}
 }
 
-void Map::Set(const Rectangle* rectangles_array, EngineTypes::Map::array_length_t rectangles_array_length, const Cyrcle* cyrcles_array, EngineTypes::Map::array_length_t cyrcles_array_length, const Polygon* polygons_array, EngineTypes::Map::array_length_t polygons_array_length)
+void MapData::Set(const Rectangle* rectangles_array, EngineTypes::Map::array_length_t rectangles_array_length, const Cyrcle* cyrcles_array, EngineTypes::Map::array_length_t cyrcles_array_length, const Polygon* polygons_array, EngineTypes::Map::array_length_t polygons_array_length)
 {
 	if (this->cyrcles_array_length > 0)
 	{
@@ -1171,7 +1173,7 @@ void Map::Set(const Rectangle* rectangles_array, EngineTypes::Map::array_length_
 	}
 }
 
-Map::~Map()
+MapData::~MapData()
 {
 	if (cyrcles_array_length > 0)
 	{

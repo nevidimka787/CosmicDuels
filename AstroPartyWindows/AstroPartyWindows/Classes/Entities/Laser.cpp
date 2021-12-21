@@ -40,7 +40,7 @@ Laser::Laser(
 	Update();
 }
 
-bool Laser::Collision(Map* map)
+bool Laser::Collision(Map::MapData* map)
 {
 	Beam beam = GetBeam();
 	bool collision = false;
@@ -50,11 +50,11 @@ bool Laser::Collision(Map* map)
 	for (element = 0; element < map->cyrcles_array_length; element++)
 	{
 		element_p = (void*)map->CyrclePointer(element);
-		if (((Cyrcle*)element_p)->exist &&
-			!((Cyrcle*)element_p)->IsUnbreacable() &&
-			((Cyrcle*)element_p)->IsCollision(&beam))
+		if (((Map::Cyrcle*)element_p)->exist &&
+			!((Map::Cyrcle*)element_p)->IsUnbreacable() &&
+			((Map::Cyrcle*)element_p)->IsCollision(&beam))
 		{
-			((Cyrcle*)element_p)->exist = false;
+			((Map::Cyrcle*)element_p)->exist = false;
 			collision = true;
 		}
 	}
@@ -62,11 +62,11 @@ bool Laser::Collision(Map* map)
 	for (EngineTypes::Map::array_length_t element = 0; element < map->polygons_array_length; element++)
 	{
 		element_p = (void*)map->PolygonPointer(element);
-		if (((Polygon*)element_p)->exist &&
-			!((Polygon*)element_p)->IsUnbreacable() &&
-			((Polygon*)element_p)->IsCollision(&beam))
+		if (((Map::Polygon*)element_p)->exist &&
+			!((Map::Polygon*)element_p)->IsUnbreacable() &&
+			((Map::Polygon*)element_p)->IsCollision(&beam))
 		{
-			((Polygon*)element_p)->exist = false;
+			((Map::Polygon*)element_p)->exist = false;
 			collision = true;
 		}
 	}
@@ -74,11 +74,11 @@ bool Laser::Collision(Map* map)
 	for (EngineTypes::Map::array_length_t element = 0; element < map->rectangles_array_length; element++)
 	{
 		element_p = (void*)map->RectanglePointer(element);
-		if (((Rectangle*)element_p)->exist &&
-			!((Rectangle*)element_p)->IsUnbreacable() &&
-			((Rectangle*)element_p)->IsCollision(&beam))
+		if (((Map::Rectangle*)element_p)->exist &&
+			!((Map::Rectangle*)element_p)->IsUnbreacable() &&
+			((Map::Rectangle*)element_p)->IsCollision(&beam))
 		{
-			((Rectangle*)element_p)->exist = false;
+			((Map::Rectangle*)element_p)->exist = false;
 			collision = true;
 		}
 	}

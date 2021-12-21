@@ -6,6 +6,8 @@
 #include "../Classes/GameEngine.h"
 
 #include <shared_mutex>
+#include <math.h>
+#include <Windows.h>
 
 class Game;
 class OpenGL;
@@ -16,21 +18,6 @@ class Game
 
 	//game variables
 public:
-	uint64_t th0_p0_w = 0;
-	uint64_t th1_p0_w = 0;
-	uint64_t th2_p0_w = 0;
-	uint64_t th3_p0_w = 0;
-	uint64_t th0_p1_w = 0;
-	uint64_t th1_p1_w = 0;
-	uint64_t th2_p1_w = 0;
-	uint64_t th3_p1_w = 0;
-	uint64_t th0_pA_w = 0;
-	uint64_t th1_pA_w = 0;
-	uint64_t th2_pA_w = 0;
-	uint64_t th3_pA_w = 0;
-
-
-
 	//Global tic value. Not use by functions.
 	GameTypes::tic_t global_timer;
 	//Global tic value when inverse flag was change value.
@@ -126,8 +113,6 @@ public:
 	//This variable stores all the values of rules of ghe game. To change the values of rules of ghe game use |= and &=. To get the values of rules of the game use &.
 	GameTypes::game_rules_t game_rules;
 
-	GameTypes::thread_flags_t threads_statuses;
-
 	//game variables
 
 	//game lists
@@ -183,7 +168,7 @@ public:
 	Particle* particles;
 
 	//Object stores data about map on current level.
-	Map map;
+	Map::MapData map;
 	//Array of deceleration areas.
 	DecelerationArea* deceler_areas;
 	//Array of gravity generators.
@@ -222,22 +207,12 @@ public:
 	std::shared_mutex ships_array_mtx;
 	std::shared_mutex turels_array_mtx;
 
-	//The thread was locked before start first phase of the physics calculation.
-	std::shared_mutex threads_statuses_mtx;
-
-	std::shared_mutex thread_0_update;
-	std::shared_mutex thread_1_update;
-	std::shared_mutex thread_2_update;
-	std::shared_mutex thread_3_update;
+	//first index -- number of sendind response thread
+	//second index -- number of geting response thread
+	//third index -- number of response
+	HANDLE thread_event[4][4][2];
 
 	//game mutexes
-
-	//phase flags
-
-	//Flags store information about completing first phase by current thread.
-	GameTypes::thread_flags_t thread_flags;
-
-	//phase flags
 
 	//menu objects
 
@@ -496,18 +471,18 @@ public:
 	//Use temp_p1
 	template<typename EntityType>
 	void DynamicEntitiesCollisions(
-		Map* map,
+		Map::MapData* map,
 		EntityType* entities,
 		GameTypes::entities_count_t entities_count);
 
 	void DynamicEntitiesCollisions(
-		Map* map,
+		Map::MapData* map,
 		Asteroid* asteroids,
 		GameTypes::entities_count_t asteroid_count);
 	
 	//The function calculates forces of collisions between entities in the array and elements of the map.
 	void DynamicEntitiesCollisions(
-		Map* map,
+		Map::MapData* map,
 		Bomb* entities,
 		GameTypes::entities_count_t entities_count);
 	
@@ -974,9 +949,7 @@ public:
 	//The thread calculte entities only.
 	void PhysicThread3();
 
-	void WaitPhase1();
-	void WaitPhaseAllPhases();
-	void WaitPhaseNotAll();
+	void ResetAllThreadEvents();
 
 	void DestroyEntity(Bomb* destroyer, Asteroid* entity);
 	void DestroyEntity(Bomb* destroyer, Bonus* entity);
@@ -1125,12 +1098,5 @@ public:
 
 	//open gl pointers
 	OpenGL* object_p__open_gl_realisation;
-
-	std::shared_mutex* opengl_p__draw_lock0_mtx;
-	std::shared_mutex* opengl_p__draw_lock1_mtx;
-	std::shared_mutex* opengl_p__draw_lock2_mtx;
-	std::shared_mutex* opengl_p__draw_lock3_mtx;
-
-	bool* opengl_p__drawing_lock;
 };
 

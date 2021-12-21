@@ -127,16 +127,16 @@ DynamicParticle Asteroid::CreateShards(GameTypes::tic_t current_tic) const
 		current_tic + PARTICLE_PERIOD_SHARDS_ASTEROID);
 }
 
-bool Asteroid::Collision(const Map* map)
+bool Asteroid::Collision(const Map::MapData* map)
 {
 	bool collision = false;
 	void* element_p;
 	for (uint8_t i = 0; i < map->rectangles_array_length; i++)
 	{
 		element_p = (void*)map->RectanglePointer(i);
-		if (((Rectangle*)element_p)->exist && DynamicEntity::Collision(((Rectangle*)element_p)))
+		if (((Map::Rectangle*)element_p)->exist && DynamicEntity::Collision(((Map::Rectangle*)element_p)))
 		{
-			if (((Rectangle*)element_p)->IsAggressive())
+			if (((Map::Rectangle*)element_p)->IsAggressive())
 			{
 				exist = false;
 				return true;
@@ -147,9 +147,9 @@ bool Asteroid::Collision(const Map* map)
 	for (uint8_t i = 0; i < map->cyrcles_array_length; i++)
 	{
 		element_p = (void*)map->CyrclePointer(i);
-		if (((Cyrcle*)element_p)->exist && DynamicEntity::Collision(((Cyrcle*)element_p)))
+		if (((Map::Cyrcle*)element_p)->exist && DynamicEntity::Collision(((Map::Cyrcle*)element_p)))
 		{
-			if (((Cyrcle*)element_p)->IsAggressive())
+			if (((Map::Cyrcle*)element_p)->IsAggressive())
 			{
 				exist = false;
 				return true;
@@ -160,9 +160,9 @@ bool Asteroid::Collision(const Map* map)
 	for (uint8_t i = 0; i < map->polygons_array_length; i++)
 	{
 		element_p = (void*)map->PolygonPointer(i);
-		if (((Polygon*)element_p)->exist && DynamicEntity::Collision(((Polygon*)element_p)))
+		if (((Map::Polygon*)element_p)->exist && DynamicEntity::Collision(((Map::Polygon*)element_p)))
 		{
-			if (((Rectangle*)element_p)->IsAggressive())
+			if (((Map::Rectangle*)element_p)->IsAggressive())
 			{
 				exist = false;
 				return true;

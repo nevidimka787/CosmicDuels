@@ -82,7 +82,7 @@ template void Game::DynamicEntitiesCollisions<Pilot, Bonus>(Pilot* entities1, Bo
 template void Game::DynamicEntitiesCollisions<Pilot, Ship>(Pilot* entities1, Ship* entities2, GameTypes::entities_count_t entities1_count, GameTypes::entities_count_t entities2_count);
 
 template<typename EntityType>
-void Game::DynamicEntitiesCollisions(Map* map, EntityType* entities, GameTypes::entities_count_t entities_count)
+void Game::DynamicEntitiesCollisions(Map::MapData* map, EntityType* entities, GameTypes::entities_count_t entities_count)
 {
 	for (GameTypes::entities_count_t i = 0, found = 0; found < entities_count; i++)
 	{
@@ -102,13 +102,13 @@ void Game::DynamicEntitiesCollisions(Map* map, EntityType* entities, GameTypes::
 	end_of_map_cycle:;
 	}
 }
-template void Game::DynamicEntitiesCollisions<Asteroid>(Map* map, Asteroid* entities, GameTypes::entities_count_t entities_count);
-template void Game::DynamicEntitiesCollisions<Bonus>(Map* map, Bonus* entities, GameTypes::entities_count_t entities_count);
-template void Game::DynamicEntitiesCollisions<Bullet>(Map* map, Bullet* entities, GameTypes::entities_count_t entities_count);
-template void Game::DynamicEntitiesCollisions<Ship>(Map* map, Ship* entities, GameTypes::entities_count_t entities_count);
-template void Game::DynamicEntitiesCollisions<Pilot>(Map* map, Pilot* entities, GameTypes::entities_count_t entities_count);
+template void Game::DynamicEntitiesCollisions<Asteroid>(Map::MapData* map, Asteroid* entities, GameTypes::entities_count_t entities_count);
+template void Game::DynamicEntitiesCollisions<Bonus>(Map::MapData* map, Bonus* entities, GameTypes::entities_count_t entities_count);
+template void Game::DynamicEntitiesCollisions<Bullet>(Map::MapData* map, Bullet* entities, GameTypes::entities_count_t entities_count);
+template void Game::DynamicEntitiesCollisions<Ship>(Map::MapData* map, Ship* entities, GameTypes::entities_count_t entities_count);
+template void Game::DynamicEntitiesCollisions<Pilot>(Map::MapData* map, Pilot* entities, GameTypes::entities_count_t entities_count);
 
-void Game::DynamicEntitiesCollisions(Map* map, Asteroid* asteroids, GameTypes::entities_count_t asteroids_count)
+void Game::DynamicEntitiesCollisions(Map::MapData* map, Asteroid* asteroids, GameTypes::entities_count_t asteroids_count)
 {
 	for (GameTypes::entities_count_t found = 0; found < asteroids_count; asteroids++)
 	{
@@ -145,7 +145,7 @@ void Game::DynamicEntitiesCollisions(Map* map, Asteroid* asteroids, GameTypes::e
 	}
 }
 
-void Game::DynamicEntitiesCollisions(Map* map, Bomb* bombs_array_p, GameTypes::entities_count_t entities_count)
+void Game::DynamicEntitiesCollisions(Map::MapData* map, Bomb* bombs_array_p, GameTypes::entities_count_t entities_count)
 {
 	for (GameTypes::entities_count_t found = 0; found < entities_count; bombs_array_p++)
 	{
@@ -1160,25 +1160,25 @@ void Game::UpdateMapPhase2()
 	for (EngineTypes::Map::array_length_t element = 0; element < map.rectangles_array_length; element++)
 	{
 		element_pointer = (void*)map.RectanglePointer(element);
-		if (((Rectangle*)element_pointer)->exist)
+		if (((Map::Rectangle*)element_pointer)->exist)
 		{
-			((Rectangle*)element_pointer)->Update();
+			((Map::Rectangle*)element_pointer)->Update();
 		}
 	}
 	for (EngineTypes::Map::array_length_t element = 0; element < map.cyrcles_array_length; element++)
 	{
 		element_pointer = (void*)map.CyrclePointer(element);
-		if (((Cyrcle*)element_pointer)->exist)
+		if (((Map::Cyrcle*)element_pointer)->exist)
 		{
-			((Cyrcle*)element_pointer)->Update();
+			((Map::Cyrcle*)element_pointer)->Update();
 		}
 	}
 	for (EngineTypes::Map::array_length_t element = 0; element < map.polygons_array_length; element++)
 	{
 		element_pointer = (void*)map.PolygonPointer(element);
-		if (((Polygon*)element_pointer)->exist)
+		if (((Map::Polygon*)element_pointer)->exist)
 		{
-			((Polygon*)element_pointer)->Update();
+			((Map::Polygon*)element_pointer)->Update();
 		}
 	}
 	map_data_mtx.unlock();

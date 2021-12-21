@@ -22,11 +22,6 @@ protected:
 	Vec2D* cursore_release_position;
 public:
 
-	std::shared_mutex draw_lock0_mtx;
-	std::shared_mutex draw_lock1_mtx;
-	std::shared_mutex draw_lock2_mtx;
-	std::shared_mutex draw_lock3_mtx;
-
 	//buffers
 
 	StaticBuffer anig_area_generator_buffer;
@@ -233,11 +228,11 @@ public:
 	void DrawObject(const Turel* turel, bool update_shader = false);
 
 	//The function draw map's rectangle.
-	void DrawObject(const Rectangle* rectangle, bool update_shader = false);
+	void DrawObject(const Map::Rectangle* rectangle, bool update_shader = false);
 	//The function draw map's cyrcle.
-	void DrawObject(const Cyrcle* cyrcle, bool update_shader = false);
+	void DrawObject(const Map::Cyrcle* cyrcle, bool update_shader = false);
 	//The function draw map's polygon.
-	void DrawObject(const Polygon* polygon, bool update_shader = false);
+	void DrawObject(const Map::Polygon* polygon, bool update_shader = false);
 
 	//The function draw menu's button.
 	void DrawObject(Button* button, bool button_is_controller = false, bool update_shader = false);
@@ -284,7 +279,7 @@ public:
 	//The function draw current menu.
 	void DrawCurrentMenu();
 	//The function draww indicated map.
-	void DrawIndicatedMap(const Map* map);
+	void DrawIndicatedMap(const Map::MapData* map);
 	//The function draw indicated menu.
 	void DrawIndicatedMenu(const Menu* menu);
 
@@ -378,7 +373,7 @@ public:
 	Ship** game_p__ships;
 
 	//Object stores data about map on current level.
-	Map* game_p__map;
+	Map::MapData* game_p__map;
 	//Array of deceleration_areas.
 	DecelerationArea** game_p__deceler_areas;
 	//Array of gravity generators.
@@ -429,9 +424,6 @@ public:
 	std::shared_mutex* game_p__pilots_array_mtx;
 	std::shared_mutex* game_p__ships_array_mtx;
 	std::shared_mutex* game_p__turels_array_mtx;
-
-	bool drawing_lock = false;
-
 
 	//menu functions pointers
 

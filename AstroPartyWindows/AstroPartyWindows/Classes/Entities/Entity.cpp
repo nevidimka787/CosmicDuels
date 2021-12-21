@@ -58,7 +58,7 @@ float Entity::GetDistance(const Beam* beam) const
 	return beam->Distance(&position) - radius, 0.0f;
 }
 
-float Entity::GetDistance(const Cyrcle* cyrcle, bool* is_inside) const
+float Entity::GetDistance(const Map::Cyrcle* cyrcle, bool* is_inside) const
 {
 	Vec2F temp = cyrcle->GetPosition();
 	float dist = GetDistance(&temp) - cyrcle->GetRadius();
@@ -107,12 +107,12 @@ float Entity::GetDistance(const StaticEntity* entity) const
 	return entity->GetDistance(&position) - radius;
 }
 
-float Entity::GetDistance(const Polygon* polygon) const
+float Entity::GetDistance(const Map::Polygon* polygon) const
 {
 	return 0.0;
 }
 
-float Entity::GetDistance(const Rectangle* rectangle) const
+float Entity::GetDistance(const Map::Rectangle* rectangle) const
 {
 	Segment temp = rectangle->UpSide();
 	float dist1 = GetDistance(&temp);
@@ -209,7 +209,7 @@ bool Entity::IsCollision(Beam* beam) const
 	return beam->Distance(position) <= radius;
 }
 
-bool Entity::IsCollision(Cyrcle* cyrcle) const
+bool Entity::IsCollision(Map::Cyrcle* cyrcle) const
 {
 	if (cyrcle->exist == false)
 	{
@@ -258,7 +258,7 @@ bool Entity::IsCollision(MegaLaser* mega_laser) const
 		Segment(start.point + segment.vector, start.vector).Distance(position) < radius;
 }
 
-bool Entity::IsCollision(Map* map) const
+bool Entity::IsCollision(Map::MapData* map) const
 {
 	for (uint8_t i = 0; i < map->rectangles_array_length; i++)
 	{
@@ -284,7 +284,7 @@ bool Entity::IsCollision(Map* map) const
 	return false;
 }
 
-bool Entity::IsCollision(Polygon* polygon) const
+bool Entity::IsCollision(Map::Polygon* polygon) const
 {
 	if (!polygon->exist)
 	{
@@ -314,7 +314,7 @@ bool Entity::IsCollision(Polygon* polygon) const
 	return false;
 }
 
-bool Entity::IsCollision(Rectangle* rectangle) const
+bool Entity::IsCollision(Map::Rectangle* rectangle) const
 {
 	if (rectangle->exist == false)
 	{

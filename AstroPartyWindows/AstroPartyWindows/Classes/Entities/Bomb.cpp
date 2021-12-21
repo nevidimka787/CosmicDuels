@@ -110,7 +110,7 @@ bool Bomb::CanRemove() const
 	return status & BOMB_STATUS_CAN_REMOVE;
 }
 
-bool Bomb::Collision(const Map* map)
+bool Bomb::Collision(const Map::MapData* map)
 {
 	void* map_element;
 	bool collision = false;
@@ -120,27 +120,27 @@ bool Bomb::Collision(const Map* map)
 		for (EngineTypes::Map::array_length_t i = 0; i < map->cyrcles_array_length; i++)
 		{
 			map_element = (void*)map->CyrclePointer(i);
-			if (((Cyrcle*)map_element)->exist && !(((Cyrcle*)map_element)->Prorerties() & MAP_PROPERTY_UNBREACABLE) && DynamicEntity::IsCollision((Cyrcle*)map_element))
+			if (((Map::Cyrcle*)map_element)->exist && !(((Map::Cyrcle*)map_element)->Prorerties() & MAP_PROPERTY_UNBREACABLE) && DynamicEntity::IsCollision((Map::Cyrcle*)map_element))
 			{
-				((Cyrcle*)map_element)->exist = false;
+				((Map::Cyrcle*)map_element)->exist = false;
 				collision = true;
 			}
 		}
 		for (EngineTypes::Map::array_length_t i = 0; i < map->polygons_array_length; i++)
 		{
 			map_element = (void*)map->PolygonPointer(i);
-			if (((Polygon*)map_element)->exist && !(((Polygon*)map_element)->Prorerties() & MAP_PROPERTY_UNBREACABLE) && DynamicEntity::IsCollision((Polygon*)map_element))
+			if (((Map::Polygon*)map_element)->exist && !(((Map::Polygon*)map_element)->Prorerties() & MAP_PROPERTY_UNBREACABLE) && DynamicEntity::IsCollision((Map::Polygon*)map_element))
 			{
-				((Polygon*)map_element)->exist = false;
+				((Map::Polygon*)map_element)->exist = false;
 				collision = true;
 			}
 		}
 		for (EngineTypes::Map::array_length_t i = 0; i < map->rectangles_array_length; i++)
 		{
 			map_element = (void*)map->RectanglePointer(i);
-			if (((Rectangle*)map_element)->exist && !(((Rectangle*)map_element)->Prorerties() & MAP_PROPERTY_UNBREACABLE) && DynamicEntity::IsCollision((Rectangle*)map_element))
+			if (((Map::Rectangle*)map_element)->exist && !(((Map::Rectangle*)map_element)->Prorerties() & MAP_PROPERTY_UNBREACABLE) && DynamicEntity::IsCollision((Map::Rectangle*)map_element))
 			{
-				((Rectangle*)map_element)->exist = false;
+				((Map::Rectangle*)map_element)->exist = false;
 				collision = true;
 			}
 		}
@@ -150,25 +150,25 @@ bool Bomb::Collision(const Map* map)
 	for (EngineTypes::Map::array_length_t i = 0; i < map->cyrcles_array_length; i++)
 	{
 		map_element = (void*)map->CyrclePointer(i);
-		if (((Cyrcle*)map_element)->exist)
+		if (((Map::Cyrcle*)map_element)->exist)
 		{
-			collision |= DynamicEntity::Collision((Cyrcle*)map_element);
+			collision |= DynamicEntity::Collision((Map::Cyrcle*)map_element);
 		}
 	}
 	for (EngineTypes::Map::array_length_t i = 0; i < map->polygons_array_length; i++)
 	{
 		map_element = (void*)map->PolygonPointer(i);
-		if (((Polygon*)map_element)->exist)
+		if (((Map::Polygon*)map_element)->exist)
 		{
-			collision |= DynamicEntity::Collision((Polygon*)map_element);
+			collision |= DynamicEntity::Collision((Map::Polygon*)map_element);
 		}
 	}
 	for (EngineTypes::Map::array_length_t i = 0; i < map->rectangles_array_length; i++)
 	{
 		map_element = (void*)map->RectanglePointer(i);
-		if (((Rectangle*)map_element)->exist)
+		if (((Map::Rectangle*)map_element)->exist)
 		{
-			collision |= DynamicEntity::Collision((Rectangle*)map_element);
+			collision |= DynamicEntity::Collision((Map::Rectangle*)map_element);
 		}
 	}
 	return collision;

@@ -75,18 +75,18 @@ Bullet::Bullet(
 {
 }
 
-bool Bullet::Collision(Map* map)
+bool Bullet::Collision(Map::MapData* map)
 {
 	void* element_p;
 	EngineTypes::Map::array_length_t element;
 	for (element = 0; element < map->cyrcles_array_length; element++)
 	{
 		element_p = (void*)map->CyrclePointer(element);
-		if (((Cyrcle*)element_p)->exist && DynamicEntity::IsCollision((Cyrcle*)element_p))
+		if (((Map::Cyrcle*)element_p)->exist && DynamicEntity::IsCollision((Map::Cyrcle*)element_p))
 		{
-			if (!((Cyrcle*)element_p)->IsUnbreacable())
+			if (!((Map::Cyrcle*)element_p)->IsUnbreacable())
 			{
-				((Cyrcle*)element_p)->exist = false;
+				((Map::Cyrcle*)element_p)->exist = false;
 			}
 			return true;
 		}
@@ -94,11 +94,11 @@ bool Bullet::Collision(Map* map)
 	for (element = 0; element < map->polygons_array_length; element++)
 	{
 		element_p = (void*)map->PolygonPointer(element);
-		if (((Polygon*)element_p)->exist && DynamicEntity::IsCollision((Polygon*)element_p))
+		if (((Map::Polygon*)element_p)->exist && DynamicEntity::IsCollision((Map::Polygon*)element_p))
 		{
-			if (!((Polygon*)element_p)->IsUnbreacable())
+			if (!((Map::Polygon*)element_p)->IsUnbreacable())
 			{
-				((Polygon*)element_p)->exist = false;
+				((Map::Polygon*)element_p)->exist = false;
 			}
 			return true;
 		}
@@ -106,11 +106,11 @@ bool Bullet::Collision(Map* map)
 	for (element = 0; element < map->rectangles_array_length; element++)
 	{
 		element_p = (void*)map->RectanglePointer(element);
-		if (((Rectangle*)element_p)->exist && DynamicEntity::IsCollision((Rectangle*)element_p))
+		if (((Map::Rectangle*)element_p)->exist && DynamicEntity::IsCollision((Map::Rectangle*)element_p))
 		{
-			if (!((Rectangle*)element_p)->IsUnbreacable())
+			if (!((Map::Rectangle*)element_p)->IsUnbreacable())
 			{
-				((Rectangle*)element_p)->exist = false;
+				((Map::Rectangle*)element_p)->exist = false;
 			}
 			return true;
 		}

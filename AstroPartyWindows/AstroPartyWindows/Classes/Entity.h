@@ -62,7 +62,7 @@ public:
 	//Getting the distance between two closest points of objects.
 	float GetDistance(const Beam* beam) const;
 	//Getting the distance between two closest points of objects.
-	float GetDistance(const Cyrcle* cyrcle, bool* is_inside = nullptr) const;
+	float GetDistance(const Map::Cyrcle* cyrcle, bool* is_inside = nullptr) const;
 	//Getting the distance between two closest points of objects.
 	float GetDistance(const DecelerationArea* deceler_area) const;
 	//Getting the distance between two closest points of objects.
@@ -72,9 +72,9 @@ public:
 	//Getting the distance between two closest points of objects.
 	float GetDistance(const Line* line) const;
 	//Getting the distance between two closest points of objects.
-	float GetDistance(const Polygon* polygon) const;
+	float GetDistance(const Map::Polygon* polygon) const;
 	//Getting the distance between two closest points of objects.
-	float GetDistance(const Rectangle* rectangle) const;
+	float GetDistance(const Map::Rectangle* rectangle) const;
 	//Getting the distance between two closest points of objects.
 	float GetDistance(const Segment* segment) const;
 	//Getting the distance between two closest points of objects.
@@ -90,7 +90,7 @@ public:
 	//If distance between two objects is less then zero, the function return true.
 	bool IsCollision(Beam* beam) const;
 	//If distance between two objects is less then zero, the function return true.
-	bool IsCollision(Cyrcle* cyrcle) const;
+	bool IsCollision(Map::Cyrcle* cyrcle) const;
 	//If distance between two objects is less then zero, the function return true.
 	bool IsCollision(DecelerationArea* deceler_area) const;
 	//If distance between two objects is less then zero, the function return true.
@@ -102,11 +102,11 @@ public:
 	bool IsCollision(Laser* laser) const;
 	bool IsCollision(MegaLaser* mega_laser) const;
 	//If distance between two objects is less then zero, the function return true.
-	bool IsCollision(Map* map) const;
+	bool IsCollision(Map::MapData* map) const;
 	//If distance between two objects is less then zero, the function return true.
-	bool IsCollision(Polygon* polygon) const;
+	bool IsCollision(Map::Polygon* polygon) const;
 	//If distance between two objects is less then zero, the function return true.
-	bool IsCollision(Rectangle* rectangle) const;
+	bool IsCollision(Map::Rectangle* rectangle) const;
 	//If distance between two objects is less then zero, the function return true.
 	bool IsCollision(Segment* segment) const;
 	//If distance between two objects is less then zero, the function return true.
@@ -200,10 +200,10 @@ public:
 	//use f1 f2
 	//use v1 v2 v3 v4 v5
 	//use s1 s2 s3 s4
-	bool Collision(const Rectangle* rectangle);
-	bool Collision(const Cyrcle* cyrcle);
-	bool Collision(const Polygon* polygon);
-	bool Collision(const Map* map);
+	bool Collision(const Map::Rectangle* rectangle);
+	bool Collision(const Map::Cyrcle* cyrcle);
+	bool Collision(const Map::Polygon* polygon);
+	bool Collision(const Map::MapData* map);
 	float GetAngularVelocity() const;
 	Segment GetLastTreck() const;
 	Segment GetTreck() const;
@@ -224,11 +224,11 @@ public:
 	bool IsCollision(const StaticEntity* entity) const;
 	bool IsCollision(const Laser* laser) const;
 	bool IsCollision(const MegaLaser* mega_laser) const;
-	bool IsCollision(const Rectangle* rectangle) const;
-	bool IsCollision(const Cyrcle* cyrcle) const;
-	bool IsCollision(const Polygon* polygon) const;
+	bool IsCollision(const Map::Rectangle* rectangle) const;
+	bool IsCollision(const Map::Cyrcle* cyrcle) const;
+	bool IsCollision(const Map::Polygon* polygon) const;
 	bool IsCollision(const Portal* portal) const;
-	bool IsCollision(const Map* map) const;
+	bool IsCollision(const Map::MapData* map) const;
 	void Set(const DynamicEntity* dynamic_entity);
 	void Set(
 		Vec2F position,
@@ -522,7 +522,7 @@ public:
 		bool exist = true);
 
 	DynamicParticle CreateShards(GameTypes::tic_t current_tic) const;
-	bool Collision(const Map* map);
+	bool Collision(const Map::MapData* map);
 	void DecrementSize();
 	Bonus Destroy();
 	/*
@@ -672,7 +672,7 @@ public:
 		bool exist = true);
 
 	//If map can destroy entity, the functuion return true.
-	bool Collision(const Map* map);
+	bool Collision(const Map::MapData* map);
 	Color3F GetColor() const;
 	Mat3x2F GetModelMatrix() const;
 	const Mat3x2F* GetModelMatrixPointer() const;
@@ -1486,7 +1486,7 @@ public:
 	void Activate();
 	void Boom(GameTypes::tic_t period = BOMB_BOOM_TIME);
 	bool CanRemove() const;
-	bool Collision(const Map* map);
+	bool Collision(const Map::MapData* map);
 	GameTypes::tic_t GetAnimationTic() const;
 	bool IsActive() const;
 	bool IsBoom() const;
@@ -1570,7 +1570,7 @@ public:
 		float radius = BULLET_DEFAULT_RADIUS,
 		float min_velocity = BULLET_DEFAULT_MIN_VELOCITY,
 		bool exist = true);
-	bool Collision(Map* map);
+	bool Collision(Map::MapData* map);
 	void Set(const Bullet* bullet);
 	void Set(
 		Vec2F position,
@@ -1620,7 +1620,7 @@ public:
 	//The function checks collision between knife and all map's elemnts.
 	//If map element is destructable, this element completes existing.
 	//If after collision health of the knife is zero, the function set its parameter "exist" to false.
-	bool Collision(Map* map);
+	bool Collision(Map::MapData* map);
 	Segment GetSegment() const;
 	void Set(const Knife* knife);
 	void Set(
@@ -1658,7 +1658,7 @@ public:
 
 	//The function checks collision between knife and all map's elemnts.
 	//If map element is destructable, this element completes existing.
-	bool Collision(Map* map);
+	bool Collision(Map::MapData* map);
 	bool IsActive() const;
 	bool CreatedBy(ControledEntity* controled_entity);
 	Beam GetBeam() const;
