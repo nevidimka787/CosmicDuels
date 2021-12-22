@@ -17,16 +17,20 @@ private:
 	Vec2F* points;
 	EngineTypes::Area::points_count_t points_count;
 
-	Vec2F horisontal_vector;
-	EngineTypes::Area::points_count_t intersections_count;
+	//Vec2F horisontal_vector;
+	//EngineTypes::Area::points_count_t intersections_count;
 public:
 	Area();
 	Area(const Area& area);
-	Area(Vec2F* points, EngineTypes::Area::points_count_t points_count);
+	Area(const Vec2F* points, EngineTypes::Area::points_count_t points_count);
 
+	EngineTypes::Area::points_count_t GetPointsCount() const;
+	const Vec2F* GetPointsArrayP() const;
 	bool HavePointInside(Vec2F* point) const;
 	void Set(const Area* area);
 	void Set(const Vec2F* points, EngineTypes::Area::points_count_t points_count);
+
+	void operator=(Area area);
 
 	~Area();
 };
@@ -49,6 +53,14 @@ public:
 	Button(const Button& button);
 	Button(
 		EngineTypes::Button::id_t id,
+		Vec2F position,
+		Vec2F size,
+		const Area* area,
+		const char* text = "",
+		EngineTypes::Button::text_size_t text_size = BUTTON_DEFAULT_TEXT_SIZE,
+		EngineTypes::Button::status_t status = BUTTON_STATUS_FALSE);
+	Button(
+		EngineTypes::Button::id_t id,
 		const Vec2F* position,
 		const Vec2F* size,
 		const Area* area,
@@ -56,6 +68,7 @@ public:
 		EngineTypes::Button::text_size_t text_size = BUTTON_DEFAULT_TEXT_SIZE,
 		EngineTypes::Button::status_t status = BUTTON_STATUS_FALSE);
 
+	const Area* GetAreaP() const;
 	EngineTypes::Button::id_t GetId() const;
 	Vec2F GetPosition() const;
 	Vec2F GetSize() const;
@@ -71,27 +84,36 @@ public:
 	void Move(const Vec2F* move_vector);
 	void Set(const Button* button);
 	void Set(
-		EngineTypes::Button::id_t id, 
-		Vec2F* position, 
-		Vec2F* size,
-		Area* area,
+		EngineTypes::Button::id_t id,
+		Vec2F position,
+		Vec2F size,
+		const Area* area,
 		const char* text = "",
 		EngineTypes::Button::text_size_t text_size = BUTTON_DEFAULT_TEXT_SIZE,
 		EngineTypes::Button::status_t status = BUTTON_STATUS_FALSE);
-	void SetArea(Area* area);
+	void Set(
+		EngineTypes::Button::id_t id, 
+		const Vec2F* position, 
+		const Vec2F* size,
+		const Area* area,
+		const char* text = "",
+		EngineTypes::Button::text_size_t text_size = BUTTON_DEFAULT_TEXT_SIZE,
+		EngineTypes::Button::status_t status = BUTTON_STATUS_FALSE);
+	void SetArea(const Area* area);
 	void SetId(EngineTypes::Button::id_t id);
 	void SetOnlyCustomStatus(EngineTypes::Button::status_t status_mask);
 	void SetPosition(Vec2F* position);
 	void SetSize(Vec2F* size);
 	void SetStatus(EngineTypes::Button::status_t status_mask, bool value);
 	void SetText(const char* text);
-	void SetText(char* text, EngineTypes::Button::text_length_t text_length);
-	void SetText(EngineTypes::Button::text_t* text);
-	void SetText(EngineTypes::Button::text_t* text, EngineTypes::Button::text_length_t text_length);
+	void SetText(const char* text, EngineTypes::Button::text_length_t text_length);
+	void SetText(const EngineTypes::Button::text_t* text);
+	void SetText(const EngineTypes::Button::text_t* text, EngineTypes::Button::text_length_t text_length);
 	//not change id and statuse
 	void TakeData(Button* button);
 
 	void operator=(Button button);
+	void operator&=(Button button);
 
 	~Button();
 };
@@ -108,26 +130,30 @@ public:
 	Menu();
 	Menu(const Menu& menu);
 	Menu(
-		Vec2F* position, 
-		Vec2F* size,
-		Button* buttons = nullptr,
+		const Vec2F* position, 
+		const Vec2F* size,
+		const Button* buttons = nullptr,
 		EngineTypes::Menu::buttons_count_t buttons_count = 0);
 
-	void AddButton(EngineTypes::Menu::buttons_count_t button_number, Button* button);
+	void AddButton(EngineTypes::Menu::buttons_count_t button_number, const Button* button);
+	//Delete all buttons from the menu.
+	void Clear();
 	void DeleteButton(EngineTypes::Menu::buttons_count_t button_number);
 	EngineTypes::Menu::buttons_count_t GetButtonsCount() const;
 	Vec2F GetPosition() const;
 	Vec2F GetSize() const;
 	void HardRecalculate();
-	void Move(Vec2F* move_vector);
+	void Move(Vec2F move_vector);
+	void Move(const Vec2F* move_vector);
 	void Recalculate();
-	void Set(Menu* menu);
+	void Set(const Menu* menu);
 	void Set(
-		Vec2F* position,
-		Vec2F* size,
-		Button* buttons = nullptr,
+		const Vec2F* position,
+		const Vec2F* size,
+		const Button* buttons = nullptr,
 		EngineTypes::Menu::buttons_count_t buttons_count = 0);
-	void SetPosition(Vec2F* position);
+	void SetPosition(Vec2F position);
+	void SetPosition(const Vec2F* position);
 	void UpdateDefaultButtons();
 
 	~Menu();

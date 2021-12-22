@@ -46,7 +46,8 @@ public:
 	StaticBuffer polygon_buffer;
 	StaticBuffer rectangle_buffer;
 
-	StaticBuffer controler_buffer;
+	StaticBuffer button_horisontal_buffer;
+	StaticBuffer button_vertical_buffer;
 	StaticBuffer button_buffer;
 
 	//FrameBuffer main_buffer;

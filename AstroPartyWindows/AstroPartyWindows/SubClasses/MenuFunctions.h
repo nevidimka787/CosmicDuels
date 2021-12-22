@@ -41,7 +41,8 @@ public:
 	void ShipsSelectMenuFunction(Vec2F* clk_pos, uint8_t clk_status);
 	void MapPullSelectMenuFunction(Vec2F* clk_pos, uint8_t clk_status);
 	void SpawnObjectsSelectMenuFunction(Vec2F* clk_pos, uint8_t clk_status);
-	void ShipsControlMenuFunction(Vec2F* clk_pos, uint8_t clk_status);
+	//The function can change rotate and shoot flags. If rotate flags was changed by the function then the function returns true.s
+	bool ShipsControlMenuFunction(Vec2F* clk_pos, uint8_t clk_status, bool* rotate_flags, bool* shoot_flags);
 
 	bool ShouldExit();
 

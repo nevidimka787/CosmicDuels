@@ -10,6 +10,23 @@ StaticBuffer::StaticBuffer() :
 {
 }
 
+StaticBuffer::StaticBuffer(const StaticBuffer& buffer)
+	:
+	id(buffer.id),
+	points_count(buffer.points_count)
+{
+}
+
+void StaticBuffer::Delete()
+{
+	if (id != 0)
+	{
+		glDeleteBuffers(1, &id);
+		return;
+	}
+	return;
+}
+
 void StaticBuffer::Draw() const
 {
 	glDrawArrays(GL_TRIANGLES, 0, points_count);

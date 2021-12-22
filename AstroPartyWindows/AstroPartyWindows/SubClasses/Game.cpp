@@ -8,6 +8,7 @@
 #pragma warning(disable : 6200)
 #pragma warning(disable : 6294)
 #pragma warning(disable : 6297)
+#pragma warning(disable : 6308)
 #pragma warning(disable : 6385)
 #pragma warning(disable : 6386)
 #pragma warning(disable : 26451)//All integer operations can be overflow. It is absolutly useless warnintg.
@@ -20,6 +21,8 @@
 void Game::PhysicThread0()
 {
 	//printf("0\t0\n");
+
+	std::chrono::system_clock::time_point lockal_time_point = std::chrono::system_clock::now();
 
 	BombsChainReaction();
 	BulletsDestroyAsteroids();
@@ -37,6 +40,8 @@ void Game::PhysicThread0()
 	ShipsRespawnOrDestroyPilots();
 	ShipsDestroedByBombsOrActivateBombs();
 
+	thread_durations[0][0] += std::chrono::system_clock::now() - lockal_time_point;
+
 	SetEvent(thread_event[0][1][0]);
 	SetEvent(thread_event[0][2][0]);
 	SetEvent(thread_event[0][3][0]);
@@ -46,6 +51,8 @@ void Game::PhysicThread0()
 	WaitForSingleObject(thread_event[3][0][0], INFINITE);
 
 	//printf("0\t1\n");
+
+	lockal_time_point = std::chrono::system_clock::now();
 
 	UpdateGravGensPhase2();
 	UpdateDecelerAreasPhase2();
@@ -84,6 +91,8 @@ void Game::PhysicThread0()
 	input_values_mtx.unlock();
 
 	PollEvents();
+
+	thread_durations[0][1] += std::chrono::system_clock::now() - lockal_time_point;
 
 	SetEvent(thread_event[0][1][1]);
 	SetEvent(thread_event[0][2][1]);
@@ -135,6 +144,8 @@ void Game::PhysicThread1()
 {
 	//printf("1\t0\n");
 
+	std::chrono::system_clock::time_point lockal_time_point = std::chrono::system_clock::now();
+
 	PortalsTPAsteroids();
 	PortalsTPBombs();
 	PortalsTPBonuses();
@@ -154,6 +165,8 @@ void Game::PhysicThread1()
 	MegaLasersDestroyBullets();
 	ShipsCreateExaust();
 
+	thread_durations[1][0] += std::chrono::system_clock::now() - lockal_time_point;
+
 	SetEvent(thread_event[1][0][0]);
 	SetEvent(thread_event[1][2][0]);
 	SetEvent(thread_event[1][3][0]);
@@ -163,6 +176,8 @@ void Game::PhysicThread1()
 	WaitForSingleObject(thread_event[3][1][0], INFINITE);
 
 	//printf("1\t1\n");
+
+	lockal_time_point = std::chrono::system_clock::now();
 
 	ships_array_mtx.lock();
 	asteroids_array_mtx.lock();
@@ -196,6 +211,8 @@ void Game::PhysicThread1()
 	UpdateBonusesPhase2();
 	UpdatePilotsPhase2();
 
+	thread_durations[1][1] += std::chrono::system_clock::now() - lockal_time_point;
+
 	SetEvent(thread_event[1][0][1]);
 	SetEvent(thread_event[1][2][1]);
 	SetEvent(thread_event[1][3][1]);
@@ -213,6 +230,8 @@ void Game::PhysicThread2()
 {
 	//printf("2\t0\n");
 
+	std::chrono::system_clock::time_point lockal_time_point = std::chrono::system_clock::now();
+
 	MegaLasersDetonateBombs();
 	//MegaLasersDestroyMap(); -- not realisated
 	CameraFocusesOnPlayers();
@@ -229,6 +248,8 @@ void Game::PhysicThread2()
 	LasersDestroyAsteroids();
 	LasersDestroyBullets();
 
+	thread_durations[2][0] += std::chrono::system_clock::now() - lockal_time_point;
+
 	SetEvent(thread_event[2][0][0]);
 	SetEvent(thread_event[2][1][0]);
 	SetEvent(thread_event[2][3][0]);
@@ -238,6 +259,8 @@ void Game::PhysicThread2()
 	WaitForSingleObject(thread_event[3][2][0], INFINITE);
 
 	//printf("2\t1\n");
+
+	lockal_time_point = std::chrono::system_clock::now();
 
 	pilots_array_mtx.lock();
 	DynamicEntitiesCollisions(pilots, pilots_count);
@@ -273,6 +296,8 @@ void Game::PhysicThread2()
 	UpdateKnifesPhase2();
 	UpdateLasersPhase2();
 
+	thread_durations[2][1] += std::chrono::system_clock::now() - lockal_time_point;
+
 	SetEvent(thread_event[2][0][1]);
 	SetEvent(thread_event[2][1][1]);
 	SetEvent(thread_event[2][3][1]);
@@ -290,6 +315,8 @@ void Game::PhysicThread3()
 {
 	//printf("3\t0\n");
 
+	std::chrono::system_clock::time_point lockal_time_point = std::chrono::system_clock::now();
+
 	KnifesDestroyTurels();
 	LasersDestroyMap();
 	LasersDestroyTurels();
@@ -306,6 +333,8 @@ void Game::PhysicThread3()
 	BombsDestroyKnifes();
 	BombsDestroyTurels();
 
+	thread_durations[3][0] += std::chrono::system_clock::now() - lockal_time_point;
+
 	SetEvent(thread_event[3][0][0]);
 	SetEvent(thread_event[3][1][0]);
 	SetEvent(thread_event[3][2][0]);
@@ -315,6 +344,8 @@ void Game::PhysicThread3()
 	WaitForSingleObject(thread_event[2][3][0], INFINITE);
 
 	//printf("3\t1\n");
+
+	lockal_time_point = std::chrono::system_clock::now();
 
 	pilots_array_mtx.lock();
 	map_data_mtx.lock();
@@ -352,6 +383,8 @@ void Game::PhysicThread3()
 	UpdateBombsPhase2();
 	UpdateAsteroidsPhase2();
 	UpdateDynamicParticlesPhase2();
+
+	thread_durations[3][1] += std::chrono::system_clock::now() - lockal_time_point;
 
 	SetEvent(thread_event[3][0][1]);
 	SetEvent(thread_event[3][1][1]);
@@ -670,42 +703,11 @@ skip_bonus_pull_set:
 		}
 	}
 
-	//create buttons
-	Vec2F* points = new Vec2F[3];
-	points[0].Set(0.0f, 0.0f);
-	points[1].Set(1.0f, 0.0f);
-	points[2].Set(0.5f, 0.5f);
-	Area area;
-	area.Set(points, 3);
-	Vec2F* positions = new Vec2F[GAME_PLAYERS_MAX_COUNT * 2];
-	positions[0].Set(-1.0f, 0.9f);
-	positions[1].Set(-0.9f, 1.0f);
-	positions[2].Set(0.9f, 1.0f);
-	positions[3].Set(1.0f, 0.9f);
-	positions[4].Set(1.0f, -0.9f);
-	positions[5].Set(0.9f, -1.0f);
-	positions[6].Set(-0.9f, -1.0f);
-	positions[7].Set(-1.0f, -0.9f);
-	Vec2F size1, size2;
-	EngineTypes::Menu::buttons_count_t buttons_count = 0;
-	size1.Set(0.095f, -0.095f);
-	size2.Set(-0.095f, 0.095f);
-	Button* buttons = new Button[GAME_PLAYERS_MAX_COUNT * 2];
+	//set players pull
 	for (GameTypes::players_count_t player = 0; player < GAME_PLAYERS_MAX_COUNT; player++)
 	{
-		if (teams[player] != SHIPS_SELECT_BUTTONS_NO_TEAM)
-		{
-			buttons[buttons_count].Set(BUTTON_ID__SHIP1_SHOOT + 2 * player, &positions[player * 2], &size1, &area, "", 0, BUTTON_STATUS_CUSTOM_RED << (teams[player] - 1));
-			buttons[buttons_count + 1].Set(BUTTON_ID__SHIP1_ROTATE + 2 * player, &positions[player * 2 + 1], &size2, &area, "", 0, BUTTON_STATUS_CUSTOM_RED << (teams[player] - 1));
-			buttons_count += 2;
-		}
 		playing_teams[player] = teams[player];
 	}
-	positions[0].Set(0.0f, 0.0f);
-	size1.Set(1.0f, -1.0f);
-	ships_control_menu.Set(&positions[0], &size1, buttons, buttons_count);
-	delete[] positions;
-	delete[] buttons;
 
 	end_match_score = 5;
 }
@@ -875,6 +877,16 @@ void Game::InitLevel()
 
 	//Set start bonus
 
+	ships_control_menu.Clear();
+
+	Vec2F buttons_positions[4] =
+	{
+		Vec2F(-1.0f, 1.0f),
+		Vec2F(1.0f, 1.0f),
+		Vec2F(1.0f, -1.0f),
+		Vec2F(-1.0f, -1.0f)
+	};
+
 	Vec2F zero_velocity;
 	players_count = 0;
 	for (GameTypes::players_count_t player = 0; player < GAME_PLAYERS_MAX_COUNT; player++)
@@ -892,7 +904,7 @@ void Game::InitLevel()
 					ships_positions[player],		//position
 					Vec2F(),						//velocity
 					player,							//player number
-					teams[player],					//team number
+					playing_teams[player],			//team number
 					(void*)&rotate_flags[player],	//nothing
 					(void*)&burnout_flags[player],	//nothing
 					(void*)&shoot_flags[player],	//nothing
@@ -902,13 +914,44 @@ void Game::InitLevel()
 					start_bonus));					//bonus inventory
 
 			players_count++;
-			IncrementPlayersCountInTeam(teams[player]);
+			IncrementPlayersCountInTeam(playing_teams[player]);
+
+			Vec2F 
+				horisontal_points[3] = { Vec2F(0.0f, 0.0f), Vec2F(BUTTON_CONTROLER_SIZE, 0.0f), Vec2F(BUTTON_CONTROLER_SIZE / 2.0f) },
+				vertical_points[3] = { Vec2F(0.0f, 0.0f), Vec2F(0.0f, BUTTON_CONTROLER_SIZE), Vec2F(BUTTON_CONTROLER_SIZE / 2.0f) };
+			Area
+				shoot_button_area = (player % 1) ? Area(vertical_points, 3) : Area(horisontal_points, 3),
+				rotate_button_area = (player % 1) ? Area(horisontal_points, 3) : Area(vertical_points, 3);
+
+			Button
+				button_shoot = Button(
+					BUTTON_ID__SHIP1_SHOOT + player * 2,
+					buttons_positions[player],
+					Vec2F((player == 0 || player == 3) ? 1.0f : -1.0f, (player == 2 || player == 3) ? 1.0f : -1.0f) * BUTTON_CONTROLER_SIZE,
+					&shoot_button_area,
+					"",
+					0,
+					BUTTON_STATUS_CUSTOM_RED << (teams[player] - 1) | BUTTON_STATUS_ACTIVE),
+				button_rotate = Button(
+					BUTTON_ID__SHIP1_ROTATE + player * 2,
+					buttons_positions[player],
+					Vec2F((player == 0 || player == 3) ? 1.0f : -1.0f, (player == 2 || player == 3) ? 1.0f : -1.0f) * BUTTON_CONTROLER_SIZE,
+					&rotate_button_area,
+					"",
+					0,
+					BUTTON_STATUS_CUSTOM_RED << (teams[player] - 1) | BUTTON_STATUS_ACTIVE);
+
+			ships_control_menu.AddButton(player * 2, &button_shoot);
+			ships_control_menu.AddButton(player * 2, &button_rotate);
 		}
 	}
 	
 	ships_count = players_count;
 
 	MutexesUnlock();
+
+	ships_control_menu.Recalculate();
+	current_active_menu = &ships_control_menu;
 
 	//ResetAllThreadEvents();
 }
@@ -923,8 +966,7 @@ void Game::InitMenus()
 	points[1].Set(0.0f, 1.0f);
 	points[2].Set(1.0f, 1.0f);
 	points[3].Set(1.0f, 0.0f);
-	Area* area = new Area();
-	area->Set(points, 4);
+	Area* area = new Area(points, 4);
 
 	Button* buttons = new Button[3];
 	Vec2F position;
@@ -1376,6 +1418,17 @@ void Game::IncrementScore(GameTypes::players_count_t team_number)
 void Game::DecrementScore(GameTypes::players_count_t team_number)
 {
 	logs.PushToEnd((LOG_CHANGE_SCORE << LOG_HEAD) | (LOG_DECREMENT << LOG_DATA_SCORE) | (((team_number - 1) & LOG_MASK_BITS) << LOG_DATA_TEAM));
+}
+
+
+
+void Game::ResetThreadDurations()
+{
+	for (uint8_t th = 0; th < 4; th++)
+	{
+		thread_durations[th][0] = std::chrono::microseconds(0);
+		thread_durations[th][1] = std::chrono::microseconds(0);
+	}
 }
 
 

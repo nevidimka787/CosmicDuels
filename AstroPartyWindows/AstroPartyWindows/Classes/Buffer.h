@@ -14,7 +14,9 @@ private:
 	EngineTypes::Buffer::array_length_t points_count;
 public:
 	StaticBuffer();
+	StaticBuffer(const StaticBuffer& buffer);
 
+	void Delete();
 	void Draw() const;
 	bool Initialisate(
 		const Vec2F* points_array = nullptr,

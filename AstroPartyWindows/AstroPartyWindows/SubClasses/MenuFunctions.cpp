@@ -616,7 +616,7 @@ void MenuFunctions::SpawnObjectsSelectMenuFunction(Vec2F* clk_pos, uint8_t clk_s
 	}
 }
 
-void MenuFunctions::ShipsControlMenuFunction(Vec2F* clk_pos, uint8_t clk_status)
+bool MenuFunctions::ShipsControlMenuFunction(Vec2F* clk_pos, uint8_t clk_status, bool* rotate_flags, bool* shoot_flags)
 {
 	Button* current_button;
 	for (EngineTypes::Menu::buttons_count_t i = 0; i < game_p__ships_control_menu->GetButtonsCount(); i++)
@@ -631,6 +631,8 @@ void MenuFunctions::ShipsControlMenuFunction(Vec2F* clk_pos, uint8_t clk_status)
 			current_button->SetStatus(BUTTON_STATUS_SELECT, false);
 		}
 	}
+
+	return false;
 }
 
 bool MenuFunctions::ShouldExit()

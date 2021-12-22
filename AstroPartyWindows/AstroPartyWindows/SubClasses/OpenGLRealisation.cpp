@@ -1,6 +1,8 @@
 #include "OpenGLRealisation.h"
 #include <iostream>
 
+#pragma warning(disable : 6011)
+
 OpenGL::OpenGL(int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share, GLFWframebuffersizefun Function, GLFWwindow** window)
     : cursore_press_position (new Vec2D()), cursore_release_position(new Vec2D()), cursore_last_position(new Vec2D()), cursore_current_position(new Vec2D())
 {
@@ -51,6 +53,10 @@ void OpenGL::CallMenuFunction(Menu* menu, Vec2F* clk_pos, uint8_t clk_status)
     else if (menu == game_p__ships_select_menu)
     {
         object_p__menu_functions->ShipsSelectMenuFunction(clk_pos, clk_status);
+    }
+    else if (menu == game_p__ships_control_menu)
+    {
+        object_p__menu_functions->ShipsControlMenuFunction(clk_pos, clk_status, *game_p__rotate_flags, *game_p__shoot_flags);
     }
 }
 
@@ -117,17 +123,12 @@ void OpenGL::ProcessInput(GLFWwindow* window)
 {
     if (object_p__menu_functions->ShouldExit())
     {
-        glfwSetWindowShouldClose(window, 1);
+        glfwSetWindowShouldClose(window, GLFW_TRUE);
         return;
     }
-
-    if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS)
+    if (glfwWindowShouldClose(window))
     {
-        glEnable(GL_MULTISAMPLE);
-    }
-    else if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS)
-    {
-        glDisable(GL_MULTISAMPLE);
+        object_p__menu_functions->EndMatch();
     }
 
     if (update_menu > 0 && flag_update_menu_can_change)
@@ -212,13 +213,6 @@ void OpenGL::ProcessInput(GLFWwindow* window)
     {
         update_menu = OPEN_GL_REALISATION_FRAMES_AFTER_CALLBAC_COUNT;
         button_commands &= OPEN_GL_REALISATION_COMMAND_FULL - OPEN_GL_REALISATION_COMMAND_BACK;
-    }
-    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS && *game_p__current_active_menu == game_p__ships_control_menu)
-    {
-        glfwGetCursorPos(window, &cursore_press_position->x, &cursore_press_position->y);
-        Vec2F clk_pos;
-        clk_pos.Set(cursore_press_position->x / window_width - 0.5f, cursore_press_position->y / window_height - 0.5f);
-        object_p__menu_functions->ShipsControlMenuFunction(&clk_pos, GLFW_PRESS);
     }
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS && (button_commands & OPEN_GL_REALISATION_COMMAND_SELECT) == OPEN_GL_REALISATION_COMMAND_NOTHING)
     {
@@ -346,15 +340,16 @@ void OpenGL::InitBuffers()
     points[5].Set(1.0f, 0.0f);
 
     button_buffer.Initialisate(points, 6);
- 
-    points[0].Set(-1.0f, 0.0f);
-    points[1].Set(0.0f, 1.0f);
-    points[2].Set(0.0f, -1.0f);
-    points[3].Set(1.0f, 0.0f);
-    points[4].Set(0.0f, -1.0f);
-    points[5].Set(0.0f, 1.0f);
 
-    controler_buffer.Initialisate(points, 6);
+    points[0].Set(0.0f, 0.0f);
+    points[1].Set(1.0f, 0.0f);
+    points[2].Set(0.5f, 0.5f);
+    points[3].Set(0.0f, 0.0f);
+    points[4].Set(0.0f, 1.0f);
+    points[5].Set(0.5f, 0.5f);
+
+    button_horisontal_buffer.Initialisate(&points[0], 3);
+    button_vertical_buffer.Initialisate(&points[3], 3);
 
     points[0].Set(1.0f, 0.02f);
     points[1].Set(0.0f, 0.02f);
@@ -385,6 +380,7 @@ void OpenGL::InitBuffers()
     pilot_buffer.Initialisate(points, t_points, 6);
     ship_buffer.Initialisate(points, t_points, 6);
 
+    //InitButtonsBuffers();
 
     //main_buffer.Initialisate(window_width, window_height);
 }
@@ -1094,7 +1090,6 @@ void OpenGL::DrawObject(Button* button, bool button_is_controller, bool update_s
     {
         if (button_is_controller)
         {
-            controler_buffer.Use();
             controler_shader.Use();
             controler_shader.SetUniform("scale", window_scale);
         }
@@ -1142,12 +1137,24 @@ void OpenGL::DrawObject(Button* button, bool button_is_controller, bool update_s
     {
         color = Color3F(0.3f, 0.3f, 0.3f);
     }
+
+    //StaticBuffer buffer = button_buffers.button_buffers[GetButtonIdInArray(&button_buffers, button->GetId())];
+
     if (button_is_controller)
     {
         controler_shader.SetUniform("position", button->GetPosition());
         controler_shader.SetUniform("size", button->GetSize());
         controler_shader.SetUniform("color", &color);
-        controler_buffer.Draw();
+        if (button->GetAreaP()->GetPointsArrayP()[1].x > 0.5f * BUTTON_CONTROLER_SIZE)
+        {
+            button_horisontal_buffer.Use();
+            button_horisontal_buffer.Draw();
+        }
+        else
+        {
+            button_vertical_buffer.Use();
+            button_vertical_buffer.Draw();
+        }
     }
     else
     {
@@ -1554,12 +1561,11 @@ void OpenGL::DrawIndicatedMenu(const Menu* menu)
 {
     if (menu == game_p__ships_control_menu)
     {
-        controler_buffer.Use();
         controler_shader.Use();
         controler_shader.SetUniform("scale", window_scale);
         for (EngineTypes::Menu::buttons_count_t button = 0; button < menu->GetButtonsCount(); button++)
         {
-        //    DrawObject(&menu->current_buttons[button], true);
+            DrawObject(&menu->current_buttons[button], true);
         }
     }
     else

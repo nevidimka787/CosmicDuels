@@ -96,6 +96,11 @@ int main()
                     glfwPollEvents();
                     glfwSwapInterval(1);
                 }
+
+                main_draw_functions->flag_move_menu = true;
+                main_draw_functions->flag_update_menu_can_change = true;
+                main_draw_functions->update_menu = OPEN_GL_REALISATION_FRAMES_AFTER_CALLBAC_COUNT;
+
                 while (tik_update_thread_flag == true || physic_thread_flag == true)
                 {
                     main_draw_functions->DrawFrame(); //draw game proces
@@ -145,14 +150,35 @@ void InputOutputUpdate()
             lock_timer++;//update local timer of console
             if (!(lock_timer % 100)) //every second
             {//draw data to console
+                uint32_t sum[2] =
+                {
+                    (uint32_t)main_game->thread_durations[0][0].count() + (uint32_t)main_game->thread_durations[1][0].count() + (uint32_t)main_game->thread_durations[2][0].count() + (uint32_t)main_game->thread_durations[3][0].count(),
+                    (uint32_t)main_game->thread_durations[0][1].count() + (uint32_t)main_game->thread_durations[1][1].count() + (uint32_t)main_game->thread_durations[2][1].count() + (uint32_t)main_game->thread_durations[3][1].count()
+                };
+                if (sum[0] == 0) { sum[0] = 1; }
+                if (sum[1] == 0) { sum[1] = 1; }
+                uint32_t percent[4][2] = 
+                {
+                    {(uint32_t)main_game->thread_durations[0][0].count() * 400u / sum[0], (uint32_t)main_game->thread_durations[0][1].count() * 400u / sum[1]},
+                    {(uint32_t)main_game->thread_durations[1][0].count() * 400u / sum[0], (uint32_t)main_game->thread_durations[1][1].count() * 400u / sum[1]},
+                    {(uint32_t)main_game->thread_durations[2][0].count() * 400u / sum[0], (uint32_t)main_game->thread_durations[2][1].count() * 400u / sum[1]},
+                    {(uint32_t)main_game->thread_durations[3][0].count() * 400u / sum[0], (uint32_t)main_game->thread_durations[3][1].count() * 400u / sum[1]}
+                };
+
+                printf("Ph:       Th:0       Th:1       Th:2       Th:3\n");
+                printf("0: %11u%%%11u%%%11u%%%11u%%\n1: %11u%%%11u%%%11u%%%11u%%\n\n",
+                    percent[0][0], percent[1][0], percent[2][0], percent[3][0],
+                    percent[0][1], percent[1][1], percent[2][1], percent[3][1]);
+
                 //reset counters
+                main_game->ResetThreadDurations();
                 frame = 0;
                 ph0 = 0;
                 ph1 = 0;
                 ph2 = 0;
                 ph3 = 0;
             }
-            else if (!((lock_timer + 60) % 100)) //every second
+            else if (!((lock_timer + 90) % 100)) //every second
             {//check thread lock
                 if (ph0 == 0 || ph1 == 0 || ph2 == 0 || ph3 == 0)
                 {
@@ -162,7 +188,7 @@ void InputOutputUpdate()
                     std::cout << "WARNING::Checking mutexes function was disabled." << std::endl;
                 }
             }
-            else if (!((lock_timer + 90) % 100)) //every second
+            else if (!((lock_timer + 10) % 100)) //every second
             {//check threads desinchronisation
                 if (!(ph0 == ph1 && ph1 == ph2 && ph2 == ph3))
                 {
@@ -170,10 +196,6 @@ void InputOutputUpdate()
                     printf("Ph0:%4u Ph1:%4u Ph2:%4u Ph3:%4u Ans:%1u\n", ph0, ph1, ph2, ph3, (unsigned)(!(ph0 == ph1 && ph1 == ph2 && ph2 == ph3)));
                 }
             }
-        }
-        else if (glfwWindowShouldClose(window))
-        {
-            break;
         }
 
         local_time_point += std::chrono::milliseconds(THREAD_INPUT_TIK_PERIOD); //set waking up point
@@ -217,14 +239,6 @@ void PhysicsCalculationStarter()
     physics_calculation1.join(); //wait completing of the physic calculation
     physics_calculation2.join(); //wait completing of the physic calculation
     physics_calculation3.join(); //wait completing of the physic calculation
-
-    if (glfwWindowShouldClose(window))
-    {
-        main_game->flag_end_match = true;
-        main_game->flag_round_results = false;
-        physic_thread_flag = false;
-        return;
-    }
 
     //waking up point
     std::chrono::system_clock::time_point local_time_point = std::chrono::system_clock::now();
@@ -277,10 +291,6 @@ void PhysicsCalculation0()
             main_game->PhysicThread0();
             ph0++; //increment count of updates of first thread
         }
-        else if (glfwWindowShouldClose(window))
-        {
-            return;
-        }
         local_time_point += std::chrono::microseconds(THREAD_PHYSIC_TIK_PERIOD); //update waking up point
         std::this_thread::sleep_until(local_time_point); //wait waking up point
     }
@@ -298,10 +308,6 @@ void PhysicsCalculation1()
         {
             main_game->PhysicThread1();
             ph1++; //increment count of updates of second thread
-        }
-        else if (glfwWindowShouldClose(window))
-        {
-            return;
         }
         local_time_point += std::chrono::microseconds(THREAD_PHYSIC_TIK_PERIOD); //update waking up point
         std::this_thread::sleep_until(local_time_point); //wait waking up point
@@ -321,10 +327,6 @@ void PhysicsCalculation2()
             main_game->PhysicThread2();
             ph2++; //increment count of updates of third thread
         }
-        else if (glfwWindowShouldClose(window))
-        {
-            return;
-        }
         local_time_point += std::chrono::microseconds(THREAD_PHYSIC_TIK_PERIOD); //update waking up point
         std::this_thread::sleep_until(local_time_point); //wait waking up point
     }
@@ -342,10 +344,6 @@ void PhysicsCalculation3()
         {
             main_game->PhysicThread3();
             ph3++; //increment count of updates of fourth thread
-        }
-        else if(glfwWindowShouldClose(window))
-        {
-            return;
         }
         local_time_point += std::chrono::microseconds(THREAD_PHYSIC_TIK_PERIOD); //update waking up point
         std::this_thread::sleep_until(local_time_point); //wait waking up point

@@ -212,6 +212,12 @@ public:
 	//third index -- number of response
 	HANDLE thread_event[4][4][2];
 
+	//The array store time of calculation indicated phase of indicated thread.
+	//first index -- number of thread
+	//second index -- number of phase
+	std::chrono::system_clock::duration thread_durations[4][2];
+	void ResetThreadDurations();
+
 	//game mutexes
 
 	//menu objects

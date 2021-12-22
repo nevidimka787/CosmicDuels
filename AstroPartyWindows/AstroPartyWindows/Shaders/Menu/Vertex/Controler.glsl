@@ -5,14 +5,10 @@ uniform vec2 position;
 uniform vec2 size;
 uniform float scale;
 
+out vec2 pixel_position;
+
 void main()
 {
-	if(scale < 10.0f)
-	{
-		gl_Position = vec4(aPos * size * vec2(1.0f, scale) + position, 0.0f, 1.0f);
-	}
-	else
-	{
-		gl_Position = vec4(aPos * size * vec2(1.0f, scale) * (10.0f / scale) + position, 0.0f, 1.0f);
-	}
+	pixel_position = aPos;
+	gl_Position = vec4(aPos * vec2(1.0f, scale) / max(scale, 1.0f) * size + position, 0.0f, 1.0f);
 }

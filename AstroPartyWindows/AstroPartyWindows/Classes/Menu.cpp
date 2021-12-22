@@ -6,57 +6,61 @@
 #pragma warning(disable : 26451)//All integer operations can be overflow. It is absolutly useless warnintg.
 #pragma warning(disable : 28182)
 
+#define HORISONTAL_VECTOR	Vec2F(1.0f, 0.0f)
+
 Area::Area() :
-	intersections_count(0),
-	points(new Vec2F[3]),
-	points_count(3)
+	points(nullptr),
+	points_count(0)
 {
-	horisontal_vector.Set(1.0f, 0.0f);
 }
 
 Area::Area(const Area& area) :
-	intersections_count(0),
-	points(new Vec2F[area.points_count]),
+	points(area.points_count > 0 ? new Vec2F[area.points_count] : nullptr),
 	points_count(area.points_count)
 {
 	for (EngineTypes::Area::points_count_t point = 0; point < points_count; point++)
 	{
 		points[point] = area.points[point];
 	}
-	horisontal_vector.Set(1.0f, 0.0f);
 }
 
-Area::Area(Vec2F* points, EngineTypes::Area::points_count_t points_count) :
-	intersections_count(0),
+Area::Area(const Vec2F* points, EngineTypes::Area::points_count_t points_count) :
+	points((points_count > 0) ? new Vec2F[points_count] : nullptr),
 	points_count(points_count)
 {
-	horisontal_vector.Set(1.0f, 0.0f);
-	if (points_count < 3)
-	{
-		this->points_count = 3;
-		this->points = new Vec2F[this->points_count];
-		return;
-	}
-	this->points = new Vec2F[points_count];
 	for (EngineTypes::Area::points_count_t point = 0; point < points_count; point++)
 	{
 		this->points[point] = points[point];
 	}
 }
 
+const Vec2F* Area::GetPointsArrayP() const
+{
+	return points;
+}
+
+EngineTypes::Area::points_count_t Area::GetPointsCount() const
+{
+	return points_count;
+}
+
 bool Area::HavePointInside(Vec2F* point) const
 {
-	Beam temp__beam = Beam(point, &horisontal_vector);
-	unsigned intersections_count = 0;
-	Segment temp__segment = Segment(&points[points_count - 1], &points[0], true);
-	if (temp__segment.IsIntersection(&temp__beam))
+	if (points_count < 3)
+	{
+		return false;
+	}
+	EngineTypes::Area::points_count_t intersections_count = 0;
+	Beam horisontal_beam = Beam(*point, HORISONTAL_VECTOR);
+	Segment temp__segment = Segment(points[points_count - 1], points[0], true);
+	if (temp__segment.IsIntersection(&horisontal_beam))
 	{
 		intersections_count++;
 	}
 	for (EngineTypes::Area::points_count_t segment = 1; segment < points_count; segment++)
 	{
 		temp__segment.Set(&points[segment - 1], &points[segment], true);
-		if (temp__beam.IsIntersection(&temp__segment))
+		if (horisontal_beam.IsIntersection(&temp__segment))
 		{
 			intersections_count++;
 		}
@@ -66,36 +70,73 @@ bool Area::HavePointInside(Vec2F* point) const
 
 void Area::Set(const Area* area)
 {
-	delete[] points;
-	points = new Vec2F[area->points_count];
-	points_count = area->points_count;
-
-	for (EngineTypes::Area::points_count_t point = 0; point < points_count; point++)
+	if (points_count > 0)
 	{
-		points[point] = area->points[point];
+		delete[] points;
+	}
+	points_count = area->points_count;
+	if (points_count > 0)
+	{
+		points = new Vec2F[area->points_count];
+		for (EngineTypes::Area::points_count_t point = 0; point < points_count; point++)
+		{
+			points[point] = area->points[point];
+		}
+	}
+	else
+	{
+		points = nullptr;
 	}
 }
 
 void Area::Set(const Vec2F* points, EngineTypes::Area::points_count_t points_count)
 {
-	delete[] this->points;
-	if (points_count < 3)
+	if (this->points_count > 0)
 	{
-		this->points_count = 3;
-		this->points = new Vec2F[this->points_count];
-		return;
+		delete[] this->points;
 	}
-	this->points = new Vec2F[points_count];
 	this->points_count = points_count;
-	for (EngineTypes::Area::points_count_t point = 0; point < points_count; point++)
+	if (this->points_count > 0)
 	{
-		this->points[point] = points[point];
+		this->points = new Vec2F[this->points_count];
+		for (EngineTypes::Area::points_count_t point = 0; point < points_count; point++)
+		{
+			this->points[point] = points[point];
+		}
+	}
+	else
+	{
+		this->points = nullptr;
+	}
+}
+
+void Area::operator=(Area area)
+{
+	if (points_count > 0)
+	{
+		delete[] points;
+	}
+	points_count = area.points_count;
+	if (points_count > 0)
+	{
+		points = new Vec2F[area.points_count];
+		for (EngineTypes::Area::points_count_t point = 0; point < points_count; point++)
+		{
+			points[point] = area.points[point];
+		}
+	}
+	else
+	{
+		points = nullptr;
 	}
 }
 
 Area::~Area()
 {
-	delete[] points;
+	if (points_count > 0)
+	{
+		delete[] points;
+	}
 }
 
 
@@ -128,6 +169,32 @@ Button::Button(const Button& button) :
 
 Button::Button(
 	EngineTypes::Button::id_t id,
+	Vec2F position,
+	Vec2F size,
+	const Area* area,
+	const char* text,
+	EngineTypes::Button::text_size_t text_size,
+	EngineTypes::Button::status_t status)
+	:
+	id(id),
+	position(position),
+	size(size),
+	status(status),
+	text_size(text_size)
+{
+	this->area.Set(area);
+
+	for (text_length = 0; text[text_length] != '\0'; text_length++);
+
+	this->text = (EngineTypes::Button::text_t*)malloc(sizeof(EngineTypes::Button::text_t) * (text_length + 1));
+	for (EngineTypes::Button::text_t i = 0; i <= text_length; i++)
+	{
+		this->text[i] = text[i];
+	}
+}
+
+Button::Button(
+	EngineTypes::Button::id_t id,
 	const Vec2F* position,
 	const Vec2F* size,
 	const Area* area,
@@ -150,6 +217,11 @@ Button::Button(
 	{
 		this->text[i] = text[i];
 	}
+}
+
+const Area* Button::GetAreaP() const
+{
+	return &area;
 }
 
 EngineTypes::Button::id_t Button::GetId() const
@@ -204,29 +276,11 @@ uint16_t Button::GetTextLength() const
 
 bool Button::HavePoint(const Vec2F* point) const
 {
-	/*
-	if (size.x > 0.0f)
-	{
-		if (size.y > 0.0f)
-		{
-			return point->x >= position.x && point->y >= position.y && point->x <= position.x + size.x && point->y <= position.y + size.y;
-		}
-		return point->x >= position.x && point->y <= position.y && point->x <= position.x + size.x && point->y >= position.y + size.y;
-	}
-	if (size.y > 0.0f)
-	{
-		return point->x <= position.x && point->y >= position.y && point->x >= position.x + size.x && point->y <= position.y + size.y;
-	}
-	return point->x <= position.x && point->y <= position.y && point->x >= position.x + size.x && point->y >= position.y + size.y;
-	*/
-	///*
 	Vec2F current_point = *point - position;
 	Vec2F scale;
 	scale.Set(1.0f / size.x, 1.0f / size.y);
 	current_point.ScaleThis(&scale);
-	//std::cout << "Text: " << GetTextC() << std::endl;
 	return area.HavePointInside(&current_point);
-	//*/
 }
 
 void Button::Move(const Vec2F* move_vector)
@@ -247,7 +301,19 @@ void Button::Set(const Button* button)
 	SetText(button->text, button->text_length);
 }
 
-void Button::Set(EngineTypes::Button::id_t id, Vec2F* position, Vec2F* size, Area* area, const char* text, EngineTypes::Button::text_size_t text_size, EngineTypes::Button::status_t status)
+void Button::Set(EngineTypes::Button::id_t id, Vec2F position, Vec2F size, const Area* area, const char* text, EngineTypes::Button::text_size_t text_size, EngineTypes::Button::status_t status)
+{
+	this->area.Set(area);
+	this->id = id;
+	this->position = position;
+	this->size = size;
+	this->status = status;
+	this->text_size = text_size;
+
+	SetText(text);
+}
+
+void Button::Set(EngineTypes::Button::id_t id, const Vec2F* position, const Vec2F* size, const Area* area, const char* text, EngineTypes::Button::text_size_t text_size, EngineTypes::Button::status_t status)
 {
 	this->area.Set(area);
 	this->id = id;
@@ -259,7 +325,7 @@ void Button::Set(EngineTypes::Button::id_t id, Vec2F* position, Vec2F* size, Are
 	SetText(text);
 }
 
-void Button::SetArea(Area* area)
+void Button::SetArea(const Area* area)
 {
 	this->area.Set(area);
 }
@@ -305,7 +371,7 @@ void Button::SetText(const char* text)
 	}
 }
 
-void Button::SetText(char* text, EngineTypes::Button::text_length_t text_length)
+void Button::SetText(const char* text, EngineTypes::Button::text_length_t text_length)
 {
 	this->text_length = text_length;
 	this->text = (EngineTypes::Button::text_t*)realloc(this->text, sizeof(EngineTypes::Button::text_t) * (text_length + 1));
@@ -315,7 +381,7 @@ void Button::SetText(char* text, EngineTypes::Button::text_length_t text_length)
 	}
 }
 
-void Button::SetText(EngineTypes::Button::text_t* text)
+void Button::SetText(const EngineTypes::Button::text_t* text)
 {
 	for (text_length = 0; text[text_length] != '\0'; text_length++);
 	this->text = (EngineTypes::Button::text_t*)realloc(this->text, sizeof(EngineTypes::Button::text_t) * (text_length + 1));
@@ -325,7 +391,7 @@ void Button::SetText(EngineTypes::Button::text_t* text)
 	}
 }
 
-void Button::SetText(EngineTypes::Button::text_t* text, EngineTypes::Button::text_length_t text_length)
+void Button::SetText(const EngineTypes::Button::text_t* text, EngineTypes::Button::text_length_t text_length)
 {
 	this->text_length = text_length;
 	this->text = (EngineTypes::Button::text_t*)realloc(this->text, sizeof(EngineTypes::Button::text_t) * (text_length + 1));
@@ -379,11 +445,17 @@ Menu::Menu(const Menu& menu):
 	for (EngineTypes::Menu::buttons_count_t i = 0; i < buttons_count; i++)
 	{
 		default_buttons[i].Set(&default_buttons[i]);
+		current_buttons[i].Set(&current_buttons[i]);
 	}
 	HardRecalculate();
 }
 
-Menu::Menu(Vec2F* position, Vec2F* size, Button* buttons, EngineTypes::Menu::buttons_count_t buttons_count) :
+Menu::Menu(
+	const Vec2F* position,
+	const Vec2F* size,
+	const Button* buttons,
+	EngineTypes::Menu::buttons_count_t buttons_count)
+	:
 	position(*position),
 	size(*size),
 	buttons_count(buttons_count),
@@ -397,7 +469,7 @@ Menu::Menu(Vec2F* position, Vec2F* size, Button* buttons, EngineTypes::Menu::but
 	HardRecalculate();
 }
 
-void Menu::AddButton(EngineTypes::Menu::buttons_count_t button_number, Button* button)
+void Menu::AddButton(EngineTypes::Menu::buttons_count_t button_number, const Button* button)
 {
 	Button* new_buttons = new Button[++buttons_count];
 	if (button_number >= buttons_count)
@@ -415,9 +487,27 @@ void Menu::AddButton(EngineTypes::Menu::buttons_count_t button_number, Button* b
 		new_buttons[i].Set(&default_buttons[i - 1]);
 	}
 
-	delete[] default_buttons;
+	if (buttons_count > 1)
+	{
+		delete[] default_buttons;
+		delete[] current_buttons;
+	}
 	default_buttons = new_buttons;
+	current_buttons = new Button[buttons_count];
 	HardRecalculate();
+}
+
+void Menu::Clear()
+{
+	if (buttons_count > 0)
+	{
+		buttons_count = 0;
+		delete[] current_buttons;
+		delete[] default_buttons;
+	}
+
+	current_buttons = nullptr;
+	default_buttons = nullptr;
 }
 
 void Menu::DeleteButton(EngineTypes::Menu::buttons_count_t button_number)
@@ -467,7 +557,13 @@ void Menu::HardRecalculate()
 	}
 }
 
-void Menu::Move(Vec2F* move_vector)
+void Menu::Move(Vec2F move_vector)
+{
+	position += move_vector;
+	Recalculate();
+}
+
+void Menu::Move(const Vec2F* move_vector)
 {
 	position += *move_vector;
 	Recalculate();
@@ -482,7 +578,7 @@ void Menu::Recalculate()
 	}
 }
 
-void Menu::Set(Menu* menu)
+void Menu::Set(const Menu* menu)
 {
 	position = menu->position;
 	size = menu->size;
@@ -512,7 +608,7 @@ void Menu::Set(Menu* menu)
 	HardRecalculate();
 }
 
-void Menu::Set(Vec2F* position, Vec2F* size, Button* buttons, EngineTypes::Menu::buttons_count_t buttons_count)
+void Menu::Set(const Vec2F* position, const Vec2F* size, const Button* buttons, EngineTypes::Menu::buttons_count_t buttons_count)
 {
 	this->position = *position;
 	this->size = *size;
@@ -542,7 +638,13 @@ void Menu::Set(Vec2F* position, Vec2F* size, Button* buttons, EngineTypes::Menu:
 	HardRecalculate();
 }
 
-void Menu::SetPosition(Vec2F* position)
+void Menu::SetPosition(Vec2F position)
+{
+	this->position = position;
+	Recalculate();
+}
+
+void Menu::SetPosition(const Vec2F* position)
 {
 	this->position = *position;
 	Recalculate();
