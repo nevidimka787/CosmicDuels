@@ -182,7 +182,7 @@ inline void SetTextToButton(Menu* menu, EngineTypes::Button::id_t button_id, con
 	}
 }
 
-void MenuFunctions::BonusPullSelectMenuFunction(Vec2F* clk_pos, uint8_t clk_status)
+void MenuFunctions::BonusPullSelectMenuFunction(Vec2F clk_pos, uint8_t clk_status)
 {
 	Button* current_button;
 	for (EngineTypes::Menu::buttons_count_t i = 0; i < game_p__bonus_pull_select_menu->GetButtonsCount(); i++)
@@ -227,7 +227,7 @@ void MenuFunctions::BonusPullSelectMenuFunction(Vec2F* clk_pos, uint8_t clk_stat
 	}
 }
 
-void MenuFunctions::MainMenuFunction(Vec2F* clk_pos, uint8_t clk_status)
+void MenuFunctions::MainMenuFunction(Vec2F clk_pos, uint8_t clk_status)
 {
 	Button* current_button;
 	for (EngineTypes::Menu::buttons_count_t i = 0; i < game_p__main_menu->GetButtonsCount(); i++)
@@ -266,7 +266,7 @@ void MenuFunctions::MainMenuFunction(Vec2F* clk_pos, uint8_t clk_status)
 	}
 }
 
-void MenuFunctions::OptionMenuFunction(Vec2F* clk_pos, uint8_t clk_status)
+void MenuFunctions::OptionMenuFunction(Vec2F clk_pos, uint8_t clk_status)
 {
 	Button* current_button;
 	bool option;
@@ -354,7 +354,7 @@ void MenuFunctions::OptionMenuFunction(Vec2F* clk_pos, uint8_t clk_status)
 	}
 }
 
-void MenuFunctions::PauseMenuFunction(Vec2F* clk_pos, uint8_t clk_status)
+void MenuFunctions::PauseMenuFunction(Vec2F clk_pos, uint8_t clk_status)
 {
 	Button* current_button;
 	for (EngineTypes::Menu::buttons_count_t i = 0; i < game_p__pause_menu->GetButtonsCount(); i++)
@@ -396,7 +396,7 @@ void MenuFunctions::PauseMenuFunction(Vec2F* clk_pos, uint8_t clk_status)
 	}
 }
 
-void MenuFunctions::ShipsSelectMenuFunction(Vec2F* clk_pos, uint8_t clk_status)
+void MenuFunctions::ShipsSelectMenuFunction(Vec2F clk_pos, uint8_t clk_status)
 {
 	Button* current_button;
 	for (EngineTypes::Menu::buttons_count_t i = 0; i < game_p__ships_select_menu->GetButtonsCount(); i++)
@@ -526,7 +526,7 @@ inline bool MinimalCountTeamsSelected(GameTypes::entities_count_t* teams_array, 
 	return found_teams >= 2u;
 }
 
-void MenuFunctions::MapPullSelectMenuFunction(Vec2F* clk_pos, uint8_t clk_status)
+void MenuFunctions::MapPullSelectMenuFunction(Vec2F clk_pos, uint8_t clk_status)
 {
 	Button* current_button;
 	for (EngineTypes::Menu::buttons_count_t i = 0; i < game_p__map_pull_select_menu->GetButtonsCount(); i++)
@@ -571,7 +571,7 @@ void MenuFunctions::MapPullSelectMenuFunction(Vec2F* clk_pos, uint8_t clk_status
 	}
 }
 
-void MenuFunctions::SpawnObjectsSelectMenuFunction(Vec2F* clk_pos, uint8_t clk_status)
+void MenuFunctions::SpawnObjectsSelectMenuFunction(Vec2F clk_pos, uint8_t clk_status)
 {
 	Button* current_button;
 	for (EngineTypes::Menu::buttons_count_t i = 0; i < game_p__spawning_objects_select_menu->GetButtonsCount(); i++)
@@ -616,23 +616,95 @@ void MenuFunctions::SpawnObjectsSelectMenuFunction(Vec2F* clk_pos, uint8_t clk_s
 	}
 }
 
-bool MenuFunctions::ShipsControlMenuFunction(Vec2F* clk_pos, uint8_t clk_status, bool* rotate_flags, bool* shoot_flags)
+void MenuFunctions::ShipsControlMenuFunction(
+	Vec2F clk_pos,
+	uint8_t clk_status,
+	bool* rotate_flags,
+	bool* shoot_flags,
+	GameTypes::tic_t* double_clk_timers,
+	bool* burnout_flags)
 {
 	Button* current_button;
 	for (EngineTypes::Menu::buttons_count_t i = 0; i < game_p__ships_control_menu->GetButtonsCount(); i++)
 	{
 		current_button = &game_p__ships_control_menu->current_buttons[i];
-		if (current_button->GetStatus(BUTTON_STATUS_ACTIVE) && current_button->HavePoint(clk_pos))
+		EngineTypes::Button::id_t id = current_button->GetId();
+		if (
+			id < BUTTON_ID__SHIP1_SHOOT ||
+			id > BUTTON_ID__SHIP4_ROTATE ||
+			!current_button->GetStatus(BUTTON_STATUS_ACTIVE))
+		{
+			continue;
+		}
+		if (clk_status == GLFW_PRESS && current_button->HavePoint(clk_pos))
 		{
 			current_button->SetStatus(BUTTON_STATUS_SELECT, true);
+
+			if (id % 2 == BUTTON_ID__SHIP1_ROTATE % 2)
+			{
+				id = (id - BUTTON_ID__SHIP1_ROTATE) / 2;
+				if (!rotate_flags[id] && double_clk_timers[id] > 0)
+				{
+					double_clk_timers[id] = 0;
+					burnout_flags[id] = true;
+				}
+				else
+				{
+					double_clk_timers[id] = GAME_DOUBLE_CLK_TIME;
+				}
+				rotate_flags[id] = true;
+			}
+			else
+			{
+				shoot_flags[(id - BUTTON_ID__SHIP1_SHOOT) / 2] = true;
+			}
 		}
 		else
 		{
 			current_button->SetStatus(BUTTON_STATUS_SELECT, false);
+
+			if (id % 2 == BUTTON_ID__SHIP1_ROTATE % 2)
+			{
+				rotate_flags[(id - BUTTON_ID__SHIP1_SHOOT) / 2] = false;
+			}
+			else
+			{
+				shoot_flags[(id - BUTTON_ID__SHIP1_SHOOT) / 2] = false;
+			}
 		}
 	}
+}
 
-	return false;
+void MenuFunctions::ShipsControlMenuFunction(
+	const bool* rotate_keys_pointers,
+	const bool* shoot_keys_pointers,
+	bool* rotate_flags,
+	bool* shoot_flags,
+	GameTypes::tic_t* double_clk_timers,
+	bool* burnout_flags)
+{
+	for (GameTypes::players_count_t id = 0; id < GAME_PLAYERS_MAX_COUNT; id++)
+	{
+		shoot_flags[id] = shoot_keys_pointers[id];
+
+		if (rotate_keys_pointers[id])
+		{
+			if (!rotate_flags[id] && double_clk_timers[id] > 0)
+			{
+				double_clk_timers[id] = 0;
+				burnout_flags[id] = true;
+			}
+			else
+			{
+				double_clk_timers[id] = GAME_DOUBLE_CLK_TIME;
+			}
+			rotate_flags[id] = true;
+		}
+		else
+		{
+			rotate_flags[id] = false;
+		}
+	}
 }
 
 bool MenuFunctions::ShouldExit()

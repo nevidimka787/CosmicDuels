@@ -6,6 +6,7 @@ ControledEntity::ControledEntity() :
 	DynamicEntity(),
 	heat_box_vertexes_array(nullptr),
 	player_number(0),
+	burnout_input_value_pointer(nullptr),
 	rotate_input_value_pointer(nullptr),
 	shoot_input_value_pointer(nullptr),
 	player_team_number(0)
@@ -19,6 +20,7 @@ ControledEntity::ControledEntity(const ControledEntity& controled_entity) :
 	heat_box_vertexes_array_length(controled_entity.heat_box_vertexes_array_length),
 	player_number(controled_entity.player_number),
 	player_team_number(controled_entity.player_team_number),
+	burnout_input_value_pointer(controled_entity.burnout_input_value_pointer),
 	rotate_input_value_pointer(controled_entity.rotate_input_value_pointer),
 	shoot_input_value_pointer(controled_entity.shoot_input_value_pointer)
 {
@@ -34,6 +36,7 @@ ControledEntity::ControledEntity(
 	float radius,
 	GameTypes::players_count_t player_number,
 	GameTypes::players_count_t player_team_number,
+	const void* burnout_input_value_pointer,
 	const void* rotate_input_value_pointer,
 	const void* shoot_input_value_pointer,
 	Vec2F* heat_box_vertexes_array,
@@ -54,6 +57,7 @@ ControledEntity::ControledEntity(
 		exist),
 	player_number(player_number),
 	player_team_number(player_team_number),
+	burnout_input_value_pointer(burnout_input_value_pointer),
 	rotate_input_value_pointer(rotate_input_value_pointer),
 	shoot_input_value_pointer(shoot_input_value_pointer)
 {
@@ -79,6 +83,7 @@ ControledEntity::ControledEntity(
 	float radius,
 	GameTypes::players_count_t player_number,
 	GameTypes::players_count_t player_team_number,
+	const void* burnout_input_value_pointer,
 	const void* rotate_input_value_pointer,
 	const void* shoot_input_value_pointer,
 	Vec2F* heat_box_vertexes_array,
@@ -100,6 +105,7 @@ ControledEntity::ControledEntity(
 		exist),
 	player_number(player_number),
 	player_team_number(player_team_number),
+	burnout_input_value_pointer(burnout_input_value_pointer),
 	rotate_input_value_pointer(rotate_input_value_pointer),
 	shoot_input_value_pointer(shoot_input_value_pointer)
 {
@@ -542,6 +548,7 @@ void ControledEntity::Set(
 	float radius, 
 	GameTypes::players_count_t player_number,
 	GameTypes::players_count_t player_team_number,
+	const void* burnout_input_value_pointer,
 	const void* rotate_input_value_pointer,
 	const void* shoot_input_value_pointer,
 	Vec2F* heat_box_vertexes_array,
@@ -554,6 +561,7 @@ void ControledEntity::Set(
 {
 	this->angle = angle;
 	this->angular_velocity = angular_velocity;
+	this->burnout_input_value_pointer = burnout_input_value_pointer;
 	UpdateDirection();
 	this->exist = exist;
 	this->force_collision_coeffisient = force_collision_coeffisient;
@@ -581,6 +589,7 @@ void ControledEntity::Set(
 	float radius, 
 	GameTypes::players_count_t player_number,
 	GameTypes::players_count_t player_team_number,
+	const void* burnout_input_value_pointer,
 	const void* rotate_input_value_pointer, 
 	const void* shoot_input_value_pointer,
 	Vec2F* heat_box_vertexes_array,
@@ -593,6 +602,7 @@ void ControledEntity::Set(
 {
 	this->angle = angle;
 	this->angular_velocity = angular_velocity;
+	this->burnout_input_value_pointer = burnout_input_value_pointer;
 	UpdateDirection();
 	this->exist = exist;
 	this->force_collision_coeffisient = force_collision_coeffisient;
@@ -648,6 +658,7 @@ void ControledEntity::operator=(ControledEntity controled_entity)
 {
 	angle = controled_entity.angle;
 	angular_velocity = controled_entity.angular_velocity;
+	burnout_input_value_pointer = controled_entity.burnout_input_value_pointer;
 	direction = controled_entity.direction;
 	exist = controled_entity.exist;
 	force = controled_entity.force;

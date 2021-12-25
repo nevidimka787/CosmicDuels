@@ -20,6 +20,11 @@ protected:
 	Vec2D* cursore_last_position;
 	Vec2D* cursore_press_position;
 	Vec2D* cursore_release_position;
+
+	//The array store data about pushed keys on keyboard.
+	bool* rotate_key_flags;
+	//The array store data about pushed keys on keyboard.
+	bool* shoot_key_flags;
 public:
 
 	//buffers
@@ -167,7 +172,8 @@ public:
 
 	//Callback functions
 
-	void CallMenuFunction(Menu* menu, Vec2F* clk_pos, uint8_t clk_statuse);
+	void CallMenuFunction(Menu* menu, const Vec2D* glob_clk_pos, uint8_t clk_status);
+	void CallControleMenuFunction(Menu* menu, const Vec2D* glob_clk_pos, uint8_t clk_status);
 	void FramebufferSizeCallback(GLFWwindow* window, int width, int height);
 	void LimitMenuPosition(Menu* menu);
 	void ProcessInput(GLFWwindow* window);
@@ -299,11 +305,23 @@ public:
 
 	void InitBuffers();
 	void InitGlad();
+	void InitMemory();
 	void InitOpenGL();
 	void InitShaders();
 	void InitTextures();
 
 	//Initialisations functions
+
+	//destructor and memory free
+
+	void Free();
+	void FreeBuffers();
+	void FreeMemory();
+	void FreeShaders();
+	void FreeTextures();
+	~OpenGL();
+
+	//destructor and memory free
 
 	//game pointers
 
@@ -402,8 +420,8 @@ public:
 	bool** game_p__rotate_flags;
 	const bool* game_p__rotation_inverse;
 	bool** game_p__shoot_flags;
-	int32_t** game_p__burnout_double_clk_timer;
-	bool** game_p__burnout_flag;
+	GameTypes::tic_t** game_p__double_clk_timers;
+	bool** game_p__burnout_flags;
 
 	std::shared_mutex* game_p__anig_area_gens_array_mtx;
 	std::shared_mutex* game_p__asteroids_array_mtx;

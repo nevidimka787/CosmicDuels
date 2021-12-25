@@ -44,7 +44,31 @@ EngineTypes::Area::points_count_t Area::GetPointsCount() const
 	return points_count;
 }
 
-bool Area::HavePointInside(Vec2F* point) const
+bool Area::HavePointInside(Vec2F point) const
+{
+	if (points_count < 3)
+	{
+		return false;
+	}
+	EngineTypes::Area::points_count_t intersections_count = 0;
+	Beam horisontal_beam = Beam(point, HORISONTAL_VECTOR);
+	Segment temp__segment = Segment(points[points_count - 1], points[0], true);
+	if (temp__segment.IsIntersection(&horisontal_beam))
+	{
+		intersections_count++;
+	}
+	for (EngineTypes::Area::points_count_t segment = 1; segment < points_count; segment++)
+	{
+		temp__segment.Set(&points[segment - 1], &points[segment], true);
+		if (horisontal_beam.IsIntersection(&temp__segment))
+		{
+			intersections_count++;
+		}
+	}
+	return (intersections_count % 2);
+}
+
+bool Area::HavePointInside(const Vec2F* point) const
 {
 	if (points_count < 3)
 	{
@@ -274,13 +298,23 @@ uint16_t Button::GetTextLength() const
 	return text_length;
 }
 
+bool Button::HavePoint(Vec2F point) const
+{
+	Vec2F current_point = point - position;
+	current_point.ScaleThis(Vec2F(1.0f / size.x, 1.0f / size.y));
+	return area.HavePointInside(current_point);
+}
+
 bool Button::HavePoint(const Vec2F* point) const
 {
 	Vec2F current_point = *point - position;
-	Vec2F scale;
-	scale.Set(1.0f / size.x, 1.0f / size.y);
-	current_point.ScaleThis(&scale);
-	return area.HavePointInside(&current_point);
+	current_point.ScaleThis(Vec2F(1.0f / size.x, 1.0f / size.y));
+	return area.HavePointInside(current_point);
+}
+
+void Button::Move(Vec2F move_vector)
+{
+	position += move_vector;
 }
 
 void Button::Move(const Vec2F* move_vector)

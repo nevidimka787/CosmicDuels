@@ -9,7 +9,16 @@
 
 Shader::Shader():
     id(0)
-{}
+{
+}
+
+void Shader::Delete()
+{
+	if (id != 0)
+	{
+		glDeleteProgram(id);
+	}
+}
 
 bool Shader::Initialisate(const char* vertex_file_name, const char* fragment_file_name)
 {
@@ -247,5 +256,4 @@ void Shader::SetUniform(const std::string& name, const Segment* segment) const
 
 Shader::~Shader()
 {
-    glDeleteProgram(id);
 }

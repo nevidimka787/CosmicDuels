@@ -5,6 +5,14 @@ Texture2D::Texture2D() :
 {
 }
 
+void Texture2D::Delete()
+{
+    if (id != 0)
+    {
+        glDeleteTextures(1, &id);
+    }
+}
+
 bool Texture2D::Initialisate(const char* texture_file_name, GLint format, GLint internal_format, GLint wrap_s_rule, GLint wrap_t_rule, GLint min_filter_parameter, GLint mag_filter_parameter)
 {
     int width;
@@ -54,5 +62,4 @@ void Texture2D::Use(GLuint as_texture_number)
 
 Texture2D::~Texture2D()
 {
-    glDeleteTextures(1, &id);
 }

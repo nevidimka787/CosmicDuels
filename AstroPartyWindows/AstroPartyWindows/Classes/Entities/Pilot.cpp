@@ -19,6 +19,7 @@ Pilot::Pilot(
 	Vec2F velocity,
 	GameTypes::players_count_t player_number,
 	GameTypes::players_count_t player_team_number,
+	const void* burnout_input_value_pointer,
 	const void* rotate_input_value_pointer,
 	const void* shoot_input_value_pointer,
 	GameTypes::tic_t respawn_timer,
@@ -39,6 +40,7 @@ Pilot::Pilot(
 		radius,
 		player_number,
 		player_team_number,
+		burnout_input_value_pointer,
 		rotate_input_value_pointer,
 		shoot_input_value_pointer,
 		heat_box_vertexes_array,
@@ -56,6 +58,7 @@ Pilot::Pilot(
 	const Vec2F* velocity,
 	GameTypes::players_count_t player_number,
 	GameTypes::players_count_t player_team_number,
+	const void* burnout_input_value_pointer,
 	const void* rotate_input_value_pointer,
 	const void* shoot_input_value_pointer,
 	GameTypes::tic_t respawn_timer,
@@ -76,6 +79,7 @@ Pilot::Pilot(
 		radius,
 		player_number,
 		player_team_number,
+		burnout_input_value_pointer,
 		rotate_input_value_pointer,
 		shoot_input_value_pointer,
 		heat_box_vertexes_array,
@@ -124,7 +128,7 @@ Ship Pilot::Respawn()
 		velocity,
 		player_number,
 		player_team_number,
-		nullptr,
+		burnout_input_value_pointer,
 		rotate_input_value_pointer,
 		shoot_input_value_pointer,
 		nullptr, 
@@ -145,6 +149,7 @@ void Pilot::Set(const Pilot* pilot)
 	position = pilot->position;
 	radius = pilot->radius;
 	respawn_timer = pilot->respawn_timer;
+	burnout_input_value_pointer = pilot->burnout_input_value_pointer;
 	rotate_input_value_pointer = pilot->rotate_input_value_pointer;
 	shoot_input_value_pointer = pilot->shoot_input_value_pointer;
 	velocity = pilot->velocity;
@@ -161,7 +166,8 @@ void Pilot::Set(
 	Vec2F position,
 	Vec2F velocity,
 	GameTypes::players_count_t player_number,
-	GameTypes::players_count_t player_team_number, 
+	GameTypes::players_count_t player_team_number,
+	const void* burnout_input_value_pointer,
 	const void* rotate_input_value_pointer,
 	const void* shoot_input_value_pointer,
 	GameTypes::tic_t respawn_timer,
@@ -204,6 +210,7 @@ void Pilot::Set(
 	const Vec2F* velocity,
 	GameTypes::players_count_t player_number,
 	GameTypes::players_count_t player_team_number,
+	const void* burnout_input_value_pointer,
 	const void* rotate_input_value_pointer,
 	const void* shoot_input_value_pointer,
 	GameTypes::tic_t respawn_timer,
