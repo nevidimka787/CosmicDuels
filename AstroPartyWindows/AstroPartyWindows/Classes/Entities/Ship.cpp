@@ -348,8 +348,8 @@ bool Ship::CreatingEntities(
 		return false;
 	}
 
-	this->objects_in_creating_proccess = objects_in_creating_proccess;
-	this->element_type = element_type;
+	this->objects_in_creating_proccess = objects_count;
+	this->element_type = object_type;
 
 	return true;
 }
@@ -442,7 +442,7 @@ Pilot Ship::Destroy()
 		nullptr,
 		0,
 		angle);
-	new_pilot.AddForce(velocity * 1.5f);
+	new_pilot.AddForce(velocity);
 	return new_pilot;
 }
 

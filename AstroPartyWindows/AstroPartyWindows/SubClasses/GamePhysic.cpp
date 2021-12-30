@@ -2997,7 +2997,7 @@ void Game::ShipsDestroedByBullets()
 						}
 						else
 						{
-							temp__ship_p->AddVelocity(temp__bullet_p->GetVelocity());
+							temp__ship_p->AddVelocity(temp__bullet_p->GetVelocity() / 4.0f);
 							bonuses_array_mtx.lock();
 							dynamic_particles_array_mtx.lock();
 							log_data_mtx.lock();

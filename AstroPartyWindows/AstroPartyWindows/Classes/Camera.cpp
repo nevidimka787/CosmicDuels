@@ -18,7 +18,16 @@ Camera::Camera(const Camera& camera) :
 {
 }
 
-Camera::Camera(const Vec2F* position, float size, float scale, float margin, float move_velocity_coefficient, float resize_velocity_coefficient, Mat2F* hight_limits, Vec2F* low_limits) :
+Camera::Camera(
+	const Vec2F* position,
+	float size,
+	float scale,
+	float margin, 
+	float move_velocity_coefficient,
+	float resize_velocity_coefficient,
+	const Mat2F* hight_limits,
+	const Vec2F* low_limits)
+	:
 	margin(margin),
 	move_velocity_coefficient(move_velocity_coefficient),
 	resize_velocity_coefficient(resize_velocity_coefficient),
@@ -60,7 +69,11 @@ float Camera::GetScale() const
 	return scale;
 }
 
-void Camera::Focus(Ship* ships_array, Pilot* pilots_array, GameTypes::players_count_t ships_count, GameTypes::players_count_t pilots_count)
+void Camera::Focus(
+	const Ship* ships_array,
+	const Pilot* pilots_array,
+	GameTypes::players_count_t ships_count,
+	GameTypes::players_count_t pilots_count)
 {
 #define MAX_X		0x01
 #define MAX_Y		0x02
@@ -73,8 +86,8 @@ void Camera::Focus(Ship* ships_array, Pilot* pilots_array, GameTypes::players_co
 	Vec2F pos_buff;
 	uint8_t first_update = MAX_X | MAX_Y | MIN_X | MIN_Y;
 
-	Ship* temp__ship_p = ships_array;
-	Pilot* temp__pilot_p = pilots_array;
+	const Ship* temp__ship_p = ships_array;
+	const Pilot* temp__pilot_p = pilots_array;
 
 	for (GameTypes::players_count_t found_ships = 0; found_ships < ships_count; temp__ship_p++)
 	{

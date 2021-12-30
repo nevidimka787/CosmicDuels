@@ -59,8 +59,8 @@ public:
 		float margin = CAMERA_DEFAULT_MARGIN,
 		float move_velocity_coefficient = CAMERA_DEFAULT_MOVE_VELOCITY,
 		float resize_velocity_coefficient = CAMERA_DEFAULT_RESIZE_VELOCITY,
-		Mat2F* hight_limits = nullptr,
-		Vec2F* low_limits = nullptr);
+		const Mat2F* hight_limits = nullptr,
+		const Vec2F* low_limits = nullptr);
 
 	Mat2F GetLimits() const;
 	Vec2F GetPosition() const;
@@ -68,8 +68,8 @@ public:
 	float GetScale() const;
 	//All ships and pilots will be show in the camera.
 	void Focus(
-		Ship* ships_array,
-		Pilot* pilots_array,
+		const Ship* ships_array,
+		const Pilot* pilots_array,
 		GameTypes::players_count_t ships_count,
 		GameTypes::players_count_t pilots_count);
 
