@@ -7,12 +7,12 @@ Ship::Ship()
 	ControledEntity(),
 	bonus_inventory(BONUS_NOTHING),
 	buff_inventory(BONUS_NOTHING),
-	bullets_in_magazine(0),
 	burnout(0),
-	burnout_coldown(0),
+	burnout_input_value_pointer(nullptr),
+	bullets_in_magazine(0),
 	magazine_size(0),
 	unbrakable(0),
-	objects_in_creating_proccess(0),
+	objects_in_loop(0),
 	element_type(GAME_OBJECT_TYPE_NULL)
 {
 }
@@ -22,12 +22,12 @@ Ship::Ship(const Ship& ship)
 	ControledEntity(ship),
 	bonus_inventory(ship.bonus_inventory),
 	buff_inventory(ship.buff_inventory),
-	bullets_in_magazine(ship.bullets_in_magazine),
 	burnout(ship.burnout),
-	burnout_coldown(ship.burnout_coldown),
+	burnout_input_value_pointer(ship.burnout_input_value_pointer),
+	bullets_in_magazine(ship.bullets_in_magazine),
 	magazine_size(ship.magazine_size),
 	unbrakable(ship.unbrakable),
-	objects_in_creating_proccess(0),
+	objects_in_loop(0),
 	element_type(GAME_OBJECT_TYPE_NULL)
 {
 }
@@ -47,7 +47,6 @@ Ship::Ship(
 	EngineTypes::Ship::inventory_t buff_inventory,
 	GameTypes::tic_t unbrakable,
 	GameTypes::tic_t burnout,
-	GameTypes::tic_t burnout_coldown,
 	float angular_velocity,
 	float radius,
 	float force_collision_coeffisient,
@@ -62,7 +61,6 @@ Ship::Ship(
 		radius,
 		player_number,
 		player_team_number,
-		burnout_input_value_pointer,
 		rotate_input_value_pointer,
 		shoot_input_value_pointer,
 		heat_box_vertexes_array,
@@ -74,12 +72,12 @@ Ship::Ship(
 		exist),
 	bonus_inventory(bonus_inventory),
 	buff_inventory(buff_inventory),
-	bullets_in_magazine(start_bullets_count),
 	burnout(burnout),
-	burnout_coldown(burnout_coldown),
+	burnout_input_value_pointer(burnout_input_value_pointer),
+	bullets_in_magazine(start_bullets_count),
 	magazine_size(max_bullets_count),
 	unbrakable(unbrakable),
-	objects_in_creating_proccess(0),
+	objects_in_loop(0),
 	element_type(GAME_OBJECT_TYPE_NULL)
 {
 }
@@ -99,7 +97,6 @@ Ship::Ship(
 	EngineTypes::Ship::inventory_t buff_inventory,
 	GameTypes::tic_t unbrakable,
 	GameTypes::tic_t burnout,
-	GameTypes::tic_t burnout_coldown,
 	float angular_velocity,
 	float radius,
 	float force_collision_coeffisient,
@@ -114,7 +111,6 @@ Ship::Ship(
 		radius,
 		player_number,
 		player_team_number,
-		burnout_input_value_pointer,
 		rotate_input_value_pointer,
 		shoot_input_value_pointer,
 		heat_box_vertexes_array,
@@ -126,12 +122,12 @@ Ship::Ship(
 		exist),
 	bonus_inventory(bonus_inventory),
 	buff_inventory(buff_inventory),
-	bullets_in_magazine(start_bullets_count),
 	burnout(burnout),
-	burnout_coldown(burnout_coldown),
+	burnout_input_value_pointer(burnout_input_value_pointer),
+	bullets_in_magazine(start_bullets_count),
 	magazine_size(max_bullets_count),
 	unbrakable(unbrakable),
-	objects_in_creating_proccess(0),
+	objects_in_loop(0),
 	element_type(GAME_OBJECT_TYPE_NULL)
 {
 }
@@ -191,10 +187,6 @@ EngineTypes::Bonus::inventory_t Ship::BonusInfo()
 
 void Ship::Burnout(float power, bool rotate_clockwise, GameTypes::tic_t burnout_period)
 {
-	if (burnout_coldown > 0)
-	{
-		return;
-	}
 	if (rotate_clockwise)
 	{
 		force -= direction.PerpendicularClockwise().Normalize() * power;
@@ -214,9 +206,9 @@ bool Ship::CanCreatingBullet() const
 	return bullets_in_magazine > 0;
 }
 
-bool Ship::CanCreatingObject() const
+bool Ship::CanCreatingLoop() const
 {
-	return objects_in_creating_proccess > 0;
+	return objects_in_loop > 0;
 }
 
 Bullet Ship::CreateBullet()
@@ -339,29 +331,34 @@ Bullet Ship::CreateTriple(uint8_t bullet_number)
 }
 
 bool Ship::CreatingEntities(
-	GameTypes::entities_count_t objects_count,	//count of objects in creating loop
-	GameTypes::objects_types_count_t object_type	//type of elemnts in creating loop
+	GameTypes::entities_count_t objects_in_loop,	//count of objects in creating loop
+	GameTypes::objects_types_count_t element_type	//type of elemnts in creating loop
 )
 {
-	if (this->objects_in_creating_proccess > 0)
+	if (this->objects_in_loop > 0)
 	{
 		return false;
 	}
 
+<<<<<<< HEAD
 	this->objects_in_creating_proccess = objects_count;
 	this->element_type = object_type;
+=======
+	this->objects_in_loop = objects_in_loop;
+	this->element_type = element_type;
+>>>>>>> parent of af0f384 (Add controling ship buttons on the screen.)
 
 	return true;
 }
 
 GameTypes::entities_count_t Ship::GetElemntFromList()
 {
-	if (objects_in_creating_proccess == 0)
+	if (objects_in_loop == 0)
 	{
 		return 0;
 	}
-	objects_in_creating_proccess--;
-	return objects_in_creating_proccess + (uint16_t)1;
+	objects_in_loop--;
+	return objects_in_loop + (uint16_t)1;
 }
 
 Bullet Ship::CreateLoop(GameTypes::entities_count_t bullet_number)
@@ -435,7 +432,6 @@ Pilot Ship::Destroy()
 		Vec2F(),
 		player_number,
 		player_team_number,
-		burnout_input_value_pointer,
 		rotate_input_value_pointer,
 		shoot_input_value_pointer,
 		PILOT_DEFAULT_RESPAWN_TIMER,
@@ -513,9 +509,8 @@ void Ship::Set(const Ship* ship)
 	angular_velocity = ship->angular_velocity;
 	bonus_inventory = ship->bonus_inventory;
 	buff_inventory = ship->buff_inventory;
-	burnout_input_value_pointer = ship->burnout_input_value_pointer;
 	burnout = ship->burnout;
-	burnout_coldown = ship->burnout_coldown;
+	burnout_input_value_pointer = ship->burnout_input_value_pointer;
 	direction = ship->direction;
 	exist = ship->exist;
 	force_collision_coeffisient = ship->force_collision_coeffisient;
@@ -553,7 +548,6 @@ void Ship::Set(
 	EngineTypes::Ship::inventory_t buff_inventory,
 	GameTypes::tic_t unbrakable,
 	GameTypes::tic_t burnout,
-	GameTypes::tic_t burnout_coldown,
 	float angular_velocity,
 	float radius,
 	float force_collision_coeffisient,
@@ -566,9 +560,8 @@ void Ship::Set(
 	this->angular_velocity = angular_velocity;
 	this->bonus_inventory = bonus_inventory;
 	this->buff_inventory = buff_inventory;
-	this->bullets_in_magazine = current_bullets_count;
 	this->burnout = burnout;
-	this->burnout_coldown = burnout_coldown;
+	this->bullets_in_magazine = current_bullets_count;
 	UpdateDirection();
 	this->exist = exist;
 	this->force_collision_coeffisient = force_collision_coeffisient;
@@ -615,7 +608,6 @@ void Ship::Set(
 	EngineTypes::Ship::inventory_t buff_inventory,
 	GameTypes::tic_t unbrakable,
 	GameTypes::tic_t burnout,
-	GameTypes::tic_t burnout_coldown,
 	float angular_velocity,
 	float radius,
 	float force_collision_coeffisient,
@@ -628,10 +620,8 @@ void Ship::Set(
 	this->angular_velocity = angular_velocity;
 	this->bonus_inventory = bonus_inventory;
 	this->buff_inventory = buff_inventory;
-	this->bullets_in_magazine = current_bullets_count;
 	this->burnout = burnout;
-	this->burnout_coldown = burnout_coldown;
-	this->burnout_input_value_pointer = burnout_input_value_pointer;
+	this->bullets_in_magazine = current_bullets_count;
 	UpdateDirection();
 	this->exist = exist;
 	this->force_collision_coeffisient = force_collision_coeffisient;
@@ -714,7 +704,7 @@ void Ship::SpendBuffNoCheck(EngineTypes::Ship::inventory_t buff)
 
 void Ship::StopCreatingLoop()
 {
-	objects_in_creating_proccess = 0;
+	objects_in_loop = 0;
 }
 
 void Ship::TakeBonus(Bonus* bonus, bool as_triple)
@@ -760,13 +750,10 @@ void Ship::Update()
 		AddForceAlongDirection(SHIP_BURNOUT_FORCE);
 		burnout--;
 	}
+
 	if (unbrakable > 0)
 	{
 		unbrakable--;
-	}
-	if (burnout_coldown > 0)
-	{
-		burnout_coldown--;
 	}
 
 	if (reoading_dellay > 0)
@@ -801,8 +788,6 @@ void Ship::operator=(Ship ship)
 	bonus_inventory = ship.bonus_inventory;
 	buff_inventory = ship.buff_inventory;
 	bullets_in_magazine = ship.bullets_in_magazine;
-	burnout = ship.burnout;
-	burnout_coldown = ship.burnout_coldown;
 	direction = ship.direction;
 	exist = ship.exist;
 	force = ship.force;
