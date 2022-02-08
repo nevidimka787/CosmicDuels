@@ -342,6 +342,7 @@ bool Ship::CreatingEntities(
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	this->objects_in_creating_proccess = objects_count;
 	this->element_type = object_type;
 =======
@@ -350,6 +351,9 @@ bool Ship::CreatingEntities(
 >>>>>>> parent of af0f384 (Add controling ship buttons on the screen.)
 =======
 	this->objects_in_creating_proccess = objects_in_creating_proccess;
+=======
+	this->objects_in_loop = objects_in_loop;
+>>>>>>> parent of af0f384 (Add controling ship buttons on the screen.)
 	this->element_type = element_type;
 >>>>>>> parent of cda58e6 (Some fixes)
 

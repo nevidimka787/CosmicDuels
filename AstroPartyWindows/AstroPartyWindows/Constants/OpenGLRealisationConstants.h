@@ -3,11 +3,14 @@
 //#include "../Classes/GameEngine.h"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 //Ships controle by keyboard.
 #define OPEN_GL_REALISATION__SHIPS_CONTROLED_BY_KEYBOARD		false
 //Ships controle by by buttons on the screen.
 #define OPEN_GL_REALISATION__SHIPS_CONTROLED_BY_SCREEN_BUTTONS	!(OPEN_GL_REALISATION__SHIPS_CONTROLED_BY_KEYBOARD)
 
+=======
+>>>>>>> parent of af0f384 (Add controling ship buttons on the screen.)
 =======
 >>>>>>> parent of af0f384 (Add controling ship buttons on the screen.)
 #define OPEN_GL_REALISATION_COMMAND_FULL	0xFFFF
