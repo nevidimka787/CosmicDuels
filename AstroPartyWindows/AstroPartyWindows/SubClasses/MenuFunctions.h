@@ -34,29 +34,15 @@ public:
 	void Exit();
 	bool ChangeOption(GameTypes::game_rules_t option_number);
 
-	void BonusPullSelectMenuFunction(Vec2F clk_pos, uint8_t clk_status);
-	void MainMenuFunction(Vec2F clk_pos, uint8_t clk_status);
-	void OptionMenuFunction(Vec2F clk_pos, uint8_t clk_status);
-	void PauseMenuFunction(Vec2F clk_pos, uint8_t clk_status);
-	void ShipsSelectMenuFunction(Vec2F clk_pos, uint8_t clk_status);
-	void MapPullSelectMenuFunction(Vec2F clk_pos, uint8_t clk_status);
-	void SpawnObjectsSelectMenuFunction(Vec2F clk_pos, uint8_t clk_status);
-	//The function can change rotate and shoot flags. If rotate flags was changed by the function then the function returns true.
-	void ShipsControlMenuFunction(
-		Vec2F clk_pos,
-		uint8_t clk_status,
-		bool* rotate_flags,
-		bool* shoot_flags,
-		GameTypes::tic_t* double_clk_timers,
-		bool* burnout_flags);
-	//The function can change rotate and shoot flags. The function get rotate data from flags.
-	void ShipsControlMenuFunction(
-		const bool* rotate_keys_pointers,
-		const bool* shoot_keys_pointers,
-		bool* rotate_flags,
-		bool* shoot_flags,
-		GameTypes::tic_t* double_clk_timers,
-		bool* burnout_flags);
+	void BonusPullSelectMenuFunction(Vec2F* clk_pos, uint8_t clk_status);
+	void MainMenuFunction(Vec2F* clk_pos, uint8_t clk_status);
+	void OptionMenuFunction(Vec2F* clk_pos, uint8_t clk_status);
+	void PauseMenuFunction(Vec2F* clk_pos, uint8_t clk_status);
+	void ShipsSelectMenuFunction(Vec2F* clk_pos, uint8_t clk_status);
+	void MapPullSelectMenuFunction(Vec2F* clk_pos, uint8_t clk_status);
+	void SpawnObjectsSelectMenuFunction(Vec2F* clk_pos, uint8_t clk_status);
+	//The function can change rotate and shoot flags. If rotate flags was changed by the function then the function returns true.s
+	bool ShipsControlMenuFunction(Vec2F* clk_pos, uint8_t clk_status, bool* rotate_flags, bool* shoot_flags);
 
 	bool ShouldExit();
 

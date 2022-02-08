@@ -124,7 +124,7 @@ public:
 	//Controled entities refer to this array.
 	bool* rotate_flags;
 	//Tumer for check double clk for ships' burnout.
-	GameTypes::tic_t* double_clk_timers;
+	int32_t* burnout_double_clk_timer;
 	//Controled entities refer to this array.
 	bool* burnout_flags;
 	//If value in the array then ship can shoot.

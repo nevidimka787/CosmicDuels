@@ -1706,6 +1706,24 @@ float Segment::Distance(const Segment* target, Vec2F* nearest_point) const
 	return temp_float1;
 }
 
+bool Segment::GetCollisionPoint(const Segment* track, float track_radius, Vec2F* collision_point, Vec2F* normal)
+{
+	bool res;
+	Vec2F r_vec = (res = (vector.x * track->vector.x > vector.y * track->vector.y)) ?
+		Vec2F(-vector.y, vector.x).Normalize() :
+		Vec2F(vector.y, -vector.x).Normalize();
+	Segment intersect_segment = Segment(track->point + r_vec * track_radius, track->vector);
+	if (Intersection(&intersect_segment, collision_point))
+	{
+		*collision_point -= r_vec * track_radius;
+		*normal = -r_vec;
+		return true;
+	}
+
+
+	return false;
+}
+
 Vec2F Segment::SecondPoint() const
 {
 	return point + vector;

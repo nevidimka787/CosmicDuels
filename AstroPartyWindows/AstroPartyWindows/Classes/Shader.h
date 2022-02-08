@@ -24,7 +24,6 @@ public:
     //GLuint* uniform_ids_array;
 
     Shader();
-    void Delete();
     bool Initialisate(const char* vertexPath, const char* fragmentPath);
     void Use();
     void SetUniform(const std::string& name, const EngineTypes::Button::text_t* text, uint16_t text_length) const;

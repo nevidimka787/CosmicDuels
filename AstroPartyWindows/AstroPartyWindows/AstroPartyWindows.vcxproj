@@ -193,6 +193,7 @@
     <ClCompile Include="SubClasses\GamePhysic.cpp" />
     <ClCompile Include="SubClasses\Linker.cpp" />
     <ClCompile Include="SubClasses\MenuFunctions.cpp" />
+    <ClCompile Include="SubClasses\Network.cpp" />
     <ClCompile Include="SubClasses\OpenGLRealisation.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -264,6 +265,7 @@
     <ClInclude Include="SubClasses\Game.h" />
     <ClInclude Include="SubClasses\Linker.h" />
     <ClInclude Include="SubClasses\MenuFunctions.h" />
+    <ClInclude Include="SubClasses\Network.h" />
     <ClInclude Include="SubClasses\OpenGLRealisation.h" />
     <ClInclude Include="Types\AllTypes.h" />
     <ClInclude Include="Types\GameEngineTypes.h" />

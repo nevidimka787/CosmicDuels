@@ -164,6 +164,12 @@ bool DynamicEntity::Collision(const Map::Rectangle* rectangle)
 
 	int i = 0;
 	Segment side = rectangle->UpSide();
+	Segment track = Segment(position, velocity - rectangle->GetVelocity());
+
+	if ((distance = side.Distance(&track, &nearest_position1)) < radius)
+	{
+
+	}
 
 	if ((distance = side.Distance(&position, &nearest_position1)) < radius || GetTreck().IsIntersection(&side))
 	{

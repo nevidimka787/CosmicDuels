@@ -72,13 +72,22 @@ void Game::PhysicThread0()
 	camera_data_mtx.unlock();
 
 	input_values_mtx.lock();
-	for (uint8_t player = 0; player < GAME_PLAYERS_MAX_COUNT; player++)
-	{
-		if (double_clk_timers[player] > 0)
-		{
-			double_clk_timers[player]--;
-		}
-	}
+	if (burnout_double_clk_timer[0] > 0)
+		burnout_double_clk_timer[0]--;
+	else if (burnout_double_clk_timer[0] < 0)
+		burnout_double_clk_timer[0]++;
+	if (burnout_double_clk_timer[1] > 0)
+		burnout_double_clk_timer[1]--;
+	else if (burnout_double_clk_timer[1] < 0)
+		burnout_double_clk_timer[1]++;
+	if (burnout_double_clk_timer[2] > 0)
+		burnout_double_clk_timer[2]--;
+	else if (burnout_double_clk_timer[2] < 0)
+		burnout_double_clk_timer[2]++;
+	if (burnout_double_clk_timer[3] > 0)
+		burnout_double_clk_timer[3]--;
+	else if (burnout_double_clk_timer[3] < 0)
+		burnout_double_clk_timer[3]++;
 	input_values_mtx.unlock();
 
 	PollEvents();
@@ -827,7 +836,7 @@ void Game::InitLevel()
 	{
 		ships_can_shoot_flags[player] = SHIP_DEFAULT_UNBRAKABLE_PERIOD;
 		players_in_team[player] = 0;
-		double_clk_timers[player] = 0;
+		burnout_double_clk_timer[player] = 0;
 		burnout_flags[player] = false;
 	}
 
@@ -896,9 +905,9 @@ void Game::InitLevel()
 					Vec2F(),						//velocity
 					player,							//player number
 					playing_teams[player],			//team number
-					(void*)&burnout_flags[player],	//burnout flag pointer
-					(void*)&rotate_flags[player],	//rotate flag pointer
-					(void*)&shoot_flags[player],	//shoot flag pointer
+					(void*)&rotate_flags[player],	//nothing
+					(void*)&burnout_flags[player],	//nothing
+					(void*)&shoot_flags[player],	//nothing
 					nullptr,						//heatbox vertexs array
 					0,								//heatbox vertexs count
 					ships_angles[player],			//angle
@@ -907,18 +916,16 @@ void Game::InitLevel()
 			players_count++;
 			IncrementPlayersCountInTeam(playing_teams[player]);
 
-#if OPEN_GL_REALISATION__SHIPS_CONTROLED_BY_SCREEN_BUTTONS == true
-
 			Vec2F 
-				horisontal_points[3] = { Vec2F(0.0f, 0.0f), Vec2F(1.0f, 0.0f), Vec2F(1.0f / 2.0f) },
-				vertical_points[3] = { Vec2F(0.0f, 0.0f), Vec2F(0.0f, 1.0f), Vec2F(1.0f / 2.0f) };
+				horisontal_points[3] = { Vec2F(0.0f, 0.0f), Vec2F(BUTTON_CONTROLER_SIZE, 0.0f), Vec2F(BUTTON_CONTROLER_SIZE / 2.0f) },
+				vertical_points[3] = { Vec2F(0.0f, 0.0f), Vec2F(0.0f, BUTTON_CONTROLER_SIZE), Vec2F(BUTTON_CONTROLER_SIZE / 2.0f) };
 			Area
 				shoot_button_area = (player % 1) ? Area(vertical_points, 3) : Area(horisontal_points, 3),
 				rotate_button_area = (player % 1) ? Area(horisontal_points, 3) : Area(vertical_points, 3);
 
 			Button
 				button_shoot = Button(
-					BUTTON_ID__SHIP1_ROTATE + player * 2,
+					BUTTON_ID__SHIP1_SHOOT + player * 2,
 					buttons_positions[player],
 					Vec2F((player == 0 || player == 3) ? 1.0f : -1.0f, (player == 2 || player == 3) ? 1.0f : -1.0f) * BUTTON_CONTROLER_SIZE,
 					&shoot_button_area,
@@ -926,7 +933,7 @@ void Game::InitLevel()
 					0,
 					BUTTON_STATUS_CUSTOM_RED << (teams[player] - 1) | BUTTON_STATUS_ACTIVE),
 				button_rotate = Button(
-					BUTTON_ID__SHIP1_SHOOT + player * 2,
+					BUTTON_ID__SHIP1_ROTATE + player * 2,
 					buttons_positions[player],
 					Vec2F((player == 0 || player == 3) ? 1.0f : -1.0f, (player == 2 || player == 3) ? 1.0f : -1.0f) * BUTTON_CONTROLER_SIZE,
 					&rotate_button_area,
@@ -936,7 +943,6 @@ void Game::InitLevel()
 
 			ships_control_menu.AddButton(player * 2, &button_shoot);
 			ships_control_menu.AddButton(player * 2, &button_rotate);
-#endif
 		}
 	}
 	
@@ -1141,12 +1147,10 @@ void Game::InitMenus()
 	bonus_pull_select_menu.Set(&position, &size, buttons, GAME_BONUS_INVENTORY_SIZE);
 	delete[] buttons;
 
-#if OPEN_GL_REALISATION__SHIPS_CONTROLED_BY_SCREEN_BUTTONS == true
 	//ship control menu
 	position.Set(-1.0f, -1.0f);
 	size.Set(2.0f, 2.0f);
 	ships_control_menu.Set(&position, &size);
-#endif
 
 	current_active_menu = &main_menu;
 

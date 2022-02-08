@@ -208,6 +208,11 @@ public:
 
 	float Distance(const Vec2F* target, Vec2F* nearest_point) const;
 
+	//If this segment is collisioning with the track
+	//then the functio return true and set "collision_point" value to position of point of collision.
+	//else the function return false and will not change the "collision_point" value.
+	bool GetCollisionPoint(const Segment* track, float track_radius, Vec2F* collision_point, Vec2F* normal);
+
 	bool Intersection(const Beam* intersection_beam, Vec2F* output_intersection_point) const;
 	
 	bool Intersection(const Line* intersection_line, Vec2F* output_intersection_point) const;

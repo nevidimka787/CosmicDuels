@@ -293,7 +293,7 @@ void Game::AnigAreaGenShoot(AnigAreaGen* anig_area_gen)
 
 void Game::ShipShoot(Ship* ship)
 {
-	if (ship->CanCreatingObject())
+	if (ship->CanCreatingLoop())
 	{
 		GameTypes::objects_types_count_t type = ship->GetTypeOfElemntInLoop();
 		GameTypes::entities_count_t entity_number;

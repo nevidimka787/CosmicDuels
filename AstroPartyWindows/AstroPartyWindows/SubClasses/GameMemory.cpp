@@ -1046,7 +1046,7 @@ void Game::MemoryLock()
 	turels_count = 0;
 
 	burnout_flags = new bool[GAME_PLAYERS_MAX_COUNT];
-	double_clk_timers = new GameTypes::tic_t[GAME_PLAYERS_MAX_COUNT];
+	burnout_double_clk_timer = new int32_t[GAME_PLAYERS_MAX_COUNT];
 	ships_shooting_flags = new bool[GAME_PLAYERS_MAX_COUNT];
 	shoot_flags = new bool[GAME_PLAYERS_MAX_COUNT];
 	rotate_flags = new bool[GAME_PLAYERS_MAX_COUNT];
@@ -1196,7 +1196,7 @@ void Game::MemoryFree()
 	delete[] players_in_team;
 
 	delete[] burnout_flags;
-	delete[] double_clk_timers;
+	delete[] burnout_double_clk_timer;
 	delete[] ships_shooting_flags;
 	delete[] shoot_flags;
 	delete[] rotate_flags;

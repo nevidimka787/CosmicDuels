@@ -9,8 +9,6 @@ OpenGL::OpenGL(int width, int height, const char* title, GLFWmonitor* monitor, G
     update_menu = OPEN_GL_REALISATION_FRAMES_AFTER_CALLBAC_COUNT;
     flag_update_menu_can_change = true;
     
-    InitMemory();
-
     InitOpenGL();
     *window = CreateWindows(width, height, title, monitor, share, Function);
     window_height = height;
@@ -26,17 +24,8 @@ OpenGL::OpenGL(int width, int height, const char* title, GLFWmonitor* monitor, G
 
 //Callback functions
 
-void OpenGL::CallMenuFunction(Menu* menu, const Vec2D* glob_clk_pos, uint8_t clk_status)
+void OpenGL::CallMenuFunction(Menu* menu, Vec2F* clk_pos, uint8_t clk_status)
 {
-    if (menu == game_p__ships_control_menu)
-    {
-        return;
-    }
-
-    Vec2F clk_pos = Vec2F(
-        ((float)glob_clk_pos->x / window_width - 0.5f) * 2.0f,
-        ((float)glob_clk_pos->y / -window_height) * 2.0f / window_scale + 1.0f);
-        
     if (menu == game_p__bonus_pull_menu)
     {
         object_p__menu_functions->BonusPullSelectMenuFunction(clk_pos, clk_status);
@@ -65,49 +54,10 @@ void OpenGL::CallMenuFunction(Menu* menu, const Vec2D* glob_clk_pos, uint8_t clk
     {
         object_p__menu_functions->ShipsSelectMenuFunction(clk_pos, clk_status);
     }
-}
-
-void OpenGL::CallControleMenuFunction(Menu* menu, const Vec2D* glob_clk_pos, uint8_t clk_status)
-{
-    if (menu != game_p__ships_control_menu)
+    else if (menu == game_p__ships_control_menu)
     {
-        return;
+        object_p__menu_functions->ShipsControlMenuFunction(clk_pos, clk_status, *game_p__rotate_flags, *game_p__shoot_flags);
     }
-
-    Vec2F clk_pos = Vec2F(
-        ((float)glob_clk_pos->x / window_width - 0.5f) * 2.0f,
-        ((float)glob_clk_pos->y / window_height - 0.5f) * -2.0f);
-
-    if (window_scale > 1.0f)
-    {
-        if (clk_pos.x > 0.0f)
-        {
-            clk_pos.x = (clk_pos.x - 1.0f) * window_scale + 1.0f;
-        }
-        else
-        {
-            clk_pos.x = (clk_pos.x + 1.0f) * window_scale - 1.0f;
-        }
-    }
-    else
-    {
-        if (clk_pos.y > 0.0f)
-        {
-            clk_pos.y = (clk_pos.y - 1.0f) / window_scale + 1.0f;
-        }
-        else
-        {
-            clk_pos.y = (clk_pos.y + 1.0f) / window_scale - 1.0f;
-        }
-    }
-
-    object_p__menu_functions->ShipsControlMenuFunction(
-        clk_pos,
-        clk_status,
-        *game_p__rotate_flags,
-        *game_p__shoot_flags,
-        *game_p__double_clk_timers,
-        *game_p__burnout_flags);
 }
 
 void OpenGL::FirstUpdatePlayersFlags(GameTypes::players_count_t player)
@@ -116,10 +66,10 @@ void OpenGL::FirstUpdatePlayersFlags(GameTypes::players_count_t player)
     if ((button_commands & (OPEN_GL_REALISATION_COMMAND_SHIP_ROTATE << player)) == OPEN_GL_REALISATION_COMMAND_NOTHING)
     {
         button_commands |= (OPEN_GL_REALISATION_COMMAND_SHIP_ROTATE << player);
-        if ((*game_p__double_clk_timers)[player] > 0)
+        if ((*game_p__burnout_double_clk_timer)[player] > 0)
         {
-            (*game_p__burnout_flags)[player] = true;
-            (*game_p__double_clk_timers)[player] = -GAME_BURNOUT_COULDOWN;
+            (*game_p__burnout_flag)[player] = true;
+            (*game_p__burnout_double_clk_timer)[player] = -GAME_BURNOUT_COULDOWN;
         }
     }
 }
@@ -130,24 +80,15 @@ void OpenGL::SecondUpdatePlayersFlags(GameTypes::players_count_t player)
     if ((button_commands & (OPEN_GL_REALISATION_COMMAND_SHIP_ROTATE << player)) != OPEN_GL_REALISATION_COMMAND_NOTHING)
     {
         button_commands &= OPEN_GL_REALISATION_COMMAND_FULL - (OPEN_GL_REALISATION_COMMAND_SHIP_ROTATE << player);
-        if ((*game_p__double_clk_timers)[player] == 0)
+        if ((*game_p__burnout_double_clk_timer)[player] == 0)
         {
-            (*game_p__double_clk_timers)[player] = GAME_DOUBLE_CLK_TIME;
+            (*game_p__burnout_double_clk_timer)[player] = GAME_DOUBLE_CLK_TIME;
         }
     }
 }
 
 void OpenGL::FramebufferSizeCallback(GLFWwindow* window, int width, int height)
 {
-    if (height < 0)
-    {
-        height = 1;
-    }
-    if (width < 0)
-    {
-        width = 1;
-    }
-
     update_menu = OPEN_GL_REALISATION_FRAMES_AFTER_CALLBAC_COUNT;
     window_height = height;
     window_width = width;
@@ -180,8 +121,6 @@ void OpenGL::LimitMenuPosition(Menu* menu)
 
 void OpenGL::ProcessInput(GLFWwindow* window)
 {
-    int left_mouse_button_pressed_status = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
-
     if (object_p__menu_functions->ShouldExit())
     {
         glfwSetWindowShouldClose(window, GLFW_TRUE);
@@ -199,27 +138,70 @@ void OpenGL::ProcessInput(GLFWwindow* window)
     }
     if (*game_p__play_round)
     {
-#if OPEN_GL_REALISATION__SHIPS_CONTROLED_BY_KEYBOARD == true
-        rotate_key_flags[0] = (glfwGetKey(window, SHIP_0_ROTATE_BUTTON) == GLFW_PRESS) ? true : false;
-        rotate_key_flags[1] = (glfwGetKey(window, SHIP_1_ROTATE_BUTTON) == GLFW_PRESS) ? true : false;
-        rotate_key_flags[2] = (glfwGetKey(window, SHIP_2_ROTATE_BUTTON) == GLFW_PRESS) ? true : false;
-        rotate_key_flags[3] = (glfwGetKey(window, SHIP_3_ROTATE_BUTTON) == GLFW_PRESS) ? true : false;
-        shoot_key_flags[0] = (glfwGetKey(window, SHIP_0_SHOOT_BUTTON) == GLFW_PRESS) ? true : false;
-        shoot_key_flags[1] = (glfwGetKey(window, SHIP_1_SHOOT_BUTTON) == GLFW_PRESS) ? true : false;
-        shoot_key_flags[2] = (glfwGetKey(window, SHIP_2_SHOOT_BUTTON) == GLFW_PRESS) ? true : false;
-        shoot_key_flags[3] = (glfwGetKey(window, SHIP_3_SHOOT_BUTTON) == GLFW_PRESS) ? true : false;
-        object_p__menu_functions->ShipsControlMenuFunction(
-            rotate_key_flags,
-            shoot_key_flags,
-            *game_p__rotate_flags,
-            *game_p__shoot_flags,
-            *game_p__double_clk_timers,
-            *game_p__burnout_flags);
-#endif //OPEN_GL_REALISATION__SHIPS_CONTROLED_BY_KEYBOARD == true
-#if  OPEN_GL_REALISATION__SHIPS_CONTROLED_BY_SCREEN_BUTTONS == true
-        glfwGetCursorPos(window, &cursore_current_position->x, &cursore_current_position->y);
-        CallControleMenuFunction(*game_p__current_active_menu, cursore_current_position, left_mouse_button_pressed_status);
-#endif //OPEN_GL_REALISATION__SHIPS_CONTROLED_BY_SCREEN_BUTTONS == true
+        if (glfwGetKey(window, SHIP_0_ROTATE_BUTTON) == GLFW_PRESS)
+        {
+            FirstUpdatePlayersFlags(PLAYER_0);
+        }
+        else
+        {
+            SecondUpdatePlayersFlags(PLAYER_0);
+        }
+        if (glfwGetKey(window, SHIP_0_SHOOT_BUTTON) == GLFW_PRESS)
+        {
+            (*game_p__shoot_flags)[PLAYER_0] = true;
+        }
+        else
+        {
+            (*game_p__shoot_flags)[PLAYER_0] = false;
+        }
+        if (glfwGetKey(window, SHIP_1_ROTATE_BUTTON) == GLFW_PRESS)
+        {
+            FirstUpdatePlayersFlags(PLAYER_1);
+        }
+        else
+        {
+            SecondUpdatePlayersFlags(PLAYER_1);
+        }
+        if (glfwGetKey(window, SHIP_1_SHOOT_BUTTON) == GLFW_PRESS)
+        {
+            (*game_p__shoot_flags)[PLAYER_1] = true;
+        }
+        else
+        {
+            (*game_p__shoot_flags)[PLAYER_1] = false;
+        }
+        if (glfwGetKey(window, SHIP_2_ROTATE_BUTTON) == GLFW_PRESS)
+        {
+            FirstUpdatePlayersFlags(PLAYER_2);
+        }
+        else
+        {
+            SecondUpdatePlayersFlags(PLAYER_2);
+        }
+        if (glfwGetKey(window, SHIP_2_SHOOT_BUTTON) == GLFW_PRESS)
+        {
+            (*game_p__shoot_flags)[PLAYER_2] = true;
+        }
+        else
+        {
+            (*game_p__shoot_flags)[PLAYER_2] = false;
+        }
+        if (glfwGetKey(window, SHIP_3_ROTATE_BUTTON) == GLFW_PRESS)
+        {
+            FirstUpdatePlayersFlags(PLAYER_3);
+        }
+        else
+        {
+            SecondUpdatePlayersFlags(PLAYER_3);
+        }
+        if (glfwGetKey(window, SHIP_3_SHOOT_BUTTON) == GLFW_PRESS)
+        {
+            (*game_p__shoot_flags)[PLAYER_3] = true;
+        }
+        else
+        {
+            (*game_p__shoot_flags)[PLAYER_3] = false;
+        }
     }
     if (glfwGetKey(window, GLFW_KEY_BACKSPACE) == GLFW_PRESS && (button_commands & OPEN_GL_REALISATION_COMMAND_BACK) == OPEN_GL_REALISATION_COMMAND_NOTHING)
     {
@@ -232,7 +214,7 @@ void OpenGL::ProcessInput(GLFWwindow* window)
         update_menu = OPEN_GL_REALISATION_FRAMES_AFTER_CALLBAC_COUNT;
         button_commands &= OPEN_GL_REALISATION_COMMAND_FULL - OPEN_GL_REALISATION_COMMAND_BACK;
     }
-    if (left_mouse_button_pressed_status == GLFW_PRESS && (button_commands & OPEN_GL_REALISATION_COMMAND_SELECT) == OPEN_GL_REALISATION_COMMAND_NOTHING)
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS && (button_commands & OPEN_GL_REALISATION_COMMAND_SELECT) == OPEN_GL_REALISATION_COMMAND_NOTHING)
     {
         update_menu = OPEN_GL_REALISATION_FRAMES_AFTER_CALLBAC_COUNT;
         flag_update_menu_can_change = false;
@@ -242,9 +224,10 @@ void OpenGL::ProcessInput(GLFWwindow* window)
         glfwGetCursorPos(window, &cursore_press_position->x, &cursore_press_position->y);
         *cursore_last_position = *cursore_press_position;
 
-        CallMenuFunction(*game_p__current_active_menu, cursore_press_position, GLFW_PRESS);
+        Vec2F clk_pos = Vec2F(((float)cursore_press_position->x / window_width - 0.5f) * 2.0f, ((float)cursore_press_position->y / -window_height) * 2.0f / window_scale + 1.0f);
+        CallMenuFunction(*game_p__current_active_menu, &clk_pos, GLFW_PRESS);
     }
-    else if (left_mouse_button_pressed_status == GLFW_RELEASE && (button_commands & OPEN_GL_REALISATION_COMMAND_SELECT) != OPEN_GL_REALISATION_COMMAND_NOTHING)
+    else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE && (button_commands & OPEN_GL_REALISATION_COMMAND_SELECT) != OPEN_GL_REALISATION_COMMAND_NOTHING)
     {
         update_menu = OPEN_GL_REALISATION_FRAMES_AFTER_CALLBAC_COUNT;
         flag_update_menu_can_change = true;
@@ -255,11 +238,12 @@ void OpenGL::ProcessInput(GLFWwindow* window)
         *cursore_press_position -= *cursore_release_position;
         if (fabs(cursore_press_position->x) < window_width / 100.0 && fabs(cursore_press_position->y) < window_height / 100.0)
         {
-            CallMenuFunction(*game_p__current_active_menu, cursore_release_position, GLFW_RELEASE);
+            Vec2F clk_pos = Vec2F(((float)cursore_release_position->x / window_width - 0.5f) * 2.0f, ((float)cursore_release_position->y / -window_height) * 2.0f / window_scale + 1.0f);
+            CallMenuFunction(*game_p__current_active_menu, &clk_pos, GLFW_RELEASE);
         }
         else
         {
-            CallMenuFunction(*game_p__current_active_menu, cursore_release_position, OPEN_GL_REALISATION_BUTTON_LOST);
+            CallMenuFunction(*game_p__current_active_menu, nullptr, OPEN_GL_REALISATION_BUTTON_LOST);
         }
     }
     if (flag_move_menu)
@@ -408,12 +392,6 @@ void OpenGL::InitGlad()
         std::cout << "Failed to initialize GLAD" << std::endl;
         exit(-1);
     }
-}
-
-void OpenGL::InitMemory()
-{
-    rotate_key_flags = new bool[GAME_PLAYERS_MAX_COUNT];
-    shoot_key_flags = new bool[GAME_PLAYERS_MAX_COUNT];
 }
 
 void OpenGL::InitOpenGL()
@@ -1517,12 +1495,10 @@ void OpenGL::DrawCurrentMap()
 
 void OpenGL::DrawCurrentMenu()
 {
-#if OPEN_GL_REALISATION__SHIPS_CONTROLED_BY_SCREEN_BUTTONS == true
     if (*game_p__current_active_menu == game_p__pause_menu)
     {
         DrawIndicatedMenu(game_p__ships_control_menu);
     }
-#endif
     DrawIndicatedMenu(*game_p__current_active_menu);
 }
 
@@ -1583,7 +1559,6 @@ void OpenGL::DrawIndicatedMap(const Map::MapData* map)
 
 void OpenGL::DrawIndicatedMenu(const Menu* menu)
 {
-#if OPEN_GL_REALISATION__SHIPS_CONTROLED_BY_SCREEN_BUTTONS == true
     if (menu == game_p__ships_control_menu)
     {
         controler_shader.Use();
@@ -1595,7 +1570,6 @@ void OpenGL::DrawIndicatedMenu(const Menu* menu)
     }
     else
     {
-#endif
         button_buffer.Use();
         button_shader.Use();
         symbols_texture.Use();
@@ -1604,9 +1578,7 @@ void OpenGL::DrawIndicatedMenu(const Menu* menu)
         {
             DrawObject(&menu->current_buttons[button]);
         }
-#if OPEN_GL_REALISATION__SHIPS_CONTROLED_BY_SCREEN_BUTTONS == true
     }
-#endif
 }
 
 //Multydraw functions
@@ -1624,104 +1596,3 @@ float OpenGL::GetScale()
 }
 
 //Get data functions
-
-//destructor and free memory functions
-
-void OpenGL::Free()
-{
-    FreeBuffers();
-    FreeMemory();
-    FreeShaders();
-    FreeTextures();
-}
-
-void OpenGL::FreeBuffers()
-{
-    anig_area_generator_buffer.Delete();
-    asteroid_buffer.Delete();
-    bomb_buffer.Delete();
-    bonus_buffer.Delete();
-    bullet_buffer.Delete();
-    cyrcle_buffer.Delete();
-    deceler_area_buffer.Delete();
-    dynamic_particle_buffer.Delete();
-    grav_gen_buffer.Delete();
-    rectangle_buffer.Delete();
-    particle_buffer.Delete();
-    portal_buffer.Delete();
-    ship_bullet_buffer.Delete();
-    laser_buffer.Delete();
-    mega_laser_buffer.Delete();
-    polygon_buffer.Delete();
-    turel_buffer.Delete();
-    button_buffer.Delete();
-    button_horisontal_buffer.Delete();
-    button_vertical_buffer.Delete();
-    knife_buffer.Delete();
-    pilot_buffer.Delete();
-    ship_buffer.Delete();
-}
-
-void OpenGL::FreeMemory()
-{
-    delete[] rotate_key_flags;
-    delete[] shoot_key_flags;
-}
-
-void OpenGL::FreeShaders()
-{
-    anig_area_gen_shader.Delete();
-    asteroid_shader.Delete();
-    bomb_shader.Delete();
-    bonus_shader.Delete();
-    bullet_shader.Delete();
-    deceler_area_shader.Delete();
-    dynamic_particle_shader.Delete();
-    grav_gen_shader.Delete();
-    knife_shader.Delete();
-    laser_shader.Delete();
-    mega_laser_shader.Delete();
-    particle_shader.Delete();
-    portal_shader.Delete();
-    pilot_shader.Delete();
-    ship_shader.Delete();
-    turel_shader.Delete();
-    rectangle_shader.Delete();
-    cyrcle_shader.Delete();
-    polygon_shader.Delete();
-    button_shader.Delete();
-    controler_shader.Delete();
-}
-
-void OpenGL::FreeTextures()
-{
-    symbols_texture.Delete();
-    anig_area_gen_basic_texture.Delete();
-    asteroid_small_texture.Delete();
-    asteroid_medium_texture.Delete();
-    asteroid_large_texture.Delete();
-    asteroid_sublimation_texture.Delete();
-    bonus_bomb_texture.Delete();
-    bonus_knife_texture.Delete();
-    bonus_laser_texture.Delete();
-    bonus_loop_texture.Delete();
-    bonus_shield_texture.Delete();
-    bonus_stream_texture.Delete();
-    bonus_triple_texture.Delete();
-    bonus_revers_texture.Delete();
-    bomb_basic_texture.Delete();
-    bomb_lighting_texture.Delete();
-    bullet_small_texture.Delete();
-    bullet_medium_texture.Delete();
-    bullet_large_texture.Delete();
-    pilot_basic_texture.Delete();
-    ship_basic_texture.Delete();
-    ship_triple_texture.Delete();
-    turel_basic_texture.Delete();
-}
-
-OpenGL::~OpenGL()
-{
-}
-
-//destructor and free memory functions

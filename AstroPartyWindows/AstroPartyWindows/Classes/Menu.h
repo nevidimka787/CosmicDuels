@@ -26,8 +26,7 @@ public:
 
 	EngineTypes::Area::points_count_t GetPointsCount() const;
 	const Vec2F* GetPointsArrayP() const;
-	bool HavePointInside(Vec2F point) const;
-	bool HavePointInside(const Vec2F* point) const;
+	bool HavePointInside(Vec2F* point) const;
 	void Set(const Area* area);
 	void Set(const Vec2F* points, EngineTypes::Area::points_count_t points_count);
 
@@ -81,9 +80,7 @@ public:
 	//Create a new memory space and return pointer to it.
 	EngineTypes::Button::text_t* GetTextU() const;
 	EngineTypes::Button::text_length_t GetTextLength() const;
-	bool HavePoint(Vec2F point) const;
 	bool HavePoint(const Vec2F* point) const;
-	void Move(Vec2F move_vector);
 	void Move(const Vec2F* move_vector);
 	void Set(const Button* button);
 	void Set(

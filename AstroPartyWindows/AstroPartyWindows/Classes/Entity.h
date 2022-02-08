@@ -633,7 +633,6 @@ protected:
 	EngineTypes::ControledEntity::heat_box_vertexes_count_t heat_box_vertexes_array_length;
 	GameTypes::players_count_t player_number;
 	GameTypes::players_count_t player_team_number;
-	const void* burnout_input_value_pointer;
 	const void* rotate_input_value_pointer;
 	const void* shoot_input_value_pointer;
 
@@ -647,7 +646,6 @@ public:
 		float radius,
 		GameTypes::players_count_t player_number,
 		GameTypes::players_count_t player_team_number,
-		const void* burnout_input_value_pointer,
 		const void* rotate_input_value_pointer,
 		const void* shoot_input_value_pointer,
 		Vec2F* heat_box_vertexes = nullptr,
@@ -663,7 +661,6 @@ public:
 		float radius,
 		GameTypes::players_count_t player_number,
 		GameTypes::players_count_t player_team_number,
-		const void* burnout_input_value_pointer,
 		const void* rotate_input_value_pointer,
 		const void* shoot_input_value_pointer,
 		Vec2F* heat_box_vertexes = nullptr,
@@ -709,7 +706,6 @@ public:
 		float radius,
 		GameTypes::players_count_t player_number,
 		GameTypes::players_count_t player_team_number,
-		const void* burnout_input_value_pointer,
 		const void* rotate_input_value_pointer,
 		const void* shoot_input_value_pointer,
 		Vec2F* heat_box_vertexes = nullptr,
@@ -725,7 +721,6 @@ public:
 		float radius,
 		GameTypes::players_count_t player_number,
 		GameTypes::players_count_t player_team_number,
-		const void* burnout_input_value_pointer,
 		const void* rotate_input_value_pointer,
 		const void* shoot_input_value_pointer,
 		Vec2F* heat_box_vertexes = nullptr,
@@ -747,15 +742,14 @@ public:
 class Ship : public ControledEntity
 {
 private:
-	//Value of the coldown of burnout. If value is zero then the ship can bornout.
-	GameTypes::tic_t burnout_coldown;
-	//Count of objects that ship should generate in next tics.
-	GameTypes::entities_count_t objects_in_creating_proccess;
+	//value of the variable will not translate to other entities
+	GameTypes::entities_count_t objects_in_loop;
 	//value of the variable will not translate to other entities
 	GameTypes::objects_types_count_t element_type;
 
 	GameTypes::tic_t shoot_cooldown_time = GAME_DELLAY_BETWEEN_SHOOTS;
 protected:
+	const void* burnout_input_value_pointer;
 	EngineTypes::Bonus::inventory_t bonus_inventory;
 	EngineTypes::Ship::inventory_t buff_inventory;
 	GameTypes::tic_t unbrakable;
@@ -782,7 +776,6 @@ public:
 		EngineTypes::Ship::inventory_t buff_inventory = BONUS_NOTHING,
 		GameTypes::tic_t unbrakable = SHIP_DEFAULT_UNBRAKABLE_PERIOD,
 		GameTypes::tic_t burnout = 0.0f,
-		GameTypes::tic_t burnout_coldown = SHIP_DEFAULT_BURNOUT_COLDOWN,
 		float angular_velocity = 0.0f,
 		float radius = SHIP_DEFAULT_RADIUS,
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
@@ -805,7 +798,6 @@ public:
 		EngineTypes::Ship::inventory_t buff_inventory = BONUS_NOTHING,
 		GameTypes::tic_t unbrakable = SHIP_DEFAULT_UNBRAKABLE_PERIOD,
 		GameTypes::tic_t burnout = 0.0f,
-		GameTypes::tic_t burnout_coldown = SHIP_DEFAULT_BURNOUT_COLDOWN,
 		float angular_velocity = 0.0f,
 		float radius = SHIP_DEFAULT_RADIUS,
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
@@ -830,7 +822,7 @@ public:
 		bool rotate_clockwise,
 		GameTypes::tic_t burnout_period = SHIP_DEFAULT_BURNOUT_PERIOD);
 	bool CanCreatingBullet() const;
-	bool CanCreatingObject() const;
+	bool CanCreatingLoop() const;
 	Bullet CreateBullet();
 	//The function return dynamic particle.
 	DynamicParticle CreateBurnoutExaust(GameTypes::tic_t current_tic);
@@ -846,8 +838,8 @@ public:
 	//If ship already has the data then the function return false
 	//else the function return true.
 	bool CreatingEntities(
-		GameTypes::entities_count_t objects_count,	//count of objects in creating loop
-		GameTypes::objects_types_count_t object_type	//type of elemnts in creating loop
+		GameTypes::entities_count_t objects_in_loop,	//count of objects in creating loop
+		GameTypes::objects_types_count_t element_type	//type of elemnts in creating loop
 	);
 	//The function does not check for the presence of a bonus.
 	Bullet CreateLoop(GameTypes::entities_count_t bullet_number);
@@ -889,7 +881,6 @@ public:
 		EngineTypes::Ship::inventory_t buff_inventory = BONUS_NOTHING,
 		GameTypes::tic_t unbrakable = SHIP_DEFAULT_UNBRAKABLE_PERIOD,
 		GameTypes::tic_t burnout = 0,
-		GameTypes::tic_t burnout_coldown = SHIP_DEFAULT_BURNOUT_COLDOWN,
 		float angular_velocity = 0.0f,
 		float radius = SHIP_DEFAULT_RADIUS,
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
@@ -912,7 +903,6 @@ public:
 		EngineTypes::Ship::inventory_t buff_inventory = BONUS_NOTHING,
 		GameTypes::tic_t unbrakable = SHIP_DEFAULT_UNBRAKABLE_PERIOD,
 		GameTypes::tic_t burnout = 0,
-		GameTypes::tic_t burnout_coldown = SHIP_DEFAULT_BURNOUT_COLDOWN,
 		float angular_velocity = 0.0f,
 		float radius = SHIP_DEFAULT_RADIUS,
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
@@ -953,7 +943,6 @@ public:
 		Vec2F velocity,
 		GameTypes::players_count_t player_number,
 		GameTypes::players_count_t player_team_number,
-		const void* burnout_input_value_pointer,
 		const void* rotate_input_value_pointer,
 		const void* shoot_input_value_pointer,
 		GameTypes::tic_t respawn_timer = PILOT_DEFAULT_RESPAWN_TIMER,
@@ -973,7 +962,6 @@ public:
 		const Vec2F* velocity,
 		GameTypes::players_count_t player_number,
 		GameTypes::players_count_t player_team_number,
-		const void* burnout_input_value_pointer,
 		const void* rotate_input_value_pointer,
 		const void* shoot_input_value_pointer,
 		GameTypes::tic_t respawn_timer = PILOT_DEFAULT_RESPAWN_TIMER,
@@ -999,7 +987,6 @@ public:
 		Vec2F velocity,
 		GameTypes::players_count_t player_number,
 		GameTypes::players_count_t player_team_number,
-		const void* burnout_input_value_pointer,
 		const void* rotate_input_value_pointer,
 		const void* shoot_input_value_pointer,
 		GameTypes::tic_t respawn_timer = PILOT_DEFAULT_RESPAWN_TIMER,
@@ -1019,7 +1006,6 @@ public:
 		const Vec2F* velocity,
 		GameTypes::players_count_t player_number,
 		GameTypes::players_count_t player_team_number,
-		const void* burnout_input_value_pointer,
 		const void* rotate_input_value_pointer,
 		const void* shoot_input_value_pointer,
 		GameTypes::tic_t respawn_timer = PILOT_DEFAULT_RESPAWN_TIMER,

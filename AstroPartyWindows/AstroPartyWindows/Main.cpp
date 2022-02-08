@@ -118,7 +118,6 @@ int main()
         glfwSwapInterval(1);
     }
 
-    main_draw_functions->Free();
     glfwTerminate(); //clear memory locating for OpenGL 
     return 0;
 }
