@@ -657,9 +657,10 @@ skip_bonus_pull_set:
 
 	MemoryLock();
 	
+	printf("Start score is -2\n");
 	for (GameTypes::players_count_t team = 1; team <= GAME_PLAYERS_MAX_COUNT; team++)
 	{
-		scores[team - 1] = 0;
+		scores[team - 1] = -2;
 	}
 
 	selected_maps_id_array_length = 0;
