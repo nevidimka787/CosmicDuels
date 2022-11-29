@@ -5,9 +5,9 @@
 
 #include "../Classes/GameEngine.h"
 
-#include <shared_mutex>
 #include <math.h>
-#include <Windows.h>
+#include <shared_mutex>
+#include <thread>
 
 class Game;
 class OpenGL;
@@ -137,6 +137,7 @@ public:
 	bool* object_pull_array;
 	//This array contains bonuses, buffs and rules that will be spawned in the current match.
 	bool* bonus_pull_array;
+	EngineTypes::Bonus::inventory_t inventory_template_mask;
 
 	//game lists
 
@@ -206,11 +207,6 @@ public:
 	std::shared_mutex portals_array_mtx;
 	std::shared_mutex ships_array_mtx;
 	std::shared_mutex turels_array_mtx;
-
-	//first index -- number of sendind response thread
-	//second index -- number of geting response thread
-	//third index -- number of response
-	HANDLE thread_event[4][4][2];
 
 	//The array store time of calculation indicated phase of indicated thread.
 	//first index -- number of thread
@@ -406,6 +402,9 @@ public:
 	//"Portal"
 	void Event9();
 
+	//"No Center"
+	void Event10();
+
 	//"Test"
 	void CreateMap0(Vec2F* ships_positions, float* ships_angles);
 	
@@ -435,6 +434,9 @@ public:
 
 	//"Portal"
 	void CreateMap9(Vec2F* ships_positions, float* ships_angles);
+
+	//"No center"
+	void CreateMap10(Vec2F* ships_positions, float* ships_angles);
 
 	void CreateMapRoundResults(GameTypes::players_count_t players_count, GameTypes::score_t max_score, float cell_size);
 
@@ -1070,6 +1072,13 @@ public:
 	void DecrementScore(GameTypes::players_count_t team_number);
 
 	void DebugLog__CheckMutexeslLock();
+
+	// The function update inventory template mask using bonus pool menu.
+	void UpdateInventoryTemplateMask();
+
+	// The function return new inventory template 
+	// that doesn't collect bonuses thats weren't in the bonus pool menu.
+	EngineTypes::Bonus::inventory_t CheckBonusPoolMenu(EngineTypes::Bonus::inventory_t inventory_template);
 
 	//The function returns a random bonus type.
 	EngineTypes::Bonus::inventory_t GenerateRandomBonus();

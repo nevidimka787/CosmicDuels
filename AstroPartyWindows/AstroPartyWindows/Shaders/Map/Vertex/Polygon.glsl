@@ -57,11 +57,11 @@ mat3 Rotate(float _angle)
 
 mat3 SetBySegment(vec4 _segment)
 {
-    if(_segment.z > 0.0f)
+    if(_segment.z >= 0.0f)
     {
         return Scale(vec2(length(_segment.zw), 1.0f)) * Rotate(atan(_segment.w / _segment.z)) * Transport(_segment.xy);
     }
-    if(_segment.w > 0.0f)
+    if(_segment.w >= 0.0f)
     {
         return Scale(vec2(length(_segment.zw), 1.0f)) * Rotate(atan(_segment.w / _segment.z) + radians(180.0f)) * Transport(_segment.xy);
     }

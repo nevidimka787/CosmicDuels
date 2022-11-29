@@ -91,6 +91,10 @@ Bomb::Bomb(
 
 void Bomb::Activate()
 {
+	if (status & BOMB_STATUS_ACTIVE)
+	{
+		return;
+	}
 	status |= BOMB_STATUS_ACTIVE;
 	animation_tic = activation_period;
 	blinking_period = activation_period;
@@ -98,6 +102,10 @@ void Bomb::Activate()
 
 void Bomb::Boom(GameTypes::tic_t period)
 {
+	if (status & BOMB_STATUS_BOOM)
+	{
+		return;
+	}
 	animation_tic = period;
 	blinking_period = period;
 	status &= BOMB_STATUS_ALL - BOMB_STATUS_ACTIVE;
@@ -152,7 +160,17 @@ bool Bomb::Collision(const Map::MapData* map)
 		map_element = (void*)map->CyrclePointer(i);
 		if (((Map::Cyrcle*)map_element)->exist)
 		{
-			collision |= DynamicEntity::Collision((Map::Cyrcle*)map_element);
+			bool current_collision = DynamicEntity::Collision((Map::Cyrcle*)map_element);
+			if (current_collision && ((Map::Cyrcle*)map_element)->IsKiller() && ((Map::Cyrcle*)map_element)->IsAggressive())
+			{
+				Boom();
+			}
+			else if (current_collision && ((Map::Cyrcle*)map_element)->IsAggressive())
+			{
+				Activate();
+			}
+
+			collision |= current_collision;
 		}
 	}
 	for (EngineTypes::Map::array_length_t i = 0; i < map->polygons_array_length; i++)
@@ -160,7 +178,17 @@ bool Bomb::Collision(const Map::MapData* map)
 		map_element = (void*)map->PolygonPointer(i);
 		if (((Map::Polygon*)map_element)->exist)
 		{
-			collision |= DynamicEntity::Collision((Map::Polygon*)map_element);
+			bool current_collision = DynamicEntity::Collision((Map::Polygon*)map_element);
+			if (current_collision && ((Map::Polygon*)map_element)->IsKiller() && ((Map::Polygon*)map_element)->IsAggressive())
+			{
+				Boom();
+			}
+			else if (current_collision && ((Map::Polygon*)map_element)->IsAggressive())
+			{
+				Activate();
+			}
+
+			collision |= current_collision;
 		}
 	}
 	for (EngineTypes::Map::array_length_t i = 0; i < map->rectangles_array_length; i++)
@@ -168,7 +196,17 @@ bool Bomb::Collision(const Map::MapData* map)
 		map_element = (void*)map->RectanglePointer(i);
 		if (((Map::Rectangle*)map_element)->exist)
 		{
-			collision |= DynamicEntity::Collision((Map::Rectangle*)map_element);
+			bool current_collision = DynamicEntity::Collision((Map::Rectangle*)map_element);
+			if (current_collision && ((Map::Rectangle*)map_element)->IsKiller() && ((Map::Rectangle*)map_element)->IsAggressive())
+			{
+				Boom();
+			}
+			else if (current_collision && ((Map::Rectangle*)map_element)->IsAggressive())
+			{
+				Activate();
+			}
+
+			collision |= current_collision;
 		}
 	}
 	return collision;

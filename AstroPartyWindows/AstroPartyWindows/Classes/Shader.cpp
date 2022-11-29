@@ -1,4 +1,7 @@
 #include "Shader.h"
+
+#pragma warning(disable : 4996)
+
 #define FRAGMENT 1
 #define VERTEX 2
 #define PROGRAM 3
@@ -30,7 +33,7 @@ bool Shader::Initialisate(const char* vertex_file_name, const char* fragment_fil
 	FILE* vertex_file = nullptr;
 	FILE* fragment_file = nullptr;
 
-	if (fopen_s(&vertex_file, vertex_file_name, "r") != 0)
+	if ((vertex_file = fopen(vertex_file_name, "r")) == nullptr)
 	{
 		std::cout << "ERROR::SHADER_CONSTRUCTOR::VERTEX::File not found." << std::endl
 			<< "File: " << vertex_file_name << std::endl << std::endl;
@@ -53,7 +56,7 @@ bool Shader::Initialisate(const char* vertex_file_name, const char* fragment_fil
 		fclose(vertex_file);
 	}
 
-	if (fopen_s(&fragment_file, fragment_file_name, "r") != 0)
+	if ((fragment_file = fopen(fragment_file_name, "r")) == nullptr)
 	{
 		std::cout << "ERROR::SHADER_CONSTRUCTOR::FRAGMENT::File not found." << std::endl
 			<< "File: " << fragment_file_name << std::endl << std::endl;

@@ -29,12 +29,6 @@ void InputOutputUpdate();
 void PhysicsCalculationStarter();
 //This thread update 100 times per second and use for update all physical data of all entities.
 void PhysicsCalculation0();
-//This thread update 100 times per second and use for update all physical data of all entities.
-void PhysicsCalculation1();
-//This thread update 100 times per second and use for update all physical data of all entities.
-void PhysicsCalculation2();
-//This thread update 100 times per second and use for update all physical data of all entities.
-void PhysicsCalculation3();
 
 bool physic_thread_flag = false;
 bool tik_update_thread_flag = false;
@@ -146,58 +140,6 @@ void InputOutputUpdate()
         main_game->input_values_mtx.lock();
         main_draw_functions->ProcessInput(window); //check input from main window
         main_game->input_values_mtx.unlock();
-        if (main_game->pause_round == false) //if round not pausing
-        {
-            lock_timer++;//update local timer of console
-            if (!(lock_timer % 100)) //every second
-            {//draw data to console
-                uint32_t sum[2] =
-                {
-                    (uint32_t)main_game->thread_durations[0][0].count() + (uint32_t)main_game->thread_durations[1][0].count() + (uint32_t)main_game->thread_durations[2][0].count() + (uint32_t)main_game->thread_durations[3][0].count(),
-                    (uint32_t)main_game->thread_durations[0][1].count() + (uint32_t)main_game->thread_durations[1][1].count() + (uint32_t)main_game->thread_durations[2][1].count() + (uint32_t)main_game->thread_durations[3][1].count()
-                };
-                if (sum[0] == 0) { sum[0] = 1; }
-                if (sum[1] == 0) { sum[1] = 1; }
-                uint32_t percent[4][2] = 
-                {
-                    {(uint32_t)main_game->thread_durations[0][0].count() * 400u / sum[0], (uint32_t)main_game->thread_durations[0][1].count() * 400u / sum[1]},
-                    {(uint32_t)main_game->thread_durations[1][0].count() * 400u / sum[0], (uint32_t)main_game->thread_durations[1][1].count() * 400u / sum[1]},
-                    {(uint32_t)main_game->thread_durations[2][0].count() * 400u / sum[0], (uint32_t)main_game->thread_durations[2][1].count() * 400u / sum[1]},
-                    {(uint32_t)main_game->thread_durations[3][0].count() * 400u / sum[0], (uint32_t)main_game->thread_durations[3][1].count() * 400u / sum[1]}
-                };
-
-                printf("Ph:       Th:0       Th:1       Th:2       Th:3\n");
-                printf("0: %11u%%%11u%%%11u%%%11u%%\n1: %11u%%%11u%%%11u%%%11u%%\n\n",
-                    percent[0][0], percent[1][0], percent[2][0], percent[3][0],
-                    percent[0][1], percent[1][1], percent[2][1], percent[3][1]);
-
-                //reset counters
-                main_game->ResetThreadDurations();
-                frame = 0;
-                ph0 = 0;
-                ph1 = 0;
-                ph2 = 0;
-                ph3 = 0;
-            }
-            else if (!((lock_timer + 90) % 100)) //every second
-            {//check thread lock
-                if (ph0 == 0 || ph1 == 0 || ph2 == 0 || ph3 == 0)
-                {
-                    std::cout << "Thread lock detected." << std::endl;
-                    std::cout << "Checking mutexes..." << std::endl;
-                    //main_game->DebugLog__CheckMutexeslLock();
-                    std::cout << "WARNING::Checking mutexes function was disabled." << std::endl;
-                }
-            }
-            else if (!((lock_timer + 10) % 100)) //every second
-            {//check threads desinchronisation
-                if (!(ph0 == ph1 && ph1 == ph2 && ph2 == ph3))
-                {
-                    std::cout << "Thread desinchronisation detected." << std::endl;
-                    printf("Ph0:%4u Ph1:%4u Ph2:%4u Ph3:%4u Ans:%1u\n", ph0, ph1, ph2, ph3, (unsigned)(!(ph0 == ph1 && ph1 == ph2 && ph2 == ph3)));
-                }
-            }
-        }
 
         local_time_point += std::chrono::milliseconds(THREAD_INPUT_TIK_PERIOD); //set waking up point
         std::this_thread::sleep_until(local_time_point); //wait waking up point
@@ -228,18 +170,9 @@ void PhysicsCalculationStarter()
     physic_start.lock();
     //calculate and update game physic
     std::thread physics_calculation0(PhysicsCalculation0);
-    //calculate and update game physic
-    std::thread physics_calculation1(PhysicsCalculation1);
-    //calculate and update game physic
-    std::thread physics_calculation2(PhysicsCalculation2);
-    //calculate and update game physic
-    std::thread physics_calculation3(PhysicsCalculation3);
     physic_start.unlock();
 
     physics_calculation0.join(); //wait completing of the physic calculation
-    physics_calculation1.join(); //wait completing of the physic calculation
-    physics_calculation2.join(); //wait completing of the physic calculation
-    physics_calculation3.join(); //wait completing of the physic calculation
 
     //waking up point
     std::chrono::system_clock::time_point local_time_point = std::chrono::system_clock::now();
@@ -283,68 +216,26 @@ void PhysicsCalculation0()
 {
     //local time point
     std::chrono::system_clock::time_point local_time_point = global_time_point;
+    std::chrono::system_clock::time_point period = global_time_point;
+    std::chrono::nanoseconds delta;
+
+
     physic_start.lock();
     physic_start.unlock();
     while (main_game->play_round) //while game gone
     {
+        period = std::chrono::system_clock::now();
         if (!main_game->pause_round) //roung not paused
         {
             main_game->PhysicThread0();
-            ph0++; //increment count of updates of first thread
         }
-        local_time_point += std::chrono::microseconds(THREAD_PHYSIC_TIK_PERIOD); //update waking up point
-        std::this_thread::sleep_until(local_time_point); //wait waking up point
-    }
-}
 
-void PhysicsCalculation1()
-{
-    //local time point
-    std::chrono::system_clock::time_point local_time_point = global_time_point;
-    physic_start.lock();
-    physic_start.unlock();
-    while (main_game->play_round) //while game gone
-    {
-        if (!main_game->pause_round) //roung not paused
-        {
-            main_game->PhysicThread1();
-            ph1++; //increment count of updates of second thread
-        }
-        local_time_point += std::chrono::microseconds(THREAD_PHYSIC_TIK_PERIOD); //update waking up point
-        std::this_thread::sleep_until(local_time_point); //wait waking up point
-    }
-}
+        delta += (std::chrono::system_clock::now() - period) / 100;
 
-void PhysicsCalculation2()
-{
-    //local time point
-    std::chrono::system_clock::time_point local_time_point = global_time_point;
-    physic_start.lock();
-    physic_start.unlock();
-    while (main_game->play_round) //while game gone
-    {
-        if (!main_game->pause_round) //roung not paused
+        if (!main_game->pause_round && main_game->global_timer % 100 == 0) //roung not paused
         {
-            main_game->PhysicThread2();
-            ph2++; //increment count of updates of third thread
-        }
-        local_time_point += std::chrono::microseconds(THREAD_PHYSIC_TIK_PERIOD); //update waking up point
-        std::this_thread::sleep_until(local_time_point); //wait waking up point
-    }
-}
-
-void PhysicsCalculation3()
-{
-    //local time point
-    std::chrono::system_clock::time_point local_time_point = global_time_point;
-    physic_start.lock();
-    physic_start.unlock();
-    while (main_game->play_round) //while game gone
-    {
-        if (!main_game->pause_round) //roung not paused
-        {
-            main_game->PhysicThread3();
-            ph3++; //increment count of updates of fourth thread
+            std::cout << double(delta.count()) / 100000.0 << "%%" << std::endl;
+            delta = std::chrono::nanoseconds(0);
         }
         local_time_point += std::chrono::microseconds(THREAD_PHYSIC_TIK_PERIOD); //update waking up point
         std::this_thread::sleep_until(local_time_point); //wait waking up point

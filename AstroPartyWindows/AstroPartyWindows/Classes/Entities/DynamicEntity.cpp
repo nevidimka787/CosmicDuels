@@ -171,10 +171,18 @@ bool DynamicEntity::Collision(const Map::Rectangle* rectangle)
 		if (position.y > side.point.y)
 		{
 			position.y += radius - distance + force_collision_coeffisient;
+			if (force.y < 0.0f)
+			{
+				force.y = 0.0f;
+			}
 		}
 		else
 		{
 			position.y -= radius - distance + force_collision_coeffisient;
+			if (force.y > 0.0f)
+			{
+				force.y = 0.0f;
+			}
 		}
 		velocity -= collision_direction.ProjectSign(&velocity);
 		velocity += Vec2F(0.0f, 1.0f).ProjectSign(rectangle_velocity - velocity);
@@ -189,10 +197,18 @@ bool DynamicEntity::Collision(const Map::Rectangle* rectangle)
 		if (position.y > side.point.y)
 		{
 			position.y += radius - distance + force_collision_coeffisient;
+			if (force.y < 0.0f)
+			{
+				force.y = 0.0f;
+			}
 		}
 		else
 		{
 			position.y -= radius - distance + force_collision_coeffisient;
+			if (force.y > 0.0f)
+			{
+				force.y = 0.0f;
+			}
 		}
 		velocity -= collision_direction.ProjectSign(&velocity);
 		velocity += Vec2F(0.0f, -1.0f).ProjectSign(rectangle_velocity - velocity);
@@ -207,10 +223,18 @@ bool DynamicEntity::Collision(const Map::Rectangle* rectangle)
 		if (position.x > side.point.x)
 		{
 			position.x += radius - distance + force_collision_coeffisient;
+			if (force.x < 0.0f)
+			{
+				force.x = 0.0f;
+			}
 		}
 		else
 		{
 			position.x -= radius - distance + force_collision_coeffisient;
+			if (force.x > 0.0f)
+			{
+				force.x = 0.0f;
+			}
 		}
 		velocity -= collision_direction.ProjectSign(&velocity);
 		velocity += Vec2F(1.0f, 0.0f).ProjectSign(rectangle_velocity - velocity);
@@ -225,10 +249,18 @@ bool DynamicEntity::Collision(const Map::Rectangle* rectangle)
 		if (position.x > side.point.x)
 		{
 			position.x += radius - distance + force_collision_coeffisient;
+			if (force.x < 0.0f)
+			{
+				force.x = 0.0f;
+			}
 		}
 		else
 		{
 			position.x -= radius - distance + force_collision_coeffisient;
+			if (force.x > 0.0f)
+			{
+				force.x = 0.0f;
+			}
 		}
 		velocity -= collision_direction.ProjectSign(&velocity);
 		velocity += Vec2F(-1.0f, 0.0f).ProjectSign(rectangle_velocity - velocity);
@@ -251,11 +283,15 @@ bool DynamicEntity::Collision(const Map::Cyrcle* cyrcle)
 	Vec2F collision_direction = cyrcle->GetPosition() - position;
 	if (inside)
 	{
-		position = cyrcle->GetPosition() - collision_direction.Normalize() * (cyrcle->GetRadius() - radius - force_collision_coeffisient);
+		Vec2F d_pos = cyrcle->GetPosition() - collision_direction.Normalize() * (cyrcle->GetRadius() - radius - force_collision_coeffisient);
+		force -= force.ProjectSign(position - d_pos);
+		position = d_pos;
 	}
 	else
 	{
-		position = cyrcle->GetPosition() - collision_direction.Normalize() * (cyrcle->GetRadius() + radius + force_collision_coeffisient);
+		Vec2F d_pos = cyrcle->GetPosition() - collision_direction.Normalize() * (cyrcle->GetRadius() + radius + force_collision_coeffisient);
+		force -= force.ProjectSign(position - d_pos);
+		position = d_pos;
 	}
 
 	velocity -= collision_direction.Project(&velocity) / 2.0f;
@@ -280,12 +316,16 @@ bool DynamicEntity::Collision(const Map::Polygon* polygon)
 	Vec2F collision_direction;//direction from position to collision point
 	float distance;
 
+	Vec2F d_pos;
+
 	if (p_count > 2 && polygon->IsClosed())
 	{
 		distance = side.Distance(position, &collision_direction);
 		if (distance < radius || side.IsIntersection(&treck))
 		{
-			position += (position - collision_direction).Normalize() * (radius - position.Distance(collision_direction) + force_collision_coeffisient);
+			d_pos = (position - collision_direction).Normalize() * (radius - position.Distance(collision_direction) + force_collision_coeffisient);
+			force -= force.ProjectSign(d_pos);
+			position += d_pos;
 			collision_direction -= position;
 			velocity -= collision_direction.ProjectSign(velocity);
 			velocity += (-collision_direction).ProjectSign(polygon->Velocity(collision_direction + position) - velocity);
@@ -301,7 +341,9 @@ bool DynamicEntity::Collision(const Map::Polygon* polygon)
 		distance = side.Distance(position, &collision_direction);
 		if (distance < radius || side.IsIntersection(&treck))
 		{
-			position += (position - collision_direction).Normalize() * (radius - position.Distance(collision_direction) + force_collision_coeffisient);
+			d_pos = (position - collision_direction).Normalize() * (radius - position.Distance(collision_direction) + force_collision_coeffisient);
+			force -= force.ProjectSign(d_pos);
+			position += d_pos;
 			collision_direction -= position;
 			velocity -= collision_direction.ProjectSign(velocity);
 			velocity += (-collision_direction).ProjectSign(polygon->Velocity(collision_direction + position) - velocity);
@@ -567,10 +609,10 @@ void DynamicEntity::Update()
 	}
 	UpdateDirection();
 
-	velocity += force;
 	velocity *= 1.0f - force_resistance_air_coefficient;
-	force.Set(0.0f, 0.0f);
+	velocity += force;
 	Move(&velocity);
+	force.Set(0.0f, 0.0f);
 }
 
 void DynamicEntity::Set(const DynamicEntity* dynamic_entity)

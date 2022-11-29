@@ -20,45 +20,102 @@
 
 void Game::PhysicThread0()
 {
-	//printf("0\t0\n");
-
-	std::chrono::system_clock::time_point lockal_time_point = std::chrono::system_clock::now();
-
-	BombsChainReaction();
-	BulletsDestroyAsteroids();
-	KnifesDestroyAsteroids();
-	LasersDestroyBonuses();
-	MegaLasersDestroyAsteroids();
-	MegaLasersDestroyBonuses();
-	PilotsKilledByBombs();
-	if (!(global_timer % PARTICLE_PERIOD_PORTAL_OUT))
+	if (ships_count > 0)
 	{
-		PortalsCreateParticles();
+		ShipsInfluenceToBonuses();
+		ShipsRespawnOrDestroyPilots();
+		ShipsDestroedByBombsOrActivateBombs();
+		ShipsCheckInput();
+		ShipsShoot();
+		ShipsCreateExaust();
+		ShipsDestroedByBullets();
+		ShipsDestroedByKnifes();
+		ShipsDestroedByLasers();
+		ShipsDestroedByMegaLasers();
 	}
-	PortalsTPShips();
-	ShipsInfluenceToBonuses();
-	ShipsRespawnOrDestroyPilots();
-	ShipsDestroedByBombsOrActivateBombs();
+	
+	if (pilots_count > 0)
+	{
+		PilotsKilledByBombs();
+		PilotsKilledByBullet();
+		PilotsCheckInput();
+		PilotsKilledByKnifes();
+		PilotsRespawnAuto();
+		PilotsKilledByLasers();
+		PilotsKilledByMegaLaser();
+	}
+	
+	if (mega_lasers_count > 0)
+	{
+		MegaLasersDestroyAsteroids();
+		MegaLasersDestroyBonuses();
+		MegaLasersDetonateBombs();
+		MegaLasersDestroyBullets();
+		//MegaLasersDestroyMap(); -- not realisated
+		MegaLasersDestroyKnifes();
+		MegaLasersDestroyTurels();
+	}
+	
+	if (lasers_count > 0)
+	{
+		LasersDestroyBonuses();
+		LasersDetonateBombs();
+		LasersDestroyKnifes();
+		LasersDestroyAsteroids();
+		LasersDestroyBullets();
+		LasersDestroyMap();
+		LasersDestroyTurels();
+	}
 
-	thread_durations[0][0] += std::chrono::system_clock::now() - lockal_time_point;
+	if (knifes_count > 0)
+	{
+		if (game_rules & GAME_RULE_KNIFES_CAN_DESTROY_BULLETS)
+		{
+			KnifesDestroyBullets();
+		}
+		KnifesDestroyAsteroids();
+		KnifesDestroyMap();
+		KnifesDestroyTurels();
+	}
+	
+	if (bullets_count > 0)
+	{
+		BombsSpawnedByBulletsAnigilation();
+		BulletsDestroyAsteroids();
+		BulletsDestroedByMap();
+	}
 
-	SetEvent(thread_event[0][1][0]);
-	SetEvent(thread_event[0][2][0]);
-	SetEvent(thread_event[0][3][0]);
+	if (bombs_count > 0)
+	{
+		BombsChainReaction();
+		BombsDestroyAsteroids();
+		BombsDestroyBonuses();
+		BombsCollisionsWithBullets();
+		BombsDestroyKnifes();
+		BombsDestroyTurels();
+	}
+	
+	if (turels_count > 0)
+	{
+		TurelsShoot();
+	}
 
-	WaitForSingleObject(thread_event[1][0][0], INFINITE);
-	WaitForSingleObject(thread_event[2][0][0], INFINITE);
-	WaitForSingleObject(thread_event[3][0][0], INFINITE);
+	if (portals_count > 0)
+	{
+		if (!(global_timer % PARTICLE_PERIOD_PORTAL_OUT))
+		{
+			PortalsCreateParticles();
+		}
+		PortalsTPShips();
+		PortalsTPAsteroids();
+		PortalsTPBombs();
+		PortalsTPBonuses();
+		PortalsTPBullets();
+		PortalsTPDynamicParticles();
+		PortalsTPPilots();
+	}
 
-	//printf("0\t1\n");
-
-	lockal_time_point = std::chrono::system_clock::now();
-
-	UpdateGravGensPhase2();
-	UpdateDecelerAreasPhase2();
-	UpdateMapPhase2();
-	UpdateMegaLasersPhase2();
-	UpdateTurelsPhase2();
+	CameraFocusesOnPlayers();
 
 	camera_data_mtx.lock();
 	if (camera.move_velocity_coefficient < CAMERA_HIGH_MOVE_VELOCITY)
@@ -83,92 +140,7 @@ void Game::PhysicThread0()
 
 	PollEvents();
 
-	thread_durations[0][1] += std::chrono::system_clock::now() - lockal_time_point;
-
-	SetEvent(thread_event[0][1][1]);
-	SetEvent(thread_event[0][2][1]);
-	SetEvent(thread_event[0][3][1]);
-
-	WaitForSingleObject(thread_event[1][0][1], INFINITE);
-	WaitForSingleObject(thread_event[2][0][1], INFINITE);
-	WaitForSingleObject(thread_event[3][0][1], INFINITE);
-
-	WaitForSingleObject(thread_event[1][1][0], INFINITE);
-	WaitForSingleObject(thread_event[2][2][0], INFINITE);
-	WaitForSingleObject(thread_event[3][3][0], INFINITE);
-
-	//printf("0\t2\n\n");
-
-	for (uint8_t th = 1, ev = 1; true; ev++)
-	{
-		if (ev >= 4)
-		{
-			if (th >= 3)
-			{
-				break;
-			}
-			ev = 0;
-			th++;
-		}
-		ResetEvent(thread_event[th][ev][0]);
-		ResetEvent(thread_event[th][ev][1]);
-	}
-
 	CheckEndMatch();
-	if (flag_end_match)
-	{
-		play_round = false;
-	}
-
-	global_timer++;
-	if (stuning_timer > 0)
-	{
-		stuning_timer--;
-	}
-
-	SetEvent(thread_event[0][0][0]);
-	SetEvent(thread_event[0][0][0]);
-	SetEvent(thread_event[0][0][0]);
-}
-
-void Game::PhysicThread1()
-{
-	//printf("1\t0\n");
-
-	std::chrono::system_clock::time_point lockal_time_point = std::chrono::system_clock::now();
-
-	PortalsTPAsteroids();
-	PortalsTPBombs();
-	PortalsTPBonuses();
-	PilotsKilledByBullet();
-	ShipsCheckInput();
-	ShipsShoot();
-
-	BombsDestroyAsteroids();
-	BombsDestroyBonuses();
-	BulletsDestroedByMap();
-	if (game_rules & GAME_RULE_KNIFES_CAN_DESTROY_BULLETS)
-	{
-		KnifesDestroyBullets();
-	}
-	LasersDetonateBombs();
-	LasersDestroyKnifes();
-	MegaLasersDestroyBullets();
-	ShipsCreateExaust();
-
-	thread_durations[1][0] += std::chrono::system_clock::now() - lockal_time_point;
-
-	SetEvent(thread_event[1][0][0]);
-	SetEvent(thread_event[1][2][0]);
-	SetEvent(thread_event[1][3][0]);
-
-	WaitForSingleObject(thread_event[0][1][0], INFINITE);
-	WaitForSingleObject(thread_event[2][1][0], INFINITE);
-	WaitForSingleObject(thread_event[3][1][0], INFINITE);
-
-	//printf("1\t1\n");
-
-	lockal_time_point = std::chrono::system_clock::now();
 
 	ships_array_mtx.lock();
 	asteroids_array_mtx.lock();
@@ -198,60 +170,6 @@ void Game::PhysicThread1()
 		deceler_areas_array_mtx.unlock();
 	}
 
-	UpdateBulletsPhase2();
-	UpdateBonusesPhase2();
-	UpdatePilotsPhase2();
-
-	thread_durations[1][1] += std::chrono::system_clock::now() - lockal_time_point;
-
-	SetEvent(thread_event[1][0][1]);
-	SetEvent(thread_event[1][2][1]);
-	SetEvent(thread_event[1][3][1]);
-
-	WaitForSingleObject(thread_event[0][1][1], INFINITE);
-	WaitForSingleObject(thread_event[2][1][1], INFINITE);
-	WaitForSingleObject(thread_event[3][1][1], INFINITE);
-
-	SetEvent(thread_event[1][1][0]);
-
-	WaitForSingleObject(thread_event[0][0][0], INFINITE);
-}
-
-void Game::PhysicThread2()
-{
-	//printf("2\t0\n");
-
-	std::chrono::system_clock::time_point lockal_time_point = std::chrono::system_clock::now();
-
-	MegaLasersDetonateBombs();
-	//MegaLasersDestroyMap(); -- not realisated
-	CameraFocusesOnPlayers();
-	PilotsCheckInput();
-	PilotsKilledByKnifes();
-	PilotsRespawnAuto();
-	ShipsDestroedByBullets();
-	ShipsDestroedByKnifes();
-	TurelsShoot();
-
-	BombsCollisionsWithBullets();
-	BombsSpawnedByBulletsAnigilation();
-	KnifesDestroyMap();
-	LasersDestroyAsteroids();
-	LasersDestroyBullets();
-
-	thread_durations[2][0] += std::chrono::system_clock::now() - lockal_time_point;
-
-	SetEvent(thread_event[2][0][0]);
-	SetEvent(thread_event[2][1][0]);
-	SetEvent(thread_event[2][3][0]);
-
-	WaitForSingleObject(thread_event[0][2][0], INFINITE);
-	WaitForSingleObject(thread_event[1][2][0], INFINITE);
-	WaitForSingleObject(thread_event[3][2][0], INFINITE);
-
-	//printf("2\t1\n");
-
-	lockal_time_point = std::chrono::system_clock::now();
 
 	pilots_array_mtx.lock();
 	DynamicEntitiesCollisions(pilots, pilots_count);
@@ -280,114 +198,97 @@ void Game::PhysicThread2()
 		DynamicEntitiesAddForce(grav_gens, grav_gens_count, bullets, bullets_count);
 		bullets_array_mtx.unlock();
 		grav_gens_array_mtx.unlock();
+	}	
+
+	if (ships_count > 0)
+	{
+		ships_array_mtx.lock();
+		map_data_mtx.lock();
+		dynamic_particles_array_mtx.lock();
+		DynamicEntitiesCollisions(&map, ships, ships_count);
+		dynamic_particles_array_mtx.unlock();
+		map_data_mtx.unlock();
+		ships_array_mtx.unlock();
 	}
 
-	UpdateParticlesPhase2();
+	if (pilots_count > 0)
+	{
+		pilots_array_mtx.lock();
+		map_data_mtx.lock();
+		dynamic_particles_array_mtx.lock();
+		DynamicEntitiesCollisions(&map, pilots, pilots_count);
+		dynamic_particles_array_mtx.unlock();
+		map_data_mtx.unlock();
+		pilots_array_mtx.unlock();
+	}
+
+	if (asteroids_count > 0)
+	{
+		asteroids_array_mtx.lock();
+		bonuses_array_mtx.lock();
+		map_data_mtx.lock();
+		dynamic_particles_array_mtx.lock();
+		DynamicEntitiesCollisions(&map, asteroids, asteroids_count);
+		dynamic_particles_array_mtx.unlock();
+		bonuses_array_mtx.unlock();
+		map_data_mtx.unlock();
+		asteroids_array_mtx.unlock();
+	}
+	
+	if (bombs_count > 0)
+	{
+		bombs_array_mtx.lock();
+		map_data_mtx.lock();
+		DynamicEntitiesCollisions(&map, bombs, bombs_count);
+		map_data_mtx.unlock();
+		bombs_array_mtx.unlock();
+	}
+	
+	UpdateDecelerAreasPhase2();
+	UpdateAnigAreaGensPhase2();
 	UpdateShipsPhase2();
-	UpdateKnifesPhase2();
+	UpdatePilotsPhase2();
+	UpdateAsteroidsPhase2();
 	UpdateLasersPhase2();
+	UpdateKnifesPhase2();
+	UpdateBulletsPhase2();
+	UpdateMegaLasersPhase2();
+	UpdateBonusesPhase2();
+	UpdateBombsPhase2();
+	UpdateTurelsPhase2();
+	UpdateGravGensPhase2();
+	UpdateMapPhase2();
+	UpdateDynamicParticlesPhase2();
+	UpdateParticlesPhase2();
 
-	thread_durations[2][1] += std::chrono::system_clock::now() - lockal_time_point;
+	if (flag_end_match)
+	{
+		play_round = false;
+	}
 
-	SetEvent(thread_event[2][0][1]);
-	SetEvent(thread_event[2][1][1]);
-	SetEvent(thread_event[2][3][1]);
-
-	WaitForSingleObject(thread_event[0][2][1], INFINITE);
-	WaitForSingleObject(thread_event[1][2][1], INFINITE);
-	WaitForSingleObject(thread_event[3][2][1], INFINITE);
-
-	SetEvent(thread_event[2][2][0]);
-
-	WaitForSingleObject(thread_event[0][0][0], INFINITE);
+	global_timer++;
+	if (stuning_timer > 0)
+	{
+		stuning_timer--;
+	}
 }
 
-void Game::PhysicThread3()
+void Game::UpdateInventoryTemplateMask()
 {
-	//printf("3\t0\n");
+	inventory_template_mask =
+		(bonus_pull_array[GAME_BONUS_ID_BOMB] ? BONUS_BOMB * 0x3 : 0x0) |
+		(bonus_pull_array[GAME_BONUS_ID_KNIFE] ? BONUS_KNIFE * 0x3 : 0x0) |
+		(bonus_pull_array[GAME_BONUS_ID_LASER] ? BONUS_LASER * 0x3 : 0x0) |
+		(bonus_pull_array[GAME_BONUS_ID_LOOP] ? BONUS_LOOP * 0x3 : 0x0) |
+		(bonus_pull_array[GAME_BONUS_ID_REVERS] ? BONUS_RULE_REVERSE * 0x3 : 0x0) |
+		(bonus_pull_array[GAME_BONUS_ID_SHIELD] ? BONUS_BUFF_SHIELD * 0x3 : 0x0) |
+		(bonus_pull_array[GAME_BONUS_ID_STREAM] ? BONUS_BUFF_STREAM * 0x3 : 0x0) |
+		(bonus_pull_array[GAME_BONUS_ID_TRIPLE] ? BONUS_BUFF_TRIPLE * 0x3 : 0x0);
+}
 
-	std::chrono::system_clock::time_point lockal_time_point = std::chrono::system_clock::now();
-
-	KnifesDestroyTurels();
-	LasersDestroyMap();
-	LasersDestroyTurels();
-	MegaLasersDestroyKnifes();
-	MegaLasersDestroyTurels();
-	PortalsTPBullets();
-	PortalsTPDynamicParticles();
-	PortalsTPPilots();
-	PilotsKilledByLasers();
-	PilotsKilledByMegaLaser();
-	ShipsDestroedByLasers();
-	ShipsDestroedByMegaLasers();
-
-	BombsDestroyKnifes();
-	BombsDestroyTurels();
-
-	thread_durations[3][0] += std::chrono::system_clock::now() - lockal_time_point;
-
-	SetEvent(thread_event[3][0][0]);
-	SetEvent(thread_event[3][1][0]);
-	SetEvent(thread_event[3][2][0]);
-
-	WaitForSingleObject(thread_event[0][3][0], INFINITE);
-	WaitForSingleObject(thread_event[1][3][0], INFINITE);
-	WaitForSingleObject(thread_event[2][3][0], INFINITE);
-
-	//printf("3\t1\n");
-
-	lockal_time_point = std::chrono::system_clock::now();
-
-	pilots_array_mtx.lock();
-	map_data_mtx.lock();
-	dynamic_particles_array_mtx.lock();
-	DynamicEntitiesCollisions(&map, pilots, pilots_count);
-	dynamic_particles_array_mtx.unlock();
-	map_data_mtx.unlock();
-	pilots_array_mtx.unlock();
-
-	ships_array_mtx.lock();
-	map_data_mtx.lock();
-	dynamic_particles_array_mtx.lock();
-	DynamicEntitiesCollisions(&map, ships, ships_count);
-	dynamic_particles_array_mtx.unlock();
-	map_data_mtx.unlock();
-	ships_array_mtx.unlock();
-
-	asteroids_array_mtx.lock();
-	bonuses_array_mtx.lock();
-	map_data_mtx.lock();
-	dynamic_particles_array_mtx.lock();
-	DynamicEntitiesCollisions(&map, asteroids, asteroids_count);
-	dynamic_particles_array_mtx.unlock();
-	bonuses_array_mtx.unlock();
-	map_data_mtx.unlock();
-	asteroids_array_mtx.unlock();
-
-	bombs_array_mtx.lock();
-	map_data_mtx.lock();
-	DynamicEntitiesCollisions(&map, bombs, bombs_count);
-	map_data_mtx.unlock();
-	bombs_array_mtx.unlock();
-
-	UpdateAnigAreaGensPhase2();
-	UpdateBombsPhase2();
-	UpdateAsteroidsPhase2();
-	UpdateDynamicParticlesPhase2();
-
-	thread_durations[3][1] += std::chrono::system_clock::now() - lockal_time_point;
-
-	SetEvent(thread_event[3][0][1]);
-	SetEvent(thread_event[3][1][1]);
-	SetEvent(thread_event[3][2][1]);
-
-	WaitForSingleObject(thread_event[0][3][1], INFINITE);
-	WaitForSingleObject(thread_event[1][3][1], INFINITE);
-	WaitForSingleObject(thread_event[2][3][1], INFINITE);
-
-	SetEvent(thread_event[3][3][0]);
-
-	WaitForSingleObject(thread_event[0][0][0], INFINITE);
+EngineTypes::Bonus::inventory_t Game::CheckBonusPoolMenu(EngineTypes::Bonus::inventory_t inventory_template)
+{
+	return inventory_template & inventory_template_mask;
 }
 
 EngineTypes::Bonus::inventory_t Game::GenerateRandomBonus()
@@ -475,15 +376,10 @@ EngineTypes::Bonus::inventory_t Game::GenerateRandomInventory(
 	GameTypes::objects_types_count_t min_objects_types_count,
 	GameTypes::objects_types_count_t max_objects_types_count)
 {
-	//Bonus luup analys
 
-	for (EngineTypes::Bonus::inventory_t cell = 0; cell < 8; cell++)
-	{
-		if (!bonus_pull_array[cell])
-		{
-			inventory_template &= BONUS_ALL - (BONUS_CELL << (cell * 2));
-		}
-	}
+	//Bonus loop analys
+
+	inventory_template = CheckBonusPoolMenu(inventory_template);
 
 	//Objec list analys
 
@@ -519,6 +415,10 @@ EngineTypes::Bonus::inventory_t Game::GenerateRandomInventory(
 	if (min_objects_count < 1)
 	{
 		min_objects_count = 1;
+	}
+	if (max_objects_count > 3)
+	{
+		max_objects_count = 3;
 	}
 
 	
@@ -573,22 +473,6 @@ GameTypes::score_t Game::GetMaxScore()
 
 Game::Game()
 {
-	thread_event[0][0][0] = CreateEvent(NULL, false, false, NULL);
-	for (uint8_t th = 1, ev = 1; true; ev++)
-	{
-		if (ev >= 4)
-		{
-			if (th >= 3)
-			{
-				break;
-			}
-			th++;
-			ev = 0;
-		}
-		thread_event[th][ev][0] = CreateEvent(NULL, true, false, NULL);
-		thread_event[th][ev][1] = CreateEvent(NULL, true, false, NULL);
-	}
-
 	InitGame();
 	InitMenus();
 }
@@ -651,7 +535,10 @@ void Game::InitMatch()
 	{
 		bonus_pull_array[bonus] = true;
 	}
+
 skip_bonus_pull_set:
+
+	UpdateInventoryTemplateMask();
 
 	//Set bonus pull
 
@@ -659,7 +546,7 @@ skip_bonus_pull_set:
 	
 	for (GameTypes::players_count_t team = 1; team <= GAME_PLAYERS_MAX_COUNT; team++)
 	{
-		scores[team - 1] = 0;
+		scores[team - 1] = -2;
 	}
 
 	selected_maps_id_array_length = 0;
@@ -717,6 +604,7 @@ void Game::PollEvents()
 	case MAP_AGGRESSIVE:		Event7();	return;
 	case MAP_BROKEN:			Event8();	return;
 	case MAP_PORTAL:			Event9();	return;
+	case MAP_NO_CENTER:			Event10();	return;
 	}
 }
 
@@ -745,9 +633,16 @@ void Game::InitLevel()
 	current_event = current_map_id;
 
 	/* Create maps */
+
+	//current_map_id = MAP_NO_CENTER;
+	//current_event = current_map_id;
+	//std::cout << "Game::InitLevel::Only map 10 created." << std::endl;
 	
 	switch (current_map_id)
 	{
+	case MAP_NO_CENTER:
+		CreateMap10(ships_positions, ships_angles);
+		break;
 	case MAP_PORTAL:
 		CreateMap9(ships_positions, ships_angles);
 		break;
@@ -820,6 +715,8 @@ void Game::InitLevel()
 			0,								//postpone
 			PARTICLE_ANIMATION_NOT_FINISH)	//finish tic
 	);
+
+	printf("Particles count %lu\n", particles_count);
 
 	/* Spawn players */
 
@@ -1103,6 +1000,7 @@ void Game::InitMenus()
 	buttons[MAP_AGGRESSIVE].text_size = 4u;
 	buttons[MAP_BROKEN].SetText("Broken");
 	buttons[MAP_PORTAL].SetText("Portal");
+	buttons[MAP_NO_CENTER].SetText("No Center");
 	position.Set(0.0f, 0.0f);
 	size.Set(1.0f, -GAME_PULL_MENU_DOWN_BORDER * (float)(((GAME_MAPS_COUNT + 1) / 2) + 1));
 	map_pull_select_menu.Set(&position, &size, buttons, GAME_MAPS_COUNT);
@@ -1476,29 +1374,6 @@ void Game::MutexesUnlock()
 	dynamic_particles_array_mtx.unlock();
 	log_data_mtx.unlock();
 }
-
-void Game::ResetAllThreadEvents()
-{
-	uint8_t th = 0, ev = 0;
-
-	Start:
-
-	if (ev >= 3)
-	{
-		if (th >= 3)
-		{
-			return;
-		}
-		ev = 0;
-		th++;
-	}
-	ResetEvent(thread_event[th][ev][0]);
-	ResetEvent(thread_event[th][ev][1]);
-
-	goto Start;
-}
-
-
 
 void Th_00(std::shared_mutex* mtx_p, bool* return_data)
 {

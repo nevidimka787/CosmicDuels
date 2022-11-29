@@ -89,7 +89,7 @@ void Game::DynamicEntitiesCollisions(Map::MapData* map, EntityType* entities, Ga
 		if (entities[i].exist)
 		{
 			entities[i].Collision(map);
-			if (!entities[i].exist)//if entity was destroed after collision
+			if (entities[i].exist == false) //if entity was destroed after collision
 			{
 				log_data_mtx.lock();
 				entities[i].exist = true;
@@ -110,6 +110,7 @@ template void Game::DynamicEntitiesCollisions<Pilot>(Map::MapData* map, Pilot* e
 
 void Game::DynamicEntitiesCollisions(Map::MapData* map, Asteroid* asteroids, GameTypes::entities_count_t asteroids_count)
 {
+	Asteroid* begin = asteroids;
 	for (GameTypes::entities_count_t found = 0; found < asteroids_count; asteroids++)
 	{
 		if (asteroids->exist)
@@ -137,6 +138,10 @@ void Game::DynamicEntitiesCollisions(Map::MapData* map, Asteroid* asteroids, Gam
 				}
 
 				DestroyEntity(asteroids);
+
+				asteroids = begin;
+				found = 0;
+
 				goto end_of_map_cycle;
 			}
 			found++;
@@ -589,7 +594,7 @@ void Game::ShipShoot(Ship* ship)
 			return;
 
 		default:
-			std::cout << "WARNING::ShipShoot::Unknow type " << type << std::endl;
+			std::cout << "WARNING::ShipShoot::Unknow type " << (int)type << std::endl;
 			return;
 		}
 	}
@@ -2423,7 +2428,7 @@ void Game::PortalsTPShips()
 	{
 		if (temp__portal_p->exist)
 		{
-			pilots_array_mtx.lock();
+			ships_array_mtx.lock();
 			for (temp__ships_p = ships, found_ships = 0; found_ships < ships_count; temp__ships_p++)
 			{
 				if (temp__ships_p->exist)
@@ -2438,7 +2443,7 @@ void Game::PortalsTPShips()
 					found_ships++;
 				}
 			}
-			pilots_array_mtx.unlock();
+			ships_array_mtx.unlock();
 
 			found_portals++;
 		}
@@ -2997,7 +3002,7 @@ void Game::ShipsDestroedByBullets()
 						}
 						else
 						{
-							temp__ship_p->AddVelocity(temp__bullet_p->GetVelocity());
+							temp__ship_p->AddVelocity(temp__bullet_p->GetVelocity() / 4.0f);
 							bonuses_array_mtx.lock();
 							dynamic_particles_array_mtx.lock();
 							log_data_mtx.lock();

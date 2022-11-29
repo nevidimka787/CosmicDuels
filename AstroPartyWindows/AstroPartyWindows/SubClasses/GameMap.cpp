@@ -471,6 +471,66 @@ void Game::Event9()
 	}
 }
 
+void Game::Event10()
+{
+#define EVENT_10__FRAME_SIZE	3.0f
+#define EVENT_10__FRAME_POS		6.0f
+
+#define EVENT_10__MAX_SIZE_COEF 0.2f
+#define EVENT_10__MIN_SIZE_COEF	0.04f
+// from -1.0f (none) to 1.0f (full)
+#define EVENT_10__WORK_PART		-0.8f
+
+#define EVENT_10__START_DELLAY	500lu
+#define EVENT_10__PERIOD		1000lu
+
+#define EVENT_10__FIRST_POLYGON_ID	1
+#define EVENT_10__LAST_POYGON_ID	4
+
+#define EVENT_10__MIN_BONUSES_COUNT 1
+#define EVENT_10__MAX_BONUSES_COUNT 3
+#define EVENT_10__MIN_BONUSES_TYPES_COUNT	4
+#define EVENT_10__MAX_BONUSES_TYPES_COUNT	8
+
+	float polygon_size = fmaxf(sinf((float)global_timer / (float)EVENT_10__PERIOD * 2.0f * M_PI) + EVENT_10__WORK_PART, 0.0f) / (1.0f + EVENT_10__WORK_PART);
+	polygon_size = (EVENT_10__MIN_SIZE_COEF + polygon_size *	(EVENT_10__MAX_SIZE_COEF - EVENT_10__MIN_SIZE_COEF)) * EVENT_10__FRAME_SIZE;
+
+	Map::Polygon* temp_polygon_p;
+	for (size_t polygon = EVENT_10__FIRST_POLYGON_ID; polygon <= EVENT_10__LAST_POYGON_ID; polygon++)
+	{
+		temp_polygon_p = map.PolygonPointer(polygon);
+		temp_polygon_p->size.Set(polygon_size, polygon_size);
+		temp_polygon_p->ShouldUpdate();
+	}
+
+	if (global_timer % EVENT_10__PERIOD == 0 && object_pull_array[GAME_OBJECT_ASTEROID])
+	{
+		if (asteroids_count < 4 && bonuses_count < 20)
+		{
+			AddEntity(
+				Asteroid(
+					Vec2F(EVENT_10__FRAME_POS),
+					Vec2F(0.0f),
+					GenerateRandomInventory(
+						BONUS_ALL,
+						EVENT_10__MIN_BONUSES_COUNT,
+						EVENT_10__MAX_BONUSES_COUNT,
+						EVENT_10__MIN_BONUSES_TYPES_COUNT,
+						EVENT_10__MAX_BONUSES_TYPES_COUNT),
+					ASTEROID_SIZE_BIG));
+		}
+		else
+		{
+			AddEntity(
+				Asteroid(
+					Vec2F(EVENT_10__FRAME_POS),
+					Vec2F(0.0f),
+					BONUS_NOTHING,
+					ASTEROID_SIZE_BIG));
+		}
+	}
+}
+
 void Game::CreateMap0(Vec2F* ships_positions, float* ships_angles)
 {
 	Vec2F new_position;
@@ -1414,7 +1474,12 @@ void Game::CreateMap8(Vec2F* ships_positions, float* ships_angles)
 	
 	delete[] points;
 
-	map.Set(rectangles, MAP_BROKEN__RECTANGLES_COUNT, nullptr, 0, polygons, MAP_BROKEN__POLYGONS_COUNT);
+	map.Set(
+		rectangles,
+		MAP_BROKEN__RECTANGLES_COUNT,
+		nullptr, 0,
+		polygons,
+		MAP_BROKEN__POLYGONS_COUNT);
 
 	delete[] rectangles;
 	delete[] polygons;
@@ -1675,6 +1740,105 @@ void Game::CreateMap9(Vec2F* ships_positions, float* ships_angles)
 		MAP_DYNAMICAL__CENTER_POSITION + CAMERA_DEFAULT_HIGH_LIMITS);
 	camera.SetPosition(Vec2F(MAP_DYNAMICAL__CENTER_POSITION, MAP_DYNAMICAL__CENTER_POSITION));
 	camera.SetSize(MAP_DYNAMICAL__CAMERA_SIZE);
+}
+
+void Game::CreateMap10(Vec2F* ships_positions, float* ships_angles)
+{
+#define MAP_NO_CENTER__POLYGONS_COUNT	5
+
+#define MAP_NO_CENTER__FRAME 0
+#define MAP_NO_CENTER__FRAME_POINTS_COUNT	20
+#define MAP_NO_CENTER__FRAME_SIZE					EVENT_10__FRAME_SIZE
+#define MAP_NO_CENTER__FRAME_POS					EVENT_10__FRAME_POS
+#define MAP_NO_CENTER__FRAME_OUT_SIDE_LENGHT		(MAP_NO_CENTER__FRAME_SIZE * 0.2f)
+#define MAP_NO_CENTER__FRAME_DISTANCE_TO_IN_SIDE	(MAP_NO_CENTER__FRAME_SIZE * 0.55f)
+
+#define MAP_NO_CENTER__DESINTEGRATOR_UP		1
+#define MAP_NO_CENTER__DESINTEGRATOR_RIGHT	2
+#define MAP_NO_CENTER__DESINTEGRATOR_DOWN	3
+#define MAP_NO_CENTER__DESINTEGRATOR_LEFT	4
+#define MAP_NO_CENTER__DESINTEGRATORS_COUNT	(MAP_NO_CENTER__DESINTEGRATOR_LEFT - MAP_NO_CENTER__DESINTEGRATOR_UP + 1)	
+#define MAP_NO_CENTER__DESINTEGRATOR_POINTS_COUNT	3
+#define MAP_NO_CENTER__DESINTEGRATOR_SHIFT	(MAP_NO_CENTER__FRAME_OUT_SIDE_LENGHT * 0.95f)
+#define MAP_NO_CENTER_DESINTEGRATOR_MIN_SIZE	(EVENT_10__MIN_SIZE_COEF * MAP_NO_CENTER__FRAME_SIZE)
+#define MAP_NO_CENTER_DESINTEGRATOR_MAX_SIZE	(EVENT_10__MAX_SIZE_COEF * MAP_NO_CENTER__FRAME_SIZE)
+
+	Map::Polygon* polygons = new Map::Polygon[MAP_NO_CENTER__POLYGONS_COUNT];
+
+	Vec2F* points = new Vec2F[MAP_NO_CENTER__FRAME_POINTS_COUNT];
+	points[0].Set(0.0f, 0.0f);
+	points[1].Set(MAP_NO_CENTER__FRAME_OUT_SIDE_LENGHT, 0.0f);
+	points[2].Set(MAP_NO_CENTER__FRAME_DISTANCE_TO_IN_SIDE, MAP_NO_CENTER__FRAME_DISTANCE_TO_IN_SIDE - MAP_NO_CENTER__FRAME_OUT_SIDE_LENGHT);
+
+	points[3].Set(MAP_NO_CENTER__FRAME_SIZE - points[2].x, points[2].y);
+	points[4].Set(MAP_NO_CENTER__FRAME_SIZE - points[1].x, points[1].y);
+
+	for (size_t point = 5; point < MAP_NO_CENTER__FRAME_POINTS_COUNT / 2; point++)
+	{
+		points[point].Set(MAP_NO_CENTER__FRAME_SIZE - points[point - 5].y, points[point - 5].x);
+	}
+	for (size_t point = 10; point < MAP_NO_CENTER__FRAME_POINTS_COUNT; point++)
+	{
+		points[point] = Vec2F(MAP_NO_CENTER__FRAME_SIZE) - points[point - 10];
+	}
+
+	polygons[MAP_NO_CENTER__FRAME].Set(
+		Vec2F(MAP_NO_CENTER__FRAME_POS - MAP_NO_CENTER__FRAME_SIZE / 2.0f, MAP_NO_CENTER__FRAME_POS + MAP_NO_CENTER__FRAME_SIZE / 2.0f),
+		0.0f,
+		Vec2F(1.0f),
+		points, 
+		MAP_NO_CENTER__FRAME_POINTS_COUNT, 
+		MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_CLOSED);
+
+	delete[] points;
+
+	points = new Vec2F[MAP_NO_CENTER__DESINTEGRATOR_POINTS_COUNT];
+
+	points[0].Set(0.0f, 0.0f);
+	points[1].Set(1.0f, 0.0f);
+	points[2].Set(0.0f, 1.0f);
+
+	Vec2F* desintegrators_positions = new Vec2F[MAP_NO_CENTER__DESINTEGRATORS_COUNT];
+	desintegrators_positions[MAP_NO_CENTER__DESINTEGRATOR_UP - MAP_NO_CENTER__DESINTEGRATOR_UP].Set(0.0f, MAP_NO_CENTER__DESINTEGRATOR_SHIFT);
+	desintegrators_positions[MAP_NO_CENTER__DESINTEGRATOR_RIGHT - MAP_NO_CENTER__DESINTEGRATOR_UP].Set(MAP_NO_CENTER__DESINTEGRATOR_SHIFT, 0.0f);
+	desintegrators_positions[MAP_NO_CENTER__DESINTEGRATOR_DOWN - MAP_NO_CENTER__DESINTEGRATOR_UP].Set(0.0f, -MAP_NO_CENTER__DESINTEGRATOR_SHIFT);
+	desintegrators_positions[MAP_NO_CENTER__DESINTEGRATOR_LEFT - MAP_NO_CENTER__DESINTEGRATOR_UP].Set(-MAP_NO_CENTER__DESINTEGRATOR_SHIFT, 0.0f);
+
+	for (size_t desintegrator = MAP_NO_CENTER__DESINTEGRATOR_UP; desintegrator <= MAP_NO_CENTER__DESINTEGRATOR_LEFT; desintegrator++)
+	{
+		polygons[desintegrator].Set(
+			desintegrators_positions[desintegrator - MAP_NO_CENTER__DESINTEGRATOR_UP] + Vec2F(MAP_NO_CENTER__FRAME_POS),
+			M_PI_4 - M_PI_2 * (desintegrator),
+			Vec2F(MAP_NO_CENTER_DESINTEGRATOR_MAX_SIZE),
+			points,
+			MAP_NO_CENTER__DESINTEGRATOR_POINTS_COUNT,
+			MAP_PROPERTY_CLOSED | MAP_PROPERTY_AGRESSIVE | MAP_PROPERTY_KILLER | MAP_PROPERTY_UNBREACABLE);
+	}
+
+	delete[] points;
+	delete[] desintegrators_positions;
+	
+	map.Set(
+		nullptr, 
+		0, 
+		nullptr,
+		0, 
+		polygons, 
+		MAP_NO_CENTER__POLYGONS_COUNT);
+
+	delete[] polygons;
+
+	ships_positions[0].Set(MAP_NO_CENTER__FRAME_POS - 1.05f, MAP_NO_CENTER__FRAME_POS + 1.1f);
+	ships_positions[1].Set(MAP_NO_CENTER__FRAME_POS + 1.1f, MAP_NO_CENTER__FRAME_POS + 1.05f);
+	ships_positions[2].Set(MAP_NO_CENTER__FRAME_POS + 1.05f, MAP_NO_CENTER__FRAME_POS - 1.1f);
+	ships_positions[3].Set(MAP_NO_CENTER__FRAME_POS - 1.1f, MAP_NO_CENTER__FRAME_POS - 1.05f);
+
+	ships_angles[0] = -(float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
+	ships_angles[1] = -(float)M_PI_2 - (float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
+	ships_angles[2] = (float)M_PI_2 + (float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
+	ships_angles[3] = (float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
+
+	camera.SetPosition(Vec2F(MAP_NO_CENTER__FRAME_POS));
 }
 
 void Game::CreateMapRoundResults(GameTypes::players_count_t players_count, GameTypes::score_t max_score, float cell_size)
