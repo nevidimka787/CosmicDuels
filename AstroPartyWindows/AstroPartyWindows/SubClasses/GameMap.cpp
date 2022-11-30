@@ -476,12 +476,11 @@ void Game::Event10()
 #define EVENT_10__FRAME_SIZE	3.0f
 #define EVENT_10__FRAME_POS		6.0f
 
-#define EVENT_10__MAX_SIZE_COEF 0.2f
-#define EVENT_10__MIN_SIZE_COEF	0.04f
+#define EVENT_10__MAX_SIZE_COEF 0.47f
+#define EVENT_10__MIN_SIZE_COEF	0.16f
 // from -1.0f (none) to 1.0f (full)
 #define EVENT_10__WORK_PART		-0.8f
 
-#define EVENT_10__START_DELLAY	500lu
 #define EVENT_10__PERIOD		1000lu
 
 #define EVENT_10__FIRST_POLYGON_ID	1
@@ -491,6 +490,8 @@ void Game::Event10()
 #define EVENT_10__MAX_BONUSES_COUNT 3
 #define EVENT_10__MIN_BONUSES_TYPES_COUNT	4
 #define EVENT_10__MAX_BONUSES_TYPES_COUNT	8
+
+#define EVENT_10__ASTEROID_SPAWN_RADIUS	(EVENT_10__FRAME_SIZE * 0.4f)
 
 	float polygon_size = fmaxf(sinf((float)global_timer / (float)EVENT_10__PERIOD * 2.0f * M_PI) + EVENT_10__WORK_PART, 0.0f) / (1.0f + EVENT_10__WORK_PART);
 	polygon_size = (EVENT_10__MIN_SIZE_COEF + polygon_size *	(EVENT_10__MAX_SIZE_COEF - EVENT_10__MIN_SIZE_COEF)) * EVENT_10__FRAME_SIZE;
@@ -525,9 +526,40 @@ void Game::Event10()
 				Asteroid(
 					Vec2F(EVENT_10__FRAME_POS),
 					Vec2F(0.0f),
-					BONUS_NOTHING,
+					BONUS_RULE_REVERSE,
 					ASTEROID_SIZE_BIG));
 		}
+	}
+
+	if (global_timer % (EVENT_10__PERIOD * 5) == 0 && asteroids_count < 4)
+	{
+		EngineTypes::Bonus::inventory_t inventory = GenerateRandomInventory(
+			BONUS_BONUS | BONUS_RULE_REVERSE,
+			1, 
+			1, 
+			1, 
+			1);
+
+		AddEntity(Asteroid(
+			Vec2F(EVENT_10__FRAME_POS + EVENT_10__ASTEROID_SPAWN_RADIUS),
+			Vec2F(0.0f),
+			inventory,
+			ASTEROID_SIZE_MEDIUM));
+		AddEntity(Asteroid(
+			Vec2F(EVENT_10__FRAME_POS + EVENT_10__ASTEROID_SPAWN_RADIUS, EVENT_10__FRAME_POS - EVENT_10__ASTEROID_SPAWN_RADIUS),
+			Vec2F(0.0f),
+			inventory,
+			ASTEROID_SIZE_MEDIUM));
+		AddEntity(Asteroid(
+			Vec2F(EVENT_10__FRAME_POS - EVENT_10__ASTEROID_SPAWN_RADIUS),
+			Vec2F(0.0f),
+			inventory,
+			ASTEROID_SIZE_MEDIUM));
+		AddEntity(Asteroid(
+			Vec2F(EVENT_10__FRAME_POS - EVENT_10__ASTEROID_SPAWN_RADIUS, EVENT_10__FRAME_POS + EVENT_10__ASTEROID_SPAWN_RADIUS),
+			Vec2F(0.0f),
+			inventory,
+			ASTEROID_SIZE_MEDIUM));
 	}
 }
 
@@ -1750,8 +1782,8 @@ void Game::CreateMap10(Vec2F* ships_positions, float* ships_angles)
 #define MAP_NO_CENTER__FRAME_POINTS_COUNT	20
 #define MAP_NO_CENTER__FRAME_SIZE					EVENT_10__FRAME_SIZE
 #define MAP_NO_CENTER__FRAME_POS					EVENT_10__FRAME_POS
-#define MAP_NO_CENTER__FRAME_OUT_SIDE_LENGHT		(MAP_NO_CENTER__FRAME_SIZE * 0.2f)
-#define MAP_NO_CENTER__FRAME_DISTANCE_TO_IN_SIDE	(MAP_NO_CENTER__FRAME_SIZE * 0.55f)
+#define MAP_NO_CENTER__FRAME_OUT_SIDE_LENGHT		(MAP_NO_CENTER__FRAME_SIZE * 0.4f)
+#define MAP_NO_CENTER__FRAME_DISTANCE_TO_IN_SIDE	(MAP_NO_CENTER__FRAME_SIZE * 0.65f)
 
 #define MAP_NO_CENTER__DESINTEGRATOR_UP		1
 #define MAP_NO_CENTER__DESINTEGRATOR_RIGHT	2

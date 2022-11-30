@@ -16,3 +16,7 @@
 *.pdb
 *.exe
 *.enc
+*.vsidx
+*.iobj
+*.ipdb
+
