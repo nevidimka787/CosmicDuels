@@ -763,6 +763,11 @@ float Beam::Distance(const Segment* target, Vec2F* nearest_point) const
 	return temp_float1;
 }
 
+void Beam::Rotate(float angle)
+{
+	vector.RotateThis(angle);
+}
+
 void Beam::Set(const Beam* beam)
 {
 	point = beam->point;

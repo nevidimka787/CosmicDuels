@@ -24,3 +24,6 @@ AstroPartyWindows/.vs/AstroPartyWindows/FileContentIndex/664ea823-d296-475e-8699
 *.iobj
 *.ipdb
 *.vsidx
+*.ipdb
+*.iobj
+*.vsidx

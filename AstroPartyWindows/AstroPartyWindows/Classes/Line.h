@@ -140,6 +140,8 @@ public:
 	bool IsIntersection(const Line* intersection_line) const;
 
 	bool IsIntersection(const Segment* intersection_segment) const;
+
+	void Rotate(float angle);
 	
 	void Set(const Beam* beam);
 	

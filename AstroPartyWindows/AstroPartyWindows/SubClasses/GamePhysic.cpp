@@ -1039,6 +1039,7 @@ void Game::UpdateKnifesPhase2()
 void Game::UpdateLasersPhase2()
 {
 	Laser* temp__laser_p = lasers;
+
 	lasers_array_mtx.lock();
 	for (GameTypes::entities_count_t found_lasers = 0; found_lasers < lasers_count; temp__laser_p++)
 	{

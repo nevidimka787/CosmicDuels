@@ -38,6 +38,8 @@ Laser::Laser(
 	width(width)
 {
 	Update();
+
+	std::cout << "Laser::Laser:local_beam->vector.AbsoluteAngle(): " << local_beam->vector.AbsoluteAngle() << std::endl;
 }
 
 bool Laser::Collision(Map::MapData* map)
@@ -180,7 +182,6 @@ void Laser::Update()
 	{
 		return;
 	}
-	direction = local_direction.Rotate(angle);
 	position = local_position * *host_matrix_p;
 	StaticEntity::Update();
 
