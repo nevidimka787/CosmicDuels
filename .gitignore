@@ -11,7 +11,6 @@
 *.log
 *.recipe
 *.ilk
-*.txt
 *.idb
 *.pdb
 *.exe
@@ -19,11 +18,12 @@
 *.vsidx
 *.iobj
 *.ipdb
-
-AstroPartyWindows/.vs/AstroPartyWindows/FileContentIndex/664ea823-d296-475e-8699-735009d37c89.vsidx
 *.iobj
 *.ipdb
 *.vsidx
 *.ipdb
 *.iobj
 *.vsidx
+AstroPartyWindows/AstroPartyWindows/x64/Debug/AstroPartyWindows.vcxproj.FileListAbsolute.txt
+AstroPartyWindows/AstroPartyWindows/x64/Release/AstroPartyRemakeWindows.iobj
+AstroPartyWindows/AstroPartyWindows/x64/Release/AstroPartyRemakeWindows.ipdb
