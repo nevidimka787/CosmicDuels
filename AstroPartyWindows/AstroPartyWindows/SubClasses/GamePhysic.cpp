@@ -839,7 +839,7 @@ void Game::ShipShoot_NoBonus(Ship* ship)
 void Game::CreateBomb(Laser* creator, Asteroid* producer)
 {
 	AddEntity(Bomb(
-		producer->GetPosition() + creator->GetBeam().vector * producer->radius * 3.0f,
+		producer->GetPosition() + creator->GetSegment().vector.Normalize() * producer->radius * 3.0f,
 		producer->GetVelocity(),
 		creator->GetPlayerMasterTeamNumber(),
 		creator->GetPlayerMasterTeamNumber(),
@@ -867,7 +867,7 @@ void Game::CreateLoop(Laser* creator, Asteroid* producer)
 		(producer->GetSize() == ASTEROID_SIZE_MEDIUM) ?
 		SHIP_SUPER_BONUS__BULLETS_RADIUS_BY_ASTEROID_MEDIUM :
 		SHIP_SUPER_BONUS__BULLETS_RADIUS_BY_ASTEROID_SMALL;
-	Vec2F laser_vector = creator->GetBeam().vector;
+	Vec2F laser_vector = creator->GetSegment().vector.Normalize();
 	Vec2F radius_vector;
 
 	for (GameTypes::entities_count_t bullet = 0; bullet < bullets_in_loop; bullet++)
@@ -876,7 +876,7 @@ void Game::CreateLoop(Laser* creator, Asteroid* producer)
 			(float)bullet / (float)bullets_in_loop * (float)M_PI * 2.0f);
 		Game::AddEntity(
 			Bullet(loop_center_position + radius_vector,
-				(radius_vector.Normalize() + laser_vector.Normalize() * 0.75f) * BULLET_DEFAULT_VELOCITY * 2.0f,
+				(radius_vector.Normalize() + laser_vector * 0.75f) * BULLET_DEFAULT_VELOCITY * 2.0f,
 				creator->GetPlayerMasterNumber(),
 				creator->GetPlayerMasterTeamNumber(),
 				false,
@@ -1261,6 +1261,7 @@ void Game::BombsDestroyAsteroids()
 				asteroids_array_mtx.lock();
 				for (asteroid = 0, found_asteroids = 0; found_asteroids < asteroids_count; asteroid++)
 				{
+					begin_of_asteroid_cycle:;
 					temp__asteroid_p = &asteroids[asteroid];
 					if (temp__asteroid_p->exist)
 					{
@@ -1271,11 +1272,13 @@ void Game::BombsDestroyAsteroids()
 							DestroyEntity(temp__bomb_p, temp__asteroid_p);
 							dynamic_particles_array_mtx.unlock();
 							bonuses_array_mtx.unlock();
-							goto end_of_asteroid_cycle;
+
+							asteroid = 0;
+							found_asteroids = 0;
+							goto begin_of_asteroid_cycle;
 						}
 						found_asteroids++;
 					}
-				end_of_asteroid_cycle:;
 				}
 				asteroids_array_mtx.unlock();
 			}
@@ -1520,15 +1523,16 @@ void Game::BulletsDestroyAsteroids()
 						dynamic_particles_array_mtx.unlock();
 						bonuses_array_mtx.unlock();
 						RemoveEntity(temp__bullet_p);
-						goto end_of_asteroid_cycle;
+						asteroids_array_mtx.unlock();
+						goto end_of_bullet_cycle;
 					}
 					found_asteroids++;
 				}
-			end_of_asteroid_cycle:;
 			}
 			asteroids_array_mtx.unlock();
 			found_bullets++;
 		}
+	end_of_bullet_cycle:;
 	}
 	bullets_array_mtx.unlock();
 }
@@ -1729,6 +1733,7 @@ void Game::LasersDestroyAsteroids()
 			asteroids_array_mtx.lock();
 			for (asteroid = 0, found_asteroids = 0; found_asteroids < asteroids_count; asteroid++)
 			{
+			begin_of_asteroid_cycle:
 				temp__asteroid_p = &asteroids[asteroid];
 				if (temp__asteroid_p->exist)
 				{
@@ -1748,11 +1753,13 @@ void Game::LasersDestroyAsteroids()
 						DestroyEntity(temp__laser_p, temp__asteroid_p);
 						dynamic_particles_array_mtx.unlock();
 						bonuses_array_mtx.unlock();
-						goto end_of_asteroid_cycle;
+
+						asteroid = 0;
+						found_asteroids = 0;
+						goto begin_of_asteroid_cycle;
 					}
 					found_asteroids++;
 				}
-			end_of_asteroid_cycle:;
 			}
 			asteroids_array_mtx.unlock();
 			bullets_array_mtx.unlock();
@@ -1908,7 +1915,7 @@ void Game::LasersDestroyKnifes()
 	lasers_array_mtx.unlock();
 }
 
-void Game::LasersDestroyMap()
+void Game::LasersCollisionWthMap()
 {
 	Laser* temp__laser_p;
 
@@ -1979,6 +1986,7 @@ void Game::MegaLasersDestroyAsteroids()
 				asteroids_array_mtx.lock();
 				for (asteroid = 0, found_asteroids = 0; found_asteroids < asteroids_count; asteroid++)
 				{
+				begin_of_asteroid_cycle:
 					temp__asteroid_p = &asteroids[asteroid];
 					if (temp__asteroid_p->exist)
 					{
@@ -1989,11 +1997,14 @@ void Game::MegaLasersDestroyAsteroids()
 							DestroyEntity(temp__mega_laser_p, temp__asteroid_p);
 							dynamic_particles_array_mtx.unlock();
 							bonuses_array_mtx.unlock();
-							goto end_of_asteroid_cycle;
+
+							asteroid = 0;
+							found_asteroids = 0;
+
+							goto begin_of_asteroid_cycle;
 						}
 						found_asteroids++;
 					}
-				end_of_asteroid_cycle:;
 				}
 				asteroids_array_mtx.unlock();
 			}

@@ -478,7 +478,7 @@ bool DynamicEntity::IsCollision(const StaticEntity* entity) const
 bool DynamicEntity::IsCollision(const Laser* laser) const
 {
 	Segment last = GetTreck();
-	return laser->GetBeam().Distance(&last) < radius + laser->width;
+	return laser->GetSegment().Distance(&last) < radius + laser->width;
 }
 
 bool DynamicEntity::IsCollision(const MegaLaser* mega_laser) const

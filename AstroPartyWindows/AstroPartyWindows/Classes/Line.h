@@ -111,6 +111,8 @@ public:
 
 	float Distance(Vec2F target) const;
 
+	float Distance(const Vec2F* target) const;
+
 	float Distance(const Beam* target) const;
 
 	float Distance(const Beam* target, Vec2F* nearest_point) const;
@@ -122,8 +124,6 @@ public:
 	float Distance(const Segment* target) const;
 
 	float Distance(const Segment* target, Vec2F* nearest_point) const;
-
-	float Distance(const Vec2F* target) const;
 
 	float Distance(Vec2F target, Vec2F* nearest_point) const;
 

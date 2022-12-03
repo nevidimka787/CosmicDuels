@@ -234,7 +234,7 @@ void PhysicsCalculation0()
 
         if (!main_game->pause_round && main_game->global_timer % 100 == 0) //roung not paused
         {
-            std::cout << double(delta.count()) / 100000.0 << "%%" << std::endl;
+            std::cout << double(delta.count()) / 100000.0 << "%" << std::endl;
             delta = std::chrono::nanoseconds(0);
         }
         local_time_point += std::chrono::microseconds(THREAD_PHYSIC_TIK_PERIOD); //update waking up point

@@ -1655,6 +1655,7 @@ class Laser : public SupportEntity
 {
 protected:
 	GameTypes::tic_t shoot_time;
+	Vec2F end_point;
 public:
 	float width;
 	//if laser destroy powered asredoid and flag is active then will be create loop
@@ -1676,6 +1677,8 @@ public:
 	bool IsActive() const;
 	bool CreatedBy(ControledEntity* controled_entity);
 	Beam GetBeam() const;
+	Beam GetBeamForMapData() const;
+	Segment GetSegment() const;
 	GameTypes::tic_t GetLifeTime() const;
 	GameTypes::players_count_t GetPlayerMasterNumber() const;
 	GameTypes::players_count_t GetPlayerMasterTeamNumber() const;

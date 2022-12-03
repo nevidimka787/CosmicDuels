@@ -358,7 +358,7 @@ bool ControledEntity::IsCollision(const Knife* knife) const
 bool ControledEntity::IsCollision(const Laser* laser) const
 {
 	//Frame of reference set to this entity.
-	Beam beam = laser->GetBeam();
+	Segment segment = laser->GetSegment();
 	//controled entity side
 	Segment ce_side;
 	Vec2F
@@ -366,7 +366,7 @@ bool ControledEntity::IsCollision(const Laser* laser) const
 		point2 = heat_box_vertexes_array[0] * model_matrix;
 
 	ce_side.Set(point1, point2, true);
-	if (beam.Distance(&ce_side) < radius + laser->width)
+	if (segment.Distance(&ce_side) < laser->width)
 	{
 		return true;
 	}
@@ -375,7 +375,7 @@ bool ControledEntity::IsCollision(const Laser* laser) const
 		point1 = point2;
 		point2 = heat_box_vertexes_array[vertex] * model_matrix;
 		ce_side.Set(point1, point2, true);
-		if (beam.Distance(&ce_side) < radius + laser->width)
+		if (segment.Distance(&ce_side) < laser->width)
 		{
 			return true;
 		}

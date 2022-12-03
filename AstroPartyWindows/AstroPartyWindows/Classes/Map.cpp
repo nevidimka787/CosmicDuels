@@ -226,6 +226,51 @@ bool Rectangle::IsCollision(const Beam* beam)
 	return false;
 }
 
+bool Rectangle::IsCollision(const Beam* beam, Vec2F* out_position, float* distance_to_out_position) const
+{
+	Vec2F output_intersection_point;
+	float min_distance = INFINITY;
+	if (UpSide().Intersection(beam, out_position))
+	{
+		min_distance = (*out_position - beam->point).Length();
+	}
+	if (RightSide().Intersection(beam, &output_intersection_point))
+	{
+		float distance = (output_intersection_point - beam->point).Length();
+		if (min_distance > distance)
+		{
+			min_distance = distance;
+			*out_position = output_intersection_point;
+		}
+	}
+	if (DownSide().Intersection(beam, &output_intersection_point))
+	{
+		float distance = (output_intersection_point - beam->point).Length();
+		if (min_distance > distance)
+		{
+			min_distance = distance;
+			*out_position = output_intersection_point;
+		}
+	}
+	if (LeftSide().Intersection(beam, &output_intersection_point))
+	{
+		float distance = (output_intersection_point - beam->point).Length();
+		if (min_distance > distance)
+		{
+			min_distance = distance;
+			*out_position = output_intersection_point;
+		}
+	}
+
+	if (min_distance != INFINITY)
+	{
+		*distance_to_out_position = min_distance;
+		return true;
+	}
+
+	return false;
+}
+
 bool Rectangle::IsCollision(const Line* line)
 {
 	if (UpSide().IsIntersection(line))
@@ -426,6 +471,28 @@ bool Cyrcle::IsCollision(const Beam* beam) const
 	return beam->Distance(position) < radius;
 }
 
+bool Cyrcle::IsCollision(const Beam* beam, Vec2F* out_position, float* distance_to_out_position) const
+{
+	Vec2F neares_point_on_beam;
+	float dist = beam->Distance(position, &neares_point_on_beam);
+	if (dist < radius)
+	{
+		float length = sqrtf(radius * radius - dist * dist);
+		float length_to_perpendicular = (beam->point - neares_point_on_beam).Length();
+		if (length < length_to_perpendicular)
+		{
+			*distance_to_out_position = length_to_perpendicular - length;
+			*out_position = beam->point + beam->vector.Normalize() * *distance_to_out_position;
+			return true;
+		}
+
+		*distance_to_out_position = length - length_to_perpendicular;
+		*out_position = beam->point + beam->vector.Normalize() * *distance_to_out_position;
+		return true;
+	}
+	return false;
+}
+
 bool Cyrcle::IsCollision(const Line* line) const
 {
 	return line->Distance(position) < radius;
@@ -609,6 +676,58 @@ bool Polygon::IsCollision(const Beam* beam) const
 			return true;
 		}
 	}
+	return false;
+}
+
+bool Polygon::IsCollision(const Beam* beam, Vec2F* out_position, float* distance_to_out_position) const
+{
+	if (points_count <= 1)
+	{
+		return false;
+	}
+	Segment side = Segment(points_array[0], points_array[1], true);
+
+	float min_distance = INFINITY;
+	Vec2F output_intersection_point;
+
+	if (side.Intersection(beam, out_position))
+	{
+		min_distance = beam->point.Distance(out_position);
+	}
+	if (points_count > 2 && properties & MAP_PROPERTY_CLOSED)
+	{
+		side.Set(points_array[0], points_array[points_count - 1], true);
+		if (side.Intersection(beam, &output_intersection_point))
+		{
+			float distance = beam->point.Distance(output_intersection_point);
+			if (min_distance > distance)
+			{
+				min_distance = distance;
+				*out_position = output_intersection_point;
+			}
+		}
+	}
+
+	for (EngineTypes::Map::array_length_t p = 2; p < points_count; p++)
+	{
+		side.Set(points_array[p - 1], points_array[p], true);
+		if (side.Intersection(beam, &output_intersection_point))
+		{
+			float distance = beam->point.Distance(output_intersection_point);
+			if (min_distance > distance)
+			{
+				min_distance = distance;
+				*out_position = output_intersection_point;
+			}
+		}
+	}
+
+	if (min_distance != INFINITY)
+	{
+		*distance_to_out_position = min_distance;
+		return true;
+	}
+
 	return false;
 }
 

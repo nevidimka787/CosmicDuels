@@ -20,6 +20,9 @@
 
 void Game::PhysicThread0()
 {
+	ShipsShoot();
+	LasersCollisionWthMap();
+
 	if (ships_count > 0)
 	{
 		ShipsInfluenceToBonuses();
@@ -62,7 +65,6 @@ void Game::PhysicThread0()
 		LasersDestroyKnifes();
 		LasersDestroyAsteroids();
 		LasersDestroyBullets();
-		LasersDestroyMap();
 		LasersDestroyTurels();
 	}
 
@@ -116,7 +118,6 @@ void Game::PhysicThread0()
 
 	CameraFocusesOnPlayers();
 
-	ShipsShoot(); // Some bullets must be updated before making impact.
 
 	camera_data_mtx.lock();
 	if (camera.move_velocity_coefficient < CAMERA_HIGH_MOVE_VELOCITY)
@@ -716,8 +717,6 @@ void Game::InitLevel()
 			0,								//postpone
 			PARTICLE_ANIMATION_NOT_FINISH)	//finish tic
 	);
-
-	printf("Particles count %lu\n", particles_count);
 
 	/* Spawn players */
 

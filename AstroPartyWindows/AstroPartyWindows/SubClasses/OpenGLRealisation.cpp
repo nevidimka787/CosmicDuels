@@ -858,7 +858,7 @@ void OpenGL::DrawObject(const Knife* knife, bool update_shader)
         knife_shader.SetUniform("camera_position", temp__game__camera_position);
         knife_shader.SetUniform("camera_size", temp__game__camera_size);
     }
-    knife_shader.SetUniform("beam", knife->GetSegment());
+    knife_shader.SetUniform("segment", knife->GetSegment());
     knife_buffer.Draw();
 }
 
@@ -872,7 +872,7 @@ void OpenGL::DrawObject(const Laser* laser, bool update_shader)
         laser_shader.SetUniform("camera_position", temp__game__camera_position);
         laser_shader.SetUniform("camera_size", temp__game__camera_size);
     }
-    laser_shader.SetUniform("beam", laser->GetBeam());
+    laser_shader.SetUniform("segment", laser->GetSegment());
     laser_shader.SetUniform("life", (float)laser->GetLifeTime() / (float)LASER_DEFAULT_SHOOT_TIME);
     laser_shader.SetUniform("width", laser->width);
     laser_shader.SetUniform("properties", (int)laser->properties);

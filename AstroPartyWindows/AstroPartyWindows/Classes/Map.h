@@ -92,6 +92,7 @@ namespace Map
 		Segment RightSide() const;
 		Segment LeftSide() const;
 		bool IsCollision(const Beam* beam);
+		bool IsCollision(const Beam* beam, Vec2F* out_position, float* distance_to_out_position) const;
 		bool IsCollision(const Line* line);
 		bool IsCollision(const Segment* segment);
 		void Move(Vec2F move_vector);
@@ -133,6 +134,7 @@ namespace Map
 			bool exist = true);
 
 		bool IsCollision(const Beam* beam) const;
+		bool IsCollision(const Beam* beam, Vec2F* out_position, float* distance_to_out_position) const;
 		bool IsCollision(const Line* line) const;
 		bool IsCollision(const Segment* segment) const;
 		float GetRadius() const;
@@ -195,6 +197,7 @@ namespace Map
 
 		bool IsClosed() const;
 		bool IsCollision(const Beam* beam) const;
+		bool IsCollision(const Beam* beam, Vec2F* out_position, float* distance_to_out_position) const;
 		bool IsCollision(const Line* line) const;
 		bool IsCollision(const Segment* segment) const;
 		//If polygon should update enges then function returns true.

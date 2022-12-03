@@ -388,8 +388,6 @@ Bomb Ship::CreateBomb()
 Laser Ship::CreateLaser()
 {
 	Beam laser_beam = LASER_DEFAULT_LOCAL_BEAM;
-	float rand_angle = ((float)rand() / (float)RAND_MAX - 0.5f) * LASER_DEFAULT_LOCAL_BEAM_ERROR;
-	laser_beam.Rotate(rand_angle);
 	AddForceAlongDirection(-SHIP_SHOOT_FORCE * 4.0f);
 	return Laser(this, &laser_beam);
 }

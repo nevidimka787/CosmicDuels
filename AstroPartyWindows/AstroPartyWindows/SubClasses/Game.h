@@ -703,7 +703,7 @@ public:
 
 	//mtx: laser -> map -> dynamic_particle
 	//t = n * (m1 + m2 + m3)
-	void LasersDestroyMap();
+	void LasersCollisionWthMap();
 
 	//mtx: laser -> turel -> dynamic_particle
 	//t = n * k

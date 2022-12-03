@@ -34,6 +34,8 @@ void Game::AddEntity(Asteroid new_asteroid)
 			}
 		}
 	}
+
+	std::cout << "Game::AddEntyty::asteroids_count" << asteroids_count << std::endl;
 }
 
 void Game::AddEntity(Bonus new_bonus)

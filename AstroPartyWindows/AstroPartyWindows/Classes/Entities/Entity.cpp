@@ -241,7 +241,7 @@ bool Entity::IsCollision(Line* line) const
 
 bool Entity::IsCollision(Laser* laser) const
 {
-	return laser->GetBeam().Distance(position) < radius + laser->width;
+	return laser->GetSegment().Distance(position) < radius + laser->width;
 }
 
 bool Entity::IsCollision(MegaLaser* mega_laser) const
