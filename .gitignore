@@ -27,3 +27,6 @@
 AstroPartyWindows/AstroPartyWindows/x64/Debug/AstroPartyWindows.vcxproj.FileListAbsolute.txt
 AstroPartyWindows/AstroPartyWindows/x64/Release/AstroPartyRemakeWindows.iobj
 AstroPartyWindows/AstroPartyWindows/x64/Release/AstroPartyRemakeWindows.ipdb
+*.iobj
+*.iobj
+*.ipdb

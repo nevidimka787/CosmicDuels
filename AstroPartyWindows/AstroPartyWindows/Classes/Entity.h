@@ -1124,12 +1124,12 @@ public:
 class AggressiveEntity : public StaticEntity
 {
 protected:
-	//Dellay to first attack after spawn.
+	//Dellay to first attack after math begining.
 	GameTypes::tic_t attack_dellay;
 public:
 	//Period of all attack cycle.
 	GameTypes::tic_t attack_period;
-	//Period between shoots.
+	//Period between shoots sessions.
 	GameTypes::tic_t inactive_period;
 	//Shoots count in one attack period.
 	EngineTypes::AgressiveEntity::shoots_count_t shoots_count;

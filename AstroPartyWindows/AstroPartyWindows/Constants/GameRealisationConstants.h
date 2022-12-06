@@ -137,6 +137,8 @@ turels, mega lasers
 #define MAP_PORTAL				9u
 //map id
 #define MAP_NO_CENTER			10u
+//map id
+#define MAP_FORTRES				11u
 
 	//map pull
 
@@ -196,7 +198,7 @@ turels, mega lasers
 //how many times elements will be swaping
 #define GAME_RANDOM_ITERATIONS_COUNT			8u
 //count of maps
-#define GAME_MAPS_COUNT							11u
+#define GAME_MAPS_COUNT							12u
 //count of objects types
 #define GAME_OBJECTS_COUNT						1u
 //count og bonuses types

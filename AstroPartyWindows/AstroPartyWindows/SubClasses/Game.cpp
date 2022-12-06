@@ -624,9 +624,6 @@ void Game::InitLevel()
 
 	current_map_id = GenerateRandomMapId();
 
-	//current_map_id = MAP_PORTAL;
-	//std::cout << "Only map Portal selected." << std::endl;
-
 	Vec2F ships_positions[GAME_PLAYERS_MAX_COUNT];
 	float ships_angles[GAME_PLAYERS_MAX_COUNT];
 
@@ -635,13 +632,12 @@ void Game::InitLevel()
 	current_event = current_map_id;
 
 	/* Create maps */
-
-	//current_map_id = MAP_NO_CENTER;
-	//current_event = current_map_id;
-	//std::cout << "Game::InitLevel::Only map 10 created." << std::endl;
 	
 	switch (current_map_id)
 	{
+	case MAP_FORTRES:
+		CreateMap11(ships_positions, ships_angles);
+		break;
 	case MAP_NO_CENTER:
 		CreateMap10(ships_positions, ships_angles);
 		break;
@@ -1001,6 +997,7 @@ void Game::InitMenus()
 	buttons[MAP_BROKEN].SetText("Broken");
 	buttons[MAP_PORTAL].SetText("Portal");
 	buttons[MAP_NO_CENTER].SetText("No Center");
+	buttons[MAP_FORTRES].SetText("Fortres");
 	position.Set(0.0f, 0.0f);
 	size.Set(1.0f, -GAME_PULL_MENU_DOWN_BORDER * (float)(((GAME_MAPS_COUNT + 1) / 2) + 1));
 	map_pull_select_menu.Set(&position, &size, buttons, GAME_MAPS_COUNT);

@@ -58,7 +58,7 @@ SupportEntity::SupportEntity(
 	StaticEntity(
 		position,
 		radius,
-		angle - host->GetAngle(),
+		angle + host->GetAngle(),
 		exist),
 	host_p(host),
 	host_matrix_p(host->GetModelMatrixPointer()),

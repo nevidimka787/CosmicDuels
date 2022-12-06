@@ -31,7 +31,7 @@ Entity::Entity(
 	bool exist) 
 	:
 	angle(angle),
-	direction(Vec2F(cosf(angle), -sinf(angle))),
+	direction(Vec2F(cosf(angle), sinf(angle))),
 	exist(exist),
 	position(*position),
 	radius(radius)
@@ -40,7 +40,7 @@ Entity::Entity(
 
 Entity::Entity(const Entity& entity) :
 	angle(entity.angle),
-	direction(Vec2F(cosf(entity.angle), -sinf(entity.angle))),
+	direction(Vec2F(cosf(entity.angle), sinf(entity.angle))),
 	exist(entity.exist),
 	position(entity.position),
 	radius(entity.radius)
@@ -464,7 +464,7 @@ void Entity::UpdateAngle()
 
 void Entity::UpdateDirection()
 {
-	direction = Vec2F(1.0f, 0.0f).Rotate(angle);
+	direction = Vec2F(cosf(angle), sinf(angle));
 }
 
 void Entity::operator=(Entity entity)

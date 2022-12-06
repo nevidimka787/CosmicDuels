@@ -924,14 +924,13 @@ void Game::DestroyEntity(Particle* entity)
 
 void Game::DestroyEntity(Pilot* entity)
 {
-	entity->exist = false;
 	if (game_rules & GAME_RULE_NEED_KILL_PILOT)
 	{
 		DecrementScore(entity->GetTeamNumber());
 		DecrementPlayersCountInTeam(entity->GetTeamNumber());
 	}
 	AddEntity(entity->CreateShards(global_timer));
-	pilots_count--;
+	RemoveEntity(entity);
 }
 
 void Game::DestroySupportEntitiesBy(ControledEntity* produser)

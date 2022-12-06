@@ -63,16 +63,29 @@ AggressiveEntity::AggressiveEntity(
 
 bool AggressiveEntity::CanShoot(GameTypes::tic_t current_tic) const
 {
-	GameTypes::tic_t local_tic = (current_tic - attack_dellay) % (attack_period + inactive_period);
-	if (local_tic < attack_period)
+	if (current_tic <= attack_dellay)
 	{
 		return false;
 	}
-	if (attack_period < shoots_count)
+	GameTypes::tic_t local_tic = (current_tic - attack_dellay) % (attack_period);
+	GameTypes::tic_t shoot_session_period = attack_period - inactive_period;
+	if (local_tic >= shoot_session_period)
+	{
+		return false;
+	}
+
+	GameTypes::tic_t time_between_shoots = shoot_session_period / shoots_count;
+	if (time_between_shoots <= 1)
 	{
 		return true;
 	}
-	return (local_tic - attack_period) % (attack_period / shoots_count) == 0;
+
+	shoot_session_period = time_between_shoots * shoots_count;
+	if (local_tic >= shoot_session_period)
+	{
+		return false;
+	}
+	return local_tic % time_between_shoots == 0;
 }
 
 void AggressiveEntity::PostponeAttack(GameTypes::tic_t dellay)
