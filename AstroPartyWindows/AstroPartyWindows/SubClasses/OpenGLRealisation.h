@@ -29,7 +29,7 @@ public:
 
 	//buffers
 
-	StaticBuffer anig_area_generator_buffer;
+	StaticBuffer annih_area_generator_buffer;
 	StaticBuffer asteroid_buffer;
 	StaticBuffer bomb_buffer;
 	StaticBuffer bonus_buffer;
@@ -45,7 +45,7 @@ public:
 	StaticBuffer pilot_buffer;
 	StaticBuffer ship_buffer;
 	StaticBuffer ship_bullet_buffer;
-	StaticBuffer turel_buffer;
+	StaticBuffer turret_buffer;
 
 	StaticBuffer cyrcle_buffer;
 	StaticBuffer polygon_buffer;
@@ -84,8 +84,8 @@ public:
 
 	//shaders
 
-	//The shader use for draw anigilatio area generator.
-	Shader anig_area_gen_shader;
+	//The shader use for draw annihilatio area generator.
+	Shader annih_area_gen_shader;
 	//The shader use for draw asteroids.
 	Shader asteroid_shader;
 	//The shader use for draw bombs.
@@ -114,8 +114,8 @@ public:
 	Shader pilot_shader;
 	//The shader use for draw shipd.
 	Shader ship_shader;
-	//The shader use for draw turels.
-	Shader turel_shader;
+	//The shader use for draw turrets.
+	Shader turret_shader;
 
 	//The shader use for draw rectangles.
 	Shader rectangle_shader;
@@ -136,7 +136,7 @@ public:
 	//The texture stores symbols and signs that will be drawn on the buttons.
 	Texture2D symbols_texture;
 
-	Texture2D anig_area_gen_basic_texture;
+	Texture2D annih_area_gen_basic_texture;
 
 	Texture2D asteroid_small_texture;
 	Texture2D asteroid_medium_texture;
@@ -164,7 +164,7 @@ public:
 	Texture2D ship_basic_texture;
 	Texture2D ship_triple_texture;
 
-	Texture2D turel_basic_texture;
+	Texture2D turret_basic_texture;
 
 	//textures
 
@@ -201,8 +201,8 @@ public:
 	//The function draw dynamic entity as vague object.
 	void DrawObject(const DynamicEntity* dynamic_entity, bool update_shader = false);
 
-	//The function draw anigilation area generator..
-	void DrawObject(const AnigAreaGen* anig_area_gen, bool update_shader = false);
+	//The function draw annihilation area generator..
+	void DrawObject(const AnnihAreaGen* annih_area_gen, bool update_shader = false);
 	//The function draw asteroid.
 	void DrawObject(const Asteroid* asteroid, bool update_shader = false);
 	//The function draw asteroid.
@@ -231,8 +231,8 @@ public:
 	void DrawObject(const Pilot* pilot, bool update_shader = false);
 	//The function draw ship.
 	void DrawObject(const Ship* ship, bool update_shader = false);
-	//The function draw turel.
-	void DrawObject(const Turel* turel, bool update_shader = false);
+	//The function draw turret.
+	void DrawObject(const Turret* turret, bool update_shader = false);
 
 	//The function draw map's rectangle.
 	void DrawObject(const Map::Rectangle* rectangle, bool update_shader = false);
@@ -248,8 +248,8 @@ public:
 
 	//Multydraw functions
 
-	//The function draw all anigilation area generators on the map.
-	void DrawAnigAreaGens();
+	//The function draw all annihilation area generators on the map.
+	void DrawAnnihAreaGens();
 	//The function draw all asteroids on the map.
 	void DrawAsteroids();
 	//The function draw all bombs on the map.
@@ -278,8 +278,8 @@ public:
 	void DrawPilots();
 	//The function draw all ships on the map.
 	void DrawShips();
-	//The function draw all turels on the map.
-	void DrawTurels();
+	//The function draw all turrets on the map.
+	void DrawTurrets();
 
 	//The function draww current map.
 	void DrawCurrentMap();
@@ -333,8 +333,8 @@ public:
 	GameTypes::tic_t* game_p__global_timer;
 	GameTypes::tic_t* game_p__stuning_timer;
 
-	//Count of anigilation area generators on the map.
-	const GameTypes::entities_count_t* game_p__anig_area_gens_count;
+	//Count of annihilation area generators on the map.
+	const GameTypes::entities_count_t* game_p__annih_area_gens_count;
 	//Count of asteroids on the map.
 	const GameTypes::entities_count_t* game_p__asteroids_count;
 	//Count of bombs on the map.
@@ -365,11 +365,11 @@ public:
 	const GameTypes::players_count_t* game_p__players_count;
 	//Count of ships on the map.
 	const GameTypes::players_count_t* game_p__ships_count;
-	//Count of turels on the map.
-	const GameTypes::map_elements_count_t* game_p__turels_count;
+	//Count of turrets on the map.
+	const GameTypes::map_elements_count_t* game_p__turrets_count;
 
-	//Array of anigilation area generators.
-	AnigAreaGen** game_p__anig_area_gens;
+	//Array of annihilation area generators.
+	AnnihAreaGen** game_p__annih_area_gens;
 	//Array of asteroids.
 	Asteroid** game_p__asteroids;
 	//Array of bombs.
@@ -399,8 +399,8 @@ public:
 	GravGen** game_p__grav_gens;
 	//Array of portals
 	Portal** game_p__portals;
-	//Array of turels.
-	Turel** game_p__turels;
+	//Array of turtets.
+	Turret** game_p__turrets;
 	//Array of lasers of the map.
 	MegaLaser** game_p__mega_lasers;
 
@@ -423,7 +423,7 @@ public:
 	GameTypes::tic_t** game_p__double_clk_timers;
 	bool** game_p__burnout_flags;
 
-	std::shared_mutex* game_p__anig_area_gens_array_mtx;
+	std::shared_mutex* game_p__annih_area_gens_array_mtx;
 	std::shared_mutex* game_p__asteroids_array_mtx;
 	std::shared_mutex* game_p__bombs_array_mtx;
 	std::shared_mutex* game_p__bonuses_array_mtx;
@@ -442,7 +442,7 @@ public:
 	std::shared_mutex* game_p__portals_array_mtx;
 	std::shared_mutex* game_p__pilots_array_mtx;
 	std::shared_mutex* game_p__ships_array_mtx;
-	std::shared_mutex* game_p__turels_array_mtx;
+	std::shared_mutex* game_p__turrets_array_mtx;
 
 	//menu functions pointers
 

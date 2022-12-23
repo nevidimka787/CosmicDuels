@@ -2,18 +2,18 @@
 
 
 
-void Game::AddEntity(AnigAreaGen new_anig_area_gen)
+void Game::AddEntity(AnnihAreaGen new_annih_area_gen)
 {
-	if (new_anig_area_gen.exist)
+	if (new_annih_area_gen.exist)
 	{
-		for (GameTypes::entities_count_t anig_area_gen = 0; anig_area_gen < GAME_ANIG_AREAS_GENS_MAX_COUNT; anig_area_gen++)
+		for (GameTypes::entities_count_t annih_area_gen = 0; annih_area_gen < GAME_ANNIH_AREAS_GENS_MAX_COUNT; annih_area_gen++)
 		{
-			if (anig_area_gens[anig_area_gen].exist == false)
+			if (annih_area_gens[annih_area_gen].exist == false)
 			{
-				anig_area_gens[anig_area_gen] = new_anig_area_gen;
-				anig_area_gens_count++;
+				annih_area_gens[annih_area_gen] = new_annih_area_gen;
+				annih_area_gens_count++;
 				return;
-				//printf("void Game::AddEntity(AnigAreaGen)::anig_area_gens_count:%3u\n", anig_area_gens_count);
+				//printf("void Game::AddEntity(AnnihAreaGen)::annih_area_gens_count:%3u\n", annih_area_gens_count);
 			}
 		}
 	}
@@ -166,16 +166,16 @@ void Game::AddEntity(MegaLaser new_mega_laser)
 	}
 }
 
-void Game::AddEntity(Turel new_turel)
+void Game::AddEntity(Turret new_turret)
 {
-	if (new_turel.exist)
+	if (new_turret.exist)
 	{
-		for (GameTypes::map_elements_count_t turel = 0; turel < GAME_TURELS_MAX_COUNT; turel++)
+		for (GameTypes::map_elements_count_t turret = 0; turret < GAME_TURRETS_MAX_COUNT; turret++)
 		{
-			if (turels[turel].exist == false)
+			if (turrets[turret].exist == false)
 			{
-				turels[turel] = new_turel;
-				turels_count++;
+				turrets[turret] = new_turret;
+				turrets_count++;
 				return;
 			}
 		}
@@ -256,12 +256,12 @@ void Game::AddEntity(Ship new_ship)
 	}
 }
 
-void Game::RemoveEntity(AnigAreaGen* deleting_anig_area_gen)
+void Game::RemoveEntity(AnnihAreaGen* deleting_annih_area_gen)
 {
-	if (deleting_anig_area_gen->exist)
+	if (deleting_annih_area_gen->exist)
 	{
-		deleting_anig_area_gen->exist = false;
-		anig_area_gens_count--;
+		deleting_annih_area_gen->exist = false;
+		annih_area_gens_count--;
 	}
 }
 
@@ -355,12 +355,12 @@ void Game::RemoveEntity(MegaLaser* deleting_mega_lazer)
 	}
 }
 
-void Game::RemoveEntity(Turel* deleting_turel)
+void Game::RemoveEntity(Turret* deleting_turret)
 {
-	if (deleting_turel->exist)
+	if (deleting_turret->exist)
 	{
-		deleting_turel->exist = false;
-		turels_count--;
+		deleting_turret->exist = false;
+		turrets_count--;
 	}
 }
 
@@ -495,7 +495,7 @@ void Game::DestroyEntity(Bomb* destroyer, Pilot* entity)
 	camera.resize_velocity_coefficient = CAMERA_LOW_RESIZE_VELOCITY;
 }
 
-void Game::DestroyEntity(Bomb* destroyer, Turel* entity)
+void Game::DestroyEntity(Bomb* destroyer, Turret* entity)
 {
 	RemoveEntity(entity);
 }
@@ -667,7 +667,7 @@ void Game::DestroyEntity(Knife* destroyer, Pilot* entity)
 	camera.resize_velocity_coefficient = CAMERA_LOW_RESIZE_VELOCITY;
 }
 
-void Game::DestroyEntity(Knife* destroyer, Turel* entity)
+void Game::DestroyEntity(Knife* destroyer, Turret* entity)
 {
 	RemoveEntity(entity);
 }
@@ -774,7 +774,7 @@ void Game::DestroyEntity(Laser* destroyer, Pilot* entity)
 	camera.resize_velocity_coefficient = CAMERA_LOW_RESIZE_VELOCITY;
 }
 
-void Game::DestroyEntity(Laser* destroyer, Turel* entity)
+void Game::DestroyEntity(Laser* destroyer, Turret* entity)
 {
 	RemoveEntity(entity);
 }
@@ -963,18 +963,18 @@ void Game::DestroySupportEntitiesBy(ControledEntity* produser)
 			}
 		}
 	}
-	for (GameTypes::entities_count_t anig_area_gen = 0, found_anig_area_gens = 0; found_anig_area_gens < anig_area_gens_count; anig_area_gen++)
+	for (GameTypes::entities_count_t annih_area_gen = 0, found_annih_area_gens = 0; found_annih_area_gens < annih_area_gens_count; annih_area_gen++)
 	{
-		if (anig_area_gens[anig_area_gen].exist)
+		if (annih_area_gens[annih_area_gen].exist)
 		{
-			if (anig_area_gens[anig_area_gen].IsCreatedBy(produser))
+			if (annih_area_gens[annih_area_gen].IsCreatedBy(produser))
 			{
-				//found_anig_area_gens++;
-				RemoveEntity(&anig_area_gens[anig_area_gen]);
+				//found_annih_area_gens++;
+				RemoveEntity(&annih_area_gens[annih_area_gen]);
 			}
 			else
 			{
-				found_anig_area_gens++;
+				found_annih_area_gens++;
 			}
 		}
 	}
@@ -1013,8 +1013,8 @@ void Game::AddBonuses(Ship* spawner)
 
 void Game::MemoryLock()
 {
-	anig_area_gens = new AnigAreaGen[GAME_ANIG_AREAS_GENS_MAX_COUNT];
-	anig_area_gens_count = 0;
+	annih_area_gens = new AnnihAreaGen[GAME_ANNIH_AREAS_GENS_MAX_COUNT];
+	annih_area_gens_count = 0;
 	asteroids = new Asteroid[GAME_ASTEROIDS_MAX_COUNT];
 	asteroids_count = 0;
 	bombs = new Bomb[GAME_BOMBS_MAX_COUNT];
@@ -1043,8 +1043,8 @@ void Game::MemoryLock()
 	portals_count = 0;
 	ships = new Ship[GAME_PLAYERS_MAX_COUNT];
 	ships_count = 0;
-	turels = new Turel[GAME_TURELS_MAX_COUNT];
-	turels_count = 0;
+	turrets = new Turret[GAME_TURRETS_MAX_COUNT];
+	turrets_count = 0;
 
 	burnout_flags = new bool[GAME_PLAYERS_MAX_COUNT];
 	double_clk_timers = new GameTypes::tic_t[GAME_PLAYERS_MAX_COUNT];
@@ -1067,7 +1067,7 @@ void Game::MemorySetDefault()
 	camera.SetLowLimits();
 	camera.SetScale(object_p__open_gl_realisation->GetScale());
 
-	anig_area_gens_count = 0;
+	annih_area_gens_count = 0;
 	asteroids_count = 0;
 	bombs_count = 0;
 	bonuses_count = 0;
@@ -1082,13 +1082,13 @@ void Game::MemorySetDefault()
 	portals_count = 0;
 	pilots_count = 0;
 	ships_count = 0;
-	turels_count = 0;
+	turrets_count = 0;
 
 	for (GameTypes::entities_count_t entity = 0; entity < UINT16_MAX - 1; entity++)
 	{
-		if (entity < GAME_ANIG_AREAS_GENS_MAX_COUNT && anig_area_gens[entity].exist)
+		if (entity < GAME_ANNIH_AREAS_GENS_MAX_COUNT && annih_area_gens[entity].exist)
 		{
-			anig_area_gens[entity].exist = false;
+			annih_area_gens[entity].exist = false;
 		}
 		if (entity < GAME_ASTEROIDS_MAX_COUNT && asteroids[entity].exist)
 		{
@@ -1149,9 +1149,9 @@ void Game::MemorySetDefault()
 				ships[entity].exist = false;
 			}
 		}
-		if (entity < GAME_TURELS_MAX_COUNT && turels[entity].exist)
+		if (entity < GAME_TURRETS_MAX_COUNT && turrets[entity].exist)
 		{
-			turels[entity].exist = false;
+			turrets[entity].exist = false;
 		}
 	}
 
@@ -1162,8 +1162,8 @@ void Game::MemorySetDefault()
 
 void Game::MemoryFree()
 {
-	delete[] anig_area_gens;
-	anig_area_gens_count = 0;
+	delete[] annih_area_gens;
+	annih_area_gens_count = 0;
 	delete[] asteroids;
 	asteroids_count = 0;
 	delete[] bombs;
@@ -1190,8 +1190,8 @@ void Game::MemoryFree()
 	pilots_count = 0;
 	delete[] ships;
 	ships_count = 0;
-	delete[] turels;
-	turels_count = 0;
+	delete[] turrets;
+	turrets_count = 0;
 
 	players_count = 0;
 	delete[] players_in_team;

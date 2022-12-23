@@ -311,7 +311,7 @@ void OpenGL::InitBuffers()
     points[4].Set(-1.0f, 1.0f);
     points[5].Set(1.0f, -1.0f);
 
-    anig_area_generator_buffer.Initialisate(points, 6);
+    annih_area_generator_buffer.Initialisate(points, 6);
     asteroid_buffer.Initialisate(points, 6);
     bomb_buffer.Initialisate(points, 6);
     bonus_buffer.Initialisate(points, 6);
@@ -346,7 +346,7 @@ void OpenGL::InitBuffers()
     points[4].Set(-2.0f, 2.0f);
     points[5].Set(2.0f, -2.0f);
 
-    turel_buffer.Initialisate(points, 6);
+    turret_buffer.Initialisate(points, 6);
 
     points[0].Set(1.0f, 1.0f);
     points[1].Set(0.0f, 1.0f);
@@ -427,7 +427,7 @@ void OpenGL::InitOpenGL()
 
 void OpenGL::InitShaders()
 {
-    anig_area_gen_shader.Initialisate(      "Shaders/Objects/Vertex/AnigAreaGen.glsl"       ,   "Shaders/Objects/Fragment/AnigAreaGen.glsl");
+    annih_area_gen_shader.Initialisate(      "Shaders/Objects/Vertex/AnnihAreaGen.glsl"       ,   "Shaders/Objects/Fragment/AnnihAreaGen.glsl");
     asteroid_shader.Initialisate(           "Shaders/Objects/Vertex/Asteroid.glsl"          ,   "Shaders/Objects/Fragment/Asteroid.glsl");
     bomb_shader.Initialisate(               "Shaders/Objects/Vertex/Bomb.glsl"              ,   "Shaders/Objects/Fragment/Bomb.glsl");
     bonus_shader.Initialisate(              "Shaders/Objects/Vertex/Bonus.glsl"             ,   "Shaders/Objects/Fragment/Bonus.glsl");
@@ -442,7 +442,7 @@ void OpenGL::InitShaders()
     portal_shader.Initialisate(             "Shaders/Objects/Vertex/Portal.glsl"            ,   "Shaders/Objects/Fragment/Portal.glsl");
     pilot_shader.Initialisate(              "Shaders/Objects/Vertex/Pilot.glsl"             ,   "Shaders/Objects/Fragment/Pilot.glsl");
     ship_shader.Initialisate(               "Shaders/Objects/Vertex/Ship.glsl"              ,   "Shaders/Objects/Fragment/Ship.glsl");
-    turel_shader.Initialisate(              "Shaders/Objects/Vertex/Turel.glsl"             ,   "Shaders/Objects/Fragment/Turel.glsl");
+    turret_shader.Initialisate(              "Shaders/Objects/Vertex/Turret.glsl"           ,   "Shaders/Objects/Fragment/Turret.glsl");
     
     rectangle_shader.Initialisate(          "Shaders/Map/Vertex/Rectangle.glsl"             ,   "Shaders/Map/Fragment/Rectangle.glsl");
     cyrcle_shader.Initialisate(             "Shaders/Map/Vertex/Cyrcle.glsl"                ,   "Shaders/Map/Fragment/Cyrcle.glsl");
@@ -454,7 +454,7 @@ void OpenGL::InitShaders()
 
 void OpenGL::InitTextures()
 {
-    anig_area_gen_basic_texture.Initialisate("Textures/Entities/AnigAreaGen/Basic.png", GL_RGBA,    GL_RGBA);
+    annih_area_gen_basic_texture.Initialisate("Textures/Entities/AnnihAreaGen/Basic.png", GL_RGBA,    GL_RGBA);
 
     asteroid_small_texture.Initialisate(    "Textures/Entities/Asteroid/Small.png",     GL_RGBA,    GL_RGBA);
     asteroid_medium_texture.Initialisate(   "Textures/Entities/Asteroid/Medium.png",    GL_RGBA,    GL_RGBA);
@@ -482,7 +482,7 @@ void OpenGL::InitTextures()
     ship_basic_texture.Initialisate(    "Textures/Entities/Ship/Basic.png",     GL_RGBA,    GL_RGBA);
     ship_triple_texture.Initialisate(   "Textures/Entities/Ship/Triple.png",    GL_RGBA,    GL_RGBA);
 
-    turel_basic_texture.Initialisate(   "Textures/Entities/Turel/Basic.png",    GL_RGBA,    GL_RGBA);
+    turret_basic_texture.Initialisate(  "Textures/Entities/Turret/Basic.png",   GL_RGBA,    GL_RGBA);
 
     symbols_texture.Initialisate("Textures/Menu/Buttons/Symbols.bmp");
 }
@@ -544,12 +544,12 @@ void OpenGL::DrawFrame()
             DrawGravityGenerators();
         }
         game_p__grav_gens_array_mtx->unlock();
-        game_p__turels_array_mtx->lock();
-        if (*game_p__turels_count > 0)
+        game_p__turrets_array_mtx->lock();
+        if (*game_p__turrets_count > 0)
         {
-            DrawTurels();
+            DrawTurrets();
         }
-        game_p__turels_array_mtx->unlock();
+        game_p__turrets_array_mtx->unlock();
 
         game_p__bombs_array_mtx->lock();
         if (*game_p__bombs_count > 0)
@@ -606,12 +606,12 @@ void OpenGL::DrawFrame()
             DrawShips();
         }
         game_p__ships_array_mtx->unlock();
-        game_p__anig_area_gens_array_mtx->lock();
-        if (*game_p__anig_area_gens_count > 0)
+        game_p__annih_area_gens_array_mtx->lock();
+        if (*game_p__annih_area_gens_count > 0)
         {
-            DrawAnigAreaGens();
+            DrawAnnihAreaGens();
         }
-        game_p__anig_area_gens_array_mtx->unlock();
+        game_p__annih_area_gens_array_mtx->unlock();
         game_p__deceler_areas_array_mtx->lock();
         if (*game_p__deceler_areas_count > 0)
         {
@@ -670,28 +670,28 @@ void OpenGL::DrawObject(const DynamicEntity* dynamic_entity, bool update_shader)
 
 }
 
-void OpenGL::DrawObject(const AnigAreaGen* anig_area_gen, bool update_shader)
+void OpenGL::DrawObject(const AnnihAreaGen* annih_area_gen, bool update_shader)
 {
     if(update_shader)
     {
-        anig_area_generator_buffer.Use();
-        anig_area_gen_shader.Use();
-        anig_area_gen_basic_texture.Use();
-        anig_area_gen_shader.SetUniform("scale", window_scale);
-        anig_area_gen_shader.SetUniform("camera_position", temp__game__camera_position);
-        anig_area_gen_shader.SetUniform("camera_size", temp__game__camera_size);
+        annih_area_generator_buffer.Use();
+        annih_area_gen_shader.Use();
+        annih_area_gen_basic_texture.Use();
+        annih_area_gen_shader.SetUniform("scale", window_scale);
+        annih_area_gen_shader.SetUniform("camera_position", temp__game__camera_position);
+        annih_area_gen_shader.SetUniform("camera_size", temp__game__camera_size);
     }
-    anig_area_gen_shader.SetUniform("shield", 0);
-    anig_area_gen_shader.SetUniform("position", anig_area_gen->GetGlobalPosition());
-    anig_area_gen_shader.SetUniform("angle", anig_area_gen->GetGlobalAngle());
-    anig_area_gen_shader.SetUniform("radius", anig_area_gen->radius);
-    anig_area_generator_buffer.Draw();
+    annih_area_gen_shader.SetUniform("shield", 0);
+    annih_area_gen_shader.SetUniform("position", annih_area_gen->GetGlobalPosition());
+    annih_area_gen_shader.SetUniform("angle", annih_area_gen->GetGlobalAngle());
+    annih_area_gen_shader.SetUniform("radius", annih_area_gen->radius);
+    annih_area_generator_buffer.Draw();
 
-    if (anig_area_gen->IsHaveShield())
+    if (annih_area_gen->IsHaveShield())
     {
-        anig_area_gen_shader.SetUniform("shield", 1);
-        anig_area_gen_shader.SetUniform("radius", anig_area_gen->radius * 1.1f);
-        anig_area_generator_buffer.Draw();
+        annih_area_gen_shader.SetUniform("shield", 1);
+        annih_area_gen_shader.SetUniform("radius", annih_area_gen->radius * 1.1f);
+        annih_area_generator_buffer.Draw();
     }
 }
 
@@ -1029,22 +1029,22 @@ void OpenGL::DrawObject(const Ship* ship, bool update_shader)
     ship_bullet_buffer.Draw();
 }
 
-void OpenGL::DrawObject(const Turel* turel, bool update_shader)
+void OpenGL::DrawObject(const Turret* turret, bool update_shader)
 {
 
     if (update_shader)
     {
-        turel_buffer.Use();
-        turel_shader.Use();
-        turel_basic_texture.Use();
-        turel_shader.SetUniform("scale", window_scale);
-        turel_shader.SetUniform("camera_position", temp__game__camera_position);
-        turel_shader.SetUniform("camera_size", temp__game__camera_size);
+        turret_buffer.Use();
+        turret_shader.Use();
+        turret_basic_texture.Use();
+        turret_shader.SetUniform("scale", window_scale);
+        turret_shader.SetUniform("camera_position", temp__game__camera_position);
+        turret_shader.SetUniform("camera_size", temp__game__camera_size);
     }
-    turel_shader.SetUniform("angle", turel->GetAngle());
-    turel_shader.SetUniform("position", turel->GetPosition());
-    turel_shader.SetUniform("size", turel->radius);
-    turel_buffer.Draw();
+    turret_shader.SetUniform("angle", turret->GetAngle());
+    turret_shader.SetUniform("position", turret->GetPosition());
+    turret_shader.SetUniform("size", turret->radius);
+    turret_buffer.Draw();
 }
 
 void OpenGL::DrawObject(const Map::Rectangle* rectangle, bool update_shader)
@@ -1194,20 +1194,20 @@ void OpenGL::DrawObject(Button* button, bool button_is_controller, bool update_s
 
 //Multydraw functions
 
-void OpenGL::DrawAnigAreaGens()
+void OpenGL::DrawAnnihAreaGens()
 {
-    anig_area_generator_buffer.Use();
-    anig_area_gen_shader.Use();
-    anig_area_gen_basic_texture.Use();
-    anig_area_gen_shader.SetUniform("scale", window_scale);
-    anig_area_gen_shader.SetUniform("camera_position", temp__game__camera_position);
-    anig_area_gen_shader.SetUniform("camera_size", temp__game__camera_size);
-    for (GameTypes::entities_count_t anig_area_gen = 0, found_anig_area_gens = 0; found_anig_area_gens < *game_p__anig_area_gens_count; anig_area_gen++)
+    annih_area_generator_buffer.Use();
+    annih_area_gen_shader.Use();
+    annih_area_gen_basic_texture.Use();
+    annih_area_gen_shader.SetUniform("scale", window_scale);
+    annih_area_gen_shader.SetUniform("camera_position", temp__game__camera_position);
+    annih_area_gen_shader.SetUniform("camera_size", temp__game__camera_size);
+    for (GameTypes::entities_count_t annih_area_gen = 0, found_annih_area_gens = 0; found_annih_area_gens < *game_p__annih_area_gens_count; annih_area_gen++)
     {
-        if ((*game_p__anig_area_gens)[anig_area_gen].exist)
+        if ((*game_p__annih_area_gens)[annih_area_gen].exist)
         {
-            found_anig_area_gens++;
-            DrawObject(&(*game_p__anig_area_gens)[anig_area_gen]);
+            found_annih_area_gens++;
+            DrawObject(&(*game_p__annih_area_gens)[annih_area_gen]);
         }
     }
 }
@@ -1491,20 +1491,20 @@ void OpenGL::DrawShips()
     }
 }
 
-void OpenGL::DrawTurels()
+void OpenGL::DrawTurrets()
 {
-    turel_buffer.Use();
-    turel_shader.Use();
-    turel_basic_texture.Use();
-    turel_shader.SetUniform("scale", window_scale);
-    turel_shader.SetUniform("camera_position", temp__game__camera_position);
-    turel_shader.SetUniform("camera_size", temp__game__camera_size);
-    for (GameTypes::entities_count_t turel = 0, found_turels = 0; found_turels < *game_p__turels_count; turel++)
+    turret_buffer.Use();
+    turret_shader.Use();
+    turret_basic_texture.Use();
+    turret_shader.SetUniform("scale", window_scale);
+    turret_shader.SetUniform("camera_position", temp__game__camera_position);
+    turret_shader.SetUniform("camera_size", temp__game__camera_size);
+    for (GameTypes::entities_count_t turret = 0, found_turrets = 0; found_turrets < *game_p__turrets_count; turret++)
     {
-        if ((*game_p__turels)[turel].exist)
+        if ((*game_p__turrets)[turret].exist)
         {
-            found_turels++;
-            DrawObject(&(*game_p__turels)[turel]);
+            found_turrets++;
+            DrawObject(&(*game_p__turrets)[turret]);
         }
     }
 }
@@ -1637,7 +1637,7 @@ void OpenGL::Free()
 
 void OpenGL::FreeBuffers()
 {
-    anig_area_generator_buffer.Delete();
+    annih_area_generator_buffer.Delete();
     asteroid_buffer.Delete();
     bomb_buffer.Delete();
     bonus_buffer.Delete();
@@ -1653,7 +1653,7 @@ void OpenGL::FreeBuffers()
     laser_buffer.Delete();
     mega_laser_buffer.Delete();
     polygon_buffer.Delete();
-    turel_buffer.Delete();
+    turret_buffer.Delete();
     button_buffer.Delete();
     button_horisontal_buffer.Delete();
     button_vertical_buffer.Delete();
@@ -1670,7 +1670,7 @@ void OpenGL::FreeMemory()
 
 void OpenGL::FreeShaders()
 {
-    anig_area_gen_shader.Delete();
+    annih_area_gen_shader.Delete();
     asteroid_shader.Delete();
     bomb_shader.Delete();
     bonus_shader.Delete();
@@ -1685,7 +1685,7 @@ void OpenGL::FreeShaders()
     portal_shader.Delete();
     pilot_shader.Delete();
     ship_shader.Delete();
-    turel_shader.Delete();
+    turret_shader.Delete();
     rectangle_shader.Delete();
     cyrcle_shader.Delete();
     polygon_shader.Delete();
@@ -1696,7 +1696,7 @@ void OpenGL::FreeShaders()
 void OpenGL::FreeTextures()
 {
     symbols_texture.Delete();
-    anig_area_gen_basic_texture.Delete();
+    annih_area_gen_basic_texture.Delete();
     asteroid_small_texture.Delete();
     asteroid_medium_texture.Delete();
     asteroid_large_texture.Delete();
@@ -1717,7 +1717,7 @@ void OpenGL::FreeTextures()
     pilot_basic_texture.Delete();
     ship_basic_texture.Delete();
     ship_triple_texture.Delete();
-    turel_basic_texture.Delete();
+    turret_basic_texture.Delete();
 }
 
 OpenGL::~OpenGL()

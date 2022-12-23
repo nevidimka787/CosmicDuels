@@ -2,18 +2,18 @@
 
 
 
-Turel::Turel() :
+Turret::Turret() :
 	AggressiveEntity()
 {
 }
 
-Turel::Turel(const Turel& turel)
+Turret::Turret(const Turret& turret)
 	:
-	AggressiveEntity(turel)
+	AggressiveEntity(turret)
 {
 }
 
-Turel::Turel(
+Turret::Turret(
 	Vec2F position,
 	float angle,
 	GameTypes::tic_t attack_dellay,
@@ -34,7 +34,7 @@ Turel::Turel(
 {
 }
 
-Turel::Turel(
+Turret::Turret(
 	const Vec2F* position,
 	float angle,
 	GameTypes::tic_t attack_dellay,
@@ -55,7 +55,7 @@ Turel::Turel(
 {
 }
 
-DynamicParticle Turel::CreateShards(GameTypes::tic_t current_tic)
+DynamicParticle Turret::CreateShards(GameTypes::tic_t current_tic)
 {
 	return DynamicParticle(
 		current_tic,
@@ -72,31 +72,31 @@ DynamicParticle Turel::CreateShards(GameTypes::tic_t current_tic)
 		PARTICLE_POSTPONE_SHARDS_ASTEROID,
 		current_tic + PARTICLE_PERIOD_SHARDS_ASTEROID);
 
-	std::cout << "Turel::CreateShards::Not realisated." << std::endl;
+	std::cout << "Turret::CreateShards::Not realisated." << std::endl;
 }
 
-Bullet Turel::Shoot()
+Bullet Turret::Shoot()
 {
 	Vec2F new_bullet_velocity = direction * BULLET_DEFAULT_VELOCITY;
 	Vec2F new_bullet_position = position + direction * radius * 2.0f;
 	return Bullet(&new_bullet_position, &new_bullet_velocity, AGGRESIVE_ENTITY_HOST_ID, AGGRESIVE_ENTITY_HOST_ID, false);
 }
 
-void Turel::Set(const Turel* turel)
+void Turret::Set(const Turret* turret)
 {
-	angle = turel->angle;
-	attack_dellay = turel->attack_dellay;
-	attack_period = turel->attack_period;
-	direction = turel->direction;
-	exist = turel->exist;
-	inactive_period = turel->inactive_period;
-	last_position = turel->last_position;
-	position = turel->position;
-	radius = turel->radius;
-	shoots_count = turel->shoots_count;
+	angle = turret->angle;
+	attack_dellay = turret->attack_dellay;
+	attack_period = turret->attack_period;
+	direction = turret->direction;
+	exist = turret->exist;
+	inactive_period = turret->inactive_period;
+	last_position = turret->last_position;
+	position = turret->position;
+	radius = turret->radius;
+	shoots_count = turret->shoots_count;
 }
 
-void Turel::Set(
+void Turret::Set(
 	Vec2F position,
 	float angle,
 	GameTypes::tic_t attack_dellay,
@@ -118,7 +118,7 @@ void Turel::Set(
 	this->shoots_count = shoots_count;
 }
 
-void Turel::Set(
+void Turret::Set(
 	const Vec2F* position,
 	float angle,
 	GameTypes::tic_t attack_dellay,
@@ -140,20 +140,20 @@ void Turel::Set(
 	this->shoots_count = shoots_count;
 }
 
-void Turel::operator=(Turel turel)
+void Turret::operator=(Turret turret)
 {
-	angle = turel.angle;
-	attack_dellay = turel.attack_dellay;
-	attack_period = turel.attack_period;
-	direction = turel.direction;
-	exist = turel.exist;
-	inactive_period = turel.inactive_period;
-	last_position = turel.last_position;
-	position = turel.position;
-	radius = turel.radius;
-	shoots_count = turel.shoots_count;
+	angle = turret.angle;
+	attack_dellay = turret.attack_dellay;
+	attack_period = turret.attack_period;
+	direction = turret.direction;
+	exist = turret.exist;
+	inactive_period = turret.inactive_period;
+	last_position = turret.last_position;
+	position = turret.position;
+	radius = turret.radius;
+	shoots_count = turret.shoots_count;
 }
 
-Turel::~Turel()
+Turret::~Turret()
 {
 }

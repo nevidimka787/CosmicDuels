@@ -55,7 +55,7 @@ void Game::PhysicThread0()
 		MegaLasersDestroyBullets();
 		//MegaLasersDestroyMap(); -- not realisated
 		MegaLasersDestroyKnifes();
-		MegaLasersDestroyTurels();
+		MegaLasersDestroyTurrets();
 	}
 	
 	if (lasers_count > 0)
@@ -65,7 +65,7 @@ void Game::PhysicThread0()
 		LasersDestroyKnifes();
 		LasersDestroyAsteroids();
 		LasersDestroyBullets();
-		LasersDestroyTurels();
+		LasersDestroyTurrets();
 	}
 
 	if (knifes_count > 0)
@@ -76,12 +76,12 @@ void Game::PhysicThread0()
 		}
 		KnifesDestroyAsteroids();
 		KnifesDestroyMap();
-		KnifesDestroyTurels();
+		KnifesDestroyTurrets();
 	}
 	
 	if (bullets_count > 0)
 	{
-		BombsSpawnedByBulletsAnigilation();
+		BombsSpawnedByBulletsAnnihilation();
 		BulletsDestroyAsteroids();
 		BulletsDestroedByMap();
 	}
@@ -93,12 +93,12 @@ void Game::PhysicThread0()
 		BombsDestroyBonuses();
 		BombsCollisionsWithBullets();
 		BombsDestroyKnifes();
-		BombsDestroyTurels();
+		BombsDestroyTurrets();
 	}
 	
-	if (turels_count > 0)
+	if (turrets_count > 0)
 	{
-		TurelsShoot();
+		TurretsShoot();
 	}
 
 	if (portals_count > 0)
@@ -247,7 +247,7 @@ void Game::PhysicThread0()
 	}
 	
 	UpdateDecelerAreasPhase2();
-	UpdateAnigAreaGensPhase2();
+	UpdateAnnihAreaGensPhase2();
 	UpdateShipsPhase2();
 	UpdatePilotsPhase2();
 	UpdateAsteroidsPhase2();
@@ -257,7 +257,7 @@ void Game::PhysicThread0()
 	UpdateMegaLasersPhase2();
 	UpdateBonusesPhase2();
 	UpdateBombsPhase2();
-	UpdateTurelsPhase2();
+	UpdateTurretsPhase2();
 	UpdateGravGensPhase2();
 	UpdateMapPhase2();
 	UpdateDynamicParticlesPhase2();
@@ -597,7 +597,7 @@ void Game::PollEvents()
 	switch (current_event)
 	{
 	case MAP_TEST_MAP:			Event0();	return;
-	case MAP_TUREL_ON_CENTER:	Event1();	return;
+	case MAP_TURRET_ON_CENTER:	Event1();	return;
 	case MAP_CYRCLE_ON_CENTER:	Event2();	return;
 	case MAP_DECELERATION_AREA:	Event3();	return;
 	case MAP_MEGA_LASERS:		Event4();	return;
@@ -665,7 +665,7 @@ void Game::InitLevel()
 	case MAP_CYRCLE_ON_CENTER:
 		CreateMap2(ships_positions, ships_angles);
 		break;
-	case MAP_TUREL_ON_CENTER:
+	case MAP_TURRET_ON_CENTER:
 		CreateMap1(ships_positions, ships_angles);
 		break;
 	default:
@@ -984,8 +984,8 @@ void Game::InitMenus()
 	}
 	buttons[MAP_TEST_MAP].SetText("Test");
 	buttons[MAP_TEST_MAP].text_size = 6u;
-	buttons[MAP_TUREL_ON_CENTER].SetText("Turel");
-	buttons[MAP_TUREL_ON_CENTER].text_size = 6u;
+	buttons[MAP_TURRET_ON_CENTER].SetText("Turret");
+	buttons[MAP_TURRET_ON_CENTER].text_size = 6u;
 	buttons[MAP_CYRCLE_ON_CENTER].SetText("Grav gen");
 	buttons[MAP_DECELERATION_AREA].SetText("Deceler");
 	buttons[MAP_MEGA_LASERS].SetText("Mega laser");
@@ -1324,7 +1324,7 @@ void Game::ResetThreadDurations()
 
 
 
-//deceler_area -> grav_gen -> camera -> portal -> ship -> pilot -> input_values ->  mega_laser -> laser ->  bomb -> knife -> turel -> bullet -> asteroid -> bonus -> map -> particle -> dynamic_particle -> log
+//deceler_area -> grav_gen -> camera -> portal -> ship -> pilot -> input_values ->  mega_laser -> laser ->  bomb -> knife -> turret -> bullet -> asteroid -> bonus -> map -> particle -> dynamic_particle -> log
 void Game::MutexesLock()
 {
 	deceler_areas_array_mtx.lock();
@@ -1338,7 +1338,7 @@ void Game::MutexesLock()
 	lasers_array_mtx.lock();
 	bombs_array_mtx.lock();
 	knifes_array_mtx.lock();
-	turels_array_mtx.lock();
+	turrets_array_mtx.lock();
 	bullets_array_mtx.lock();
 	asteroids_array_mtx.lock();
 	bonuses_array_mtx.lock();
@@ -1348,7 +1348,7 @@ void Game::MutexesLock()
 	log_data_mtx.lock();
 }
 
-//deceler_area -> grav_gen -> camera -> ship -> pilot -> input_values ->  mega_laser -> laser ->  bomb -> knife -> turel -> bullet -> asteroid -> bonus -> map -> particle -> log
+//deceler_area -> grav_gen -> camera -> ship -> pilot -> input_values ->  mega_laser -> laser ->  bomb -> knife -> turret -> bullet -> asteroid -> bonus -> map -> particle -> log
 void Game::MutexesUnlock()
 {
 	deceler_areas_array_mtx.unlock();
@@ -1362,7 +1362,7 @@ void Game::MutexesUnlock()
 	lasers_array_mtx.unlock();
 	bombs_array_mtx.unlock();
 	knifes_array_mtx.unlock();
-	turels_array_mtx.unlock();
+	turrets_array_mtx.unlock();
 	bullets_array_mtx.unlock();
 	asteroids_array_mtx.unlock();
 	bonuses_array_mtx.unlock();
@@ -1512,13 +1512,13 @@ void Game::DebugLog__CheckMutexeslLock()
 	std::shared_mutex* mtx_02 = &camera_data_mtx;
 	std::shared_mutex* mtx_03 = &ships_array_mtx;
 	std::shared_mutex* mtx_04 = &pilots_array_mtx;
-	std::shared_mutex* mtx_05 = &anig_area_gens_array_mtx;
+	std::shared_mutex* mtx_05 = &annih_area_gens_array_mtx;
 	std::shared_mutex* mtx_06 = &input_values_mtx;
 	std::shared_mutex* mtx_07 = &mega_lasers_array_mtx;
 	std::shared_mutex* mtx_08 = &lasers_array_mtx;
 	std::shared_mutex* mtx_09 = &bombs_array_mtx;
 	std::shared_mutex* mtx_0A = &knifes_array_mtx;
-	std::shared_mutex* mtx_0B = &turels_array_mtx;
+	std::shared_mutex* mtx_0B = &turrets_array_mtx;
 	std::shared_mutex* mtx_0C = &bullets_array_mtx;
 	std::shared_mutex* mtx_0D = &asteroids_array_mtx;
 	std::shared_mutex* mtx_0E = &bonuses_array_mtx;
@@ -1538,13 +1538,13 @@ void Game::DebugLog__CheckMutexeslLock()
 	std::thread th_02(Th_02, mtx_02, &data[0x02]);//camera
 	std::thread th_03(Th_03, mtx_03, &data[0x03]);//ship
 	std::thread th_04(Th_04, mtx_04, &data[0x04]);//pilot
-	std::thread th_05(Th_05, mtx_11, &data[0x05]);//anig_area_gen
+	std::thread th_05(Th_05, mtx_11, &data[0x05]);//annih_area_gen
 	std::thread th_06(Th_06, mtx_05, &data[0x06]);//input
 	std::thread th_07(Th_07, mtx_06, &data[0x07]);//mega laser
 	std::thread th_08(Th_08, mtx_07, &data[0x08]);//laser
 	std::thread th_09(Th_09, mtx_08, &data[0x09]);//bomb
 	std::thread th_0A(Th_0A, mtx_09, &data[0x0A]);//knife
-	std::thread th_0B(Th_0B, mtx_0A, &data[0x0B]);//turel
+	std::thread th_0B(Th_0B, mtx_0A, &data[0x0B]);//turret
 	std::thread th_0C(Th_0C, mtx_0B, &data[0x0C]);//bullet
 	std::thread th_0D(Th_0D, mtx_0C, &data[0x0D]);//asteroid
 	std::thread th_0E(Th_0E, mtx_0D, &data[0x0E]);//bonus
@@ -1638,7 +1638,7 @@ end_of_cycle:
 	{
 		printf("unlock\n");
 	}
-	printf(" 5. AnigAreaGens:  ");
+	printf(" 5. AnnihAreaGens:  ");
 	if (data[0x05])
 	{
 		printf("lock\n");
@@ -1692,7 +1692,7 @@ end_of_cycle:
 	{
 		printf("unlock\n");
 	}
-	printf("11. Turels:        ");
+	printf("11. Turrets:        ");
 	if (data[0x0B])
 	{
 		printf("lock\n");

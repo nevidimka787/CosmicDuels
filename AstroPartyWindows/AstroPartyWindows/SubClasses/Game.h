@@ -72,8 +72,8 @@ public:
 	//This variable chaned in NextLevel function.
 	GameTypes::score_t end_match_score;
 
-	//Count of anigilation area generators on the map.
-	GameTypes::entities_count_t anig_area_gens_count;
+	//Count of annihilation area generators on the map.
+	GameTypes::entities_count_t annih_area_gens_count;
 	//Count of deceler areas on the map.
 	GameTypes::map_elements_count_t deceler_areas_count;
 	//Count of gravity generators on the map.
@@ -90,8 +90,8 @@ public:
 	GameTypes::entities_count_t lasers_count;
 	//Count of bombs on the map.
 	GameTypes::entities_count_t bombs_count;
-	//Count of turels on the map.
-	GameTypes::map_elements_count_t turels_count;
+	//Count of turrets on the map.
+	GameTypes::map_elements_count_t turrets_count;
 	//Count of map's lazers on the map.
 	GameTypes::map_elements_count_t mega_lasers_count;
 	//Count of asteroids on the map.
@@ -150,7 +150,7 @@ public:
 	//Array of pilots.
 	Pilot* pilots;
 
-	AnigAreaGen* anig_area_gens;
+	AnnihAreaGen* annih_area_gens;
 	//Array of asteroids.
 	Asteroid* asteroids;
 	//Array of bonuses.
@@ -174,8 +174,8 @@ public:
 	DecelerationArea* deceler_areas;
 	//Array of gravity generators.
 	GravGen* grav_gens;
-	//Array of turels.
-	Turel* turels;
+	//Array of turrets.
+	Turret* turrets;
 	//Array of lasers of the map.
 	MegaLaser* mega_lasers;
 	//Array of porttals
@@ -187,7 +187,7 @@ public:
 
 	//game mutexes
 
-	std::shared_mutex anig_area_gens_array_mtx;
+	std::shared_mutex annih_area_gens_array_mtx;
 	std::shared_mutex asteroids_array_mtx;
 	std::shared_mutex bombs_array_mtx;
 	std::shared_mutex bonuses_array_mtx;
@@ -206,7 +206,7 @@ public:
 	std::shared_mutex pilots_array_mtx;
 	std::shared_mutex portals_array_mtx;
 	std::shared_mutex ships_array_mtx;
-	std::shared_mutex turels_array_mtx;
+	std::shared_mutex turrets_array_mtx;
 
 	//The array store time of calculation indicated phase of indicated thread.
 	//first index -- number of thread
@@ -236,7 +236,7 @@ public:
 	//menu objects
 
 	//Function adds entity to array that store entities of the same type.
-	void AddEntity(AnigAreaGen anig_area_gen);
+	void AddEntity(AnnihAreaGen annih_area_gen);
 
 	//Function adds entity to array that store entities of the same type.
 	void AddEntity(Asteroid new_asteroid);
@@ -281,11 +281,11 @@ public:
 	void AddEntity(Ship new_particle);
 	
 	//Function adds entity to array that store entities of the same type.
-	void AddEntity(Turel new_lazer);
+	void AddEntity(Turret new_lazer);
 
 
 	//Function removes the specified entity from the array.
-	void RemoveEntity(AnigAreaGen* anig_area_gen);
+	void RemoveEntity(AnnihAreaGen* annih_area_gen);
 	
 	//Function removes the specified entity from the array.
 	void RemoveEntity(Asteroid* deleting_asteroid);
@@ -327,7 +327,7 @@ public:
 	void RemoveEntity(Ship* deleting_particle);
 	
 	//Function removes the specified entity from the array.
-	void RemoveEntity(Turel* deleting_turel);
+	void RemoveEntity(Turret* deleting_turret);
 
 
 	
@@ -375,7 +375,7 @@ public:
 	//"Test"
 	void Event0();
 	
-	//"Turel"
+	//"turret"
 	void Event1();
 	
 	//"Grav Gen"
@@ -405,10 +405,13 @@ public:
 	//"No Center"
 	void Event10();
 
+	//"Fortres"
+	void Event11();
+
 	//"Test"
 	void CreateMap0(Vec2F* ships_positions, float* ships_angles);
 	
-	//"Turel"
+	//"turret"
 	void CreateMap1(Vec2F* ships_positions, float* ships_angles);
 	
 	//"Grav Gen"
@@ -545,13 +548,13 @@ public:
 	 3. portal
 	 4. ship
 	 5. pilot
-	 6. anig_area_gen
+	 6. annih_area_gen
 	 7. input_values
 	 8. mega_laser
 	 9. laser
 	10. bomb
 	11. knife
-	12. turel
+	12. turret
 	13. bullet
 	14. asteroid
 	15. bonus
@@ -560,23 +563,23 @@ public:
 	18. dynamic_particle
 	19. log
 	
-	//deceler_area -> grav_gen -> camera -> portal -> ship -> pilot -> anig_area_generator -> input_values ->  mega_laser -> laser ->  bomb -> knife -> turel -> bullet -> asteroid -> bonus -> map -> particle -> dynamic_particle -> log
+	//deceler_area -> grav_gen -> camera -> portal -> ship -> pilot -> annih_area_generator -> input_values ->  mega_laser -> laser ->  bomb -> knife -> turret -> bullet -> asteroid -> bonus -> map -> particle -> dynamic_particle -> log
 
 	bomb										bomb chain reaction
 	bomb -> asteroid -> bonus					bomb destroys asteroid after that bonus spawns
 	bomb -> bonus								bomb destroys bonus
 	bomb -> bullet								bomb destroys bullet
 	bomb -> bullet								bomb was activated by bullet
-	bomb -> bullet								bomb was spawned by two anigilated bullets
+	bomb -> bullet								bomb was spawned by two annihilated bullets
 	bomb -> knife								bomb destroys knife
-	bomb -> turel								bomb destroys turel
+	bomb -> turret								bomb destroys turret
 	bullet -> asteroid -> bonus					bullet destroys asteroid after that bonus spawns
 	bullet -> map								bullet destroys map
 	camera -> ship -> pilot						camera focused on ships and pilots
 	knife -> asteroid -> bonus					knife destroys asteroid after that bonus spawns
 	knife -> bullet								knife destroys bullet
 	knife -> map								knife destroys map
-	knife -> turel								knife destroys turel
+	knife -> turret								knife destroys turret
 	laser										laser checks that it can be removed
 	laser -> asteroid -> bonus					laser destroys asteroid after that bonus spawns
 	laser -> bomb								laser detonates bomb
@@ -584,14 +587,14 @@ public:
 	laser -> bullet								laser destroys bullet
 	laser -> knife								laser destroys knife
 	laser -> map								laser destroys map
-	laser -> turel								laser destroys turel
+	laser -> turret								laser destroys turret
 	mega_laser -> asteroid -> bonus				mega_laser destroys asteroid after that bonus spawns
 	mega_laser -> bomb							mega_laser detonates bomb
 	mega_laser -> bonus							mega_laser destroys bonus
 	mega_laser -> bullet						mega_laser destroys bullet
 	mega_laser -> knife							mega_laser destroys knife
 	mega_laser -> map							mega_laser destroys map
-	mega_laser -> turel							mega_laser destroys turel
+	mega_laser -> turret							mega_laser destroys turret
 	portal -> asteroid							portal teleported asteroid
 	portal -> bomb								portal teleported bonus
 	portal -> bonus								portal teleported bonus
@@ -619,14 +622,14 @@ public:
 					knife -> bonus -> log		ship was destroed by laser after that ship's knifes destroed and pilot and bonus spawn
 	ship -> pilot -> mega_laser ->
 					knife -> bonus -> log		ship was destroed by mega_laser after that ship's knifes destroed and pilot and bonus spawn
-	turel -> bullet								turel create bullet
+	turret -> bullet								turret create bullet
 	*/
 
 	//entity update events
 
-	//mtx: anig_area_generator
+	//mtx: annih_area_generator
 	//t = n
-	void AnigAreaGensShoot();
+	void AnnihAreaGensShoot();
 
 	//mtx: bomb
 	//t = (n - 1) / 2 * n
@@ -646,15 +649,15 @@ public:
 
 	//mtx: bomb -> bullet
 	//t = (n - 1) / 2 * n
-	void BombsSpawnedByBulletsAnigilation();
+	void BombsSpawnedByBulletsAnnihilation();
 
 	//mtx: boms -> knife
 	//t = n * k
 	void BombsDestroyKnifes();
 
-	//mtx: bomb -> turel -> dynamic_particle
+	//mtx: bomb -> turret -> dynamic_particle
 	//t = n * k
-	void BombsDestroyTurels();
+	void BombsDestroyTurrets();
 
 	//mtx: bullet -> asteroid -> bonus -> dynamic_particle
 	//t = n * k
@@ -680,9 +683,9 @@ public:
 	//t = n * (m1 + m2 + m3)
  	void KnifesDestroyMap();
 
- 	//mtx: knife -> turel -> dynamic_particle
+ 	//mtx: knife -> turret -> dynamic_particle
 	//t = n * k
- 	void KnifesDestroyTurels();
+ 	void KnifesDestroyTurrets();
 
 	//mtx: laser -> asteroid -> bonus -> dynamic_particle
 	//t = n * k
@@ -708,9 +711,9 @@ public:
 	//t = n * (m1 + m2 + m3)
 	void LasersCollisionWthMap();
 
-	//mtx: laser -> turel -> dynamic_particle
+	//mtx: laser -> turret -> dynamic_particle
 	//t = n * k
-	void LasersDestroyTurels();
+	void LasersDestroyTurrets();
 
 	//mtx: mega_laser -> asteroid -> bonus -> dynamic_particle
 	//t = n * k
@@ -736,9 +739,9 @@ public:
 	//t = n * (m1 + m2 + m3)
 	void MegaLasersDestroyMap();
 
-	//mtx: mega_laser -> turel -> dynamic_particle
+	//mtx: mega_laser -> turret -> dynamic_particle
 	//t = n * k
-	void MegaLasersDestroyTurels();
+	void MegaLasersDestroyTurrets();
 
 	//mtx: portal -> particle
 	//t = n
@@ -840,9 +843,9 @@ public:
 	//t = n * k
 	void ShipsDestroedByMegaLasers();
 
-	//mtx: turel -> bullet
+	//mtx: turret -> bullet
 	//t = n
-	void TurelsShoot();
+	void TurretsShoot();
 
 
 	//entity update events
@@ -853,9 +856,9 @@ public:
 	void UpdateMapPhase2();
 
 	//Update the position and velocity of entity.
-	//mtx: ship- > anig_areaa_gen
+	//mtx: ship- > annih_areaa_gen
 	//t = n
-	void UpdateAnigAreaGensPhase2();
+	void UpdateAnnihAreaGensPhase2();
 
 	//Update the position and velocity of entity.
 	//mtx: asteroid
@@ -928,9 +931,9 @@ public:
 	void UpdateShipsPhase2();
 	
 	//Update the position and velocity of entity.
-	//mtx: turel
+	//mtx: turret
 	//t = n
-	void UpdateTurelsPhase2();
+	void UpdateTurretsPhase2();
 
 	void MutexesLock();
 	void MutexesUnlock();
@@ -969,7 +972,7 @@ public:
 	void DestroyEntity(Bomb* destroyer, Ship* entity);
 	void DestroyEntity(Bomb* destroyer, Particle* entity);
 	void DestroyEntity(Bomb* destroyer, Pilot* entity);
-	void DestroyEntity(Bomb* destroyer, Turel* entity);
+	void DestroyEntity(Bomb* destroyer, Turret* entity);
 
 	void DestroyEntity(Bullet* destroyer, Asteroid* entity);
 	void DestroyEntity(Bullet* destroyer, Knife* entity);
@@ -979,7 +982,7 @@ public:
 	void DestroyEntity(Knife* destroyer, Asteroid* entity);
 	void DestroyEntity(Knife* destroyer, Ship* entity);
 	void DestroyEntity(Knife* destroyer, Pilot* entity);
-	void DestroyEntity(Knife* destroyer, Turel* entity);
+	void DestroyEntity(Knife* destroyer, Turret* entity);
 
 	void DestroyEntity(Laser* destroyer, Asteroid* entity);
 	void DestroyEntity(Laser* destroyer, Bonus* entity);
@@ -988,7 +991,7 @@ public:
 	void DestroyEntity(Laser* destroyer, Ship* entity);
 	void DestroyEntity(Laser* destroyer, Particle* entity);
 	void DestroyEntity(Laser* destroyer, Pilot* entity);
-	void DestroyEntity(Laser* destroyer, Turel* entity);
+	void DestroyEntity(Laser* destroyer, Turret* entity);
 
 	void DestroyEntity(MegaLaser* destroyer, Asteroid* entity);
 	void DestroyEntity(MegaLaser* destroyer, Bonus* entity);
@@ -1027,8 +1030,8 @@ public:
 
 	void AddBonuses(Ship* spawner);
 		
-	//mtx: anig_area_gen -> bomb
-	void AnigAreaGenShoot(AnigAreaGen* anig_area_gen);
+	//mtx: annih_area_gen -> bomb
+	void AnnihAreaGenShoot(AnnihAreaGen* annih_area_gen);
 
 	//Not checking nullprt!
 	//mtx: laser -> bomb -> knife -> bullet

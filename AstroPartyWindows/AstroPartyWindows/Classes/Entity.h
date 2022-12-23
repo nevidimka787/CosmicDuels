@@ -13,7 +13,7 @@
 #define M_PI 3.14159265358979323846
 
 class AggressiveEntity;
-class AnigAreaGen;
+class AnnihAreaGen;
 class Bomb;
 class Bonus;
 class Bullet;
@@ -33,7 +33,7 @@ class Portal;
 class Ship;
 class StaticEntity;
 class SupportEntity;
-class Turel;
+class Turret;
 
 class Entity
 {
@@ -1180,34 +1180,34 @@ public:
 	~AggressiveEntity();
 };
 
-class AnigAreaGen : public SupportEntity
+class AnnihAreaGen : public SupportEntity
 {
 private:
 	EngineTypes::Ship::inventory_t buff_inventory;
 public:
-	AnigAreaGen();
-	AnigAreaGen(const AnigAreaGen& anig_area_generator);
-	AnigAreaGen(
+	AnnihAreaGen();
+	AnnihAreaGen(const AnnihAreaGen& annih_area_generator);
+	AnnihAreaGen(
 		const ControledEntity* host,
 		Vec2F position,
 		EngineTypes::Ship::inventory_t buff_inventory,
-		float radius = ANIG_AREA_GEN_DEFAULT_RADIUS,
+		float radius = ANNIH_AREA_GEN_DEFAULT_RADIUS,
 		float angle = 0.0f,
 		bool exist = true);
-	AnigAreaGen(
+	AnnihAreaGen(
 		const ControledEntity* host,
 		const Vec2F* position,
 		EngineTypes::Ship::inventory_t buff_inventory,
-		float radius = ANIG_AREA_GEN_DEFAULT_RADIUS,
+		float radius = ANNIH_AREA_GEN_DEFAULT_RADIUS,
 		float angle = 0.0f,
 		bool exist = true);
 
 	bool IsHaveShield() const;
 	Bomb Shoot();
 	
-	void operator=(AnigAreaGen anig_area_gen);
+	void operator=(AnnihAreaGen annih_area_gen);
 
-	~AnigAreaGen();
+	~AnnihAreaGen();
 };
 
 class DecelerationArea : public StaticEntity
@@ -1364,33 +1364,33 @@ public:
 	~Portal();
 };
 
-class Turel : public AggressiveEntity
+class Turret : public AggressiveEntity
 {
 public:
-	Turel();
-	Turel(const Turel& turel);
-	Turel(
+	Turret();
+	Turret(const Turret& turret);
+	Turret(
 		Vec2F position,
 		float angle = 0.0f,
 		GameTypes::tic_t attack_dellay = AGGRESIVE_ENTITY_DEFAULT_ATTACK_DELLAY,
 		GameTypes::tic_t attack_period = AGGRESIVE_ENTITY_DEFAULT_ATTACK_PERIOD,
 		GameTypes::tic_t inactive_period = AGGRESIVE_ENTITY_DEFAULT_INACTIVE_PERIOD,
 		EngineTypes::AgressiveEntity::shoots_count_t shoots_count = AGGRESIVE_ENTITY_DEFAULT_SHOOTS_COUNT,
-		float radius = TUREL_DEFAULT_RADIUS,
+		float radius = TURRET_DEFAULT_RADIUS,
 		bool exist = true);
-	Turel(
+	Turret(
 		const Vec2F* position,
 		float angle = 0.0f,
 		GameTypes::tic_t attack_dellay = AGGRESIVE_ENTITY_DEFAULT_ATTACK_DELLAY,
 		GameTypes::tic_t attack_period = AGGRESIVE_ENTITY_DEFAULT_ATTACK_PERIOD,
 		GameTypes::tic_t inactive_period = AGGRESIVE_ENTITY_DEFAULT_INACTIVE_PERIOD,
 		EngineTypes::AgressiveEntity::shoots_count_t shoots_count = AGGRESIVE_ENTITY_DEFAULT_SHOOTS_COUNT,
-		float radius = TUREL_DEFAULT_RADIUS,
+		float radius = TURRET_DEFAULT_RADIUS,
 		bool exist = true);
 
 	DynamicParticle CreateShards(GameTypes::tic_t current_tic);
 	Bullet Shoot();
-	void Set(const Turel* entity);
+	void Set(const Turret* entity);
 	void Set(
 		Vec2F position,
 		float angle = 0.0f,
@@ -1398,7 +1398,7 @@ public:
 		GameTypes::tic_t attack_period = AGGRESIVE_ENTITY_DEFAULT_ATTACK_PERIOD,
 		GameTypes::tic_t inactive_period = AGGRESIVE_ENTITY_DEFAULT_INACTIVE_PERIOD,
 		EngineTypes::AgressiveEntity::shoots_count_t shoots_count = AGGRESIVE_ENTITY_DEFAULT_SHOOTS_COUNT,
-		float radius = TUREL_DEFAULT_RADIUS,
+		float radius = TURRET_DEFAULT_RADIUS,
 		bool exist = true);
 	void Set(
 		const Vec2F* position,
@@ -1407,12 +1407,12 @@ public:
 		GameTypes::tic_t attack_period = AGGRESIVE_ENTITY_DEFAULT_ATTACK_PERIOD,
 		GameTypes::tic_t inactive_period = AGGRESIVE_ENTITY_DEFAULT_INACTIVE_PERIOD,
 		EngineTypes::AgressiveEntity::shoots_count_t shoots_count = AGGRESIVE_ENTITY_DEFAULT_SHOOTS_COUNT,
-		float radius = TUREL_DEFAULT_RADIUS,
+		float radius = TURRET_DEFAULT_RADIUS,
 		bool exist = true);
 
-	void operator=(Turel entity);
+	void operator=(Turret entity);
 
-	~Turel();
+	~Turret();
 };
 
 class MegaLaser : public AggressiveEntity

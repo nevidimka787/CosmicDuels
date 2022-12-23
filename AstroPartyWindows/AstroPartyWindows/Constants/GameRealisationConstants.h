@@ -14,7 +14,7 @@
 asteroids, bombs, bonuses, bullets,
 knifes, lasers, particles, ships,
 pilots, players, gravity generators,
-turels, mega lasers
+turrets, mega lasers
 */
 #define GAME_ENTITIES_TYPES_COUNT 13
 
@@ -55,14 +55,14 @@ turels, mega lasers
 #define GAME_LASERS_MAX_COUNT		(UINT8_MAX - 1)
 //The maximum possible count of bombs on the map.
 #define GAME_BOMBS_MAX_COUNT		(UINT8_MAX - 1)
-//The maximum possible count of turels on the map.
-#define GAME_TURELS_MAX_COUNT		32
+//The maximum possible count of turrets on the map.
+#define GAME_TURRETS_MAX_COUNT		32
 //The maximum possible count of lasers on the map.
 #define GAME_MEGA_LASERS_MAX_COUNT	32
 //The maximum possible count of asteroids on the map.
 #define GAME_ASTEROIDS_MAX_COUNT	32
-//The maximum possible count of anigilation area generators on the map.
-#define GAME_ANIG_AREAS_GENS_MAX_COUNT	16
+//The maximum possible count of annihilation area generators on the map.
+#define GAME_ANNIH_AREAS_GENS_MAX_COUNT	16
 //The maximum possible count of bonuses on the map.
 #define GAME_BONUSES_MAX_COUNT		32
 //The maximum possible count of bullets on the map.
@@ -118,7 +118,7 @@ turels, mega lasers
 //map id.
 #define MAP_TEST_MAP			0u
 //map id.
-#define MAP_TUREL_ON_CENTER		1u
+#define MAP_TURRET_ON_CENTER	1u
 //map id.
 #define MAP_CYRCLE_ON_CENTER	2u
 //map id.
@@ -338,7 +338,7 @@ turels, mega lasers
 //select map
 #define BUTTON_ID__SELECT_MAP_0	(BUTTON_ID__SELECT_MAP + MAP_TEST_MAP)
 //select map
-#define BUTTON_ID__SELECT_MAP_1	(BUTTON_ID__SELECT_MAP + MAP_TUREL_ON_CENTER)
+#define BUTTON_ID__SELECT_MAP_1	(BUTTON_ID__SELECT_MAP + MAP_TURRET_ON_CENTER)
 //select map
 #define BUTTON_ID__SELECT_MAP_2	(BUTTON_ID__SELECT_MAP + MAP_CYRCLE_ON_CENTER)
 //select map
@@ -395,14 +395,14 @@ turels, mega lasers
 //count of health points of knife created by "long knife" ability
 #define SHIP_SUPER_BONUS__LONG_KNIFE_HEALTH	10u
 
-//Count of tick in that anigilation area will be existing.
-#define SHIP_SUPER_BONUS__ANIGILATION_AREA_EXIST_PERIOD	600u
+//Count of tick in that annihilation area will be existing.
+#define SHIP_SUPER_BONUS__ANNIHILATION_AREA_EXIST_PERIOD	600u
 
-#define SHIP_SUPER_BONUS__ANIGILATORS_IN_LOOP	24
-#define SHIP_SUPER_BONUS__ANIGILATORS_IN_LOOP_DEFAULT_VELOCITY		(BULLET_DEFAULT_VELOCITY * 1.0f)
+#define SHIP_SUPER_BONUS__ANNIHILATORS_IN_LOOP	24
+#define SHIP_SUPER_BONUS__ANNIHILATORS_IN_LOOP_DEFAULT_VELOCITY		(BULLET_DEFAULT_VELOCITY * 1.0f)
 
-#define SHIP_SUPER_BONUS__ANIGILATORS_IN_LASER	25
-#define SHIP_SUPER_BONUS__ANIGILATORS_IN_LASER_DEFAULT_VELOCITY		(BULLET_DEFAULT_VELOCITY * 1.0f)
+#define SHIP_SUPER_BONUS__ANNIHILATORS_IN_LASER	25
+#define SHIP_SUPER_BONUS__ANNIHILATORS_IN_LASER_DEFAULT_VELOCITY		(BULLET_DEFAULT_VELOCITY * 1.0f)
 
 #define SHIP_SUPER_BONUS__LONG_KNIFES_IN_LOOP	10
 

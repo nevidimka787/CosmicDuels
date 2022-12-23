@@ -40,9 +40,9 @@ Linker::Linker(Game* game_object, MenuFunctions* menu_functions_object, OpenGL* 
 
 	open_gl_object->object_p__menu_functions = menu_functions_object;
 
-	open_gl_object->game_p__anig_area_gens = &game_object->anig_area_gens;
-	open_gl_object->game_p__anig_area_gens_array_mtx = &game_object->anig_area_gens_array_mtx;
-	open_gl_object->game_p__anig_area_gens_count = &game_object->anig_area_gens_count;
+	open_gl_object->game_p__annih_area_gens = &game_object->annih_area_gens;
+	open_gl_object->game_p__annih_area_gens_array_mtx = &game_object->annih_area_gens_array_mtx;
+	open_gl_object->game_p__annih_area_gens_count = &game_object->annih_area_gens_count;
 	open_gl_object->game_p__asteroids = &game_object->asteroids;
 	open_gl_object->game_p__asteroids_array_mtx = &game_object->asteroids_array_mtx;
 	open_gl_object->game_p__asteroids_count = &game_object->asteroids_count;
@@ -110,9 +110,9 @@ Linker::Linker(Game* game_object, MenuFunctions* menu_functions_object, OpenGL* 
 	open_gl_object->game_p__play_match = &game_object->play_match;
 	open_gl_object->game_p__play_round = &game_object->play_round;
 	open_gl_object->game_p__spawning_objects_select_menu = &game_object->spawning_objects_select_menu;
-	open_gl_object->game_p__turels = &game_object->turels;
-	open_gl_object->game_p__turels_array_mtx = &game_object->turels_array_mtx;
-	open_gl_object->game_p__turels_count = &game_object->turels_count;
+	open_gl_object->game_p__turrets = &game_object->turrets;
+	open_gl_object->game_p__turrets_array_mtx = &game_object->turrets_array_mtx;
+	open_gl_object->game_p__turrets_count = &game_object->turrets_count;
 
 	//open gl object
 }

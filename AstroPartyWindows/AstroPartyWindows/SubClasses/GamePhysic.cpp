@@ -287,12 +287,12 @@ template void Game::TeleportEntity<DynamicParticle>(Portal* portal, DynamicParti
 template void Game::TeleportEntity<Ship>(Portal* portal, Ship* ship);
 template void Game::TeleportEntity<Pilot>(Portal* portal, Pilot* pilot);
 
-void Game::AnigAreaGenShoot(AnigAreaGen* anig_area_gen)
+void Game::AnnihAreaGenShoot(AnnihAreaGen* annih_area_gen)
 {
-	const ControledEntity* host_p = anig_area_gen->GetHostP();
+	const ControledEntity* host_p = annih_area_gen->GetHostP();
 	if (host_p->GetShootInputValue() && ships_shooting_flags[host_p->GetPlayerNumber()])
 	{
-		AddEntity(anig_area_gen->Shoot());
+		AddEntity(annih_area_gen->Shoot());
 	}
 }
 
@@ -418,23 +418,23 @@ void Game::ShipShoot(Ship* ship)
 		case GAME_OBJECT_TYPE_LOOP_BOMB_KNIFE:
 			bombs_array_mtx.lock();
 			entity_number = ship->GetElemntFromList();
-			angle = (float)(((entity_number - 1u) / 2u) + 0.5f) / (float)SHIP_SUPER_BONUS__ANIGILATORS_IN_LOOP * (float)M_PI * 2.0f;
+			angle = (float)(((entity_number - 1u) / 2u) + 0.5f) / (float)SHIP_SUPER_BONUS__ANNIHILATORS_IN_LOOP * (float)M_PI * 2.0f;
 
 			r_vec = Vec2F(1.0f, 0.0f).RotateClockwise(ship->GetAngle() + angle);
 			AddEntity(Bomb(
-				ship->GetPosition() + r_vec * (ship->radius * 3.0f + SHIP_SUPER_BONUS__ANIGILATORS_IN_LOOP_DEFAULT_VELOCITY),
+				ship->GetPosition() + r_vec * (ship->radius * 3.0f + SHIP_SUPER_BONUS__ANNIHILATORS_IN_LOOP_DEFAULT_VELOCITY),
 				ship->GetVelocity() + r_vec * SHIP_BONUS__LOOP_BULLET_VELOCITY,
 				ship->GetTeamNumber(),
 				ship->GetTeamNumber(),
-				SHIP_SUPER_BONUS__ANIGILATION_AREA_EXIST_PERIOD,
+				SHIP_SUPER_BONUS__ANNIHILATION_AREA_EXIST_PERIOD,
 				0.0f,
 				0.0f,
 				DEFAULT_FORCE_COLLISION_COEFFICIENT,
 				0.0f,
 				BOMB_DEFAULT_RADIUS,
 				BOMB_STATUS_BOOM,
-				SHIP_SUPER_BONUS__ANIGILATION_AREA_EXIST_PERIOD,
-				SHIP_SUPER_BONUS__ANIGILATION_AREA_EXIST_PERIOD));
+				SHIP_SUPER_BONUS__ANNIHILATION_AREA_EXIST_PERIOD,
+				SHIP_SUPER_BONUS__ANNIHILATION_AREA_EXIST_PERIOD));
 
 			entity_number = ship->GetElemntFromList();
 			if (entity_number == 0)
@@ -444,19 +444,19 @@ void Game::ShipShoot(Ship* ship)
 			}
 			r_vec = Vec2F(1.0f, 0.0f).RotateClockwise(ship->GetAngle() - angle);
 			AddEntity(Bomb(
-				ship->GetPosition() + r_vec * (ship->radius * 3.0f + SHIP_SUPER_BONUS__ANIGILATORS_IN_LOOP_DEFAULT_VELOCITY),
+				ship->GetPosition() + r_vec * (ship->radius * 3.0f + SHIP_SUPER_BONUS__ANNIHILATORS_IN_LOOP_DEFAULT_VELOCITY),
 				ship->GetVelocity() + r_vec * SHIP_BONUS__LOOP_BULLET_VELOCITY,
 				ship->GetTeamNumber(),
 				ship->GetTeamNumber(),
-				SHIP_SUPER_BONUS__ANIGILATION_AREA_EXIST_PERIOD,
+				SHIP_SUPER_BONUS__ANNIHILATION_AREA_EXIST_PERIOD,
 				0.0f,
 				0.0f,
 				DEFAULT_FORCE_COLLISION_COEFFICIENT,
 				0.0f,
 				BOMB_DEFAULT_RADIUS,
 				BOMB_STATUS_BOOM,
-				SHIP_SUPER_BONUS__ANIGILATION_AREA_EXIST_PERIOD,
-				SHIP_SUPER_BONUS__ANIGILATION_AREA_EXIST_PERIOD));
+				SHIP_SUPER_BONUS__ANNIHILATION_AREA_EXIST_PERIOD,
+				SHIP_SUPER_BONUS__ANNIHILATION_AREA_EXIST_PERIOD));
 			bombs_array_mtx.unlock();
 			return;
 
@@ -471,84 +471,84 @@ void Game::ShipShoot(Ship* ship)
 
 			{
 
-				Vec2F anigilation_area_position;
+				Vec2F annihilation_area_position;
 				float basic_length = ship->radius * 3.0f + BOMB_DEFAULT_RADIUS;
-#if SHIP_SUPER_BONUS__ANIGILATORS_IN_LASER % 2 == 1
+#if SHIP_SUPER_BONUS__ANNIHILATORS_IN_LASER % 2 == 1
 
-				entity_number = (SHIP_SUPER_BONUS__ANIGILATORS_IN_LASER - entity_number + 1) / 2;//0 -> (SHIP_SUPER_BONUS__ANIGILATORS_IN_LASER - 1)
+				entity_number = (SHIP_SUPER_BONUS__ANNIHILATORS_IN_LASER - entity_number + 1) / 2;//0 -> (SHIP_SUPER_BONUS__ANNIHILATORS_IN_LASER - 1)
 				r_vec = Vec2F(basic_length, 0.0f) - Vec2F(BOMB_DEFAULT_RADIUS * (float)entity_number);
-				anigilation_area_position = ship->GetVelocity() + r_vec.Rotate(ship->GetAngle());
+				annihilation_area_position = ship->GetVelocity() + r_vec.Rotate(ship->GetAngle());
 				AddEntity(Bomb(
-					ship->GetPosition() + ship->GetVelocity() + anigilation_area_position,
-					ship->GetVelocity() + anigilation_area_position / basic_length * SHIP_SUPER_BONUS__ANIGILATORS_IN_LASER_DEFAULT_VELOCITY,
+					ship->GetPosition() + ship->GetVelocity() + annihilation_area_position,
+					ship->GetVelocity() + annihilation_area_position / basic_length * SHIP_SUPER_BONUS__ANNIHILATORS_IN_LASER_DEFAULT_VELOCITY,
 					ship->GetTeamNumber(),
 					ship->GetTeamNumber(),
-					SHIP_SUPER_BONUS__ANIGILATION_AREA_EXIST_PERIOD,
+					SHIP_SUPER_BONUS__ANNIHILATION_AREA_EXIST_PERIOD,
 					0.0f,
 					0.0f,
 					DEFAULT_FORCE_COLLISION_COEFFICIENT,
 					0.0f,
 					BOMB_DEFAULT_RADIUS,
 					BOMB_STATUS_BOOM,
-					SHIP_SUPER_BONUS__ANIGILATION_AREA_EXIST_PERIOD,
-					SHIP_SUPER_BONUS__ANIGILATION_AREA_EXIST_PERIOD));
+					SHIP_SUPER_BONUS__ANNIHILATION_AREA_EXIST_PERIOD,
+					SHIP_SUPER_BONUS__ANNIHILATION_AREA_EXIST_PERIOD));
 
 				if (entity_number != 0)
 				{
 					r_vec.y = -r_vec.y;
-					anigilation_area_position = r_vec.Rotate(ship->GetAngle());
+					annihilation_area_position = r_vec.Rotate(ship->GetAngle());
 
 					AddEntity(Bomb(
-						ship->GetPosition() + ship->GetVelocity() + anigilation_area_position,
-						ship->GetVelocity() + anigilation_area_position / basic_length * SHIP_SUPER_BONUS__ANIGILATORS_IN_LASER_DEFAULT_VELOCITY,
+						ship->GetPosition() + ship->GetVelocity() + annihilation_area_position,
+						ship->GetVelocity() + annihilation_area_position / basic_length * SHIP_SUPER_BONUS__ANNIHILATORS_IN_LASER_DEFAULT_VELOCITY,
 						ship->GetTeamNumber(),
 						ship->GetTeamNumber(),
-						SHIP_SUPER_BONUS__ANIGILATION_AREA_EXIST_PERIOD,
+						SHIP_SUPER_BONUS__ANNIHILATION_AREA_EXIST_PERIOD,
 						0.0f,
 						0.0f,
 						DEFAULT_FORCE_COLLISION_COEFFICIENT,
 						0.0f,
 						BOMB_DEFAULT_RADIUS,
 						BOMB_STATUS_BOOM,
-						SHIP_SUPER_BONUS__ANIGILATION_AREA_EXIST_PERIOD,
-						SHIP_SUPER_BONUS__ANIGILATION_AREA_EXIST_PERIOD));
+						SHIP_SUPER_BONUS__ANNIHILATION_AREA_EXIST_PERIOD,
+						SHIP_SUPER_BONUS__ANNIHILATION_AREA_EXIST_PERIOD));
 				}
 #else
-				entity_number = (SHIP_SUPER_BONUS__ANIGILATORS_IN_LASER - entity_number) / 2 + 1;//0 -> (SHIP_SUPER_BONUS__ANIGILATORS_IN_LASER - 1)
+				entity_number = (SHIP_SUPER_BONUS__ANNIHILATORS_IN_LASER - entity_number) / 2 + 1;//0 -> (SHIP_SUPER_BONUS__ANNIHILATORS_IN_LASER - 1)
 
 				r_vec = Vec2F(0.0f, ship->radius * 3.0f + BOMB_DEFAULT_RADIUS) - Vec2F(BOMB_DEFAULT_RADIUS * (float)entity_number);
-				anigilation_area_position = ship->GetVelocity() + r_vec.Rotate(ship->GetAngle());
+				annihilation_area_position = ship->GetVelocity() + r_vec.Rotate(ship->GetAngle());
 				AddEntity(Bomb(
-					ship->GetPosition() + ship->GetVelocity() + anigilation_area_position,
-					ship->GetVelocity() + anigilation_area_position / basic_length * SHIP_SUPER_BONUS__ANIGILATORS_IN_LASER_DEFAULT_VELOCITY,
+					ship->GetPosition() + ship->GetVelocity() + annihilation_area_position,
+					ship->GetVelocity() + annihilation_area_position / basic_length * SHIP_SUPER_BONUS__ANNIHILATORS_IN_LASER_DEFAULT_VELOCITY,
 					ship->GetTeamNumber(),
 					ship->GetTeamNumber(),
-					SHIP_SUPER_BONUS__ANIGILATION_AREA_EXIST_PERIOD,
+					SHIP_SUPER_BONUS__ANNIHILATION_AREA_EXIST_PERIOD,
 					0.0f,
 					0.0f,
 					DEFAULT_FORCE_COLLISION_COEFFICIENT,
 					0.0f,
 					BOMB_DEFAULT_RADIUS,
 					BOMB_STATUS_BOOM,
-					SHIP_SUPER_BONUS__ANIGILATION_AREA_EXIST_PERIOD,
-					SHIP_SUPER_BONUS__ANIGILATION_AREA_EXIST_PERIOD));
+					SHIP_SUPER_BONUS__ANNIHILATION_AREA_EXIST_PERIOD,
+					SHIP_SUPER_BONUS__ANNIHILATION_AREA_EXIST_PERIOD));
 
 				r_vec.y = -r_vec.y;
-				anigilation_area_position = ship->GetVelocity() + r_vec.Rotate(ship->GetAngle());
+				annihilation_area_position = ship->GetVelocity() + r_vec.Rotate(ship->GetAngle());
 				AddEntity(Bomb(
-					ship->GetPosition() + ship->GetVelocity() + anigilation_area_position,
-					ship->GetVelocity() + anigilation_area_position / basic_length * SHIP_SUPER_BONUS__ANIGILATORS_IN_LASER_DEFAULT_VELOCITY,
+					ship->GetPosition() + ship->GetVelocity() + annihilation_area_position,
+					ship->GetVelocity() + annihilation_area_position / basic_length * SHIP_SUPER_BONUS__ANNIHILATORS_IN_LASER_DEFAULT_VELOCITY,
 					ship->GetTeamNumber(),
 					ship->GetTeamNumber(),
-					SHIP_SUPER_BONUS__ANIGILATION_AREA_EXIST_PERIOD,
+					SHIP_SUPER_BONUS__ANNIHILATION_AREA_EXIST_PERIOD,
 					0.0f,
 					0.0f,
 					DEFAULT_FORCE_COLLISION_COEFFICIENT,
 					0.0f,
 					BOMB_DEFAULT_RADIUS,
 					BOMB_STATUS_BOOM,
-					SHIP_SUPER_BONUS__ANIGILATION_AREA_EXIST_PERIOD,
-					SHIP_SUPER_BONUS__ANIGILATION_AREA_EXIST_PERIOD));
+					SHIP_SUPER_BONUS__ANNIHILATION_AREA_EXIST_PERIOD,
+					SHIP_SUPER_BONUS__ANNIHILATION_AREA_EXIST_PERIOD));
 #endif
 				ship->GetElemntFromList();
 			}
@@ -693,10 +693,10 @@ void Game::ShipShoot(Ship* ship)
 
 void Game::ShipShoot_LaserLoopBombKnife(Ship* ship)
 {
-	anig_area_gens_array_mtx.lock();
-	AddEntity(AnigAreaGen(ship, Vec2F(0.0f, 1.0f), SHIP_BUFF_SHIELD));
-	AddEntity(AnigAreaGen(ship, Vec2F(0.0f, -1.0f), SHIP_BUFF_SHIELD));
-	anig_area_gens_array_mtx.unlock();
+	annih_area_gens_array_mtx.lock();
+	AddEntity(AnnihAreaGen(ship, Vec2F(0.0f, 1.0f), SHIP_BUFF_SHIELD));
+	AddEntity(AnnihAreaGen(ship, Vec2F(0.0f, -1.0f), SHIP_BUFF_SHIELD));
+	annih_area_gens_array_mtx.unlock();
 	ships_can_shoot_flags[ship->GetPlayerNumber()] += GAME_ADD_DELLAY_BONUS_USE + GAME_ADD_DELLAY_COMBO_USE * 3;
 }
 
@@ -712,19 +712,19 @@ void Game::ShipShoot_LaserLoopBomb(Ship* ship)
 
 void Game::ShipShoot_LaserLoopKnife(Ship* ship)
 {
-	ship->CreatingEntities(SHIP_SUPER_BONUS__ANIGILATORS_IN_LOOP, GAME_OBJECT_TYPE_LOOP_LASER_KNIFE);
+	ship->CreatingEntities(SHIP_SUPER_BONUS__ANNIHILATORS_IN_LOOP, GAME_OBJECT_TYPE_LOOP_LASER_KNIFE);
 	ships_can_shoot_flags[ship->GetPlayerNumber()] += GAME_ADD_DELLAY_BONUS_USE + GAME_ADD_DELLAY_COMBO_USE * 2;
 }
 
 void Game::ShipShoot_LaserBombKnife(Ship* ship)
 {
-	ship->CreatingEntities(SHIP_SUPER_BONUS__ANIGILATORS_IN_LASER, GAME_OBJECT_TYPE_LASER_BOMB_KNIFE);
+	ship->CreatingEntities(SHIP_SUPER_BONUS__ANNIHILATORS_IN_LASER, GAME_OBJECT_TYPE_LASER_BOMB_KNIFE);
 	ships_can_shoot_flags[ship->GetPlayerNumber()] += GAME_ADD_DELLAY_BONUS_USE + GAME_ADD_DELLAY_COMBO_USE * 2;
 }
 
 void Game::ShipShoot_LoopBombKnife(Ship* ship)
 {
-	ship->CreatingEntities(SHIP_SUPER_BONUS__ANIGILATORS_IN_LOOP, GAME_OBJECT_TYPE_LOOP_BOMB_KNIFE);
+	ship->CreatingEntities(SHIP_SUPER_BONUS__ANNIHILATORS_IN_LOOP, GAME_OBJECT_TYPE_LOOP_BOMB_KNIFE);
 	ships_can_shoot_flags[ship->GetPlayerNumber()] += GAME_ADD_DELLAY_BONUS_USE + GAME_ADD_DELLAY_COMBO_USE * 2;
 }
 
@@ -773,15 +773,15 @@ void Game::ShipShoot_BombKnife(Ship* ship)
 			ship->GetVelocity() / 1.5f,
 			ship->GetTeamNumber(),
 			ship->GetTeamNumber(),
-			SHIP_SUPER_BONUS__ANIGILATION_AREA_EXIST_PERIOD,
+			SHIP_SUPER_BONUS__ANNIHILATION_AREA_EXIST_PERIOD,
 			0.0f,
 			0.0f,
 			DEFAULT_FORCE_COLLISION_COEFFICIENT,
 			0.0f,
 			BOMB_DEFAULT_RADIUS,
 			BOMB_STATUS_BOOM,
-			SHIP_SUPER_BONUS__ANIGILATION_AREA_EXIST_PERIOD,
-			SHIP_SUPER_BONUS__ANIGILATION_AREA_EXIST_PERIOD));
+			SHIP_SUPER_BONUS__ANNIHILATION_AREA_EXIST_PERIOD,
+			SHIP_SUPER_BONUS__ANNIHILATION_AREA_EXIST_PERIOD));
 	bombs_array_mtx.unlock();
 	ships_can_shoot_flags[ship->GetPlayerNumber()] += GAME_ADD_DELLAY_BONUS_USE + GAME_ADD_DELLAY_COMBO_USE;
 }
@@ -843,7 +843,7 @@ void Game::CreateBomb(Laser* creator, Asteroid* producer)
 		producer->GetVelocity(),
 		creator->GetPlayerMasterTeamNumber(),
 		creator->GetPlayerMasterTeamNumber(),
-		SHIP_SUPER_BONUS__ANIGILATION_AREA_EXIST_PERIOD,
+		SHIP_SUPER_BONUS__ANNIHILATION_AREA_EXIST_PERIOD,
 		0.0f,
 		0.0f,
 		DEFAULT_FORCE_COLLISION_COEFFICIENT,
@@ -888,20 +888,20 @@ void Game::CreateLoop(Laser* creator, Asteroid* producer)
 	}
 }
 
-void Game::UpdateAnigAreaGensPhase2()
+void Game::UpdateAnnihAreaGensPhase2()
 {
-	AnigAreaGen* temp__anig_area_gen_p = anig_area_gens;
+	AnnihAreaGen* temp__annih_area_gen_p = annih_area_gens;
 	ships_array_mtx.lock();
-	anig_area_gens_array_mtx.lock();
-	for (GameTypes::entities_count_t found_anig_area_gens = 0; found_anig_area_gens < anig_area_gens_count; temp__anig_area_gen_p++)
+	annih_area_gens_array_mtx.lock();
+	for (GameTypes::entities_count_t found_annih_area_gens = 0; found_annih_area_gens < annih_area_gens_count; temp__annih_area_gen_p++)
 	{
-		if (temp__anig_area_gen_p->exist)
+		if (temp__annih_area_gen_p->exist)
 		{
-			temp__anig_area_gen_p->Update();
-			found_anig_area_gens++;
+			temp__annih_area_gen_p->Update();
+			found_annih_area_gens++;
 		}
 	}
-	anig_area_gens_array_mtx.unlock();
+	annih_area_gens_array_mtx.unlock();
 	ships_array_mtx.unlock();
 }
 
@@ -1144,19 +1144,19 @@ void Game::UpdateShipsPhase2()
 	ships_array_mtx.unlock();
 }
 
-void Game::UpdateTurelsPhase2()
+void Game::UpdateTurretsPhase2()
 {
-	Turel* temp__turel_p = turels;
-	turels_array_mtx.lock();
-	for (GameTypes::map_elements_count_t turel = 0, found_turels = 0; found_turels < turels_count; temp__turel_p++)
+	Turret* temp__turret_p = turrets;
+	turrets_array_mtx.lock();
+	for (GameTypes::map_elements_count_t found_turrets = 0; found_turrets < turrets_count; temp__turret_p++)
 	{
-		if (temp__turel_p->exist)
+		if (temp__turret_p->exist)
 		{
-			temp__turel_p->Update();
-			found_turels++;
+			temp__turret_p->Update();
+			found_turrets++;
 		}
 	}
-	turels_array_mtx.unlock();
+	turrets_array_mtx.unlock();
 }
 
 void Game::UpdateMapPhase2()
@@ -1190,20 +1190,20 @@ void Game::UpdateMapPhase2()
 	map_data_mtx.unlock();
 }
 
-void Game::AnigAreaGensShoot()
+void Game::AnnihAreaGensShoot()
 {
-	anig_area_gens_array_mtx.lock();
-	AnigAreaGen* temp__anig_area_gen_p = anig_area_gens;
+	annih_area_gens_array_mtx.lock();
+	AnnihAreaGen* temp__annih_area_gen_p = annih_area_gens;
 
-	for (GameTypes::entities_count_t found_anig_area_gens = 0; found_anig_area_gens < anig_area_gens_count; temp__anig_area_gen_p++)
+	for (GameTypes::entities_count_t found_annih_area_gens = 0; found_annih_area_gens < annih_area_gens_count; temp__annih_area_gen_p++)
 	{
-		if (temp__anig_area_gen_p->exist)
+		if (temp__annih_area_gen_p->exist)
 		{
-			AnigAreaGenShoot(temp__anig_area_gen_p);
-			found_anig_area_gens++;
+			AnnihAreaGenShoot(temp__annih_area_gen_p);
+			found_annih_area_gens++;
 		}
 	}
-	anig_area_gens_array_mtx.unlock();
+	annih_area_gens_array_mtx.unlock();
 }
 
 void Game::BombsChainReaction()
@@ -1368,7 +1368,7 @@ void Game::BombsCollisionsWithBullets()
 	bombs_array_mtx.unlock();
 }
 
-void Game::BombsSpawnedByBulletsAnigilation()
+void Game::BombsSpawnedByBulletsAnnihilation()
 {
 	GameTypes::entities_count_t found_second_bullets;
 	Bullet* temp__bullet1_p = bullets;
@@ -1461,11 +1461,11 @@ void Game::BombsDestroyKnifes()
 	bombs_array_mtx.unlock();
 }
 
-void Game::BombsDestroyTurels()
+void Game::BombsDestroyTurrets()
 {
-	GameTypes::entities_count_t turel, found_turels;
+	GameTypes::entities_count_t turret, found_turrets;
 	Bomb* temp__bomb_p;
-	Turel* temp__turel_p;
+	Turret* temp__turret_p;
 	bombs_array_mtx.lock();
 	for (GameTypes::entities_count_t bomb = 0, found_bombs = 0; found_bombs < bombs_count; bomb++)
 	{
@@ -1474,22 +1474,22 @@ void Game::BombsDestroyTurels()
 		{
 			if (temp__bomb_p->IsBoom())
 			{
-				turels_array_mtx.lock();
-				for (turel = 0, found_turels = 0; found_turels < turels_count; turel++)
+				turrets_array_mtx.lock();
+				for (turret = 0, found_turrets = 0; found_turrets < turrets_count; turret++)
 				{
-					temp__turel_p = &turels[turel];
-					if (temp__turel_p->exist)
+					temp__turret_p = &turrets[turret];
+					if (temp__turret_p->exist)
 					{
-						if (temp__turel_p->Entity::IsCollision(temp__bomb_p))
+						if (temp__turret_p->Entity::IsCollision(temp__bomb_p))
 						{
-							DestroyEntity(temp__bomb_p, temp__turel_p);
-							goto end_of_turel_cycle;
+							DestroyEntity(temp__bomb_p, temp__turret_p);
+							goto end_of_turret_cycle;
 						}
-						found_turels++;
+						found_turrets++;
 					}
-				end_of_turel_cycle:;
+				end_of_turret_cycle:;
 				}
-				turels_array_mtx.unlock();
+				turrets_array_mtx.unlock();
 			}
 			found_bombs++;
 		}
@@ -1678,11 +1678,11 @@ void Game::KnifesDestroyMap()
 	knifes_array_mtx.unlock();
 }
 
-void Game::KnifesDestroyTurels()
+void Game::KnifesDestroyTurrets()
 {
-	GameTypes::map_elements_count_t turel, found_turels;
+	GameTypes::map_elements_count_t turret, found_turrets;
 	Knife* temp__knife_p;
-	Turel* temp__turel_p;
+	Turret* temp__turret_p;
 	Segment temp__segment;
 
 	knifes_array_mtx.lock();
@@ -1691,24 +1691,24 @@ void Game::KnifesDestroyTurels()
 		temp__knife_p = &knifes[knife];
 		if (temp__knife_p->exist)
 		{
-			turels_array_mtx.lock();
-			for (turel = 0, found_turels = 0; found_turels < turels_count; turel++)
+			turrets_array_mtx.lock();
+			for (turret = 0, found_turrets = 0; found_turrets < turrets_count; turret++)
 			{
-				temp__turel_p = &turels[turel];
-				if (temp__turel_p->exist)
+				temp__turret_p = &turrets[turret];
+				if (temp__turret_p->exist)
 				{
 					temp__segment = temp__knife_p->GetSegment();
-					if (temp__turel_p->IsCollision(&temp__segment))
+					if (temp__turret_p->IsCollision(&temp__segment))
 					{
 						RemoveEntity(temp__knife_p);
-						RemoveEntity(temp__turel_p);
-						turels_array_mtx.unlock();
+						RemoveEntity(temp__turret_p);
+						turrets_array_mtx.unlock();
 						goto end_of_knife_cycle;
 					}
-					found_turels++;
+					found_turrets++;
 				}
 			}
-			turels_array_mtx.unlock();
+			turrets_array_mtx.unlock();
 			found_knifes++;
 		}
 	end_of_knife_cycle:;
@@ -1934,11 +1934,11 @@ void Game::LasersCollisionWthMap()
 	knifes_array_mtx.unlock();
 }
 
-void Game::LasersDestroyTurels()
+void Game::LasersDestroyTurrets()
 {
-	GameTypes::entities_count_t turel, found_turels;
+	GameTypes::entities_count_t turret, found_turrets;
 	Laser* temp__laser_p;
-	Turel* temp__turel_p;
+	Turret* temp__turret_p;
 
 	lasers_array_mtx.lock();
 	for (GameTypes::entities_count_t laser = 0, found_lasers = 0; found_lasers < lasers_count; laser++)
@@ -1946,23 +1946,22 @@ void Game::LasersDestroyTurels()
 		temp__laser_p = &lasers[laser];
 		if (temp__laser_p->exist)
 		{
-			turels_array_mtx.lock();
-			for (turel = 0, found_turels = 0; found_turels < turels_count; turel++)
+			turrets_array_mtx.lock();
+			for (turret = 0, found_turrets = 0; found_turrets < turrets_count; turret++)
 			{
-				temp__turel_p = &turels[turel];
-				if (temp__turel_p->exist)
+				temp__turret_p = &turrets[turret];
+				if (temp__turret_p->exist)
 				{
-					if (temp__turel_p->IsCollision(temp__laser_p))
+					if (temp__turret_p->IsCollision(temp__laser_p))
 					{
-						std::cout << "Remove turel." << std::endl;
-						RemoveEntity(temp__turel_p);
-						goto end_of_turel_cycle;
+						RemoveEntity(temp__turret_p);
+						goto end_of_turret_cycle;
 					}
-					found_turels++;
+					found_turrets++;
 				}
-			end_of_turel_cycle:;
+			end_of_turret_cycle:;
 			}
-			turels_array_mtx.unlock();
+			turrets_array_mtx.unlock();
 			found_lasers++;
 		}
 	}
@@ -2170,10 +2169,10 @@ void Game::MegaLasersDestroyMap()
 
 }
 
-void Game::MegaLasersDestroyTurels()
+void Game::MegaLasersDestroyTurrets()
 {
-	GameTypes::entities_count_t turel, found_turels;
-	Turel* temp__turel_p;
+	GameTypes::entities_count_t turret, found_turrets;
+	Turret* temp__turret_p;
 	MegaLaser* temp__mega_laser_p;
 
 	mega_lasers_array_mtx.lock();
@@ -2184,22 +2183,22 @@ void Game::MegaLasersDestroyTurels()
 		{
 			if (temp__mega_laser_p->IsShooting(global_timer))
 			{
-				turels_array_mtx.lock();
-				for (turel = 0, found_turels = 0; found_turels < turels_count; turel++)
+				turrets_array_mtx.lock();
+				for (turret = 0, found_turrets = 0; found_turrets < turrets_count; turret++)
 				{
-					temp__turel_p = &turels[turel];
-					if (temp__turel_p->exist)
+					temp__turret_p = &turrets[turret];
+					if (temp__turret_p->exist)
 					{
-						if (temp__turel_p->IsCollision(temp__mega_laser_p))
+						if (temp__turret_p->IsCollision(temp__mega_laser_p))
 						{
-							RemoveEntity(temp__turel_p);
-							goto end_of_turel_cycle;
+							RemoveEntity(temp__turret_p);
+							goto end_of_turret_cycle;
 						}
-						found_turels++;
+						found_turrets++;
 					}
-				end_of_turel_cycle:;
+				end_of_turret_cycle:;
 				}
-				turels_array_mtx.unlock();
+				turrets_array_mtx.unlock();
 			}
 			found_mega_lasers++;
 		}
@@ -2875,7 +2874,7 @@ void Game::ShipsShoot()
 	}
 	ships_array_mtx.unlock();
 
-	AnigAreaGensShoot();
+	AnnihAreaGensShoot();
 	ClearShipsShootingFlags();
 }
 
@@ -2943,7 +2942,7 @@ void Game::ShipsDestroedByBombsOrActivateBombs()
 				{
 					if (temp__bomb_p->IsBoom() && temp__ship_p->IsCollision(temp__bomb_p))
 					{
-						anig_area_gens_array_mtx.lock();
+						annih_area_gens_array_mtx.lock();
 						bonuses_array_mtx.lock();
 						dynamic_particles_array_mtx.lock();
 						log_data_mtx.lock();
@@ -2952,7 +2951,7 @@ void Game::ShipsDestroedByBombsOrActivateBombs()
 						bonuses_array_mtx.unlock();
 						dynamic_particles_array_mtx.unlock();
 						pilots_array_mtx.unlock();
-						anig_area_gens_array_mtx.unlock();
+						annih_area_gens_array_mtx.unlock();
 						goto end_of_ship_cycle;
 					}
 					else if (!temp__bomb_p->IsActive() && !temp__bomb_p->IsCreatedByTeam(temp__ship_p) && temp__ship_p->GetDistance(temp__bomb_p) < temp__bomb_p->radius * BOMB_ACTIVATION_RADIUS_COEF)
@@ -2983,7 +2982,7 @@ void Game::ShipsDestroedByBullets()
 		if (temp__ship_p->exist)
 		{
 			pilots_array_mtx.lock();
-			anig_area_gens_array_mtx.lock();
+			annih_area_gens_array_mtx.lock();
 			bullets_array_mtx.lock();
 			for (bullet = 0, found_bullets = 0; found_bullets < bullets_count; bullet++)
 			{
@@ -3033,7 +3032,7 @@ void Game::ShipsDestroedByBullets()
 			found_ships++;
 		end_of_ship_cycle:
 			bullets_array_mtx.unlock();
-			anig_area_gens_array_mtx.unlock();
+			annih_area_gens_array_mtx.unlock();
 			pilots_array_mtx.unlock();
 		}
 	}
@@ -3054,7 +3053,7 @@ void Game::ShipsDestroedByKnifes()
 		if (temp__ship_p->exist)
 		{
 			pilots_array_mtx.lock();
-			anig_area_gens_array_mtx.lock();
+			annih_area_gens_array_mtx.lock();
 			knifes_array_mtx.lock();
 			for (knife = 0, found_knifes = 0; found_knifes < knifes_count; knife++)
 			{
@@ -3076,7 +3075,7 @@ void Game::ShipsDestroedByKnifes()
 						dynamic_particles_array_mtx.unlock();
 						bonuses_array_mtx.unlock();
 						knifes_array_mtx.unlock();
-						anig_area_gens_array_mtx.unlock();
+						annih_area_gens_array_mtx.unlock();
 						pilots_array_mtx.unlock();
 						goto end_of_ship_cycle;
 					}
@@ -3084,7 +3083,7 @@ void Game::ShipsDestroedByKnifes()
 				}
 			}
 			knifes_array_mtx.unlock();
-			anig_area_gens_array_mtx.unlock();
+			annih_area_gens_array_mtx.unlock();
 			pilots_array_mtx.unlock();
 			found_ships++;
 		}
@@ -3106,7 +3105,7 @@ void Game::ShipsDestroedByLasers()
 		if (temp__ship_p->exist)
 		{
 			pilots_array_mtx.lock();
-			anig_area_gens_array_mtx.lock();
+			annih_area_gens_array_mtx.lock();
 			lasers_array_mtx.lock();
 			for (laser = 0, found_lasers = 0; found_lasers < lasers_count; laser++)
 			{
@@ -3126,7 +3125,7 @@ void Game::ShipsDestroedByLasers()
 						dynamic_particles_array_mtx.unlock();
 						bonuses_array_mtx.unlock();
 						lasers_array_mtx.unlock();
-						anig_area_gens_array_mtx.unlock();
+						annih_area_gens_array_mtx.unlock();
 						pilots_array_mtx.unlock();
 						goto end_of_ship_cycle;
 					}
@@ -3134,7 +3133,7 @@ void Game::ShipsDestroedByLasers()
 				}
 			}
 			lasers_array_mtx.unlock();
-			anig_area_gens_array_mtx.unlock();
+			annih_area_gens_array_mtx.unlock();
 			pilots_array_mtx.unlock();
 			found_ships++;
 		}
@@ -3155,7 +3154,7 @@ void Game::ShipsDestroedByMegaLasers()
 		temp__ship_p = &ships[ship];
 		if (temp__ship_p->exist)
 		{
-			anig_area_gens_array_mtx.lock();
+			annih_area_gens_array_mtx.lock();
 			mega_lasers_array_mtx.lock();
 			for (mega_laser = 0, found_mega_lasers = 0; found_mega_lasers < mega_lasers_count; mega_laser++)
 			{
@@ -3182,30 +3181,30 @@ void Game::ShipsDestroedByMegaLasers()
 			found_ships++;
 		end_of_ship_cycle:
 			mega_lasers_array_mtx.unlock();
-			anig_area_gens_array_mtx.unlock();
+			annih_area_gens_array_mtx.unlock();
 		}
 	}
 	ships_array_mtx.unlock();
 }
 
-void Game::TurelsShoot()
+void Game::TurretsShoot()
 {
-	Turel* temp__turel_p;
+	Turret* temp__turret_p;
 
-	turels_array_mtx.lock();
-	for (GameTypes::entities_count_t turel = 0, found_turels = 0; found_turels < turels_count; turel++)
+	turrets_array_mtx.lock();
+	for (GameTypes::entities_count_t turret = 0, found_turrets = 0; found_turrets < turrets_count; turret++)
 	{
-		temp__turel_p = &turels[turel];
-		if (temp__turel_p->exist)
+		temp__turret_p = &turrets[turret];
+		if (temp__turret_p->exist)
 		{
-			if (temp__turel_p->CanShoot(global_timer))
+			if (temp__turret_p->CanShoot(global_timer))
 			{
 				bullets_array_mtx.lock();
-				AddEntity(temp__turel_p->Shoot());
+				AddEntity(temp__turret_p->Shoot());
 				bullets_array_mtx.unlock();
 			}
-			found_turels++;
+			found_turrets++;
 		}
 	}
-	turels_array_mtx.unlock();
+	turrets_array_mtx.unlock();
 }
