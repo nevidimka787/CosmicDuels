@@ -162,6 +162,18 @@ void Game::DynamicEntitiesCollisions(Map::MapData* map, Bomb* bombs_array_p, Gam
 	}
 }
 
+void Game::DynamicEntitiesCollisions(Map::MapData* map, DynamicParticle* dynamic_particles_array_p, GameTypes::entities_count_t entities_count)
+{
+	for (GameTypes::entities_count_t found = 0; found < entities_count; dynamic_particles_array_p++)
+	{
+		if (dynamic_particles_array_p->exist)
+		{
+			dynamic_particles_array_p->Collision(map);
+			found++;
+		}
+	}
+}
+
 template<typename EntityType>
 void Game::DynamicEntitiesAddForce(Vec2F force, EntityType* entities, GameTypes::entities_count_t entities_count)
 {
@@ -2216,7 +2228,7 @@ void Game::PortalsCreateParticles()
 		if (temp__portal_p->exist)
 		{
 			particles_array_mtx.lock();
-			AddEntity(temp__portal_p->CreateParticlesTP(global_timer, BULLET_DEFAULT_RADIUS * 2.0f));
+			AddEntity(temp__portal_p->CreateParticlesTP(global_timer, PORTAL_DEFAULT_RADIUS * 2.0f));
 			particles_array_mtx.unlock();
 			found_portals++;
 		}

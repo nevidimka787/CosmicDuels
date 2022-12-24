@@ -499,6 +499,12 @@ public:
 		Map::MapData* map,
 		Bomb* entities,
 		GameTypes::entities_count_t entities_count);
+
+	//The function calculates forces of collisions between entities in the array and elements of the map.
+	void DynamicEntitiesCollisions(
+		Map::MapData* map,
+		DynamicParticle* entities,
+		GameTypes::entities_count_t entities_count);
 	
 	//The function adds the specified force to all entities in the array.
 	//Use temp_p1 temp_p2

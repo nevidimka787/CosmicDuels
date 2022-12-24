@@ -32,6 +32,7 @@ vec3 pos_neg_alpha;
 #define SHIELD		0x0F00
 
 vec4 DrawBullets(vec2 _pixel_position, int _inventory, int _bullets_count);
+vec4 ColorSpread(vec4 color, float dist);
 
 void main()
 {
@@ -104,7 +105,7 @@ void main()
 vec4 DrawBullets(vec2 _pixel_position, int _inventory, int _bullets_count)
 {
 #define MAX_RADIUS		1.0f
-#define MIN_RADIUS		0.85f
+#define MIN_RADIUS		0.80f
 #define DELTA_RADIUS	(MAX_RADIUS - MIN_RADIUS)
 #define ORBIT_RADIUS	(MIN_RADIUS + DELTA_RADIUS / 2.0f)
 
@@ -142,13 +143,16 @@ vec4 DrawBullets(vec2 _pixel_position, int _inventory, int _bullets_count)
 			float angle = radians(float(vertex) / float(bullets_count) * 360.0f);
 			vec2 r_vec = vec2(-sin(angle), cos(angle)) * ORBIT_RADIUS;
 
-			if(length(r_vec - _pixel_position) < DELTA_RADIUS / 2.0f)
+			float dist = length(r_vec - _pixel_position);
+
+			if(dist < DELTA_RADIUS / 2.0f)
 			{
+				dist /= DELTA_RADIUS / 2.0f;
 				if(_bullets_count < magazine_size)
 				{
-					return BULLET_COLOR;
+					return ColorSpread(BULLET_COLOR, dist);
 				}
-				return FULL_BULLETS_COLOR;
+				return ColorSpread(FULL_BULLETS_COLOR, dist);
 			}
 		}
 
@@ -161,13 +165,16 @@ vec4 DrawBullets(vec2 _pixel_position, int _inventory, int _bullets_count)
 		float angle = radians(float(vertex) / float(bullets_on_orbit) * 360.0f);
 		vec2 r_vec = vec2(-sin(angle), cos(angle)) * ORBIT_RADIUS;
 
-		if(length(r_vec - _pixel_position) < DELTA_RADIUS / 2.0f)
+		float dist = length(r_vec - _pixel_position);
+
+		if(dist < DELTA_RADIUS / 2.0f)
 		{
+			dist /= DELTA_RADIUS / 2.0f;
 			if(has_loop == true)
 			{
 				if(vertex <= 0)
 				{
-					return LOOP_COLOR;
+					return ColorSpread(LOOP_COLOR, dist);
 				}
 				vertex--;
 			}
@@ -175,7 +182,7 @@ vec4 DrawBullets(vec2 _pixel_position, int _inventory, int _bullets_count)
 			{
 				if(vertex <= 0)
 				{
-					return LASER_COLOR;
+					return ColorSpread(LASER_COLOR, dist);
 				}
 				vertex--;
 			}
@@ -183,7 +190,7 @@ vec4 DrawBullets(vec2 _pixel_position, int _inventory, int _bullets_count)
 			{
 				if(vertex <= 0)
 				{
-					return BOMB_COLOR;
+					return vec4(mix(vec3(1.0f, 0.7f, 0.7f), BOMB_COLOR.xyz, 0.5f + dist / 2.0f), mix(BOMB_COLOR.w, 0.0f, dist * dist));
 				}
 				vertex--;
 			}
@@ -191,7 +198,7 @@ vec4 DrawBullets(vec2 _pixel_position, int _inventory, int _bullets_count)
 			{
 				if(vertex <= 0)
 				{
-					return KNIFE_COLOR;
+					return ColorSpread(KNIFE_COLOR, dist);
 				}
 			}
 
@@ -200,4 +207,9 @@ vec4 DrawBullets(vec2 _pixel_position, int _inventory, int _bullets_count)
 	}
 
 	return vec4(-1.0f);
+}
+
+vec4 ColorSpread(vec4 color, float dist)
+{
+	return vec4(mix(vec3(1.0f), color.xyz, 0.5f + dist / 2.0f), mix(color.w, 0.0f, dist * dist));
 }

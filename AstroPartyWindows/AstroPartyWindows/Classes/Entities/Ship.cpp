@@ -263,7 +263,7 @@ DynamicParticle Ship::CreateEnginExaust(GameTypes::tic_t current_tic)
 	return DynamicParticle(
 		current_tic,
 		position,
-		velocity - direction * 0.001f,
+		velocity - direction * 0.01f,
 		radius,
 		angle,
 		0.0f,

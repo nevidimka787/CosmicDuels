@@ -245,6 +245,12 @@ void Game::PhysicThread0()
 		map_data_mtx.unlock();
 		bombs_array_mtx.unlock();
 	}
+
+	dynamic_particles_array_mtx.lock();
+	map_data_mtx.lock();
+	DynamicEntitiesCollisions(&map, dynamic_particles, dynamic_particles_count);
+	map_data_mtx.unlock();
+	dynamic_particles_array_mtx.unlock();
 	
 	UpdateDecelerAreasPhase2();
 	UpdateAnnihAreaGensPhase2();

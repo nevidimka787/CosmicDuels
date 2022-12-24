@@ -33,6 +33,9 @@ bool PositionInCyrcle(vec2 _position, float _radius);
 bool PositionInQuare(vec2 _position, float _quare_side);
 bool PositionInTriangle(vec2 _position, float _triangle_side, float _triangle_angle);
 
+float ElipsLength(vec2 pos1, vec2 pos2, vec2 scale);
+vec3 ColorOfTemperature(float _temperature);
+
 #define NULL					0
 #define BACKGROUND				1
 #define EXAUST_ENGINE			2
@@ -130,18 +133,13 @@ void Background()
 			if(radius < 100.0f)
 			{
 				frag_color = vec4(
-					max(min(3.0f * (1.0f - abs((_temp * 2.0f - 1.0f) * 1.5f + 2.0f / 3.0f)), 1.0f), 0.0f),
-					max(min(3.0f * (1.0f - abs((_temp * 2.0f - 1.0f) * 1.5f)), 1.0f), 0.0f),
-					max(min(3.0f * (1.0f - abs((_temp * 2.0f - 1.0f) * 1.5f - 2.0f / 3.0f)), 1.0f), 0.0f),
+					ColorOfTemperature(_temp),
 					(1.0f - angle) * STAR_ALPHA);
 				return;
 			}
 			frag_color = vec4(
-				vec3(
-					max(min(3.0f * (1.0f - abs((_temp * 2.0f - 1.0f) * 1.5f + 2.0f / 3.0f)), 1.0f), 0.0f),
-					max(min(3.0f * (1.0f - abs((_temp * 2.0f - 1.0f) * 1.5f)), 1.0f), 0.0f),
-					max(min(3.0f * (1.0f - abs((_temp * 2.0f - 1.0f) * 1.5f - 2.0f / 3.0f)), 1.0f), 0.0f)
-					) * STAR_ALPHA + color * (1.0f - STAR_ALPHA), 1.0f - angle);
+				ColorOfTemperature(_temp)
+				* STAR_ALPHA + color * (1.0f - STAR_ALPHA), 1.0f - angle);
 			return;
 		}
 	}
@@ -189,20 +187,25 @@ void ExaustEngine()
 #define POS3 (vec2(0.0f,		0.21f) * 2.0f - 1.0f)
 #define POS4 (vec2(2.0f / 3.0f, 0.26f) * 2.0f - 1.0f)
 #define POS5 (vec2(1.0f / 3.0f, 0.16f) * 2.0f - 1.0f)
-#define RADIUS	0.1f
+#define RADIUS	(0.4f - animation * 0.4f)
 
+	float disance = min(
+		min(min(ElipsLength(pixel_position, POS0 * (1.0f - animation), vec2(0.5f, 1.0f)),
+				ElipsLength(pixel_position, POS1 * (1.0f - animation), vec2(0.5f, 1.0f))),
+		min(	ElipsLength(pixel_position, POS2 * (1.0f - animation), vec2(0.5f, 1.0f)),
+				ElipsLength(pixel_position, POS3 * (1.0f - animation), vec2(0.5f, 1.0f)))),
+		min(	ElipsLength(pixel_position, POS4 * (1.0f - animation), vec2(0.5f, 1.0f)),
+				ElipsLength(pixel_position, POS5 * (1.0f - animation), vec2(0.5f, 1.0f))));
 	if(
-		length(pixel_position - POS0) > RADIUS &&
-		length(pixel_position - POS1) > RADIUS &&
-		length(pixel_position - POS2) > RADIUS &&
-		length(pixel_position - POS3) > RADIUS &&
-		length(pixel_position - POS4) > RADIUS &&
-		length(pixel_position - POS5) > RADIUS)
+		disance > RADIUS)
 	{
 		discard;
 	}
 
-	frag_color = vec4(color, 1.1f * (1.0f - pow(animation, 4.0f)));
+	float power = 1.0f / max(disance, 1.0f);
+
+	frag_color = mix(vec4(mix(color, vec3(1.0f), 1.0f - disance / RADIUS), 1.0f - disance / RADIUS), vec4(color, 0.0f), animation);
+	//frag_color = vec4(color, 1.1f * (1.0f - pow(animation, 4.0f)));
 }
 
 void ExaustShoot()
@@ -301,6 +304,18 @@ void ShardsShip()
 		discard;
 	}
 	frag_color = vec4(color, 1.0f);
+}
+
+float ElipsLength(vec2 pos1, vec2 pos2, vec2 scale)
+{
+	return sqrt((pos1.x - pos2.x) * (pos1.x - pos2.x) * scale.x + (pos1.y - pos2.y) * (pos1.y - pos2.y) * scale.y);
+}
+
+vec3 ColorOfTemperature(float _temperature)
+{
+	return vec3(max(min(3.0f * (1.0f - abs((_temperature * 2.0f - 1.0f) * 1.5f + 2.0f / 3.0f)), 1.0f), 0.0f),
+				max(min(3.0f * (1.0f - abs((_temperature * 2.0f - 1.0f) * 1.5f)), 1.0f), 0.0f),
+				max(min(3.0f * (1.0f - abs((_temperature * 2.0f - 1.0f) * 1.5f - 2.0f / 3.0f)), 1.0f), 0.0f));
 }
 
 

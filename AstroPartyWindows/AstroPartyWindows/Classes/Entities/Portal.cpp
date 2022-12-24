@@ -146,7 +146,7 @@ Particle Portal::CreateParticlesTP(GameTypes::tic_t current_tic, float radius)
 			angle,
 			radius,
 			PARTICLE_TYPE_PORTAL_OUT,
-			Color3F(31.0f / 256.0f, 14.0f / 256.0f, 32.0f / 256.0f),
+			Color3F(31.0f / 256.0f, 14.0f / 256.0f, 32.0f / 256.0f) * 2.0f,
 			PARTICLE_PERIOD_PORTAL_OUT,
 			PARTICLE_POSTPONE_PORTAL_OUT,
 			current_tic + PARTICLE_POSTPONE_PORTAL_OUT + PARTICLE_PERIOD_PORTAL_OUT);
