@@ -427,13 +427,13 @@ void OpenGL::InitOpenGL()
 
 void OpenGL::InitShaders()
 {
-    annih_area_gen_shader.Initialisate(      "Shaders/Objects/Vertex/AnnihAreaGen.glsl"       ,   "Shaders/Objects/Fragment/AnnihAreaGen.glsl");
+    annih_area_gen_shader.Initialisate(     "Shaders/Objects/Vertex/AnnihAreaGen.glsl"      ,   "Shaders/Objects/Fragment/AnnihAreaGen.glsl");
     asteroid_shader.Initialisate(           "Shaders/Objects/Vertex/Asteroid.glsl"          ,   "Shaders/Objects/Fragment/Asteroid.glsl");
     bomb_shader.Initialisate(               "Shaders/Objects/Vertex/Bomb.glsl"              ,   "Shaders/Objects/Fragment/Bomb.glsl");
     bonus_shader.Initialisate(              "Shaders/Objects/Vertex/Bonus.glsl"             ,   "Shaders/Objects/Fragment/Bonus.glsl");
     bullet_shader.Initialisate(             "Shaders/Objects/Vertex/Bullet.glsl"            ,   "Shaders/Objects/Fragment/Bullet.glsl");
     deceler_area_shader.Initialisate(       "Shaders/Objects/Vertex/Deceler.glsl"           ,   "Shaders/Objects/Fragment/Deceler.glsl");
-    dynamic_particle_shader.Initialisate(   "Shaders/Objects/Vertex/Particle.glsl"          ,   "Shaders/Objects/Fragment/Particle.glsl");
+    dynamic_particle_shader.Initialisate(   "Shaders/Objects/Vertex/DynamicParticle.glsl"   ,   "Shaders/Objects/Fragment/DynamicParticle.glsl");
     grav_gen_shader.Initialisate(           "Shaders/Objects/Vertex/GravGen.glsl"           ,   "Shaders/Objects/Fragment/GravGen.glsl");
     knife_shader.Initialisate(              "Shaders/Objects/Vertex/Knife.glsl"             ,   "Shaders/Objects/Fragment/Knife.glsl");
     laser_shader.Initialisate(              "Shaders/Objects/Vertex/Laser.glsl"             ,   "Shaders/Objects/Fragment/Laser.glsl");
@@ -491,6 +491,8 @@ void OpenGL::InitTextures()
 
 void OpenGL::DrawFrame()
 {
+    //glClearColor(0.07f, 0.07f, 0.4f, 1.0f);
+    //glClear(GL_COLOR_BUFFER_BIT);
     //draw_lock0_mtx.lock();
     //game_p__input_values_mtx->lock();
 

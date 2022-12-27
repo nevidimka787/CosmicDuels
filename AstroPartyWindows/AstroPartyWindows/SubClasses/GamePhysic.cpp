@@ -168,7 +168,10 @@ void Game::DynamicEntitiesCollisions(Map::MapData* map, DynamicParticle* dynamic
 	{
 		if (dynamic_particles_array_p->exist)
 		{
-			dynamic_particles_array_p->Collision(map);
+			if (dynamic_particles_array_p->properties & DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_MAP)
+			{
+				dynamic_particles_array_p->Collision(map);
+			}
 			found++;
 		}
 	}

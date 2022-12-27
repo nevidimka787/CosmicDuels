@@ -4,8 +4,6 @@ out vec4 frag_color;
 
 in vec2 pixel_position;
 
-#define STARS_COUNT	5
-
 uniform int type;
 uniform float animation;
 
@@ -57,60 +55,37 @@ void main()
 	case BACKGROUND:
 		Background();
 		break;
-	case EXAUST_ENGINE:
-		ExaustEngine();
-		break;
-	case EXAUST_SHOOT:
-		ExaustShoot();
-		break;
-	case EXAUST_BOMB_BOOM:
-		ExaustBombBoom();
-		break;
-	case EXAUST_BURNOUT:
-		ExaustBurnous();
-		break;
 	case PORTAL_IN:
 		PortalIn();
 		break;
 	case PORTAL_OUT:
 		PortalOut();
 		break;
-	case SHARDS_ASTEROID:
-		ShardsAsteroid();
-		break;
-	case SHARDS_ASTEROID_POWERED:
-		ShardsAsteroidPowered();
-		break;
-	case SHARDS_MAP_ELEMENT:
-		ShardsPilot();
-		break;
-	case SHARDS_PILOT:
-		ShardsPilot();
-		break;
-	case SHARDS_SHIP:
-		ShardsShip();
-		break;
 	default:
-		frag_color = vec4(0.0f, 0.0f, 0.0f, 1.0f);
+		frag_color = vec4(float(type / 3) / 3.0f, float(type % 3) / 3.0f, 0.0f, 1.0f);
 		break;
 	}
 }
 
+// The function generate random number that vary from 0 to 1
 float Rand(float _value)
 {
 	return fract((sin(6438593.3489 * _value) + 0.234) * 3297.2352);
 }
 
+// The function generate random number that vary from 0 to 1
 float RandF(vec2 _value)
 {
 	return fract(sin(dot(_value, vec2(45.4622, 78.90342))) * 70053.2345);
 }
 
+// The function generate random vector. Values of components of the vector vary from 0 to 1.
 vec2 Rand(vec2 _value)
 {
 	return fract(vec2(sin(dot(_value, vec2(98.4544, 12.1298))), sin(dot(_value, vec2(23.23222, 79.7543)))) * 73146.3433);
 }
 
+// The function generate random vector. Values of components of the vector vary from 0 to 1.
 vec3 Rand(vec3 _value)
 {
 	return fract(vec3(sin(dot(_value.xy, vec2(98.4544, 12.1298))) * 43983.3453, sin(dot(_value.yz, vec2(23.23222, 79.7543))) * 37462.457, sin(dot(_value.xz, vec2(30.4833, 87.2433))) * 28733.534));
@@ -118,109 +93,64 @@ vec3 Rand(vec3 _value)
 
 void Background()
 {
+#define STARS_COUNT	5
+#define stun angle
 #define SIZE		1.0f
-#define STAR_ALPHA	0.4f
+#define STAR_ALPHA	1.0f
+
+#define STAR_MIN_RADIUS		0.005f
+#define START_DELTA_RADIUS	0.01f
+#define STAR_MIN_POSITION	0.04f
+#define STAR_DELTA_POSITION	0.92f
+#define STAR_ENDGE_POWER	0.4f
+
+#define LAST_LAYER_RADIUS	100.0f
+#define BACKGROUND_VAWE_LENGTH	5.0f
+#define NOIZE_VAWE_ANPLITUDE	0.2f
+
 	vec2 _star_pos;
 	float _star_r;
 	for(int _star = 0; _star < STARS_COUNT; _star++)
 	{
-		_star_pos = Rand(vec2((_star + 1) * (trunc(pixel_position) + 1.0f))) * 0.92f + 0.04f;
-		_star_r = RandF(_star_pos) * 0.02f + 0.015f;
+		// Generate random vector by star_number and area of pixels position (by trunc).
+		_star_pos = Rand(
+			vec2((_star + 1) * (trunc(pixel_position / SIZE) + 1.0f)))
+			* STAR_DELTA_POSITION + STAR_MIN_POSITION; // Edges of positio is 0.04 and 0.96.
+		_star_r = RandF(_star_pos) * START_DELTA_RADIUS + STAR_MIN_RADIUS; // Generate star's radious that vary from 0.02 to 0.035.
+		// Star temperature vary from 0 to 1.
 		float _temp = Rand(_star_r);
 
-		if(PositionInTriangle(fract(pixel_position / SIZE) - _star_pos, _star_r / SIZE * sqrt(3.0f), Rand(_temp) * radians(60.0f)))
+		// Position of pixel relatively the star.
+		vec2 _local_position = fract(pixel_position / SIZE) - _star_pos;
+
+		float _dist_to_star_edge = (_star_r - length(_local_position)) / _star_r;
+
+		if (_dist_to_star_edge > 0) // the pixel inside star chec
 		{
-			if(radius < 100.0f)
+			if(radius < LAST_LAYER_RADIUS)
 			{
 				frag_color = vec4(
-					ColorOfTemperature(_temp),
-					(1.0f - angle) * STAR_ALPHA);
+					ColorOfTemperature(_temp), // main color
+					(1.0f - stun) * STAR_ALPHA * pow(_dist_to_star_edge, STAR_ENDGE_POWER)); // alpha chanel
 				return;
 			}
 			frag_color = vec4(
-				ColorOfTemperature(_temp)
-				* STAR_ALPHA + color * (1.0f - STAR_ALPHA), 1.0f - angle);
+				mix (color, ColorOfTemperature(_temp), STAR_ALPHA * pow(_dist_to_star_edge, STAR_ENDGE_POWER)), //last layer is calculated by mixing
+				1.0f - stun); // and has alpha chanel vary by stun only.
 			return;
 		}
 	}
-	if(radius < 100.0f)
+	if(radius < LAST_LAYER_RADIUS)
 	{
 		discard;
 	}
 	
-	frag_color = vec4(color, 1.0f - angle);
-
-}
-
-bool PositionInCyrcle(vec2 _position, float _radius)
-{
-	return length(_position) < _radius;
-}
-
-bool PositionInQuare(vec2 _position, float _quare_side)
-{
-	return 
-		_position.x > -_quare_side &&
-		_position.y > -_quare_side &&
-		_position.x < _quare_side &&
-		_position.y < _quare_side;
-}
-
-bool PositionInTriangle(vec2 _position, float _triangle_side, float _triangle_angle)
-{
-	vec2 _l_pos = _position / _triangle_side;
-	_l_pos = vec2(
-		_l_pos.x * cos(_triangle_angle) - _l_pos.y * sin(_triangle_angle),
-		_l_pos.x * sin(_triangle_angle) + _l_pos.y * cos(_triangle_angle));
-	return
-		_l_pos.y < sqrt(3.0f) * _l_pos.x + 1.0f / sqrt(3.0f) &&
-		_l_pos.y < -sqrt(3.0f) * _l_pos.x + 1.0f / sqrt(3.0f) &&
-		_l_pos.y > -0.5f / sqrt(3.0f);
-}
-
-void ExaustEngine()
-{
-#define POS0 (vec2(0.0f,		0.79f) * 2.0f - 1.0f)
-#define POS1 (vec2(1.0f / 3.0f, 0.84f) * 2.0f - 1.0f)
-#define POS2 (vec2(2.0f / 3.0f, 0.74f) * 2.0f - 1.0f)
-
-#define POS3 (vec2(0.0f,		0.21f) * 2.0f - 1.0f)
-#define POS4 (vec2(2.0f / 3.0f, 0.26f) * 2.0f - 1.0f)
-#define POS5 (vec2(1.0f / 3.0f, 0.16f) * 2.0f - 1.0f)
-#define RADIUS	(0.4f - animation * 0.4f)
-
-	float disance = min(
-		min(min(ElipsLength(pixel_position, POS0 * (1.0f - animation), vec2(0.5f, 1.0f)),
-				ElipsLength(pixel_position, POS1 * (1.0f - animation), vec2(0.5f, 1.0f))),
-		min(	ElipsLength(pixel_position, POS2 * (1.0f - animation), vec2(0.5f, 1.0f)),
-				ElipsLength(pixel_position, POS3 * (1.0f - animation), vec2(0.5f, 1.0f)))),
-		min(	ElipsLength(pixel_position, POS4 * (1.0f - animation), vec2(0.5f, 1.0f)),
-				ElipsLength(pixel_position, POS5 * (1.0f - animation), vec2(0.5f, 1.0f))));
-	if(
-		disance > RADIUS)
-	{
-		discard;
-	}
-
-	float power = 1.0f / max(disance, 1.0f);
-
-	frag_color = mix(vec4(mix(color, vec3(1.0f), 1.0f - disance / RADIUS), 1.0f - disance / RADIUS), vec4(color, 0.0f), animation);
-	//frag_color = vec4(color, 1.1f * (1.0f - pow(animation, 4.0f)));
-}
-
-void ExaustShoot()
-{
-	frag_color = vec4(0.0f, 0.0f, 0.0f, 1.0f);
-}
-
-void ExaustBombBoom()
-{
-	frag_color = vec4(0.0f, 0.0f, 0.0f, 1.0f);
-}
-
-void ExaustBurnous()
-{
-	frag_color = vec4(0.0f, 0.0f, 0.0f, 1.0f);
+	frag_color = vec4(
+		mix(
+			color,
+			vec3(0.0f),
+			(sin((pixel_position.x + pixel_position.y) + sin(pixel_position.x - pixel_position.y) * NOIZE_VAWE_ANPLITUDE) / BACKGROUND_VAWE_LENGTH) * 0.5f + 0.5f),
+		1.0f - stun);
 }
 
 void PortalIn()
@@ -256,66 +186,7 @@ void PortalOut()
 	discard;
 }
 
-void ShardsAsteroid()
-{
-	if(length(pixel_position) < 0.9f || length(pixel_position) > 1.0f)
-	{
-		discard;
-	}
-	frag_color = vec4(color, 1.0f);
-}
-
-void ShardsAsteroidPowered()
-{
-	if(length(pixel_position) < 0.9f || length(pixel_position) > 1.0f)
-	{
-		discard;
-	}
-	frag_color = vec4(color, 1.0f);
-}
-
-void ShardsMapElement()
-{
-	if(
-		(length(pixel_position) < 0.9f || length(pixel_position) > 1.0f) && 
-		(length(pixel_position) < 0.7f || length(pixel_position) > 0.8f) &&
-		(length(pixel_position) < 0.5f || length(pixel_position) > 0.6f))
-	{
-		discard;
-	}
-	frag_color = vec4(color, 1.0f);
-}
-
-void ShardsPilot()
-{
-	if(
-		(length(pixel_position) < 0.9f || length(pixel_position) > 1.0f) && 
-		(length(pixel_position) < 0.7f || length(pixel_position) > 0.8f))
-	{
-		discard;
-	}
-	frag_color = vec4(color, 1.0f);
-}
-
-void ShardsShip()
-{
-	if(length(pixel_position) < 0.9f || length(pixel_position) > 1.0f)
-	{
-		discard;
-	}
-	frag_color = vec4(color, 1.0f);
-}
-
-float ElipsLength(vec2 pos1, vec2 pos2, vec2 scale)
-{
-	return sqrt((pos1.x - pos2.x) * (pos1.x - pos2.x) * scale.x + (pos1.y - pos2.y) * (pos1.y - pos2.y) * scale.y);
-}
-
 vec3 ColorOfTemperature(float _temperature)
 {
-	return vec3(max(min(3.0f * (1.0f - abs((_temperature * 2.0f - 1.0f) * 1.5f + 2.0f / 3.0f)), 1.0f), 0.0f),
-				max(min(3.0f * (1.0f - abs((_temperature * 2.0f - 1.0f) * 1.5f)), 1.0f), 0.0f),
-				max(min(3.0f * (1.0f - abs((_temperature * 2.0f - 1.0f) * 1.5f - 2.0f / 3.0f)), 1.0f), 0.0f));
+	return vec3(1.0f - _temperature * 0.3f, 0.7f + 0.15f, 0.7f + _temperature * 0.3f) / min (1.0f - _temperature * 0.3f, 1.0f + _temperature * 0.3f);
 }
-
-
