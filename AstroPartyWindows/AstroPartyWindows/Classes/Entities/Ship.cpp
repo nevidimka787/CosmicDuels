@@ -297,6 +297,25 @@ DynamicParticle Ship::CreateShards(GameTypes::tic_t current_tic)
 		current_tic + PARTICLE_PERIOD_SHARDS_SHIP + PARTICLE_POSTPONE_SHARDS_SHIP);
 }
 
+DynamicParticle Ship::CreateShootingExaust(GameTypes::tic_t current_tic)
+{
+	return DynamicParticle(
+		current_tic,
+		position + direction * radius,
+		velocity + direction * BULLET_DEFAULT_MIN_VELOCITY,
+		radius,
+		angle,
+		angular_velocity,
+		force_collision_coeffisient,
+		force_resistance_air_coefficient,
+		PARTICLE_TYPE_EXAUST_SHOOT,
+		DYNAMIC_PARTICLE_PROPERTY_NULL,
+		Color3F(1.0f, 1.0f, 0.5f),
+		PARTICLE_PERIOD_EXAUST_SHOOT,
+		PARTICLE_POSTPONE_EXAUST_SHOOT,
+		current_tic + PARTICLE_PERIOD_EXAUST_SHOOT + PARTICLE_POSTPONE_EXAUST_SHOOT);
+}
+
 void Ship::ClearInventory()
 {
 	buff_inventory = 0x0;
@@ -406,15 +425,6 @@ Knife Ship::CreateKnife(uint8_t knife_number)
 	default:
 		return Knife();
 	}
-}
-
-Particle Ship::CreateShootingExaust(GameTypes::tic_t current_tic)
-{
-	return Particle(
-		current_tic,
-		this,
-		PARTICLE_TYPE_EXAUST_SHOOT,
-		Color3F(1.0f, 0.0f, 0.0f));
 }
 
 void Ship::DecrementSizeOfMagasize(GameTypes::entities_count_t cells_count)

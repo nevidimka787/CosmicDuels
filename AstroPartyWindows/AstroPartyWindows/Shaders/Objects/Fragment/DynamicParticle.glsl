@@ -131,17 +131,21 @@ void ExaustEngine()
 
 void ExaustShoot()
 {
-	frag_color = vec4(0.0f, 0.0f, 0.0f, 1.0f);
+	if (pixel_position.x < 0.0f)
+	{
+		discard;
+	}
+	frag_color = vec4(color, 0.0f);
 }
 
 void ExaustBombBoom()
 {
-	frag_color = vec4(0.0f, 0.0f, 0.0f, 1.0f);
+	frag_color = vec4(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
 void ExaustBurnous()
 {
-	frag_color = vec4(0.0f, 0.0f, 0.0f, 1.0f);
+	frag_color = vec4(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
 void ShardsAsteroid()

@@ -205,6 +205,9 @@
     <ClCompile Include="Classes\Entities\SupportEntity.cpp">
       <Filter>Classes\Файлы ресурсов\Entities</Filter>
     </ClCompile>
+    <ClCompile Include="SubClasses\Commands.cpp">
+      <Filter>Classes\Файлы ресурсов</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Objects\Vertex\Asteroid.glsl">
@@ -423,6 +426,9 @@
       <Filter>Classes\Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Logs.h">
+      <Filter>Classes\Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="SubClasses\Commands.h">
       <Filter>Classes\Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

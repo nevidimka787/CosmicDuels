@@ -1040,7 +1040,7 @@ public:
 	void AnnihAreaGenShoot(AnnihAreaGen* annih_area_gen);
 
 	//Not checking nullprt!
-	//mtx: laser -> bomb -> knife -> bullet
+	//mtx: laser -> bomb -> knife -> bullet -> dynamic_particle
 	void ShipShoot(Ship* ship);
 
 	void ShipShoot_LaserLoopBombKnife(Ship* ship);

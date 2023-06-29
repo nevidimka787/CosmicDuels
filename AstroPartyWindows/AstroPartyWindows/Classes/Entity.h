@@ -409,9 +409,9 @@ public:
 		GameTypes::tic_t current_tic,
 		const Vec2F* position,
 		const Vec2F* velocisy,
+		float radius,
 		float angle,
 		float angular_velocity,
-		float radius,
 		float force_collision_coeffisient,
 		float force_resistance_air_coefficient,
 		EngineTypes::Particle::type_t type,
@@ -832,12 +832,14 @@ public:
 	bool CanCreatingBullet() const;
 	bool CanCreatingObject() const;
 	Bullet CreateBullet();
-	//The function return dynamic particle.
+	// The function return dynamic particle.
 	DynamicParticle CreateBurnoutExaust(GameTypes::tic_t current_tic);
-	//The function return dynamic particle.
+	// The function return dynamic particle.
 	DynamicParticle CreateEnginExaust(GameTypes::tic_t current_tic);
-	//The function return dynamic particle.
+	// The function return dynamic particle.
 	DynamicParticle CreateShards(GameTypes::tic_t current_tic);
+	// the function cteare dynamic particle.
+	DynamicParticle CreateShootingExaust(GameTypes::tic_t current_tic);
 	//Thw ship loses all buffs, bonuses, and bullets.
 	void ClearInventory();
 	//The function does not check for the presence of a bonus.
@@ -857,8 +859,6 @@ public:
 	Laser CreateLaser();
 	//The function does not check for the presence of a bonus.
 	Knife CreateKnife(uint8_t knife_number);
-	//The function return dynamic particle.
-	Particle CreateShootingExaust(GameTypes::tic_t current_tic);
 	void DecrementSizeOfMagasize(GameTypes::entities_count_t cells_count = 1);
 	Pilot Destroy();
 	int GetBonusInventoryAsBoolList() const;

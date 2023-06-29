@@ -703,6 +703,7 @@ void Game::ShipShoot(Ship* ship)
 		return;
 	}
 	ShipShoot_NoBonus(ship);
+	//AddEntity(ship->CreateShootingExaust(global_timer));
 	return;
 }
 
