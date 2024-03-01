@@ -629,6 +629,7 @@ void Game::InitLevel()
 	MemorySetDefault();
 
 	current_map_id = GenerateRandomMapId();
+	// std::cout << "void Game::InitLevel()::current_map_id=" << (current_map_id = <map number>) << std::endl;
 
 	Vec2F ships_positions[GAME_PLAYERS_MAX_COUNT];
 	float ships_angles[GAME_PLAYERS_MAX_COUNT];
