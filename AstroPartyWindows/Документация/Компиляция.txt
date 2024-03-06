@@ -1,0 +1,3 @@
+Команда:
+ /usr/bin/g++ -std=c++17 ./AstroPartyWindows/*.cpp ./AstroPartyWindows/*.c ./AstroPartyWindows/Classes/*.cpp ./AstroPartyWindows/Classes/Entities/*.cpp ./AstroPartyWindows/SubClasses/*.cpp -o ./AstroParty.elf -lGLEW -lglfw -lpthread -ldl -O3
+ 

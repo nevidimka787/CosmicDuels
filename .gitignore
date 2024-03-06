@@ -32,3 +32,4 @@ AstroPartyWindows/AstroPartyWindows/x64/Release/AstroPartyRemakeWindows.ipdb
 *.ipdb
 AstroPartyWindows/.vs/AstroPartyWindows/FileContentIndex/read.lock
 *.tmp
+*.elf
