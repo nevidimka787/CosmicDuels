@@ -1,0 +1,30 @@
+{
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "g++ build active file",
+            "command": "/usr/bin/g++",
+            "args": [
+                "-std=c++17",
+                
+                "${workspaceFolder}/AstroPartyWindows/*.cpp",
+                "${workspaceFolder}/AstroPartyWindows/*.c",
+                "${workspaceFolder}/AstroPartyWindows/Classes/*cpp",
+                "${workspaceFolder}/AstroPartyWindows/Classes/Entities/*cpp",
+                "${workspaceFolder}/AstroPartyWindows/SubClasses/*cpp",
+                
+                "-o",
+                "${workspaceFolder}/AstroParty.elf",
+
+                "-lGLEW",
+                "-lglfw",
+                "-lpthread",
+                "-ldl"
+            ],
+            "options": {
+                "cwd": ""
+            }
+        }
+    ],
+    "version": "2.0.0"
+}

@@ -1,6 +1,10 @@
-#pragma once
+#if defined(_WIN32) || defined(_WIN64)
+#define memcpy(dst, src, len) memcpy_s(dst, len, src, len)
+#endif // _WIN32 || _WIN64
 
 #include "Commands.h"
+
+#include <cstring>
 #include <stdint.h>
 #include <iostream>
 
@@ -36,9 +40,8 @@ Command::Command(command_id_t command_id, size_t command_data_length, void* comm
 
 	*(uint8_t*)command_full_data = command_id;
 
-	memcpy_s(
+	std::memcpy(
 		(uint8_t*)command_full_data + COMMAND_ID_LENGTH,
-		command_data_length,
 		command_data,
 		command_data_length);
 }
@@ -60,9 +63,8 @@ Command::Command(command_id_t command_id, uint8_t first_argument, size_t command
 	*(uint8_t*)command_full_data = command_id;
 	((uint8_t*)command_full_data)[COMMAND_ID_LENGTH] = first_argument;
 
-	memcpy_s(
+	std::memcpy(
 		(uint8_t*)command_full_data + COMMAND_ID_LENGTH + COMMAND_8_BIT_LENGTH,
-		command_data_length,
 		command_data,
 		command_data_length);
 }
@@ -88,9 +90,8 @@ Command::Command(command_id_t command_id, uint8_t first_argument, uint32_t secon
 	5     4          1             0         2                   3                       5                */
 	*(uint32_t*)((uint8_t*)command_full_data + COMMAND_ID_LENGTH + COMMAND_8_BIT_LENGTH) = second_argument;
 
-	memcpy_s(
+	std::memcpy(
 		(uint8_t*)command_full_data + COMMAND_ID_LENGTH + COMMAND_8_BIT_LENGTH + COMMAND_32_BIT_LENGTH,
-		command_data_length,
 		command_data,
 		command_data_length);
 }
@@ -114,13 +115,12 @@ Command::Command(command_id_t command_id, uint32_t first_argument)
 }
 
 
-Command::Command(size_t command_length, void* command_full_data)
+Command::Command(size_t command_length, void* command_full_data) : command_length(command_length)
 {
-	command_full_data = malloc(command_length);
+	this->command_full_data = malloc(command_length);
 
-	memcpy_s(
+	std::memcpy(
 		this->command_full_data,
-		this->command_length,
 		command_full_data,
 		command_length
 	);

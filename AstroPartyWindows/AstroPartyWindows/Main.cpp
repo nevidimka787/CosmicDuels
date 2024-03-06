@@ -23,6 +23,8 @@ uint8_t init = 0x00;
 
 std::chrono::system_clock::time_point global_time_point;
 
+std::string getOsName();
+
 //This thread update 100 times per second and use for show information about app.
 void InputOutputUpdate();
 //This thread start physics calculation thread and wait when they stop.
@@ -116,6 +118,25 @@ int main()
     glfwTerminate(); //clear memory locating for OpenGL 
     return 0;
 }
+
+std::string getOsName()
+{
+    #ifdef _WIN32
+    return "Windows 32-bit";
+    #elif _WIN64
+    return "Windows 64-bit";
+    #elif __APPLE__ || __MACH__
+    return "Mac OSX";
+    #elif __linux__
+    return "Linux";
+    #elif __FreeBSD__
+    return "FreeBSD";
+    #elif __unix || __unix__
+    return "Unix";
+    #else
+    return "Other";
+    #endif
+} 
 
 #pragma warning(disable : 6269)
 
