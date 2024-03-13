@@ -52,6 +52,8 @@ void Game::Event0()
 			(float)(global_timer % EVENT0__INTERNAL_PERIOD) / (float)EVENT0__INTERNAL_PERIOD * M_PI * 2.0f
 		) * (MAP_ORBIT_MAP__GRAVGEN_SAVE_BARIER_RADIUS - MAP_ORBIT_MAP__GRAVGEN_KILL_BARIER_RADIUS);
 
+	map_data_mtx.lock();
+
 	map.CyrclePointer(2)->SetPosition(pos_2_3);
 	map.CyrclePointer(3)->SetPosition(pos_2_3);
 	map.CyrclePointer(4)->SetPosition(pos_4_5);
@@ -66,15 +68,23 @@ void Game::Event0()
 	map.CyrclePointer(6)->SetRadius(ex_radius);
 	map.CyrclePointer(8)->SetRadius(ex_radius);
 
+	map_data_mtx.unlock();
+
+	grav_gens_array_mtx.lock();
+
 	grav_gens[0].SetPosition(pos_2_3);
 	grav_gens[1].SetPosition(pos_4_5);
 	grav_gens[2].SetPosition(pos_6_7);
 	grav_gens[3].SetPosition(pos_8_9);
 
+	grav_gens_array_mtx.unlock();
+
 	if (!(global_timer % 100) && global_timer > 1000)
 	{
 		if (asteroids_count <= 2)
 		{
+
+			asteroids_array_mtx.lock();
 			for (size_t i = 0; i < 4; ++i)
 			{
 				Vec2F asteroid_position = center_position + Vec2F(MAP_ORBIT_MAP__INTERNAL_ORBIT_RADIUS, MAP_ORBIT_MAP__EXTERNAL_ORBIT_RADIUS).Rotate((float)i / 4.0f * M_PI * 2.0f);
@@ -84,6 +94,7 @@ void Game::Event0()
 					GenerateRandomInventory(BONUS_ALL, 1, 3, 1, 3),
 					ASTEROID_MAX_SIZE));
 			}
+			asteroids_array_mtx.unlock();
 		}
 	}
 }
@@ -96,41 +107,48 @@ void Game::Event1()
 		turrets[0].Rotate(0.01f);
 	}
 	turrets_array_mtx.unlock();
-	asteroids_array_mtx.lock();
+
+	static int event1_spawn_asteroids;
+
 #define EVENT1_SQUARE_SIZE 0.7f
-	if (object_pull_array[GAME_OBJECT_ASTEROID] && !((global_timer + 1) % 1000) && asteroids_count < 2)
+
+	Vec2F asteroid_position(-EVENT1_SQUARE_SIZE, -EVENT1_SQUARE_SIZE);
+
+	switch (event1_spawn_asteroids)
 	{
+	case 4:
+		break;
+	case 3:
+		asteroid_position.Set(-EVENT1_SQUARE_SIZE, EVENT1_SQUARE_SIZE);
+		break;
+	case 2:
+		asteroid_position.Set(EVENT1_SQUARE_SIZE, -EVENT1_SQUARE_SIZE);
+		break;
+	case 1:
+		asteroid_position.Set(EVENT1_SQUARE_SIZE, EVENT1_SQUARE_SIZE);
+		break;
+	default:
+		event1_spawn_asteroids = 0;
+		break;
+	}
+
+	if (event1_spawn_asteroids)
+	{
+		asteroids_array_mtx.lock();
 		AddEntity(Asteroid(
-			Vec2F(-EVENT1_SQUARE_SIZE, -EVENT1_SQUARE_SIZE),
+			asteroid_position,
 			Vec2F(),
 			GenerateRandomInventory(BONUS_BONUS, 1, 2, 2, 4) | GenerateRandomInventory(BONUS_BUFF_STREAM, 0, 3, 1, 1) | GenerateRandomInventory(BONUS_RULE_REVERSE, 0, 1, 0, 1),
 			ASTEROID_SIZE_BIG));
+		asteroids_array_mtx.unlock();
+
+		--event1_spawn_asteroids;
 	}
-	if (object_pull_array[GAME_OBJECT_ASTEROID] && !((global_timer + 2) % 1000) && asteroids_count < 3)
+
+	if (object_pull_array[GAME_OBJECT_ASTEROID] && event1_spawn_asteroids <= 0 && !((global_timer + 5) % 1000) && asteroids_count < 2)
 	{
-		AddEntity(Asteroid(
-			Vec2F(-EVENT1_SQUARE_SIZE, EVENT1_SQUARE_SIZE),
-			Vec2F(),
-			GenerateRandomInventory(BONUS_BONUS, 1, 2, 2, 4) | GenerateRandomInventory(BONUS_BUFF_STREAM, 0, 3, 1, 1) | GenerateRandomInventory(BONUS_RULE_REVERSE, 0, 1, 0, 1),
-			ASTEROID_SIZE_BIG));
+		event1_spawn_asteroids = 4;
 	}
-	if (object_pull_array[GAME_OBJECT_ASTEROID] && !((global_timer + 3) % 1000) && asteroids_count < 4)
-	{
-		AddEntity(Asteroid(
-			Vec2F(EVENT1_SQUARE_SIZE, -EVENT1_SQUARE_SIZE),
-			Vec2F(),
-			GenerateRandomInventory(BONUS_BONUS, 1, 2, 2, 4) | GenerateRandomInventory(BONUS_BUFF_STREAM, 0, 3, 1, 1) | GenerateRandomInventory(BONUS_RULE_REVERSE, 0, 1, 0, 1),
-			ASTEROID_SIZE_BIG));
-	}
-	if (object_pull_array[GAME_OBJECT_ASTEROID] && !((global_timer + 4) % 1000) && asteroids_count < 5)
-	{
-		AddEntity(Asteroid(
-			Vec2F(EVENT1_SQUARE_SIZE, EVENT1_SQUARE_SIZE),
-			Vec2F(),
-			GenerateRandomInventory(BONUS_BONUS, 1, 2, 2, 4) | GenerateRandomInventory(BONUS_BUFF_STREAM, 0, 3, 1, 1) | GenerateRandomInventory(BONUS_RULE_REVERSE, 0, 1, 0, 1),
-			ASTEROID_SIZE_BIG));
-	}
-	asteroids_array_mtx.unlock();
 }
 
 void Game::Event2()
@@ -735,6 +753,10 @@ void Game::CreateMap0(Vec2F* ships_positions, float* ships_angles)
 
 void Game::CreateMap1(Vec2F* ships_positions, float* ships_angles)
 {
+	/* Init static variables */
+
+	static int event1_spawn_asteroids = 0;
+
 	Vec2F new_position;
 	Segment new_segment;
 

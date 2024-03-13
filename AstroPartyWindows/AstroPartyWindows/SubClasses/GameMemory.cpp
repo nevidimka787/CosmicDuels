@@ -2,7 +2,7 @@
 
 
 
-void Game::AddEntity(AnnihAreaGen new_annih_area_gen)
+void Game::AddEntity(const AnnihAreaGen& new_annih_area_gen)
 {
 	if (new_annih_area_gen.exist)
 	{
@@ -13,13 +13,12 @@ void Game::AddEntity(AnnihAreaGen new_annih_area_gen)
 				annih_area_gens[annih_area_gen] = new_annih_area_gen;
 				annih_area_gens_count++;
 				return;
-				//printf("void Game::AddEntity(AnnihAreaGen)::annih_area_gens_count:%3u\n", annih_area_gens_count);
 			}
 		}
 	}
 }
 
-void Game::AddEntity(Asteroid new_asteroid)
+void Game::AddEntity(const Asteroid& new_asteroid)
 {
 	if (new_asteroid.exist)
 	{
@@ -29,16 +28,13 @@ void Game::AddEntity(Asteroid new_asteroid)
 			{
 				asteroids[asteroid] = new_asteroid;
 				asteroids_count++;
-				//printf("Add asteroid: %u.\tAsteroids count: %u.\n", asteroid, asteroids_count);
 				return;
 			}
 		}
 	}
-
-	std::cout << "Game::AddEntyty::asteroids_count" << asteroids_count << std::endl;
 }
 
-void Game::AddEntity(Bonus new_bonus)
+void Game::AddEntity(const Bonus& new_bonus)
 {
 	if (new_bonus.exist)
 	{
@@ -54,7 +50,7 @@ void Game::AddEntity(Bonus new_bonus)
 	}
 }
 
-void Game::AddEntity(Bullet new_bullet)
+void Game::AddEntity(const Bullet& new_bullet)
 {
 	if (new_bullet.exist)
 	{
@@ -70,7 +66,7 @@ void Game::AddEntity(Bullet new_bullet)
 	}
 }
 
-void Game::AddEntity(DecelerationArea new_deceler_area)
+void Game::AddEntity(const DecelerationArea& new_deceler_area)
 {
 	if (new_deceler_area.exist)
 	{
@@ -86,7 +82,7 @@ void Game::AddEntity(DecelerationArea new_deceler_area)
 	}
 }
 
-void Game::AddEntity(GravGen new_grav_gen)
+void Game::AddEntity(const GravGen& new_grav_gen)
 {
 	if (new_grav_gen.exist)
 	{
@@ -102,7 +98,7 @@ void Game::AddEntity(GravGen new_grav_gen)
 	}
 }
 
-void Game::AddEntity(Knife new_knife)
+void Game::AddEntity(const Knife& new_knife)
 {
 	if (new_knife.exist)
 	{
@@ -118,7 +114,7 @@ void Game::AddEntity(Knife new_knife)
 	}
 }
 
-void Game::AddEntity(Bomb new_bomb)
+void Game::AddEntity(const Bomb& new_bomb)
 {
 	if (new_bomb.exist)
 	{
@@ -134,7 +130,7 @@ void Game::AddEntity(Bomb new_bomb)
 	}
 }
 
-void Game::AddEntity(Laser new_laser)
+void Game::AddEntity(const Laser& new_laser)
 {
 	if (new_laser.exist)
 	{
@@ -150,7 +146,7 @@ void Game::AddEntity(Laser new_laser)
 	}
 }
 
-void Game::AddEntity(MegaLaser new_mega_laser)
+void Game::AddEntity(const MegaLaser& new_mega_laser)
 {
 	if (new_mega_laser.exist)
 	{
@@ -166,7 +162,7 @@ void Game::AddEntity(MegaLaser new_mega_laser)
 	}
 }
 
-void Game::AddEntity(Turret new_turret)
+void Game::AddEntity(const Turret& new_turret)
 {
 	if (new_turret.exist)
 	{
@@ -182,7 +178,7 @@ void Game::AddEntity(Turret new_turret)
 	}
 }
 
-void Game::AddEntity(Particle new_particle)
+void Game::AddEntity(const Particle& new_particle)
 {
 	if (new_particle.exist)
 	{
@@ -198,7 +194,7 @@ void Game::AddEntity(Particle new_particle)
 	}
 }
 
-void Game::AddEntity(DynamicParticle new_particle)
+void Game::AddEntity(const DynamicParticle& new_particle)
 {
 	if (new_particle.exist)
 	{
@@ -214,7 +210,7 @@ void Game::AddEntity(DynamicParticle new_particle)
 	}
 }
 
-void Game::AddEntity(Portal new_portal)
+void Game::AddEntity(const Portal& new_portal)
 {
 	if (new_portal.exist)
 	{
@@ -230,7 +226,7 @@ void Game::AddEntity(Portal new_portal)
 	}
 }
 
-void Game::AddEntity(Pilot new_pilot)
+void Game::AddEntity(const Pilot& new_pilot)
 {
 	if (new_pilot.exist)
 	{
@@ -243,7 +239,7 @@ void Game::AddEntity(Pilot new_pilot)
 	}
 }
 
-void Game::AddEntity(Ship new_ship)
+void Game::AddEntity(const Ship& new_ship)
 {
 	if (new_ship.exist)
 	{

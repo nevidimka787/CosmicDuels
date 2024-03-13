@@ -188,22 +188,22 @@ public:
 
 	Mat2D();
 	Mat2D(double value);
-	Mat2D(Vec2D abscissa, Vec2D ordinate);
+	Mat2D(const Vec2D& abscissa,  const Vec2D& ordinate);
 	Mat2D(const Vec2D* abscissa, const Vec2D* ordinate);
 	Mat2D(double a11, double a12, double a21, double a22);
 
-	Mat2D operator+(Mat2D matrix) const;
-	void operator+=(Mat2D matrix);
+	Mat2D operator+(const Mat2D& matrix) const;
+	void operator+=(const Mat2D& matrix);
 	Mat2D operator-() const;
-	Mat2D operator-(Mat2D matrix) const;
-	void operator-=(Mat2D matrix);
+	Mat2D operator-(const Mat2D& matrix) const;
+	void operator-=(const Mat2D& matrix);
 	Mat2D operator*(double mult) const;
-	Mat2D operator*(Mat2D matrix) const;
+	Mat2D operator*(const Mat2D& matrix) const;
 	void operator*=(double mult);
-	void operator*=(Mat2D matrix);
+	void operator*=(const Mat2D& matrix);
 	Mat2D operator/(double value) const;
 	void operator/=(double value);
-	bool operator==(Mat2D vector) const;
+	bool operator==(const Mat2D& matrix) const;
 
 	operator Mat2F();
 
@@ -215,10 +215,10 @@ public:
 
 	void Set(double value);
 	void Set(double a11, double a12, double a21, double a22);
-	void Set(Vec2D abscisse, Vec2D ardinate);
+	void Set(const Vec2D& abscisse,  const Vec2D& ardinate);
 	void Set(const Vec2D* abscisse, const Vec2D* ardinate);
 
-	void operator=(Mat2D matrix);
+	void operator=(const Mat2D& matrix);
 
 	~Mat2D();
 };
@@ -232,22 +232,22 @@ public:
 
 	Mat2F();
 	Mat2F(float value);
-	Mat2F(Vec2F abscissa, Vec2F ordinate);
+	Mat2F(const Vec2F& abscissa,  const Vec2F& ordinate);
 	Mat2F(const Vec2F* abscissa, const Vec2F* ordinate);
 	Mat2F(float a11, float a12, float a21, float a22);
 
-	Mat2F operator+(Mat2F matrix) const;
-	void operator+=(Mat2F matrix);
+	Mat2F operator+(const Mat2F& matrix) const;
+	void operator+=(const Mat2F& matrix);
 	Mat2F operator-() const;
-	Mat2F operator-(Mat2F matrix) const;
-	void operator-=(Mat2F matrix);
+	Mat2F operator-(const Mat2F& matrix) const;
+	void operator-=(const Mat2F& matrix);
 	Mat2F operator*(float mult) const;
-	Mat2F operator*(Mat2F matrix) const;
+	Mat2F operator*(const Mat2F& matrix) const;
 	void operator*=(float mult);
-	void operator*=(Mat2F matrix);
+	void operator*=(const Mat2F& matrix);
 	Mat2F operator/(float value) const;
 	void operator/=(float value);
-	bool operator==(Mat2F vector) const;
+	bool operator==(const Mat2F& matrix) const;
 
 	operator Mat2D();
 
@@ -259,10 +259,10 @@ public:
 
 	void Set(float value);
 	void Set(float a11, float a12, float a21, float a22);
-	void Set(Vec2F abscisse, Vec2F ardinate);
+	void Set(const Vec2F& abscisse,  const Vec2F& ardinate);
 	void Set(const Vec2F* abscisse, const Vec2F* ardinate);
 
-	void operator=(Mat2F matrix);
+	void operator=(const Mat2F& matrix);
 
 	~Mat2F();
 };
@@ -283,18 +283,18 @@ public:
 		double a11, double a12, double a13,
 		double a21, double a22, double a23);
 
-	Mat3x2D operator+(Mat3x2D matrix) const;
-	void operator+=(Mat3x2D matrix);
+	Mat3x2D operator+(const Mat3x2D& matrix) const;
+	void operator+=(const Mat3x2D& matrix);
 	Mat3x2D operator-() const;
-	Mat3x2D operator-(Mat3x2D matrix) const;
-	void operator-=(Mat3x2D matrix);
+	Mat3x2D operator-(const Mat3x2D& matrix) const;
+	void operator-=(const Mat3x2D& matrix);
 	Mat3x2D operator*(double mult) const;
-	Mat3x2D operator*(Mat3x2D matrix) const;
+	Mat3x2D operator*(const Mat3x2D& matrix) const;
 	void operator*=(double mult);
-	void operator*=(Mat3x2D matrix);
+	void operator*=(const Mat3x2D& matrix);
 	Mat3x2D operator/(double value) const;
 	void operator/=(double value);
-	bool operator==(Mat3x2D vector) const;
+	bool operator==(const Mat3x2D& matrix) const;
 
 	operator Mat3x2F() const;
 	operator Mat2D() const;
@@ -317,14 +317,14 @@ public:
 		double a11, double a12, double a13,
 		double a21, double a22, double a23);
 	void SetByAngle(double angle);
-	void SetByDirection(Vec2D direction);
+	void SetByDirection(const Vec2D& direction);
 	void SetByDirection(const Vec2D* direction);
-	void SetByPosition(Vec2D position);
+	void SetByPosition(const Vec2D& position);
 	void SetByPosition(const Vec2D* position);
-	void SetByScale(Vec2D scale);
+	void SetByScale(const Vec2D& scale);
 	void SetByScale(const Vec2D* scale);
 
-	void operator=(Mat3x2D matrix);
+	void operator=(const Mat3x2D& matrix);
 
 	~Mat3x2D();
 };
@@ -342,18 +342,18 @@ public:
 		float a11, float a12, float a13,
 		float a21, float a22, float a23);
 
-	Mat3x2F operator+(Mat3x2F matrix) const;
-	void operator+=(Mat3x2F matrix);
+	Mat3x2F operator+(const Mat3x2F& matrix) const;
+	void operator+=(const Mat3x2F& matrix);
 	Mat3x2F operator-() const;
-	Mat3x2F operator-(Mat3x2F matrix) const;
-	void operator-=(Mat3x2F matrix);
+	Mat3x2F operator-(const Mat3x2F& matrix) const;
+	void operator-=(const Mat3x2F& matrix);
 	Mat3x2F operator*(float mult) const;
-	Mat3x2F operator*(Mat3x2F matrix) const;
+	Mat3x2F operator*(const Mat3x2F& matrix) const;
 	void operator*=(float mult);
-	void operator*=(Mat3x2F matrix);
+	void operator*=(const Mat3x2F& matrix);
 	Mat3x2F operator/(float value) const;
 	void operator/=(float value);
-	bool operator==(Mat3x2F vector) const;
+	bool operator==(const Mat3x2F& matrix) const;
 
 	operator Mat3x2D() const;
 	operator Mat2D() const;
@@ -376,14 +376,14 @@ public:
 		float a11, float a12, float a13,
 		float a21, float a22, float a23);
 	void SetByAngle(float angle);
-	void SetByDirection(Vec2F direction);
+	void SetByDirection(const Vec2F& direction);
 	void SetByDirection(const Vec2F* direction);
-	void SetByPosition(Vec2F position);
+	void SetByPosition(const Vec2F& position);
 	void SetByPosition(const Vec2F* position);
-	void SetByScale(Vec2F scale);
+	void SetByScale(const Vec2F& scale);
 	void SetByScale(const Vec2F* scale);
 
-	void operator=(Mat3x2F matrix);
+	void operator=(const Mat3x2F& matrix);
 
 	~Mat3x2F();
 };

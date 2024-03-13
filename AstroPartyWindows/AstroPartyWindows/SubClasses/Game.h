@@ -236,52 +236,52 @@ public:
 	//menu objects
 
 	//Function adds entity to array that store entities of the same type.
-	void AddEntity(AnnihAreaGen annih_area_gen);
+	void AddEntity(const AnnihAreaGen& annih_area_gen);
 
 	//Function adds entity to array that store entities of the same type.
-	void AddEntity(Asteroid new_asteroid);
+	void AddEntity(const Asteroid& new_asteroid);
 
 	//Function adds entity to array that store entities of the same type.
-	void AddEntity(Bonus new_bonus);
+	void AddEntity(const Bonus& new_bonus);
 	
 	//Function adds entity to array that store entities of the same type.
-	void AddEntity(Bullet new_bullet);
+	void AddEntity(const Bullet& new_bullet);
 	
 	//Function adds entity to array that store entities of the same type.
-	void AddEntity(DecelerationArea new_deceleration_area);
+	void AddEntity(const DecelerationArea& new_deceleration_area);
 
 	//Function adds entity to array that store entities of the same type.
-	void AddEntity(DynamicParticle new_particle);
+	void AddEntity(const DynamicParticle& new_particle);
 	
 	//Function adds entity to array that store entities of the same type.
-	void AddEntity(GravGen new_grav_gen);
+	void AddEntity(const GravGen& new_grav_gen);
 	
 	//Function adds entity to array that store entities of the same type.
-	void AddEntity(Knife new_knife);
+	void AddEntity(const Knife& new_knife);
 	
 	//Function adds entity to array that store entities of the same type.
-	void AddEntity(Bomb new_bomb);
+	void AddEntity(const Bomb& new_bomb);
 	
 	//Function adds entity to array that store entities of the same type.
-	void AddEntity(Laser new_lazsr);
+	void AddEntity(const Laser& new_lazsr);
 	
 	//Function adds entity to array that store entities of the same type.
-	void AddEntity(MegaLaser new_laser);
+	void AddEntity(const MegaLaser& new_laser);
 	
 	//Function adds entity to array that store entities of the same type.
-	void AddEntity(Particle new_particle);
+	void AddEntity(const Particle& new_particle);
 
 	//Function adds entity to array that store entities of the same type.
-	void AddEntity(Portal new_portal);
+	void AddEntity(const Portal& new_portal);
 	
 	//Function adds entity to array that store entities of the same type.
-	void AddEntity(Pilot new_particle);
+	void AddEntity(const Pilot& new_particle);
 	
 	//Function adds entity to array that store entities of the same type.
-	void AddEntity(Ship new_particle);
+	void AddEntity(const Ship& new_particle);
 	
 	//Function adds entity to array that store entities of the same type.
-	void AddEntity(Turret new_lazer);
+	void AddEntity(const Turret& new_lazer);
 
 
 	//Function removes the specified entity from the array.

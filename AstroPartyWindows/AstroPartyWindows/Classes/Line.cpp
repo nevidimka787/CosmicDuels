@@ -12,7 +12,7 @@ Line::Line(const Line& line) :
 {
 }
 
-Line::Line(Vec2F point, Vec2F point_vector, bool second_argument_is_point) :
+Line::Line(const Vec2F&point, const Vec2F&point_vector, bool second_argument_is_point) :
 	point(point)
 {
 	if (second_argument_is_point)
@@ -127,7 +127,7 @@ bool Line::IsIntersection(const Segment* intersection_segment) const
 	return temp_vector1.x + temp_vector1.y >= 1.0f;
 }
 
-float Line::Distance(Vec2F target) const
+float Line::Distance(const Vec2F& target) const
 {
 	Vec2F temp_vector2 = Vec2F(vector.y, -vector.x);
 	Line temp_line1 = Line(target, temp_vector2);
@@ -145,7 +145,7 @@ float Line::Distance(const Vec2F* target) const
 	return temp_vector2.Distance(target);
 }
 
-float Line::Distance(Vec2F target, Vec2F* nearest_point) const
+float Line::Distance(const Vec2F& target, Vec2F* nearest_point) const
 {
 	Vec2F temp_vector2 = Vec2F(vector.y, -vector.x);
 	Line temp_line1 = Line(&target, &temp_vector2);
@@ -232,7 +232,7 @@ void Line::Set(const Line* line)
 	vector = line->vector;
 }
 
-void Line::Set(Vec2F point, Vec2F point_vector, bool second_argument_is_point)
+void Line::Set(const Vec2F& point, const Vec2F& point_vector, bool second_argument_is_point)
 {
 	this->point = point;
 	if (second_argument_is_point == true)
@@ -307,7 +307,7 @@ Beam::Beam(const Beam& beam) :
 {
 }
 
-Beam::Beam(Vec2F point, Vec2F point_vector, bool second_argument_is_point) :
+Beam::Beam(const Vec2F& point, const Vec2F& point_vector, bool second_argument_is_point) :
 	point(point)
 {
 	if (second_argument_is_point)
@@ -411,7 +411,7 @@ bool Beam::IsIntersection(const Segment* intersection_segment) const
 	return (temp_vector1.y >= 0.0f && temp_vector1.x + temp_vector1.y >= 1.0f);
 }
 
-float Beam::Distance(Vec2F target) const
+float Beam::Distance(const Vec2F& target) const
 {
 	Vec2F temp_vector2 = vector.PerpendicularClockwise();
 	Line temp_line1 = Line(target, temp_vector2);
@@ -435,7 +435,7 @@ float Beam::Distance(const Vec2F* target) const
 	return point.Distance(target);
 }
 
-float Beam::Distance(Vec2F target, Vec2F* nearest_point) const
+float Beam::Distance(const Vec2F& target, Vec2F* nearest_point) const
 {
 	Vec2F temp_vector2 = vector.PerpendicularClockwise();
 	Line temp_line1 = Line(&target, &temp_vector2);
@@ -802,7 +802,7 @@ void Beam::Set(const Beam* beam)
 	vector = beam->vector;
 }
 
-void Beam::Set(Vec2F point, Vec2F point_vector, bool second_argument_is_point)
+void Beam::Set(const Vec2F& point, const Vec2F& point_vector, bool second_argument_is_point)
 {
 	this->point = point;
 	if (second_argument_is_point == true)
@@ -877,7 +877,7 @@ Segment::Segment(const Segment& segment) :
 {
 }
 
-Segment::Segment(Vec2F point, Vec2F point_vector, bool second_argument_is_point) :
+Segment::Segment(const Vec2F& point, const Vec2F& point_vector, bool second_argument_is_point) :
 	point(point)
 {
 	if (second_argument_is_point)
@@ -983,7 +983,7 @@ bool Segment::IsIntersection(const Segment* intersection_segment) const
 	return temp_vector1.x >= 0.0f && temp_vector1.y >= 0.0f && temp_vector1.x + temp_vector1.y >= 1.0f;
 }
 
-float Segment::Distance(Vec2F target) const
+float Segment::Distance(const Vec2F& target) const
 {
 	Vec2F temp_vector1 = vector.PerpendicularClockwise();
 	Line temp_line1 = Line(&target, &temp_vector1);
@@ -1023,7 +1023,7 @@ float Segment::Distance(const Vec2F* target) const
 	return temp_float1;
 }
 
-float Segment::Distance(Vec2F target, Vec2F* nearest_point) const
+float Segment::Distance(const Vec2F& target, Vec2F* nearest_point) const
 {
 	Vec2F temp_vector1 = vector.PerpendicularClockwise();
 	Line temp_line1 = Line(&target, &temp_vector1);
@@ -1754,7 +1754,7 @@ void Segment::Set(const Segment* segment)
 	vector = segment->vector;
 }
 
-void Segment::Set(Vec2F point, Vec2F point_vector, bool second_argument_is_point)
+void Segment::Set(const Vec2F& point, const Vec2F& point_vector, bool second_argument_is_point)
 {
 	this->point = point;
 	if (second_argument_is_point == true)
