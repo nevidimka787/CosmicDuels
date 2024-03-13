@@ -508,7 +508,13 @@ bool DynamicEntity::IsCollision(const Map::Rectangle* rectangle) const
 
 bool DynamicEntity::IsCollision(const Map::Cyrcle* cyrcle) const
 {
-	return Segment(position, -velocity).Distance(cyrcle->GetPosition()) < radius + cyrcle->GetRadius();
+	const Segment trace(position, -velocity);
+	const Vec2F& cyrcle_position = cyrcle->GetPosition();
+	const float& cyrcle_radius = cyrcle->GetRadius();
+
+	return !(trace.Distance(cyrcle_position) > cyrcle_radius ||
+		trace.point.Distance(cyrcle_position) < cyrcle_radius - radius &&
+		trace.SecondPoint().Distance(cyrcle_position) < cyrcle_radius - radius);
 }
 
 bool DynamicEntity::IsCollision(const Map::Polygon* polygon) const

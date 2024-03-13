@@ -9,63 +9,81 @@
 #pragma warning(disable : 6385)
 #pragma warning(disable : 26451)
 
+#define MAP_ORBIT_MAP__AREA_RADIUS		2.0f
+#define MAP_ORBIT_MAP__CENTER_POSITION	(MAP_ORBIT_MAP__AREA_RADIUS * 3.0f)
+#define MAP_ORBIT_MAP__CYRCLES_COUNT	10
+#define MAP_ORBIT_MAP__CAMERA_SIZE		10.0f
+
+#define MAP_ORBIT_MAP__CENTER_GRAV_GEN_POS		MAP_ORBIT_MAP__CENTER_POSITION
+#define MAP_ORBIT_MAP__INTERNAL_ORBIT_RADIUS	(MAP_ORBIT_MAP__AREA_RADIUS / 3.0f)
+#define MAP_ORBIT_MAP__EXTERNAL_ORBIT_RADIUS	(MAP_ORBIT_MAP__INTERNAL_ORBIT_RADIUS * 2.0f)
+
+#define MAP_ORBIT_MAP__GRAVGEN_SAVE_BARIER_RADIUS	(MAP_ORBIT_MAP__AREA_RADIUS / 20.0f)
+#define MAP_ORBIT_MAP__GRAVGEN_KILL_BARIER_RADIUS	(MAP_ORBIT_MAP__GRAVGEN_SAVE_BARIER_RADIUS * 0.8f)
+#define MAP_ORBIT_MAP__GRAVGEN_RADIUS				(MAP_ORBIT_MAP__GRAVGEN_SAVE_BARIER_RADIUS * 0.5f)
+
+#define MAP_ORBIT_MAP__RELATIVE_SHIP_POSITION	Vec2F(MAP_ORBIT_MAP__AREA_RADIUS * 0.6f, MAP_ORBIT_MAP__AREA_RADIUS * 1.025f * 0.6f)
+
+#define MAP_ORBIT_MAP__GRAVGEN_FORCE			0.00001f
+
 void Game::Event0()
 {
-#define EVENT0__CENTER_POSITION	0.0f
-#define EVENT0__BONUS_POSITION	1.0f
-#define EVENT0__BAD_AREA_RADIUS	1.5f
-#define EVENT0__RM_ARAE_RADIUS	2.0f
-	if (!(global_timer % 100))
-	{
-		Ship* temp__ship_p = ships;
-		bool can_spawn = true;
-		ships_array_mtx.lock();
-		for (GameTypes::players_count_t found_ships = 0; found_ships < ships_count; temp__ship_p++)
-		{
-			if (temp__ship_p->exist)
-			{
-				if (can_spawn && temp__ship_p->GetPosition().Length() < EVENT0__BAD_AREA_RADIUS)
-				{
-					can_spawn = false;
-					break;
-				}
-				found_ships++;
-			}
-		}
-		ships_array_mtx.unlock();
+#define EVENT0__INTERNAL_PERIOD	2500 // 25 seconds
+#define EVENT0__EXTERNAL_PERIOD	5000 // 50 seconds
 
-		if (can_spawn)
-		{
-			bonuses_array_mtx.lock();
-			if (!bonuses[0].exist)
-			{
-				bonuses_count++;
-				bonuses[0] = Bonus(Vec2F(EVENT0__CENTER_POSITION, EVENT0__CENTER_POSITION + EVENT0__BONUS_POSITION), Vec2F(), BONUS_LOOP);//up
-			}
-			if (!bonuses[1].exist)
-			{
-				bonuses_count++;
-				bonuses[1] = Bonus(Vec2F(EVENT0__CENTER_POSITION + EVENT0__BONUS_POSITION, EVENT0__CENTER_POSITION), Vec2F(), BONUS_LASER);//right
-			}
-			if (!bonuses[2].exist)
-			{
-				bonuses_count++;
-				bonuses[2] = Bonus(Vec2F(EVENT0__CENTER_POSITION, EVENT0__CENTER_POSITION - EVENT0__BONUS_POSITION), Vec2F(), BONUS_BOMB);//down
-			}
-			if (!bonuses[3].exist)
-			{
-				bonuses_count++;
-				bonuses[3] = Bonus(Vec2F(EVENT0__CENTER_POSITION - EVENT0__BONUS_POSITION, EVENT0__CENTER_POSITION), Vec2F(), BONUS_KNIFE);//left
-			}
-			bonuses_array_mtx.unlock();
-		}
-	}
+	Vec2F center_position(MAP_ORBIT_MAP__CENTER_POSITION);
+	Vec2F in_direction(0.0f, -MAP_ORBIT_MAP__INTERNAL_ORBIT_RADIUS);
+	Vec2F ex_direction(MAP_ORBIT_MAP__EXTERNAL_ORBIT_RADIUS, 0.0f);
 
-	if (!((global_timer + 50) % 100))
+	Vec2F pos_2_3(center_position + in_direction.Rotate((float)(global_timer % EVENT0__INTERNAL_PERIOD) / (float)EVENT0__INTERNAL_PERIOD * M_PI * 2.0f));
+	Vec2F pos_4_5(center_position + in_direction.Rotate((float)(global_timer % EVENT0__INTERNAL_PERIOD) / (float)EVENT0__INTERNAL_PERIOD * M_PI * 2.0f - M_PI));
+	Vec2F pos_6_7(center_position + ex_direction.RotateClockwise((float)(global_timer % EVENT0__EXTERNAL_PERIOD) / (float)EVENT0__EXTERNAL_PERIOD * M_PI * 2.0f));
+	Vec2F pos_8_9(center_position + ex_direction.RotateClockwise((float)(global_timer % EVENT0__EXTERNAL_PERIOD) / (float)EVENT0__EXTERNAL_PERIOD * M_PI * 2.0f - M_PI));
+
+	float in_radius = 
+		MAP_ORBIT_MAP__GRAVGEN_SAVE_BARIER_RADIUS + 
+		sinf(
+			(float)(global_timer % EVENT0__EXTERNAL_PERIOD) / (float)EVENT0__EXTERNAL_PERIOD * M_PI * 2.0f
+		) * (MAP_ORBIT_MAP__GRAVGEN_SAVE_BARIER_RADIUS - MAP_ORBIT_MAP__GRAVGEN_KILL_BARIER_RADIUS);
+
+	float ex_radius =
+		MAP_ORBIT_MAP__GRAVGEN_SAVE_BARIER_RADIUS +
+		sinf(
+			(float)(global_timer % EVENT0__INTERNAL_PERIOD) / (float)EVENT0__INTERNAL_PERIOD * M_PI * 2.0f
+		) * (MAP_ORBIT_MAP__GRAVGEN_SAVE_BARIER_RADIUS - MAP_ORBIT_MAP__GRAVGEN_KILL_BARIER_RADIUS);
+
+	map.CyrclePointer(2)->SetPosition(pos_2_3);
+	map.CyrclePointer(3)->SetPosition(pos_2_3);
+	map.CyrclePointer(4)->SetPosition(pos_4_5);
+	map.CyrclePointer(5)->SetPosition(pos_4_5);
+	map.CyrclePointer(6)->SetPosition(pos_6_7);
+	map.CyrclePointer(7)->SetPosition(pos_6_7);
+	map.CyrclePointer(8)->SetPosition(pos_8_9);
+	map.CyrclePointer(9)->SetPosition(pos_8_9);
+
+	map.CyrclePointer(2)->SetRadius(in_radius);
+	map.CyrclePointer(4)->SetRadius(in_radius);
+	map.CyrclePointer(6)->SetRadius(ex_radius);
+	map.CyrclePointer(8)->SetRadius(ex_radius);
+
+	grav_gens[0].SetPosition(pos_2_3);
+	grav_gens[1].SetPosition(pos_4_5);
+	grav_gens[2].SetPosition(pos_6_7);
+	grav_gens[3].SetPosition(pos_8_9);
+
+	if (!(global_timer % 100) && global_timer > 1000)
 	{
-		if (asteroids_count == 0)
+		if (asteroids_count <= 2)
 		{
-			AddEntity(Asteroid(Vec2F(EVENT0__CENTER_POSITION), Vec2F(), GenerateRandomInventory(BONUS_BUFF_STREAM, 3, 3, 1, 1) | GenerateRandomInventory(BONUS_LOOP | BONUS_LASER | BONUS_BOMB | BONUS_KNIFE, 1, 1, 1, 4), ASTEROID_MAX_SIZE));
+			for (size_t i = 0; i < 4; ++i)
+			{
+				Vec2F asteroid_position = center_position + Vec2F(MAP_ORBIT_MAP__INTERNAL_ORBIT_RADIUS, MAP_ORBIT_MAP__EXTERNAL_ORBIT_RADIUS).Rotate((float)i / 4.0f * M_PI * 2.0f);
+				AddEntity(Asteroid(
+					asteroid_position,
+					Vec2F(),
+					GenerateRandomInventory(BONUS_ALL, 1, 3, 1, 3),
+					ASTEROID_MAX_SIZE));
+			}
 		}
 	}
 }
@@ -639,110 +657,80 @@ void Game::Event10()
 	}
 }
 
-void Game::CreateMap0(Vec2F* ships_positions, float* ships_angles)
-{
-	Vec2F new_position;
-	Segment new_segment;
-
-#define MAP_TEST_MAP__CENTER_POSITION	EVENT0__CENTER_POSITION
-#define MAP_TEST_MAP__FRAME_SIZE		2.0f
-#define MAP_TEST_MAP__RECTANGLES_COUNT	9
-#define MAP_TEST_MAP__CAMERA_SIZE		10.0f
-
-#define MAP_TEST_MAP__SHIFT				(MAP_TEST_MAP__FRAME_SIZE / 2.0f)
-#define MAP_TEST_MAP__RECTANGLE_SIZE	(MAP_TEST_MAP__SHIFT / 10.0f)
-
-	/* Create map */
-
-	Map::Rectangle* rectangles = new Map::Rectangle[MAP_TEST_MAP__RECTANGLES_COUNT];
-
-	new_segment.Set(
-		Vec2F(MAP_TEST_MAP__CENTER_POSITION + MAP_TEST_MAP__FRAME_SIZE, MAP_TEST_MAP__CENTER_POSITION - MAP_TEST_MAP__FRAME_SIZE),
-		Vec2F(MAP_TEST_MAP__CENTER_POSITION - MAP_TEST_MAP__FRAME_SIZE, MAP_TEST_MAP__CENTER_POSITION + MAP_TEST_MAP__FRAME_SIZE),
-		true);
-	rectangles[0].Set(&new_segment);
-
-
-	new_segment.Set(
-		Vec2F(MAP_TEST_MAP__CENTER_POSITION + MAP_TEST_MAP__RECTANGLE_SIZE) + Vec2F(MAP_TEST_MAP__SHIFT, 0.0f),
-		Vec2F(MAP_TEST_MAP__CENTER_POSITION - MAP_TEST_MAP__RECTANGLE_SIZE) + Vec2F(MAP_TEST_MAP__SHIFT, 0.0f),
-		true);
-
-	rectangles[1].Set(&new_segment, 0);
-
-	new_segment.Set(
-		Vec2F(MAP_TEST_MAP__CENTER_POSITION + MAP_TEST_MAP__RECTANGLE_SIZE) + Vec2F(MAP_TEST_MAP__SHIFT, -MAP_TEST_MAP__SHIFT),
-		Vec2F(MAP_TEST_MAP__CENTER_POSITION - MAP_TEST_MAP__RECTANGLE_SIZE) + Vec2F(MAP_TEST_MAP__SHIFT, -MAP_TEST_MAP__SHIFT),
-		true);
-
-	rectangles[2].Set(&new_segment, 1);
-
-	new_segment.Set(
-		Vec2F(MAP_TEST_MAP__CENTER_POSITION + MAP_TEST_MAP__RECTANGLE_SIZE) + Vec2F(0.0f, -MAP_TEST_MAP__SHIFT),
-		Vec2F(MAP_TEST_MAP__CENTER_POSITION - MAP_TEST_MAP__RECTANGLE_SIZE) + Vec2F(0.0f, -MAP_TEST_MAP__SHIFT),
-		true);
-
-	rectangles[3].Set(&new_segment, 2);
-
-	new_segment.Set(
-		Vec2F(MAP_TEST_MAP__CENTER_POSITION + MAP_TEST_MAP__RECTANGLE_SIZE) + Vec2F(-MAP_TEST_MAP__SHIFT, -MAP_TEST_MAP__SHIFT),
-		Vec2F(MAP_TEST_MAP__CENTER_POSITION - MAP_TEST_MAP__RECTANGLE_SIZE) + Vec2F(-MAP_TEST_MAP__SHIFT, -MAP_TEST_MAP__SHIFT),
-		true);
-
-	rectangles[4].Set(&new_segment, 3);
-
-	new_segment.Set(
-		Vec2F(MAP_TEST_MAP__CENTER_POSITION + MAP_TEST_MAP__RECTANGLE_SIZE) + Vec2F(-MAP_TEST_MAP__SHIFT, 0.0f),
-		Vec2F(MAP_TEST_MAP__CENTER_POSITION - MAP_TEST_MAP__RECTANGLE_SIZE) + Vec2F(-MAP_TEST_MAP__SHIFT, 0.0f),
-		true);
-
-	rectangles[5].Set(&new_segment, 4);
-
-	new_segment.Set(
-		Vec2F(MAP_TEST_MAP__CENTER_POSITION + MAP_TEST_MAP__RECTANGLE_SIZE) + Vec2F(-MAP_TEST_MAP__SHIFT, MAP_TEST_MAP__SHIFT),
-		Vec2F(MAP_TEST_MAP__CENTER_POSITION - MAP_TEST_MAP__RECTANGLE_SIZE) + Vec2F(-MAP_TEST_MAP__SHIFT, MAP_TEST_MAP__SHIFT),
-		true);
-
-	rectangles[6].Set(&new_segment, 5);
-
-	new_segment.Set(
-		Vec2F(MAP_TEST_MAP__CENTER_POSITION + MAP_TEST_MAP__RECTANGLE_SIZE) + Vec2F(0.0f, MAP_TEST_MAP__SHIFT),
-		Vec2F(MAP_TEST_MAP__CENTER_POSITION - MAP_TEST_MAP__RECTANGLE_SIZE) + Vec2F(0.0f, MAP_TEST_MAP__SHIFT),
-		true);
-
-	rectangles[7].Set(&new_segment, 6);
-
-	new_segment.Set(
-		Vec2F(MAP_TEST_MAP__CENTER_POSITION + MAP_TEST_MAP__RECTANGLE_SIZE) + Vec2F(MAP_TEST_MAP__SHIFT, MAP_TEST_MAP__SHIFT),
-		Vec2F(MAP_TEST_MAP__CENTER_POSITION - MAP_TEST_MAP__RECTANGLE_SIZE) + Vec2F(MAP_TEST_MAP__SHIFT, MAP_TEST_MAP__SHIFT),
-		true);
-
-	rectangles[8].Set(&new_segment, 7);
-
-	map.Set(rectangles, MAP_TEST_MAP__RECTANGLES_COUNT);
-
+void CreateMap0_PlaceTwoCyrclesAndGravGen(Game* game_object, Map::Cyrcle* cyrcles, size_t id, const Vec2F& position, float gravity) {
+	cyrcles[id].Set(
+		position,
+		MAP_ORBIT_MAP__GRAVGEN_KILL_BARIER_RADIUS,
+		MAP_PROPERTY_AGRESSIVE | MAP_PROPERTY_KILLER | MAP_PROPERTY_UNBREACABLE);
+	cyrcles[id + 1].Set(
+		position,
+		MAP_ORBIT_MAP__GRAVGEN_SAVE_BARIER_RADIUS,
+		MAP_PROPERTY_UNBREACABLE);
 
 	/* Spawn entities */
 
-	ships_positions[0].Set(MAP_TEST_MAP__CENTER_POSITION - 1.85f, MAP_TEST_MAP__CENTER_POSITION + 1.9f);
-	ships_positions[1].Set(MAP_TEST_MAP__CENTER_POSITION + 1.9f, MAP_TEST_MAP__CENTER_POSITION + 1.85f);
-	ships_positions[2].Set(MAP_TEST_MAP__CENTER_POSITION + 1.85f, MAP_TEST_MAP__CENTER_POSITION - 1.9f);
-	ships_positions[3].Set(MAP_TEST_MAP__CENTER_POSITION - 1.9f, MAP_TEST_MAP__CENTER_POSITION - 1.85f);
+	game_object->AddEntity(GravGen(position, -gravity, MAP_ORBIT_MAP__GRAVGEN_RADIUS));
+}
+
+void CreateMap0_PlaceShips(Vec2F* ships_positions, float* ships_angles) {
+	Vec2F center_position(MAP_ORBIT_MAP__CENTER_POSITION);
+	Vec2F ship_position = MAP_ORBIT_MAP__RELATIVE_SHIP_POSITION;
+	ships_positions[0] = center_position + ship_position.RotateClockwise(-M_PI_2);
+	ships_positions[1] = center_position + ship_position;
+	ships_positions[2] = center_position + ship_position.RotateClockwise(M_PI_2);
+	ships_positions[3] = center_position + ship_position.RotateClockwise(M_PI);
 
 	ships_angles[0] = -(float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
 	ships_angles[1] = -(float)M_PI_2 - (float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
 	ships_angles[2] = (float)M_PI_2 + (float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
 	ships_angles[3] = (float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
+}
+
+void Game::CreateMap0(Vec2F* ships_positions, float* ships_angles)
+{
+
+	Map::Cyrcle* cyrcles = new Map::Cyrcle[MAP_ORBIT_MAP__CYRCLES_COUNT];
+	Vec2F position(MAP_ORBIT_MAP__CENTER_POSITION);
+
+	cyrcles[0].Set(
+		position,
+		MAP_ORBIT_MAP__AREA_RADIUS,
+		MAP_PROPERTY_UNBREACABLE);
+
+	cyrcles[1].Set(
+		position,
+		MAP_ORBIT_MAP__GRAVGEN_KILL_BARIER_RADIUS,
+		MAP_PROPERTY_AGRESSIVE | MAP_PROPERTY_KILLER | MAP_PROPERTY_UNBREACABLE);
+	
+	position += Vec2F(0.0f, MAP_ORBIT_MAP__INTERNAL_ORBIT_RADIUS);
+	CreateMap0_PlaceTwoCyrclesAndGravGen(this, cyrcles, 2, position, -MAP_ORBIT_MAP__GRAVGEN_FORCE);
+
+	position -= Vec2F(0.0f, 2.0f * MAP_ORBIT_MAP__INTERNAL_ORBIT_RADIUS);
+	CreateMap0_PlaceTwoCyrclesAndGravGen(this, cyrcles, 4, position, -MAP_ORBIT_MAP__GRAVGEN_FORCE);
+
+	position = Vec2F(MAP_ORBIT_MAP__CENTER_POSITION) + Vec2F(MAP_ORBIT_MAP__EXTERNAL_ORBIT_RADIUS, 0.0f);
+	CreateMap0_PlaceTwoCyrclesAndGravGen(this, cyrcles, 6, position, MAP_ORBIT_MAP__GRAVGEN_FORCE);
+
+	position -= Vec2F(2.0f * MAP_ORBIT_MAP__EXTERNAL_ORBIT_RADIUS, 0.0f);
+	CreateMap0_PlaceTwoCyrclesAndGravGen(this, cyrcles, 8, position, MAP_ORBIT_MAP__GRAVGEN_FORCE);
+
+	map.Set(nullptr, 0, cyrcles, MAP_ORBIT_MAP__CYRCLES_COUNT, nullptr, 0);
+
+	/* Spawn entities */
+	
+	AddEntity(GravGen(Vec2F(MAP_ORBIT_MAP__CENTER_POSITION), -MAP_ORBIT_MAP__GRAVGEN_FORCE, MAP_ORBIT_MAP__GRAVGEN_RADIUS));
+
+	CreateMap0_PlaceShips(ships_positions, ships_angles);
 
 	camera.SetHightLimits(
-		MAP_TEST_MAP__CENTER_POSITION - CAMERA_DEFAULT_HIGH_LIMITS,
-		MAP_TEST_MAP__CENTER_POSITION - CAMERA_DEFAULT_HIGH_LIMITS,
-		MAP_TEST_MAP__CENTER_POSITION + CAMERA_DEFAULT_HIGH_LIMITS,
-		MAP_TEST_MAP__CENTER_POSITION + CAMERA_DEFAULT_HIGH_LIMITS);
-	camera.SetPosition(Vec2F(MAP_TEST_MAP__CENTER_POSITION, MAP_TEST_MAP__CENTER_POSITION));
-	camera.SetSize(MAP_TEST_MAP__CAMERA_SIZE);
+		MAP_ORBIT_MAP__CENTER_POSITION - CAMERA_DEFAULT_HIGH_LIMITS,
+		MAP_ORBIT_MAP__CENTER_POSITION - CAMERA_DEFAULT_HIGH_LIMITS,
+		MAP_ORBIT_MAP__CENTER_POSITION + CAMERA_DEFAULT_HIGH_LIMITS,
+		MAP_ORBIT_MAP__CENTER_POSITION + CAMERA_DEFAULT_HIGH_LIMITS);
+	camera.SetPosition(Vec2F(MAP_ORBIT_MAP__CENTER_POSITION));
+	camera.SetSize(MAP_ORBIT_MAP__CAMERA_SIZE);
 
-	delete[] rectangles;
+	delete[] cyrcles;
 }
 
 void Game::CreateMap1(Vec2F* ships_positions, float* ships_angles)

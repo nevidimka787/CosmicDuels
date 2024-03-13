@@ -116,7 +116,7 @@ turrets, mega lasers
 	//map pull
 
 //map id.
-#define MAP_TEST_MAP			0u
+#define MAP_ORBIT_MAP			0u
 //map id.
 #define MAP_TURRET_ON_CENTER	1u
 //map id.
@@ -336,7 +336,7 @@ turrets, mega lasers
 //select map
 #define BUTTON_ID__SELECT_MAP	300u
 //select map
-#define BUTTON_ID__SELECT_MAP_0	(BUTTON_ID__SELECT_MAP + MAP_TEST_MAP)
+#define BUTTON_ID__SELECT_MAP_0	(BUTTON_ID__SELECT_MAP + MAP_ORBIT_MAP)
 //select map
 #define BUTTON_ID__SELECT_MAP_1	(BUTTON_ID__SELECT_MAP + MAP_TURRET_ON_CENTER)
 //select map

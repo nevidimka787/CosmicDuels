@@ -31,7 +31,13 @@ public:
 		const Vec2F* point, 
 		const Vec2F* point_vector, 
 		bool second_argument_is_point = false);
-	
+
+	Line(const Beam& beam);
+	Line(const Beam* beam);
+
+	Line(const Segment& beam);
+	Line(const Segment* beam);
+
 	void Intersection(const Line* intersection_line, Vec2F* output_intersection_point) const;
 	
 	bool Intersection(const Beam* intersection_beam, Vec2F* output_intersection_point) const;
@@ -85,6 +91,8 @@ public:
 
 	~Line();
 };
+
+std::ostream& operator<<(std::ostream& stream, const Line& line);
 
 class Beam
 {
@@ -169,6 +177,8 @@ public:
 	~Beam();
 };
 
+std::ostream& operator<<(std::ostream& stream, const Beam& beam);
+
 class Segment
 {
 public:
@@ -249,3 +259,5 @@ public:
 
 	~Segment();
 };
+
+std::ostream& operator<<(std::ostream& stream, const Segment& segment);

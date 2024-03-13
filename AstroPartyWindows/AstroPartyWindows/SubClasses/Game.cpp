@@ -602,7 +602,7 @@ void Game::PollEvents()
 {
 	switch (current_event)
 	{
-	case MAP_TEST_MAP:			Event0();	return;
+	case MAP_ORBIT_MAP:			Event0();	return;
 	case MAP_TURRET_ON_CENTER:	Event1();	return;
 	case MAP_CYRCLE_ON_CENTER:	Event2();	return;
 	case MAP_DECELERATION_AREA:	Event3();	return;
@@ -677,7 +677,7 @@ void Game::InitLevel()
 		break;
 	default:
 		std::cout << "WARNING::Map value is undeclarated. Defaul map is created." << std::endl;
-	case MAP_TEST_MAP:
+	case MAP_ORBIT_MAP:
 		CreateMap0(ships_positions, ships_angles);
 		break;
 	}
@@ -989,8 +989,8 @@ void Game::InitMenus()
 		buttons[i].Set(BUTTON_ID__SELECT_MAP + i, &position, &size, area, "", 5, BUTTON_STATUS_TRUE);
 		buttons[i].status |= BUTTON_STATUS_ACTIVE;
 	}
-	buttons[MAP_TEST_MAP].SetText("Test");
-	buttons[MAP_TEST_MAP].text_size = 6u;
+	buttons[MAP_ORBIT_MAP].SetText("Orbit");
+	buttons[MAP_ORBIT_MAP].text_size = 6u;
 	buttons[MAP_TURRET_ON_CENTER].SetText("Turret");
 	buttons[MAP_TURRET_ON_CENTER].text_size = 6u;
 	buttons[MAP_CYRCLE_ON_CENTER].SetText("Grav gen");

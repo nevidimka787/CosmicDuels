@@ -60,21 +60,23 @@ float Entity::GetDistance(const Beam* beam) const
 
 float Entity::GetDistance(const Map::Cyrcle* cyrcle, bool* is_inside) const
 {
-	Vec2F temp = cyrcle->GetPosition();
-	float dist = GetDistance(&temp) - cyrcle->GetRadius();
-	if (dist < -2.0f * radius)
+	const Vec2F& cyrcle_position(cyrcle->GetPosition());
+
+	float distance = position.Distance(&cyrcle_position) - cyrcle->GetRadius();
+	if (distance < 0.0f)
 	{
 		if (is_inside != nullptr)
 		{
 			*is_inside = true;
 		}
-		dist = cyrcle->GetRadius() - temp.Distance(&position) - 3.0f * radius;
+		return -distance - radius;
 	}
-	else if (is_inside != nullptr)
+	
+	if (is_inside != nullptr)
 	{
 		*is_inside = false;
 	}
-	return dist;
+	return distance - radius;
 }
 
 float Entity::GetDistance(const DecelerationArea* deceler_area) const

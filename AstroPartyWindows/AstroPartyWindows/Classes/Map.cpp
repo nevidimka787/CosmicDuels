@@ -473,24 +473,25 @@ bool Cyrcle::IsCollision(const Beam* beam) const
 
 bool Cyrcle::IsCollision(const Beam* beam, Vec2F* out_position, float* distance_to_out_position) const
 {
-	Vec2F neares_point_on_beam;
-	float dist = beam->Distance(position, &neares_point_on_beam);
-	if (dist < radius)
-	{
-		float length = sqrtf(radius * radius - dist * dist);
-		float length_to_perpendicular = (beam->point - neares_point_on_beam).Length();
-		if (length < length_to_perpendicular)
-		{
-			*distance_to_out_position = length_to_perpendicular - length;
-			*out_position = beam->point + beam->vector.Normalize() * *distance_to_out_position;
-			return true;
-		}
+	Vec2F neares_point_on_line;
 
-		*distance_to_out_position = length - length_to_perpendicular;
-		*out_position = beam->point + beam->vector.Normalize() * *distance_to_out_position;
-		return true;
+	float distance = Line(beam).Distance(position, &neares_point_on_line);
+
+	if (distance > radius)
+	{
+		return false;
 	}
-	return false;
+
+	float sub_vector_length = sqrtf(radius * radius - (neares_point_on_line - position).LengthPow2());
+
+	*out_position =
+		(beam->point.Distance(position) > radius) ?
+		(neares_point_on_line - beam->vector.Normalize() * sub_vector_length) :
+		(neares_point_on_line + beam->vector.Normalize() * sub_vector_length);
+
+	*distance_to_out_position = beam->point.Distance(out_position);
+
+	return true;
 }
 
 bool Cyrcle::IsCollision(const Line* line) const

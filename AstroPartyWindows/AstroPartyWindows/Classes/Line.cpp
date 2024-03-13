@@ -38,6 +38,30 @@ Line::Line(const Vec2F* point, const Vec2F* point_vector, bool second_argument_i
 	}
 }
 
+Line::Line(const Beam& beam) :
+	point(beam.point),
+	vector(beam.vector)
+{
+}
+
+Line::Line(const Beam* beam) :
+	point(beam->point),
+	vector(beam->vector)
+{
+}
+
+Line::Line(const Segment& segment) :
+	point(segment.point),
+	vector(segment.vector)
+{
+}
+
+Line::Line(const Segment* segment) :
+	point(segment->point),
+	vector(segment->vector)
+{
+}
+
 void Line::Intersection(const Line* intersection_line, Vec2F* output_intersection_point) const
 {
 	Vec2F temp_vector1 = point - intersection_line->point;
@@ -127,7 +151,7 @@ float Line::Distance(Vec2F target, Vec2F* nearest_point) const
 	Line temp_line1 = Line(&target, &temp_vector2);
 	Intersection(&temp_line1, nearest_point);
 
-	return temp_vector2.Distance(target);
+	return nearest_point->Distance(target);
 }
 
 float Line::Distance(const Vec2F* target, Vec2F* nearest_point) const
@@ -266,7 +290,11 @@ Line::~Line()
 {
 }
 
-
+std::ostream& operator<<(std::ostream& stream, const Line& line)
+{
+	stream << "P: " << line.point << " V: " << line.vector;
+	return stream;
+}
 
 Beam::Beam()
 {
@@ -832,7 +860,11 @@ Beam::~Beam()
 {
 }
 
-
+std::ostream& operator<<(std::ostream& stream, const Beam& beam)
+{
+	stream << "P: " << beam.point << " V: " << beam.vector;
+	return stream;
+}
 
 Segment::Segment()
 {
@@ -1778,4 +1810,10 @@ Segment::operator Beam()
 
 Segment::~Segment()
 {
+}
+
+std::ostream& operator<<(std::ostream& stream, const Segment& segment)
+{
+	stream << "P: " << segment.point << " V: " << segment.vector;
+	return stream;
 }

@@ -26,12 +26,12 @@ Vec2D::Vec2D(double x, double y) :
 {
 }
 
-Vec2D Vec2D::operator+(Vec2D vector) const
+Vec2D Vec2D::operator+(const Vec2D& vector) const
 {
 	return Vec2D(x + vector.x, y + vector.y);
 }
 
-Vec2D Vec2D::operator-(Vec2D vector) const
+Vec2D Vec2D::operator-(const Vec2D& vector) const
 {
 	return Vec2D(x - vector.x, y - vector.y);
 }
@@ -46,17 +46,17 @@ Vec2D Vec2D::operator*(double value) const
 	return Vec2D(x * value, y * value);
 }
 
-double Vec2D::operator*(Vec2D vector) const
+double Vec2D::operator*(const Vec2D& vector) const
 {
 	return x * vector.x + y * vector.y;
 }
 
-Vec2D Vec2D::operator*(Mat2D matrix) const
+Vec2D Vec2D::operator*(const Mat2D& matrix) const
 {
 	return Vec2D(x * matrix.a11 + y * matrix.a12, x * matrix.a21 + y * matrix.a22);
 }
 
-Vec2D Vec2D::operator*(Mat3x2D matrix) const
+Vec2D Vec2D::operator*(const Mat3x2D& matrix) const
 {
 	return Vec2D(
 		x * matrix.a11 + y * matrix.a12 + matrix.a13,
@@ -68,13 +68,13 @@ Vec2D Vec2D::operator/(double value) const
 	return Vec2D(x / value, y / value);
 }
 
-void Vec2D::operator+=(Vec2D vector)
+void Vec2D::operator+=(const Vec2D& vector)
 {
 	x += vector.x;
 	y += vector.y;
 }
 
-void Vec2D::operator-=(Vec2D vector)
+void Vec2D::operator-=(const Vec2D& vector)
 {
 	x -= vector.x;
 	y -= vector.y;
@@ -86,14 +86,14 @@ void Vec2D::operator*=(double value)
 	y *= value;
 }
 
-void Vec2D::operator*=(Mat2D matrix)
+void Vec2D::operator*=(const Mat2D& matrix)
 {
 	double temp = x * matrix.a11 + y * matrix.a12;
 	y = x * matrix.a21 + y * matrix.a22;
 	x = temp;
 }
 
-void Vec2D::operator*=(Mat3x2D matrix)
+void Vec2D::operator*=(const Mat3x2D& matrix)
 {
 	double temp = x * matrix.a11 + y * matrix.a12 + matrix.a13;
 	y = x * matrix.a21 + y * matrix.a22 + matrix.a23;
@@ -106,7 +106,7 @@ void Vec2D::operator/=(double value)
 	y /= value;
 }
 
-bool Vec2D::operator||(Vec2D vector) const
+bool Vec2D::operator||(const Vec2D& vector) const
 {
 	return x == 0.0 && vector.x == 0.0 ||
 		y == 0.0 && vector.y == 0.0 ||
@@ -119,7 +119,7 @@ bool Vec2D::operator==(double value) const
 	return (x == value && y == value);
 }
 
-bool Vec2D::operator==(Vec2D vector) const
+bool Vec2D::operator==(const Vec2D& vector) const
 {
 	return (x == vector.x && y == vector.y);
 }
@@ -129,7 +129,7 @@ bool Vec2D::operator!=(double value) const
 	return (x != value || y != value);
 }
 
-bool Vec2D::operator!=(Vec2D vector) const
+bool Vec2D::operator!=(const Vec2D& vector) const
 {
 	return (x != vector.x || y != vector.y);
 }
@@ -139,7 +139,7 @@ bool Vec2D::operator>(double value) const
 	return (x > value && y > value);
 }
 
-bool Vec2D::operator>(Vec2D vector) const
+bool Vec2D::operator>(const Vec2D& vector) const
 {
 	return (x > vector.x && y > vector.y);
 }
@@ -149,7 +149,7 @@ bool Vec2D::operator>=(double value) const
 	return (x >= value && y >= value);
 }
 
-bool Vec2D::operator>=(Vec2D vector) const
+bool Vec2D::operator>=(const Vec2D& vector) const
 {
 	return (x >= vector.x && y >= vector.y);
 }
@@ -159,7 +159,7 @@ bool Vec2D::operator<(double value) const
 	return (x < value && y < value);
 }
 
-bool Vec2D::operator<(Vec2D vector) const
+bool Vec2D::operator<(const Vec2D& vector) const
 {
 	return (x < vector.x && y < vector.y);
 }
@@ -169,7 +169,7 @@ bool Vec2D::operator<=(double value) const
 	return (x <= value && y <= value);
 }
 
-bool Vec2D::operator<=(Vec2D vector) const
+bool Vec2D::operator<=(const Vec2D& vector) const
 {
 	return (x <= vector.x && y <= vector.y);
 }
@@ -184,7 +184,7 @@ double Vec2D::AbsoluteAngle() const
 	return (atan2(-y, x));
 }
 
-double Vec2D::Distance(Vec2D vector) const
+double Vec2D::Distance(const Vec2D& vector) const
 {
 	return (*this - vector).Length();
 }
@@ -209,7 +209,7 @@ void Vec2D::NormalizeThis()
 	*this /= Length();
 }
 
-Vec2D Vec2D::Project(Vec2D projecting_vector) const
+Vec2D Vec2D::Project(const Vec2D& projecting_vector) const
 {
 	double dot = *this * projecting_vector;
 	if (dot > 0.0)
@@ -263,7 +263,7 @@ void Vec2D::RotateThis(double angle)
 	x = temp;
 }
 
-Vec2D Vec2D::Scale(Vec2D scale) const
+Vec2D Vec2D::Scale(const Vec2D& scale) const
 {
 	return Vec2D(x * scale.x, y * scale.y);
 }
@@ -273,7 +273,7 @@ Vec2D Vec2D::Scale(const Vec2D* scale) const
 	return Vec2D(x * scale->x, y * scale->y);
 }
 
-void Vec2D::ScaleThis(Vec2D scale)
+void Vec2D::ScaleThis(const Vec2D& scale)
 {
 	x *= scale.x;
 	y *= scale.y;
@@ -309,13 +309,13 @@ void Vec2D::Set(double x, double y)
 	this->y = y;
 }
 
-void Vec2D::operator=(Vec2F vector)
+void Vec2D::operator=(const Vec2F& vector)
 {
 	x = vector.x;
 	y = vector.y;
 }
 
-void Vec2D::operator=(Vec2D vector)
+void Vec2D::operator=(const Vec2D& vector)
 {
 	x = vector.x;
 	y = vector.y;
@@ -324,8 +324,6 @@ void Vec2D::operator=(Vec2D vector)
 Vec2D::~Vec2D()
 {
 }
-
-
 
 Vec2F::Vec2F() : x(0.0), y(0.0)
 {
@@ -349,7 +347,7 @@ Vec2F::Vec2F(float x, float y) :
 {
 }
 
-Vec2F Vec2F::operator+(Vec2F vector) const
+Vec2F Vec2F::operator+(const Vec2F& vector) const
 {
 	return Vec2F(x + vector.x, y + vector.y);
 }
@@ -359,7 +357,7 @@ Vec2F Vec2F::operator+(float value) const
 	return Vec2F(x + value, y + value);
 }
 
-Vec2F Vec2F::operator-(Vec2F vector) const
+Vec2F Vec2F::operator-(const Vec2F& vector) const
 {
 	return Vec2F(x - vector.x, y - vector.y);
 }
@@ -379,17 +377,17 @@ Vec2F Vec2F::operator*(float value) const
 	return Vec2F(x * value, y * value);
 }
 
-float Vec2F::operator*(Vec2F vector) const
+float Vec2F::operator*(const Vec2F& vector) const
 {
 	return x * vector.x + y * vector.y;
 }
 
-Vec2F Vec2F::operator*(Mat2F matrix) const
+Vec2F Vec2F::operator*(const Mat2F& matrix) const
 {
 	return Vec2F(x * matrix.a11 + y * matrix.a12, x * matrix.a21 + y * matrix.a22);
 }
 
-Vec2F Vec2F::operator*(Mat3x2F matrix) const
+Vec2F Vec2F::operator*(const Mat3x2F& matrix) const
 {
 	return Vec2F(
 		x * matrix.a11 + y * matrix.a12 + matrix.a13,
@@ -402,13 +400,13 @@ Vec2F Vec2F::operator/(float value) const
 	return Vec2F(x / value, y / value);
 }
 
-void Vec2F::operator+=(Vec2F vector)
+void Vec2F::operator+=(const Vec2F& vector)
 {
 	x += vector.x;
 	y += vector.y;
 }
 
-void Vec2F::operator-=(Vec2F vector)
+void Vec2F::operator-=(const Vec2F& vector)
 {
 	x -= vector.x;
 	y -= vector.y;
@@ -420,14 +418,14 @@ void Vec2F::operator*=(float value)
 	y *= value;
 }
 
-void Vec2F::operator*=(Mat2F matrix)
+void Vec2F::operator*=(const Mat2F& matrix)
 {
 	float temp = x * matrix.a11 + y * matrix.a12;
 	y = x * matrix.a21 + y * matrix.a22;
 	x = temp;
 }
 
-void Vec2F::operator*=(Mat3x2F matrix)
+void Vec2F::operator*=(const Mat3x2F& matrix)
 {
 	float temp = x * matrix.a11 + y * matrix.a12 + matrix.a13;
 	y = x * matrix.a21 + y * matrix.a22 + matrix.a23;
@@ -440,7 +438,7 @@ void Vec2F::operator/=(float value)
 	y /= value;
 }
 
-bool Vec2F::operator||(Vec2F vector) const
+bool Vec2F::operator||(const Vec2F& vector) const
 {
 	return x == 0.0 && vector.x == 0.0 ||
 		y == 0.0 && vector.y == 0.0 ||
@@ -453,7 +451,7 @@ bool Vec2F::operator==(float value) const
 	return x == value && y == value;
 }
 
-bool Vec2F::operator==(Vec2F vector) const
+bool Vec2F::operator==(const Vec2F& vector) const
 {
 	return x == vector.x && y == vector.y;
 }
@@ -463,7 +461,7 @@ bool Vec2F::operator!=(float value) const
 	return (x != value || y != value);
 }
 
-bool Vec2F::operator!=(Vec2F vector) const
+bool Vec2F::operator!=(const Vec2F& vector) const
 {
 	return (x != vector.x || y != vector.y);
 }
@@ -473,7 +471,7 @@ bool Vec2F::operator>(float value) const
 	return (x > value && y > value);
 }
 
-bool Vec2F::operator>(Vec2F vector) const
+bool Vec2F::operator>(const Vec2F& vector) const
 {
 	return (x > vector.x && y > vector.y);
 }
@@ -483,7 +481,7 @@ bool Vec2F::operator>=(float value) const
 	return (x >= value && y >= value);
 }
 
-bool Vec2F::operator>=(Vec2F vector) const
+bool Vec2F::operator>=(const Vec2F& vector) const
 {
 	return (x >= vector.x && y >= vector.y);
 }
@@ -493,7 +491,7 @@ bool Vec2F::operator<(float value) const
 	return (x < value && y < value);
 }
 
-bool Vec2F::operator<(Vec2F vector) const
+bool Vec2F::operator<(const Vec2F& vector) const
 {
 	return (x < vector.x && y < vector.y);
 }
@@ -503,7 +501,7 @@ bool Vec2F::operator<=(float value) const
 	return (x <= value && y <= value);
 }
 
-bool Vec2F::operator<=(Vec2F vector) const
+bool Vec2F::operator<=(const Vec2F& vector) const
 {
 	return (x <= vector.x && y <= vector.y);
 }
@@ -523,7 +521,7 @@ float Vec2F::AbsoluteAngleClockwise() const
 	return (atan2f(y, x));
 }
 
-float Vec2F::Distance(Vec2F target_vector) const
+float Vec2F::Distance(const Vec2F& target_vector) const
 {
 	return (*this - target_vector).Length();
 }
@@ -538,14 +536,29 @@ float Vec2F::Length() const
 	return sqrtf(x * x + y * y);
 }
 
+float Vec2F::LengthPow2() const
+{
+	return x * x + y * y;
+}
+
 Vec2F Vec2F::Normalize() const
 {
 	return *this / Length();
 }
 
+Vec2F Vec2F::NormalizePow2() const
+{
+	return *this / LengthPow2();
+}
+
 void Vec2F::NormalizeThis()
 {
 	*this /= Length();
+}
+
+void Vec2F::NormalizeThisPow2()
+{
+	*this /= LengthPow2();
 }
 
 Vec2F Vec2F::Project(Vec2F projecting_vector) const
@@ -639,7 +652,7 @@ void Vec2F::RotateThis(float angle)
 	x = temp;
 }
 
-Vec2F Vec2F::Scale(Vec2F scale) const
+Vec2F Vec2F::Scale(const Vec2F& scale) const
 {
 	return Vec2F(x * scale.x, y * scale.y);
 }
@@ -649,7 +662,7 @@ Vec2F Vec2F::Scale(const Vec2F* scale) const
 	return Vec2F(x * scale->x, y * scale->y);
 }
 
-void Vec2F::ScaleThis(Vec2F scale)
+void Vec2F::ScaleThis(const Vec2F& scale)
 {
 	x *= scale.x;
 	y *= scale.y;
@@ -661,10 +674,22 @@ void Vec2F::ScaleThis(const Vec2F* scale)
 	y *= scale->y;
 }
 
+void Vec2F::Set(const Vec2F& vector)
+{
+	x = vector.x;
+	y = vector.y;
+}
+
 void Vec2F::Set(const Vec2F* vector)
 {
 	x = vector->x;
 	y = vector->y;
+}
+
+void Vec2F::Set(const Vec2D& vector)
+{
+	x = (float)vector.x;
+	y = (float)vector.y;
 }
 
 void Vec2F::Set(const Vec2D* vector)
@@ -685,13 +710,13 @@ void Vec2F::Set(double x, double y)
 	this->y = (float)y;
 }
 
-void Vec2F::operator=(Vec2F vector)
+void Vec2F::operator=(const Vec2F& vector)
 {
 	x = vector.x;
 	y = vector.y;
 }
 
-void Vec2F::operator=(Vec2D vector)
+void Vec2F::operator=(const Vec2D& vector)
 {
 	x = (float)vector.x;
 	y = (float)vector.y;
@@ -701,15 +726,13 @@ Vec2F::~Vec2F()
 {
 }
 
-
-
-std::ostream& operator<<(std::ostream& stream, Vec2F vector)
+std::ostream& operator<<(std::ostream& stream, const Vec2F& vector)
 {
 	stream << "X: " << vector.x << " Y: " << vector.y;
 	return stream;
 }
 
-std::ostream& operator<<(std::ostream& stream, Vec2D vector)
+std::ostream& operator<<(std::ostream& stream, const Vec2D& vector)
 {
 	stream << "X: " << vector.x << " Y: " << vector.y;
 	return stream;
@@ -1123,8 +1146,6 @@ std::ostream& operator<<(std::ostream& stream, Mat2F matrix)
 	return stream << "a11: " << matrix.a11 << " a12: " << matrix.a12 << " a21: " << matrix.a21 << " a22: " << matrix.a22;
 }
 
-
-
 Mat3x2D::Mat3x2D() :
 	a11(0.0), a12(0.0), a13(0.0),
 	a21(0.0), a22(0.0), a23(0.0)
@@ -1280,7 +1301,7 @@ void Mat3x2D::RotateThis(double angle)
 		sin(angle), cos(angle), 0.0f);
 }
 
-Mat3x2D Mat3x2D::Scale(Vec2D vector) const
+Mat3x2D Mat3x2D::Scale(const Vec2D& vector) const
 {
 	return *this * Mat3x2D(
 		vector.x, 0.0f, 0.0f,
@@ -1294,7 +1315,7 @@ Mat3x2D Mat3x2D::Scale(const Vec2D* vector) const
 		0.0f, vector->y, 0.0f);
 }
 
-void Mat3x2D::ScaleThis(Vec2D vector)
+void Mat3x2D::ScaleThis(const Vec2D& vector)
 {
 	*this *= Mat3x2D(
 		vector.x, 0.0f, 0.0f,
@@ -1308,7 +1329,7 @@ void Mat3x2D::ScaleThis(const Vec2D* vector)
 		0.0f, vector->y, 0.0f);
 }
 
-Mat3x2D Mat3x2D::Transport(Vec2D vector) const
+Mat3x2D Mat3x2D::Transport(const Vec2D& vector) const
 {
 	return *this * Mat3x2D(
 		1.0f, 0.0f, vector.x,
@@ -1322,7 +1343,7 @@ Mat3x2D Mat3x2D::Transport(const Vec2D* vector) const
 		0.0f, 1.0f, vector->y);
 }
 
-void Mat3x2D::TransportThis(Vec2D vector)
+void Mat3x2D::TransportThis(const Vec2D& vector)
 {
 	*this *= Mat3x2D(
 		1.0f, 0.0f, vector.x,
@@ -1623,7 +1644,7 @@ void Mat3x2F::RotateThis(float angle)
 		sinf(angle), cosf(angle), 0.0f);
 }
 
-Mat3x2F Mat3x2F::Scale(Vec2F vector) const
+Mat3x2F Mat3x2F::Scale(const Vec2F& vector) const
 {
 	return *this * Mat3x2F(
 		vector.x, 0.0f, 0.0f,
@@ -1637,7 +1658,7 @@ Mat3x2F Mat3x2F::Scale(const Vec2F* vector) const
 		0.0f, vector->y, 0.0f);
 }
 
-void Mat3x2F::ScaleThis(Vec2F vector)
+void Mat3x2F::ScaleThis(const Vec2F& vector)
 {
 	*this *= Mat3x2F(
 		vector.x, 0.0f, 0.0f,
@@ -1651,7 +1672,7 @@ void Mat3x2F::ScaleThis(const Vec2F* vector)
 		0.0f, vector->y, 0.0f);
 }
 
-Mat3x2F Mat3x2F::Transport(Vec2F vector) const
+Mat3x2F Mat3x2F::Transport(const Vec2F& vector) const
 {
 	return *this * Mat3x2F(
 		1.0f, 0.0f, vector.x,
@@ -1665,7 +1686,7 @@ Mat3x2F Mat3x2F::Transport(const Vec2F* vector) const
 		0.0f, 1.0f, vector->y);
 }
 
-void Mat3x2F::TransportThis(Vec2F vector)
+void Mat3x2F::TransportThis(const Vec2F& vector)
 {
 	*this *= Mat3x2F(
 		1.0f, 0.0f, vector.x,

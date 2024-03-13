@@ -134,7 +134,11 @@ namespace Map
 			bool exist = true);
 
 		bool IsCollision(const Beam* beam) const;
-		bool IsCollision(const Beam* beam, Vec2F* out_position, float* distance_to_out_position) const;
+		bool IsCollision(
+			const Beam* beam, 
+			Vec2F* out_position,
+			float* distance_to_out_position // distance from beam point to the nearest intersection position
+		) const;
 		bool IsCollision(const Line* line) const;
 		bool IsCollision(const Segment* segment) const;
 		float GetRadius() const;
