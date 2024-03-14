@@ -512,7 +512,14 @@ bool DynamicEntity::IsCollision(const Map::Cyrcle* cyrcle) const
 	const Vec2F& cyrcle_position = cyrcle->GetPosition();
 	const float& cyrcle_radius = cyrcle->GetRadius();
 
-	return !(trace.Distance(cyrcle_position) > cyrcle_radius ||
+	bool object_too_far = trace.Distance(cyrcle_position) > cyrcle_radius;
+	bool first_point_inside = trace.point.Distance(cyrcle_position) < cyrcle_radius - radius;
+	bool second_point_inside = trace.SecondPoint().Distance(cyrcle_position) < cyrcle_radius - radius;
+
+	return !(object_too_far || first_point_inside && second_point_inside);
+
+	return
+		!(trace.Distance(cyrcle_position) > cyrcle_radius ||
 		trace.point.Distance(cyrcle_position) < cyrcle_radius - radius &&
 		trace.SecondPoint().Distance(cyrcle_position) < cyrcle_radius - radius);
 }

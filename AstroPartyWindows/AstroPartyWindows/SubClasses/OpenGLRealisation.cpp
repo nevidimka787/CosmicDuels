@@ -811,6 +811,7 @@ void OpenGL::DrawObject(const DecelerationArea* deceler_area, bool update_shader
     }
     deceler_area_shader.SetUniform("position", deceler_area->GetPosition());
     deceler_area_shader.SetUniform("size", deceler_area->radius);
+    deceler_area_shader.SetUniform("decel_param", deceler_area->deceleration_parameter);
     deceler_area_buffer.Draw();
 }
 

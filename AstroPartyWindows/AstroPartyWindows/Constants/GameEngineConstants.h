@@ -120,7 +120,7 @@
 
 
 #define DECELERATION_AREA_DEFAULT_RADIUS					0.1f
-#define DECELERATION_AREA_DEFAULT_DECELERATION_CEFFICIENT	0.02f //how much velocity will lose every tic
+#define DECELERATION_AREA_DEFAULT_DECELERATION_COEFFICIENT	0.02f //how much velocity will lose every tic
 
 
 //the distance the ship will be pushed to the side

@@ -613,6 +613,7 @@ void Game::PollEvents()
 	case MAP_BROKEN:			Event8();	return;
 	case MAP_PORTAL:			Event9();	return;
 	case MAP_NO_CENTER:			Event10();	return;
+	case MAP_FORTRES:			Event11();	return;
 	}
 }
 
@@ -629,7 +630,7 @@ void Game::InitLevel()
 	MemorySetDefault();
 
 	current_map_id = GenerateRandomMapId();
-	// std::cout << "void Game::InitLevel()::current_map_id=" << (current_map_id = <map number>) << std::endl;
+	//std::cout << "void Game::InitLevel()::current_map_id=" << (current_map_id = <map number>) << std::endl;
 
 	Vec2F ships_positions[GAME_PLAYERS_MAX_COUNT];
 	float ships_angles[GAME_PLAYERS_MAX_COUNT];
@@ -1004,7 +1005,7 @@ void Game::InitMenus()
 	buttons[MAP_BROKEN].SetText("Broken");
 	buttons[MAP_PORTAL].SetText("Portal");
 	buttons[MAP_NO_CENTER].SetText("No Center");
-	buttons[MAP_FORTRES].SetText("Fortres");
+	buttons[MAP_FORTRES].SetText("Collaider");
 	position.Set(0.0f, 0.0f);
 	size.Set(1.0f, -GAME_PULL_MENU_DOWN_BORDER * (float)(((GAME_MAPS_COUNT + 1) / 2) + 1));
 	map_pull_select_menu.Set(&position, &size, buttons, GAME_MAPS_COUNT);

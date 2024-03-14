@@ -65,7 +65,7 @@ bool MapElement::IsUnbreacable() const
 	return properties & MAP_PROPERTY_UNBREACABLE;
 }
 
-void MapElement::Move(Vec2F move_vector)
+void MapElement::Move(const Vec2F& move_vector)
 {
 	position += move_vector;
 }
@@ -88,7 +88,7 @@ void MapElement::Set(const MapElement* map_element)
 	properties = map_element->properties;
 }
 
-void MapElement::Set(Vec2F position, EngineTypes::Map::property_t properties, bool exist)
+void MapElement::Set(const Vec2F& position, EngineTypes::Map::property_t properties, bool exist)
 {
 	this->exist = exist;
 	this->position = position;
@@ -102,7 +102,7 @@ void MapElement::Set(const Vec2F* position, EngineTypes::Map::property_t propert
 	this->properties = properties;
 }
 
-void MapElement::SetPosition(Vec2F position)
+void MapElement::SetPosition(const Vec2F& position)
 {
 	this->position = position;
 }
@@ -110,6 +110,11 @@ void MapElement::SetPosition(Vec2F position)
 void MapElement::SetPosition(const Vec2F* position)
 {
 	this->position = *position;
+}
+
+void MapElement::SetProperties(EngineTypes::Map::property_t properties)
+{
+	this->properties = properties;
 }
 
 void MapElement::operator=(MapElement map_element)
@@ -137,6 +142,12 @@ Rectangle::Rectangle(const Rectangle& rectangle) :
 {
 }
 
+Rectangle::Rectangle(const Segment& diagonal, EngineTypes::Map::property_t properties, bool exist) :
+	MapElement(&diagonal.point, properties, exist),
+	point2(diagonal.point + diagonal.vector)
+{
+}
+
 Rectangle::Rectangle(const Segment* diagonal, EngineTypes::Map::property_t properties, bool exist) :
 	MapElement(&diagonal->point, properties, exist),
 	point2(diagonal->point + diagonal->vector)
@@ -147,14 +158,12 @@ Rectangle::Rectangle(Vec2F point1, Vec2F point2, EngineTypes::Map::property_t pr
 	MapElement(point1, properties, exist),
 	point2(point2)
 {
-
 }
 
 Rectangle::Rectangle(const Vec2F* point1, const Vec2F* point2, EngineTypes::Map::property_t properties, bool exist) :
 	MapElement(point1, properties, exist),
 	point2(*point2)
 {
-
 }
 
 Vec2F Rectangle::UpRightPoint() const
@@ -399,6 +408,14 @@ void Rectangle::Set(const Rectangle* rectangle)
 	properties = rectangle->properties;
 }
 
+void Rectangle::Set(const Segment& diagonal, EngineTypes::Map::property_t properties, bool exist)
+{
+	this->exist = exist;
+	this->point2 = diagonal.point + diagonal.vector;
+	this->position = diagonal.point;
+	this->properties = properties;
+}
+
 void Rectangle::Set(const Segment* diagonal, EngineTypes::Map::property_t properties, bool exist)
 {
 	this->exist = exist;
@@ -435,11 +452,18 @@ void Rectangle::SetSize(const Vec2F* size)
 	point2 = center + *size;
 }
 
+void Rectangle::operator=(const Rectangle& rectangle)
+{
+	exist = rectangle.exist;
+	last_position = rectangle.last_position;
+	point2 = rectangle.point2;
+	position = rectangle.position;
+	properties = rectangle.properties;
+}
+
 Rectangle::~Rectangle()
 {
 }
-
-
 
 Cyrcle::Cyrcle() :
 	MapElement(),

@@ -372,7 +372,7 @@ public:
 
 	void PollEvents();
 	
-	//"Test"
+	//"Orbit"
 	void Event0();
 	
 	//"turret"
@@ -405,10 +405,10 @@ public:
 	//"No Center"
 	void Event10();
 
-	//"Fortres"
+	//"Collaider"
 	void Event11();
 
-	//"Test"
+	//"Orbit"
 	void CreateMap0(Vec2F* ships_positions, float* ships_angles);
 	
 	//"turret"
@@ -441,7 +441,7 @@ public:
 	//"No center"
 	void CreateMap10(Vec2F* ships_positions, float* ships_angles);
 
-	//"Fortres"
+	//"Collaider"
 	void CreateMap11(Vec2F* ships_positions, float* ships_angles);
 
 	void CreateMapRoundResults(GameTypes::players_count_t players_count, GameTypes::score_t max_score, float cell_size);

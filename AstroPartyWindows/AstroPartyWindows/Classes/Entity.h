@@ -1219,13 +1219,13 @@ public:
 	DecelerationArea(const DecelerationArea& deceleration_area);
 	DecelerationArea(
 		Vec2F position,
-		float deseleration_parameter = DECELERATION_AREA_DEFAULT_DECELERATION_CEFFICIENT,
+		float deseleration_parameter = DECELERATION_AREA_DEFAULT_DECELERATION_COEFFICIENT,
 		float radius = DECELERATION_AREA_DEFAULT_RADIUS,
 		float angle = 0.0f,
 		bool exist = true);
 	DecelerationArea(
 		const Vec2F* position,
-		float deseleration_parameter = DECELERATION_AREA_DEFAULT_DECELERATION_CEFFICIENT,
+		float deseleration_parameter = DECELERATION_AREA_DEFAULT_DECELERATION_COEFFICIENT,
 		float radius = DECELERATION_AREA_DEFAULT_RADIUS,
 		float angle = 0.0f,
 		bool exist = true);
@@ -1233,13 +1233,13 @@ public:
 	void Set(const DecelerationArea* deceleration_area);
 	void Set(
 		Vec2F position,
-		float deseleration_parameter = DECELERATION_AREA_DEFAULT_DECELERATION_CEFFICIENT,
+		float deseleration_parameter = DECELERATION_AREA_DEFAULT_DECELERATION_COEFFICIENT,
 		float radius = DECELERATION_AREA_DEFAULT_RADIUS,
 		float angle = 0.0f,
 		bool exist = true);
 	void Set(
 		const Vec2F* position,
-		float deseleration_parameter = DECELERATION_AREA_DEFAULT_DECELERATION_CEFFICIENT,
+		float deseleration_parameter = DECELERATION_AREA_DEFAULT_DECELERATION_COEFFICIENT,
 		float radius = DECELERATION_AREA_DEFAULT_RADIUS,
 		float angle = 0.0f,
 		bool exist = true);

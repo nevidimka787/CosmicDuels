@@ -911,7 +911,7 @@ bool Segment::Intersection(const Line* intersection_line, Vec2F* output_intersec
 	Mat2F temp_matrix1 = Mat2F(&temp_vector1, output_intersection_point);
 	temp_vector1 = vector * temp_matrix1.Inverse();
 
-	if (temp_vector1.x + temp_vector1.y < 1.0f)
+	if (temp_vector1.x + temp_vector1.y < 1.0f || !(temp_vector1 == temp_vector1))
 	{
 		return false;
 	}

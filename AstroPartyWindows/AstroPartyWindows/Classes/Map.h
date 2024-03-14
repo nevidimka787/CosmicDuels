@@ -40,13 +40,14 @@ namespace Map
 		bool IsKiller() const;
 		bool IsAggressive() const;
 		bool IsUnbreacable() const;
-		void Move(Vec2F move_vector);
+		void Move(const Vec2F& move_vector);
 		void Move(const Vec2F* move_vector);
-		void SetPosition(Vec2F position);
+		void SetPosition(const Vec2F& position);
 		void SetPosition(const Vec2F* position);
+		void SetProperties(EngineTypes::Map::property_t properties);
 		void Set(const MapElement* map_element);
 		void Set(
-			Vec2F position,
+			const Vec2F& position,
 			EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
 			bool exist = true);
 		void Set(
@@ -79,6 +80,10 @@ namespace Map
 		Rectangle();
 		Rectangle(const Rectangle& rectangle);
 		Rectangle(
+			const Segment& diagonal,
+			EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
+			bool exist = true);
+		Rectangle(
 			const Segment* diagonal,
 			EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
 			bool exist = true);
@@ -104,6 +109,10 @@ namespace Map
 		Vec2F Position() const;
 		void Set(const Rectangle* patent);
 		void Set(
+			const Segment& diagonal,
+			EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
+			bool exist = true);
+		void Set(
 			const Segment* diagonal,
 			EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
 			bool exist = true);
@@ -111,6 +120,8 @@ namespace Map
 		void SetPosition(const Vec2F* position);
 		void SetSize(Vec2F size);
 		void SetSize(const Vec2F* size);
+
+		void operator=(const Rectangle& rectangle);
 
 		~Rectangle();
 	};

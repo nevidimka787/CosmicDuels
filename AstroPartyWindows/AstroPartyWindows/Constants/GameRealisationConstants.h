@@ -58,13 +58,13 @@ turrets, mega lasers
 //The maximum possible count of turrets on the map.
 #define GAME_TURRETS_MAX_COUNT		32
 //The maximum possible count of lasers on the map.
-#define GAME_MEGA_LASERS_MAX_COUNT	32
+#define GAME_MEGA_LASERS_MAX_COUNT	4
 //The maximum possible count of asteroids on the map.
-#define GAME_ASTEROIDS_MAX_COUNT	32
+#define GAME_ASTEROIDS_MAX_COUNT	(UINT8_MAX - 1)
 //The maximum possible count of annihilation area generators on the map.
-#define GAME_ANNIH_AREAS_GENS_MAX_COUNT	16
+#define GAME_ANNIH_AREAS_GENS_MAX_COUNT	32
 //The maximum possible count of bonuses on the map.
-#define GAME_BONUSES_MAX_COUNT		32
+#define GAME_BONUSES_MAX_COUNT		(UINT8_MAX - 1)
 //The maximum possible count of bullets on the map.
 #define GAME_BULLETS_MAX_COUNT		(UINT16_MAX - 1)
 //The maximum possible count of particles on the map.

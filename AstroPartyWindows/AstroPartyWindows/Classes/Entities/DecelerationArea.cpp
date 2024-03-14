@@ -4,7 +4,7 @@
 
 DecelerationArea::DecelerationArea() :
 	StaticEntity(),
-	deceleration_parameter(DECELERATION_AREA_DEFAULT_DECELERATION_CEFFICIENT)
+	deceleration_parameter(DECELERATION_AREA_DEFAULT_DECELERATION_COEFFICIENT)
 {
 }
 
