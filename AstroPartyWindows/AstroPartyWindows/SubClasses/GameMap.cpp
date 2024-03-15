@@ -101,14 +101,76 @@ void Game::Event0()
 	}
 }
 
+#define EVENT_1__TURRET_ANGULAR_VELOSITY	0.01f
+#define EVENT_1__TURRET_DETERCION_DISTANCE	1.0f
+
 void Game::Event1()
 {
-	turrets_array_mtx.lock();
 	if (turrets[0].exist)
 	{
-		turrets[0].Rotate(0.01f);
+		float min_dist = EVENT_1__TURRET_DETERCION_DISTANCE;
+		size_t min_id = PLAYERS_COUNT_T_MAX;
+
+		ships_array_mtx.lock();
+		for (size_t id = 0, count = 0; count < ships_count; ++id)
+		{
+			if (ships[id].exist)
+			{
+				float cur_dist = turrets[0].GetDistance(&ships[id]);
+				if (cur_dist < min_dist)
+				{
+					cur_dist = min_dist;
+					min_id = id;
+				}
+				++count;
+			}
+		}
+		ships_array_mtx.unlock();
+
+		Vec2F direction;
+		if (min_id != PLAYERS_COUNT_T_MAX)
+		{
+			direction = ships[min_id].GetPosition() - turrets[0].GetPosition();
+			goto CALCULATE_ANGLE;
+		}
+		
+		asteroids_array_mtx.lock();
+		for (size_t id = 0, count = 0; count < asteroids_count; ++id)
+		{
+			if (asteroids[id].exist)
+			{
+				float cur_dist = turrets[0].GetDistance(&asteroids[id]);
+				if (cur_dist < min_dist)
+				{
+					cur_dist = min_dist;
+					min_id = id;
+				}
+				++count;
+			}
+		}
+		asteroids_array_mtx.unlock();
+
+		if (min_id != PLAYERS_COUNT_T_MAX)
+		{
+			direction = asteroids[min_id].GetPosition() - turrets[0].GetPosition();
+			goto CALCULATE_ANGLE;
+		}
+
+	CALCULATE_ANGLE:
+
+		turrets_array_mtx.lock();
+		if (min_id != PLAYERS_COUNT_T_MAX)
+		{
+			float angle = turrets[0].GetDirection().GetAngle(direction);
+			turrets[0].Rotate(fmaxf(-EVENT_1__TURRET_ANGULAR_VELOSITY, fminf(-angle, EVENT_1__TURRET_ANGULAR_VELOSITY)));
+		}
+		else
+		{
+			turrets[0].Rotate(rotation_inverse ? -EVENT_1__TURRET_ANGULAR_VELOSITY : EVENT_1__TURRET_ANGULAR_VELOSITY);
+		}
+		turrets_array_mtx.unlock();
+
 	}
-	turrets_array_mtx.unlock();
 
 	static int event1_spawn_asteroids;
 

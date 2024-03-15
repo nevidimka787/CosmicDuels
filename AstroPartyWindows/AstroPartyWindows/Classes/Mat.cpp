@@ -179,11 +179,6 @@ Vec2D::operator Vec2F()
 	return Vec2F((float)x, (float)y);
 }
 
-double Vec2D::AbsoluteAngle() const
-{
-	return (atan2(-y, x));
-}
-
 double Vec2D::Distance(const Vec2D& vector) const
 {
 	return (*this - vector).Length();
@@ -192,6 +187,17 @@ double Vec2D::Distance(const Vec2D& vector) const
 double Vec2D::Distance(const Vec2D* vector) const
 {
 	return (*this - *vector).Length();
+}
+
+double Vec2D::GetAngle() const
+{
+	return (atan2(-y, x));
+}
+
+double Vec2D::GetAngle(Vec2D to_vector) const
+{
+	to_vector.RotateThis(-GetAngle());
+	return to_vector.GetAngle();
 }
 
 double Vec2D::Length() const
@@ -511,16 +517,6 @@ Vec2F::operator Vec2D()
 	return Vec2D(x, y);
 }
 
-float Vec2F::AbsoluteAngle() const
-{
-	return (atan2f(-y, x));
-}
-
-float Vec2F::AbsoluteAngleClockwise() const
-{
-	return (atan2f(y, x));
-}
-
 float Vec2F::Distance(const Vec2F& target_vector) const
 {
 	return (*this - target_vector).Length();
@@ -529,6 +525,22 @@ float Vec2F::Distance(const Vec2F& target_vector) const
 float Vec2F::Distance(const Vec2F* target_vector) const
 {
 	return (*this - *target_vector).Length();
+}
+
+float Vec2F::GetAngle() const
+{
+	return (atan2f(-y, x));
+}
+
+float Vec2F::GetAngle(Vec2F to_vector) const
+{
+	to_vector.RotateThis(-GetAngle());
+	return to_vector.GetAngle();
+}
+
+float Vec2F::GetAngleClockwise() const
+{
+	return (atan2f(y, x));
 }
 
 float Vec2F::Length() const

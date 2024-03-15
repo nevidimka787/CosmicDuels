@@ -53,7 +53,8 @@ public:
 
 	operator Vec2F();
 
-	double AbsoluteAngle() const;
+	double GetAngle() const;
+	double GetAngle(Vec2D to_vector) const;
 	double Distance(const Vec2D& target) const;
 	double Distance(const Vec2D* target) const;
 	double Length() const;
@@ -125,10 +126,11 @@ public:
 
 	operator Vec2D();
 
-	float AbsoluteAngle() const;
-	float AbsoluteAngleClockwise() const;
 	float Distance(const Vec2F& target) const;
 	float Distance(const Vec2F* target) const;
+	float GetAngle() const;
+	float GetAngle(Vec2F to_vector) const;
+	float GetAngleClockwise() const;
 	float Length() const;
 	float LengthPow2() const;
 	Vec2F Normalize() const;

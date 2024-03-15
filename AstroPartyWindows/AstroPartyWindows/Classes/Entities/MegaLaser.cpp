@@ -29,7 +29,7 @@ MegaLaser::MegaLaser(
 	AggressiveEntity(
 		&segment->point,
 		segment->vector.Length(),
-		segment->vector.AbsoluteAngle(),
+		segment->vector.GetAngle(),
 		attack_dellay,
 		attack_period,
 		inactive_period,

@@ -26,7 +26,7 @@ Knife::Knife(
 		host,
 		&local_segment->point,
 		local_segment->vector.Length(),
-		local_segment->vector.AbsoluteAngleClockwise(),
+		local_segment->vector.GetAngleClockwise(),
 		exist),
 	health(health)
 {
@@ -137,7 +137,7 @@ void Knife::Set(
 	host_number = host->GetPlayerNumber();
 	host_team = host->GetTeamNumber();
 	local_direction = local_segment->vector;
-	local_angle = local_direction.AbsoluteAngle();
+	local_angle = local_direction.GetAngle();
 	local_position = local_segment->point;
 	radius = local_segment->vector.Length();
 	SupportEntity::Update();

@@ -893,7 +893,7 @@ void OpenGL::DrawObject(const MegaLaser* mega_laser, bool update_shader)
         mega_laser_shader.SetUniform("camera_size", temp__game__camera_size);
     }
     mega_laser_shader.SetUniform("is_active", mega_laser->IsShooting(*game_p__global_timer));
-    mega_laser_shader.SetUniform("angle", mega_laser->GetDirectionNotNormalize().AbsoluteAngle());
+    mega_laser_shader.SetUniform("angle", mega_laser->GetDirectionNotNormalize().GetAngle());
     mega_laser_shader.SetUniform("position", mega_laser->GetPosition());
     mega_laser_shader.SetUniform("vector", mega_laser->GetDirectionNotNormalize() * mega_laser->radius);
     mega_laser_shader.SetUniform("width", mega_laser->width);

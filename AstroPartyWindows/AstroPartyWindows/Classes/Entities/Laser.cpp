@@ -33,7 +33,7 @@ Laser::Laser(
 		host,
 		&local_beam->point,
 		0.0f,
-		local_beam->vector.AbsoluteAngle(), 
+		local_beam->vector.GetAngle(), 
 		exist),
 	end_point(local_beam->point),
 	properties(properties),
@@ -242,7 +242,7 @@ void Laser::Set(
 	this->exist = exist;
 	this->host_number = host_number;
 	this->host_team = host_team;
-	local_angle = local_beam->vector.AbsoluteAngle();
+	local_angle = local_beam->vector.GetAngle();
 	local_position = local_beam->point;
 	shoot_time = shoot_time;
 	this->width = width;
