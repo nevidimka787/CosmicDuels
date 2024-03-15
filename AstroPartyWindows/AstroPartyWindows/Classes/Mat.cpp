@@ -698,10 +698,22 @@ void Vec2F::Set(const Vec2D* vector)
 	y = (float)vector->y;
 }
 
+void Vec2F::Set(float v)
+{
+	this->x = v;
+	this->y = v;
+}
+
 void Vec2F::Set(float x, float y)
 {
 	this->x = x;
 	this->y = y;
+}
+
+void Vec2F::Set(double v)
+{
+	this->x = (float)v;
+	this->y = (float)v;
 }
 
 void Vec2F::Set(double x, double y)

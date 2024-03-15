@@ -978,6 +978,22 @@ void Polygon::Set(const Vec2F* position, float angle, const Vec2F* size, const V
 	}
 }
 
+void Polygon::SetAngle(float angle)
+{
+	this->last_angle = this->angle;
+	this->angle = angle;
+
+	need_update = true;
+}
+
+void Polygon::SetSize(const Vec2F& size)
+{
+	this->last_size = this->size;
+	this->size = size;
+
+	need_update = true;
+}
+
 void Polygon::Update()
 {
 	if (need_update)

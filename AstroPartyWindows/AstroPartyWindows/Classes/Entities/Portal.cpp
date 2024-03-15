@@ -180,7 +180,7 @@ bool Portal::IsConnected() const
 }
 
 void Portal::Set(
-	Vec2F position,
+	const Vec2F& position,
 	const Vec2F* tp_position_pointer,
 	float radius,
 	float angle,
@@ -210,6 +210,17 @@ void Portal::Set(
 	this->radius = radius;
 	this->tp_mode = PORTAL_MODE_POINTER;
 	this->tp_position_pointer = tp_position_pointer;
+}
+
+void Portal::SetPosition(const Vec2F& position)
+{
+	this->last_position = this->position;
+	this->position = position;
+}
+
+void Portal::SetTPPosition(const Vec2F& position)
+{
+	this->tp_position = position;
 }
 
 void Portal::SetMode(EngineTypes::Portal::mode_t mode)

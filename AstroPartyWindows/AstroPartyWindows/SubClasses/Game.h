@@ -408,6 +408,9 @@ public:
 	//"Collaider"
 	void Event11();
 
+	//"Kaleidoscope"
+	void Event12();
+
 	//"Orbit"
 	void CreateMap0(Vec2F* ships_positions, float* ships_angles);
 	
@@ -443,6 +446,9 @@ public:
 
 	//"Collaider"
 	void CreateMap11(Vec2F* ships_positions, float* ships_angles);
+
+	//"Kaleidoscope"
+	void CreateMap12(Vec2F* ships_positions, float* ships_angles);
 
 	void CreateMapRoundResults(GameTypes::players_count_t players_count, GameTypes::score_t max_score, float cell_size);
 

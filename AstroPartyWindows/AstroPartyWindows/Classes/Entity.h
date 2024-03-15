@@ -1344,7 +1344,7 @@ public:
 	void Disconnect();
 	bool IsConnected() const;
 	void Set(
-		Vec2F position,
+		const Vec2F& position,
 		const Vec2F* tp_position_pointer = nullptr,
 		float radius = GRAVITY_GENERATOR_DEFAULT_RADIUS,
 		float angle = 0.0f,
@@ -1355,6 +1355,8 @@ public:
 		float radius = GRAVITY_GENERATOR_DEFAULT_RADIUS,
 		float angle = 0.0f,
 		bool exist = true);
+	void SetPosition(const Vec2F& position);
+	void SetTPPosition(const Vec2F& position);
 	void SetMode(EngineTypes::Portal::mode_t mode);
 	template <typename EntityType>
 	void Teleport(EntityType* entity);

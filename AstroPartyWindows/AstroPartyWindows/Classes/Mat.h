@@ -167,7 +167,9 @@ public:
 	void Set(const Vec2F* vector);
 	void Set(const Vec2D& vector);
 	void Set(const Vec2D* vector);
+	void Set(float v);
 	void Set(float x, float y);
+	void Set(double v);
 	void Set(double x, double y);
 
 	void operator=(const Vec2F& vector);

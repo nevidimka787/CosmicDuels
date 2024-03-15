@@ -251,6 +251,8 @@ namespace Map
 			EngineTypes::Polygon::points_array_length_t points_array_length,
 			EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
 			bool exist = true);
+		void SetAngle(float angle);
+		void SetSize(const Vec2F& size);
 		void ToDefault();
 		//The function set local_points by global points, position and angle.
 		void UpdatePoints();
