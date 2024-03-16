@@ -101,6 +101,21 @@ void Game::Event0()
 	}
 }
 
+#define MAP_TURRET_ON_CENTER__CENTER_POSITION			6.0f
+#define MAP_TURRET_ON_CENTER__FRAME_SIZE				2.0f
+#define MAP_TURRET_ON_CENTER__CENTER_SQUARE_SIZE		0.1f
+#define MAP_TURRET_ON_CENTER__RECTANGLE_OUT_POSITION	1.5f
+#define MAP_TURRET_ON_CENTER__RECTANGLE_IN_POSITION		1.0f
+#define MAP_TURRET_ON_CENTER__CENTER					MAP_TURRET_ON_CENTER__CENTER_POSITION
+#define MAP_TURRET_ON_CENTER__RECTANGLE_COUNT			6u
+
+#define MAP_TURRET_ON_CENTER__FRAME_RECTANGLE		0u
+#define MAP_TURRET_ON_CENTER__CENTER_RECTANGLE		1u
+#define MAP_TURRET_ON_CENTER__DOWN_LEFT_RECTANGLE	2u
+#define MAP_TURRET_ON_CENTER__UP_RIGHT_RECTANGLE	3u
+#define MAP_TURRET_ON_CENTER__UP_LEFT_RECTANGLE		4u
+#define MAP_TURRET_ON_CENTER__DOWN_RIGHT_RECTANGLE	5u
+
 #define EVENT_1__TURRET_ANGULAR_VELOSITY	0.01f
 #define EVENT_1__TURRET_DETERCION_DISTANCE	1.0f
 
@@ -171,6 +186,10 @@ void Game::Event1()
 		turrets_array_mtx.unlock();
 
 	}
+	else if (!(global_timer % 1000))
+	{
+		AddEntity(Turret(Vec2F(MAP_TURRET_ON_CENTER__CENTER_POSITION), 0.0f, 200u));
+	}
 
 	static int event1_spawn_asteroids;
 
@@ -195,6 +214,8 @@ void Game::Event1()
 		event1_spawn_asteroids = 0;
 		break;
 	}
+
+	asteroid_position += Vec2F(MAP_TURRET_ON_CENTER__CENTER_POSITION);
 
 	if (event1_spawn_asteroids)
 	{
@@ -491,19 +512,8 @@ void Game::Event6()
 		AddEntity(Asteroid(
 			Vec2F(MAP_DESTRUCTIBLE__CENTER_POSTION),
 			Vec2F(),
-			GenerateRandomInventory(BONUS_BUFF_SHIELD | BONUS_BUFF_TRIPLE, 1, 1, 1, 1),
+			GenerateRandomInventory(BONUS_BUFF_STREAM, 1, 3, 1, 1),
 			ASTEROID_SIZE_MEDIUM));
-
-		for (size_t asteroid = 0; asteroid < 4; ++asteroid)
-		{
-			AddEntity(Asteroid(
-				Vec2F(MAP_DESTRUCTIBLE__CENTER_POSTION) + asteroid_position / 8.0f,
-				Vec2F(),
-				GenerateRandomInventory(BONUS_BUFF_STREAM, 1, 3, 1, 1),
-				ASTEROID_SIZE_MEDIUM));
-
-			asteroid_position.PerpendicularThis();
-		}
 
 		asteroids_array_mtx.unlock();
 	SKIP_CENTER_SPAWN:
@@ -527,7 +537,7 @@ void Game::Event6()
 				Vec2F(MAP_DESTRUCTIBLE__CENTER_POSTION) + asteroid_position,
 				Vec2F(),
 				GenerateRandomInventory(BONUS_BONUS | BONUS_RULE_REVERSE, 1, 2, 1, 2),
-				ASTEROID_SIZE_BIG));
+				ASTEROID_SIZE_MEDIUM));
 			
 		SKIP_EDGE_SPAWN:
 			asteroid_position.PerpendicularThis();
@@ -1048,21 +1058,6 @@ void Game::CreateMap1(Vec2F* ships_positions, float* ships_angles)
 	Vec2F new_position;
 	Segment new_segment;
 
-#define MAP_TURRET_ON_CENTER__CENTER_POSITION			0.0f
-#define MAP_TURRET_ON_CENTER__FRAME_SIZE				2.0f
-#define MAP_TURRET_ON_CENTER__CENTER_SQUARE_SIZE		0.1f
-#define MAP_TURRET_ON_CENTER__RECTANGLE_OUT_POSITION	1.5f
-#define MAP_TURRET_ON_CENTER__RECTANGLE_IN_POSITION		1.0f
-#define MAP_TURRET_ON_CENTER__CENTER					0.0f
-#define MAP_TURRET_ON_CENTER__RECTANGLE_COUNT			6u
-
-#define MAP_TURRET_ON_CENTER__FRAME_RECTANGLE		0u
-#define MAP_TURRET_ON_CENTER__CENTER_RECTANGLE		1u
-#define MAP_TURRET_ON_CENTER__DOWN_LEFT_RECTANGLE	2u
-#define MAP_TURRET_ON_CENTER__UP_RIGHT_RECTANGLE	3u
-#define MAP_TURRET_ON_CENTER__UP_LEFT_RECTANGLE		4u
-#define MAP_TURRET_ON_CENTER__DOWN_RIGHT_RECTANGLE	5u
-
 	/* Create map */
 
 	Map::Rectangle* rectangles = new Map::Rectangle[MAP_TURRET_ON_CENTER__RECTANGLE_COUNT];
@@ -1105,9 +1100,10 @@ void Game::CreateMap1(Vec2F* ships_positions, float* ships_angles)
 
 	map.Set(rectangles, MAP_TURRET_ON_CENTER__RECTANGLE_COUNT);
 
-	new_position.Set(MAP_TURRET_ON_CENTER__CENTER, MAP_TURRET_ON_CENTER__CENTER);
-	AddEntity(Turret(&new_position, 0.0f, 200u));
+	delete[] rectangles;
 
+	new_position.Set(MAP_TURRET_ON_CENTER__CENTER);
+	AddEntity(Turret(&new_position, 0.0f, 200u));
 
 	/* Spawn entities */
 
@@ -1121,7 +1117,8 @@ void Game::CreateMap1(Vec2F* ships_positions, float* ships_angles)
 	ships_angles[2] = (float)M_PI_2 + (float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
 	ships_angles[3] = (float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
 
-	delete[] rectangles;
+	camera.SetPosition(Vec2F(MAP_TURRET_ON_CENTER__CENTER_POSITION));
+	camera.SetSize();
 }
 
 void Game::CreateMap2(Vec2F* ships_positions, float* ships_angles)
@@ -1483,8 +1480,8 @@ void Game::CreateMap6(Vec2F* ships_positions, float* ships_angles)
 			for (size_t rec = 0; rec < 9; ++rec)
 			{
 				rectangle_position = rectangles_positions[position] - Vec2F(MAP_DESTRUCTIBLE__DESTROYABLE_RECTANGLE_POSITION_STEP);
-				rectangle_position.x += (rec % 3) * MAP_DESTRUCTIBLE__DESTROYABLE_RECTANGLE_POSITION_STEP;
-				rectangle_position.y += (rec / 3) * MAP_DESTRUCTIBLE__DESTROYABLE_RECTANGLE_POSITION_STEP;
+				rectangle_position.x += static_cast<float>(rec % 3) * MAP_DESTRUCTIBLE__DESTROYABLE_RECTANGLE_POSITION_STEP;
+				rectangle_position.y += static_cast<float>(rec / 3) * MAP_DESTRUCTIBLE__DESTROYABLE_RECTANGLE_POSITION_STEP;
 
 				diagonal.Set(
 					rectangle_position - Vec2F(MAP_DESTRUCTIBLE__DESTROYABLE_RECTANGLES_SIZE / 2.0f) + Vec2F(MAP_DESTRUCTIBLE__CENTER_POSTION),

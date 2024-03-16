@@ -150,20 +150,29 @@ void ExaustBurnous()
 
 void ShardsAsteroid()
 {
-	if(length(pixel_position) < 0.9f || length(pixel_position) > 1.0f)
+	float len = length(pixel_position);
+	int ang = int((atan(pixel_position.x / pixel_position.y) + 3.14f) / 6.28f * 1000.0f);
+
+	if(len < animation * 0.5f + 0.5f || len > 1.0f)
 	{
 		discard;
 	}
-	frag_color = vec4(color, 1.0f);
+	float pahse = abs(float(ang % 50 - 25)) / 25.0f;
+	float alpha = 
+		(len - animation) * 
+		4.0f * 
+		(1.0f - max(animation * 5.0f - 4.0f, 0.0f)) *
+		pahse;
+
+	vec3 res_color = vec3(0.5f) * (pahse) + color * (1.0f - pahse);
+
+	frag_color = vec4(res_color, alpha);
 }
 
 void ShardsAsteroidPowered()
 {
-	if(length(pixel_position) < 0.9f || length(pixel_position) > 1.0f)
-	{
-		discard;
-	}
-	frag_color = vec4(color, 1.0f);
+	ShardsAsteroid();
+	return;
 }
 
 void ShardsMapElement()
@@ -180,9 +189,26 @@ void ShardsMapElement()
 
 void ShardsPilot()
 {
-	if(
-		(length(pixel_position) < 0.9f || length(pixel_position) > 1.0f) && 
-		(length(pixel_position) < 0.7f || length(pixel_position) > 0.8f))
+	float len = length(pixel_position);
+	int ang = int((atan(pixel_position.x / pixel_position.y) + 3.14f) / 6.28f * 1000.0f);
+
+	if((len < animation * 0.9f + 0.1f || len > 1.0f))
+	{
+		discard;
+	}
+	float pahse = abs(float(ang % 40 - 20)) / 20.0f;
+	float alpha = 
+		(len - animation) * 
+		4.0f * 
+		(1.0f - max(animation * 5.0f - 4.0f, 0.0f)) *
+		pahse;
+
+	vec3 res_color = vec3(vec3(1.0f) - color) * (1.0f - pahse) + color * (pahse);
+
+	frag_color = vec4(res_color, alpha);
+	return;
+
+	if(length(pixel_position) < 0.9f || length(pixel_position) > 1.0f)
 	{
 		discard;
 	}
@@ -191,6 +217,25 @@ void ShardsPilot()
 
 void ShardsShip()
 {
+	float len = length(pixel_position);
+	int ang = int((atan(pixel_position.x / pixel_position.y) + 3.14f) / 6.28f * 1000.0f);
+
+	if((len < animation * 0.4f + 0.7f || len > 1.0f) && (len < animation * 0.3f + 0.3f || len > 0.7f))
+	{
+		discard;
+	}
+	float pahse = abs(float(ang % 80 - 40)) / 40.0f;
+	float alpha = 
+		(len - animation) * 
+		4.0f * 
+		(1.0f - max(animation * 5.0f - 4.0f, 0.0f)) *
+		pahse;
+
+	vec3 res_color = vec3(vec3(1.0f) - color) * (1.0f - pahse) + color * (pahse);
+
+	frag_color = vec4(res_color, alpha);
+	return;
+
 	if(length(pixel_position) < 0.9f || length(pixel_position) > 1.0f)
 	{
 		discard;
@@ -202,5 +247,3 @@ float ElipsLength(vec2 pos1, vec2 pos2, vec2 scale)
 {
 	return sqrt((pos1.x - pos2.x) * (pos1.x - pos2.x) * scale.x + (pos1.y - pos2.y) * (pos1.y - pos2.y) * scale.y);
 }
-
-

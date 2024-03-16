@@ -644,47 +644,21 @@ void Game::InitLevel()
 	
 	switch (current_map_id)
 	{
-	case MAP_KALEIDOSCOPE:
-		CreateMap12(ships_positions, ships_angles);
-		break;
-	case MAP_COLLAIDER:
-		CreateMap11(ships_positions, ships_angles);
-		break;
-	case MAP_NO_CENTER:
-		CreateMap10(ships_positions, ships_angles);
-		break;
-	case MAP_PORTAL:
-		CreateMap9(ships_positions, ships_angles);
-		break;
-	case MAP_BROKEN:
-		CreateMap8(ships_positions, ships_angles);
-		break;
-	case MAP_AGGRESSIVE:
-		CreateMap7(ships_positions, ships_angles);
-		break;
-	case MAP_DESTROYABLE:
-		CreateMap6(ships_positions, ships_angles);
-		break;
-	case MAP_DYNAMICAL:
-		CreateMap5(ships_positions, ships_angles);
-		break;
-	case MAP_MEGA_LASERS:
-		CreateMap4(ships_positions, ships_angles);
-		break;
-	case MAP_DECELERATION_AREA:
-		CreateMap3(ships_positions, ships_angles);
-		break;
-	case MAP_CYRCLE_ON_CENTER:
-		CreateMap2(ships_positions, ships_angles);
-		break;
-	case MAP_TURRET_ON_CENTER:
-		CreateMap1(ships_positions, ships_angles);
-		break;
-	default:
-		std::cout << "WARNING::Map value is undeclarated. Defaul map is created." << std::endl;
-	case MAP_ORBIT_MAP:
-		CreateMap0(ships_positions, ships_angles);
-		break;
+	case MAP_KALEIDOSCOPE:		CreateMap12(ships_positions, ships_angles);	break;
+	case MAP_COLLAIDER:			CreateMap11(ships_positions, ships_angles);	break;
+	case MAP_NO_CENTER:			CreateMap10(ships_positions, ships_angles);	break;
+	case MAP_PORTAL:			CreateMap9(ships_positions, ships_angles);	break;
+	case MAP_BROKEN:			CreateMap8(ships_positions, ships_angles);	break;
+	case MAP_AGGRESSIVE:		CreateMap7(ships_positions, ships_angles);	break;
+	case MAP_DESTROYABLE:		CreateMap6(ships_positions, ships_angles);	break;
+	case MAP_DYNAMICAL:			CreateMap5(ships_positions, ships_angles);	break;
+	case MAP_MEGA_LASERS:		CreateMap4(ships_positions, ships_angles);	break;
+	case MAP_DECELERATION_AREA:	CreateMap3(ships_positions, ships_angles);	break;
+	case MAP_CYRCLE_ON_CENTER:	CreateMap2(ships_positions, ships_angles);	break;
+	case MAP_TURRET_ON_CENTER:	CreateMap1(ships_positions, ships_angles);	break;
+	default:					
+		std::cout << "WARNING::Game::InitLevel: Map value is undeclarated. Defaul map is created." << std::endl;
+	case MAP_ORBIT_MAP:			CreateMap0(ships_positions, ships_angles);	break;
 	}
 
 	AddEntity(
