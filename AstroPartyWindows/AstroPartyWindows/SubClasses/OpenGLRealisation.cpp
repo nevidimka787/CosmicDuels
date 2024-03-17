@@ -1060,8 +1060,8 @@ void OpenGL::DrawObject(const Map::Rectangle* rectangle, bool update_shader)
         rectangle_shader.SetUniform("camera_size", temp__game__camera_size);
     }
     rectangle_shader.SetUniform("properties", rectangle->Prorerties());
-    rectangle_shader.SetUniform("position",rectangle->UpLeftPoint());
-    rectangle_shader.SetUniform("point2", rectangle->DownRightPoint());
+    rectangle_shader.SetUniform("position",rectangle->GetUpLeftPoint());
+    rectangle_shader.SetUniform("point2", rectangle->GetDownRightPoint());
     rectangle_buffer.Draw();
 }
 

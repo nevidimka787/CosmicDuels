@@ -115,6 +115,7 @@ public:
 	bool IsCollision(Vec2F point) const;
 	//If distance between two objects is less then zero, the function return true.
 	bool IsCollision(Vec2F* point) const;
+	bool IsInside(const Map::Rectangle* rectangle) const;
 	void Rotate(float angle);
 	void Set(const Entity* entity);
 	void Set(
@@ -147,6 +148,10 @@ public:
 
 class DynamicEntity : public Entity
 {
+private:
+	bool CollisionInside(const Map::Rectangle* rectangle);
+	bool CollisionOutside(const Map::Rectangle* rectangle);
+	Vec2F GetCollisionDirection(const Vec2F& point, const Vec2F& neares_point) const;
 protected:
 	float angular_velocity;
 	Vec2F velocity;
@@ -206,6 +211,7 @@ public:
 	bool Collision(const Map::MapData* map);
 	float GetAngularVelocity() const;
 	Segment GetLastTreck() const;
+	Vec2F GetCollisionDirection(const Vec2F& point) const;
 	Segment GetTreck() const;
 	Segment GetTreckDouble() const;
 	Segment GetTreckDoubleRelative(const DynamicEntity* entity) const;

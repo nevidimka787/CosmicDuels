@@ -38,32 +38,40 @@ public:
 	Line(const Segment& beam);
 	Line(const Segment* beam);
 
+	void Intersection(const Line& intersection_line, Vec2F* output_intersection_point) const;
 	void Intersection(const Line* intersection_line, Vec2F* output_intersection_point) const;
 
+	bool Intersection(const Beam& intersection_beam, Vec2F* output_intersection_point) const;
 	bool Intersection(const Beam* intersection_beam, Vec2F* output_intersection_point) const;
 
+	bool Intersection(const Segment& intersection_segment, Vec2F* output_intersection_point) const;
 	bool Intersection(const Segment* intersection_segment, Vec2F* output_intersection_point) const;
 
+	bool IsIntersection(const Beam& intersection_beam) const;
 	bool IsIntersection(const Beam* intersection_beam) const;
 
+	bool IsIntersection(const Segment& intersection_segment) const;
 	bool IsIntersection(const Segment* intersection_segment) const;
 
 	float Distance(const Vec2F& target) const;
-
 	float Distance(const Vec2F* target) const;
 
 	float Distance(const Vec2F& target, Vec2F* nearest_point) const;
-
 	float Distance(const Vec2F* target, Vec2F* nearest_point) const;
 
+	float Distance(const Line& target) const;
 	float Distance(const Line* target) const;
 
+	float Distance(const Beam& target) const;
 	float Distance(const Beam* target) const;
 
+	float Distance(const Beam& target, Vec2F* nearest_point) const;
 	float Distance(const Beam* target, Vec2F* nearest_point) const;
 
+	float Distance(const Segment& target) const;
 	float Distance(const Segment* target) const;
 
+	float Distance(const Segment& target, Vec2F* nearest_point) const;
 	float Distance(const Segment* target, Vec2F* nearest_point) const;
 
 	void Set(const Line* line);
@@ -79,11 +87,11 @@ public:
 		bool second_argument_is_point = false);
 
 
-	void operator=(Line line);
+	void operator=(const Line& line);
 
-	void operator=(Beam line);
+	void operator=(const Beam& line);
 
-	void operator=(Segment line);
+	void operator=(const Segment& line);
 
 	operator Beam();
 
@@ -118,35 +126,45 @@ public:
 
 
 	float Distance(const Vec2F& target) const;
-
 	float Distance(const Vec2F* target) const;
 
+	float Distance(const Beam& target) const;
 	float Distance(const Beam* target) const;
 
+	float Distance(const Beam& target, Vec2F* nearest_point) const;
 	float Distance(const Beam* target, Vec2F* nearest_point) const;
 
+	float Distance(const Line& target) const;
 	float Distance(const Line* target) const;
 
+	float Distance(const Line& target, Vec2F* nearest_point) const;
 	float Distance(const Line* target, Vec2F* nearest_point) const;
 
+	float Distance(const Segment& target) const;
 	float Distance(const Segment* target) const;
 
+	float Distance(const Segment& target, Vec2F* nearest_point) const;
 	float Distance(const Segment* target, Vec2F* nearest_point) const;
 
 	float Distance(const Vec2F& target, Vec2F* nearest_point) const;
-
 	float Distance(const Vec2F* target, Vec2F* nearest_point) const;
 
+	bool Intersection(const Beam& intersection_beam, Vec2F* output_intersection_point) const;
 	bool Intersection(const Beam* intersection_beam, Vec2F* output_intersection_point) const;
 
+	bool Intersection(const Line& intersection_line, Vec2F* output_intersection_point) const;
 	bool Intersection(const Line* intersection_line, Vec2F* output_intersection_point) const;
 
+	bool Intersection(const Segment& intersection_segment, Vec2F* output_intersection_point) const;
 	bool Intersection(const Segment* intersection_segment, Vec2F* output_intersection_point) const;
 
+	bool IsIntersection(const Beam& intersection_beam) const;
 	bool IsIntersection(const Beam* intersection_beam) const;
 
+	bool IsIntersection(const Line& intersection_line) const;
 	bool IsIntersection(const Line* intersection_line) const;
 
+	bool IsIntersection(const Segment& intersection_segment) const;
 	bool IsIntersection(const Segment* intersection_segment) const;
 
 	void Rotate(float angle);
@@ -164,11 +182,11 @@ public:
 		bool second_argument_is_point = false);
 
 
-	void operator=(Line line);
+	void operator=(const Line& line);
 
-	void operator=(Beam line);
+	void operator=(const Beam& line);
 
-	void operator=(Segment line);
+	void operator=(const Segment& line);
 
 	operator Line();
 
@@ -200,36 +218,46 @@ public:
 		bool second_argument_is_point = false);
 
 
+	float Distance(const Beam& target) const;
 	float Distance(const Beam* target) const;
 
-	float Distance(const Beam* target, Vec2F* nearest_point) const;
+	float Distance(const Beam& target, Vec2F* nearest_point) const; // nearest_point -- points on this segment
+	float Distance(const Beam* target, Vec2F* nearest_point) const; // nearest_point -- points on this segment
 
+	float Distance(const Line& target) const;
 	float Distance(const Line* target) const;
 
-	float Distance(const Line* target, Vec2F* nearest_point) const;
+	float Distance(const Line& target, Vec2F* nearest_point) const; // nearest_point -- points on this segment
+	float Distance(const Line* target, Vec2F* nearest_point) const; // nearest_point -- points on this segment
 
+	float Distance(const Segment& target) const;
 	float Distance(const Segment* target) const;
 
-	float Distance(const Segment* target, Vec2F* nearest_point) const;
+	float Distance(const Segment& target, Vec2F* nearest_point) const; // nearest_point -- points on this segment
+	float Distance(const Segment* target, Vec2F* nearest_point) const; // nearest_point -- points on this segment
 
 	float Distance(const Vec2F& target) const;
-
 	float Distance(const Vec2F* target) const;
 
-	float Distance(const Vec2F& target, Vec2F* nearest_point) const;
+	float Distance(const Vec2F& target, Vec2F* nearest_point) const; // nearest_point -- points on this segment
+	float Distance(const Vec2F* target, Vec2F* nearest_point) const; // nearest_point -- points on this segment
 
-	float Distance(const Vec2F* target, Vec2F* nearest_point) const;
-
+	bool Intersection(const Beam& intersection_beam, Vec2F* output_intersection_point) const;
 	bool Intersection(const Beam* intersection_beam, Vec2F* output_intersection_point) const;
 
+	bool Intersection(const Line& intersection_line, Vec2F* output_intersection_point) const;
 	bool Intersection(const Line* intersection_line, Vec2F* output_intersection_point) const;
 
+	bool Intersection(const Segment& intersection_segment, Vec2F* output_intersection_point) const;
 	bool Intersection(const Segment* intersection_segment, Vec2F* output_intersection_point) const;
 
+	bool IsIntersection(const Beam& intersection_beam) const;
 	bool IsIntersection(const Beam* intersection_beam) const;
 
+	bool IsIntersection(const Line& intersection_line) const;
 	bool IsIntersection(const Line* intersection_line) const;
 
+	bool IsIntersection(const Segment& intersection_segment) const;
 	bool IsIntersection(const Segment* intersection_segment) const;
 
 	Vec2F SecondPoint() const;
@@ -247,11 +275,11 @@ public:
 		bool second_argument_is_point = false);
 
 
-	void operator=(Line line);
+	void operator=(const Line& line);
 
-	void operator=(Beam line);
+	void operator=(const Beam& line);
 
-	void operator=(Segment line);
+	void operator=(const Segment& line);
 
 	operator Line();
 

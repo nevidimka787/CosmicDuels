@@ -35,13 +35,19 @@ namespace Map
 			bool exist = true);
 
 		Vec2F GetPosition() const;
-		EngineTypes::Map::property_t Prorerties() const;
 		Vec2F GetVelocity() const;
+		bool HasAllProrerties(EngineTypes::Map::property_t obtained_properties) const;
+		bool HasNoProrerties(EngineTypes::Map::property_t obtained_properties) const;
+		bool HasSomeProrerties(EngineTypes::Map::property_t obtained_properties) const;
 		bool IsKiller() const;
 		bool IsAggressive() const;
+		bool IsCheckCollisionsInside() const;
+		bool IsCheckCollisionsOutside() const;
 		bool IsUnbreacable() const;
 		void Move(const Vec2F& move_vector);
 		void Move(const Vec2F* move_vector);
+		EngineTypes::Map::property_t Prorerties() const;
+		void RessetVelocity();
 		void SetPosition(const Vec2F& position);
 		void SetPosition(const Vec2F* position);
 		void SetProperties(EngineTypes::Map::property_t properties);
@@ -88,14 +94,16 @@ namespace Map
 			EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
 			bool exist = true);
 
-		Vec2F UpRightPoint() const;
-		Vec2F DownRightPoint() const;
-		Vec2F DownLeftPoint() const;
-		Vec2F UpLeftPoint() const;
-		Segment UpSide() const;
-		Segment DownSide() const;
-		Segment RightSide() const;
-		Segment LeftSide() const;
+		Vec2F GetUpRightPoint() const;
+		Vec2F GetDownRightPoint() const;
+		Vec2F GetDownLeftPoint() const;
+		Vec2F GetUpLeftPoint() const;
+		Segment GetUpSide() const;
+		Segment GetDownSide() const;
+		Segment GetRightSide() const;
+		Segment GetLeftSide() const;
+		Vec2F GetSize() const;
+		Vec2F GetPosition() const; // position of the rectangle's center
 		bool IsCollision(const Beam* beam);
 		bool IsCollision(const Beam* beam, Vec2F* out_position, float* distance_to_out_position) const;
 		bool IsCollision(const Line* line);
@@ -106,6 +114,7 @@ namespace Map
 		Rectangle Normalise() const;
 		//set point2 as down left point and point1 as up right point
 		void NormaliseThis();
+		// position of rectangle's center
 		Vec2F Position() const;
 		void Set(const Rectangle* patent);
 		void Set(

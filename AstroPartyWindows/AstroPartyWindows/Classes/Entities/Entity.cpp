@@ -116,25 +116,25 @@ float Entity::GetDistance(const Map::Polygon* polygon) const
 
 float Entity::GetDistance(const Map::Rectangle* rectangle) const
 {
-	Segment temp = rectangle->UpSide();
+	Segment temp = rectangle->GetUpSide();
 	float dist1 = GetDistance(&temp);
 	if (dist1 == 0.0)
 	{
 		return 0.0;
 	}
-	temp = rectangle->DownSide();
+	temp = rectangle->GetDownSide();
 	float dist2 = GetDistance(&temp);
 	if (dist2 == 0.0)
 	{
 		return 0.0;
 	}
-	temp = rectangle->LeftSide();
+	temp = rectangle->GetLeftSide();
 	float dist3 = GetDistance(&temp);
 	if (dist3 == 0.0)
 	{
 		return 0.0;
 	}
-	temp = rectangle->RightSide();
+	temp = rectangle->GetRightSide();
 	float dist4 = GetDistance(&temp);
 	if (dist4 == 0.0)
 	{
@@ -323,22 +323,22 @@ bool Entity::IsCollision(Map::Rectangle* rectangle) const
 		return false;
 	}
 	Segment side;
-	side = rectangle->UpSide();
+	side = rectangle->GetUpSide();
 	if (IsCollision(&side))
 	{
 		return true;
 	}
-	side = rectangle->DownSide();
+	side = rectangle->GetDownSide();
 	if (IsCollision(&side))
 	{
 		return true;
 	}
-	side = rectangle->RightSide();
+	side = rectangle->GetRightSide();
 	if (IsCollision(&side))
 	{
 		return true;
 	}
-	side = rectangle->LeftSide();
+	side = rectangle->GetLeftSide();
 	if (IsCollision(&side))
 	{
 		return true;
@@ -364,6 +364,15 @@ bool Entity::IsCollision(Vec2F point) const
 bool Entity::IsCollision(Vec2F* point) const
 {
 	return GetDistance(point) <= 0.0f;
+}
+
+bool Entity::IsInside(const Map::Rectangle* rectangle) const
+{
+	const auto& p1 = rectangle->GetDownLeftPoint();
+	const auto& p2 = rectangle->GetUpRightPoint();
+	return
+		position > rectangle->GetDownLeftPoint() &&
+		position < rectangle->GetUpRightPoint();
 }
 
 void Entity::Rotate(float angle)

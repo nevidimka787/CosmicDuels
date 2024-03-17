@@ -156,118 +156,20 @@ bool DynamicEntity::Collision(const StaticEntity* entity)
 
 bool DynamicEntity::Collision(const Map::Rectangle* rectangle)
 {
-	Vec2F nearest_position1;
-	Vec2F collision_direction;
-	Vec2F rectangle_velocity = rectangle->GetVelocity();
-	float distance;
-	bool collision = false;
-
-	int i = 0;
-	Segment side = rectangle->UpSide();
-
-	if ((distance = side.Distance(&position, &nearest_position1)) < radius || GetTreck().IsIntersection(&side))
+	if (rectangle->IsCheckCollisionsInside())
 	{
-		collision_direction = nearest_position1 - position;
-		if (position.y > side.point.y)
+		if (CollisionInside(rectangle))
 		{
-			position.y += radius - distance + force_collision_coeffisient;
-			if (force.y < 0.0f)
-			{
-				force.y = 0.0f;
-			}
+			return true;
 		}
-		else
-		{
-			position.y -= radius - distance + force_collision_coeffisient;
-			if (force.y > 0.0f)
-			{
-				force.y = 0.0f;
-			}
-		}
-		velocity -= collision_direction.ProjectSign(&velocity);
-		velocity += Vec2F(0.0f, 1.0f).ProjectSign(rectangle_velocity - velocity);
 
-		collision = true;
+	}
+	else if (rectangle->IsCheckCollisionsOutside())
+	{
+		return CollisionOutside(rectangle);
 	}
 
-	side = rectangle->DownSide();
-	if ((distance = side.Distance(&position, &nearest_position1)) < radius || GetTreck().IsIntersection(&side))
-	{
-		collision_direction = nearest_position1 - position;
-		if (position.y > side.point.y)
-		{
-			position.y += radius - distance + force_collision_coeffisient;
-			if (force.y < 0.0f)
-			{
-				force.y = 0.0f;
-			}
-		}
-		else
-		{
-			position.y -= radius - distance + force_collision_coeffisient;
-			if (force.y > 0.0f)
-			{
-				force.y = 0.0f;
-			}
-		}
-		velocity -= collision_direction.ProjectSign(&velocity);
-		velocity += Vec2F(0.0f, -1.0f).ProjectSign(rectangle_velocity - velocity);
-
-		collision = true;
-	}
-
-	side = rectangle->RightSide();
-	if ((distance = side.Distance(&position, &nearest_position1)) < radius || GetTreck().IsIntersection(&side))
-	{
-		collision_direction = nearest_position1 - position;
-		if (position.x > side.point.x)
-		{
-			position.x += radius - distance + force_collision_coeffisient;
-			if (force.x < 0.0f)
-			{
-				force.x = 0.0f;
-			}
-		}
-		else
-		{
-			position.x -= radius - distance + force_collision_coeffisient;
-			if (force.x > 0.0f)
-			{
-				force.x = 0.0f;
-			}
-		}
-		velocity -= collision_direction.ProjectSign(&velocity);
-		velocity += Vec2F(1.0f, 0.0f).ProjectSign(rectangle_velocity - velocity);
-
-		collision = true;
-	}
-
-	side = rectangle->LeftSide();
-	if ((distance = side.Distance(&position, &nearest_position1)) < radius || GetTreck().IsIntersection(&side))
-	{
-		collision_direction = nearest_position1 - position;
-		if (position.x > side.point.x)
-		{
-			position.x += radius - distance + force_collision_coeffisient;
-			if (force.x < 0.0f)
-			{
-				force.x = 0.0f;
-			}
-		}
-		else
-		{
-			position.x -= radius - distance + force_collision_coeffisient;
-			if (force.x > 0.0f)
-			{
-				force.x = 0.0f;
-			}
-		}
-		velocity -= collision_direction.ProjectSign(&velocity);
-		velocity += Vec2F(-1.0f, 0.0f).ProjectSign(rectangle_velocity - velocity);
-
-		collision = true;
-	}
-	return collision;
+	return false;
 }
 
 bool DynamicEntity::Collision(const Map::Cyrcle* cyrcle)
@@ -385,6 +287,170 @@ bool DynamicEntity::Collision(const Map::MapData* map)
 	return collision;
 }
 
+bool DynamicEntity::CollisionInside(const Map::Rectangle* rectangle)
+{
+	if (!IsInside(rectangle))
+	{
+		return false;
+	}
+
+	bool collision = false;
+	const Vec2F rectangle_velocity = rectangle->GetVelocity();
+
+	if (rectangle->GetUpRightPoint().y - position.y - velocity.y < radius)
+	{
+		position.y = rectangle->GetUpRightPoint().y - radius;
+		velocity.y = fminf(velocity.y, rectangle_velocity.y);
+		force.y = fminf(force.y, 0.0f);
+
+		collision = true;
+	}
+
+	if (rectangle->GetUpRightPoint().x - position.x - velocity.x < radius)
+	{
+		position.x = rectangle->GetUpRightPoint().x - radius;
+		velocity.x = fminf(velocity.x, rectangle_velocity.x);
+		force.x = fminf(force.x, 0.0f);
+
+		collision = true;
+	}
+
+	if (position.y + velocity.y - rectangle->GetDownLeftPoint().y < radius)
+	{
+		position.y = rectangle->GetDownLeftPoint().y + radius;
+		velocity.y = fmaxf(velocity.y, rectangle_velocity.y);
+		force.y = fmaxf(force.y, 0.0f);
+
+		collision = true;
+	}
+
+	if (position.x + velocity.x - rectangle->GetDownLeftPoint().x < radius)
+	{
+		position.x = rectangle->GetDownLeftPoint().x + radius;
+		velocity.x = fmaxf(velocity.x, rectangle_velocity.x);
+		force.x = fmaxf(force.x, 0.0f);
+
+		collision = true;
+	}
+
+	return collision;
+}
+
+bool DynamicEntity::CollisionOutside(const Map::Rectangle* rectangle)
+{
+	if (
+		GetDistance(rectangle->GetPosition()) >
+		rectangle->GetSize().Length() / 2.0f + velocity.Length())
+	{
+		return false;
+	}
+
+	const Vec2F& rectangle_velocity = rectangle->GetVelocity();
+	const Vec2F& relative_velocity = velocity - rectangle_velocity;
+
+	const Segment treck(position - relative_velocity, relative_velocity);
+	Segment side = rectangle->GetUpSide();
+	side.point.y += radius;
+	if (treck.IsIntersection(side))
+	{
+		position.y = side.point.y + force_collision_coeffisient;
+		velocity.y = fmaxf(velocity.y, rectangle_velocity.y);
+		force.y = fmaxf(force.y, 0.0f);
+		return true;
+	}
+	side = rectangle->GetLeftSide();
+	side.point.x -= radius;
+	if (treck.IsIntersection(side))
+	{
+		position.x = side.point.x - force_collision_coeffisient;
+		velocity.x = fminf(velocity.x, rectangle_velocity.x);
+		force.x = fminf(force.x, 0.0f);
+		return true;
+	}
+	side = rectangle->GetDownSide();
+	side.point.y -= radius;
+	if (treck.IsIntersection(side))
+	{
+		position.y = side.point.y - force_collision_coeffisient;
+		velocity.y = fminf(velocity.y, rectangle_velocity.y);
+		force.y = fminf(force.y, 0.0f);
+		return true;
+	}
+	side = rectangle->GetRightSide();
+	side.point.x += radius;
+	if (treck.IsIntersection(side))
+	{
+		position.x = side.point.x + force_collision_coeffisient;
+		velocity.x = fmaxf(velocity.x, rectangle_velocity.x);
+		force.x = fmaxf(force.x, 0.0f);
+		return true;
+	}
+
+	Map::Cyrcle cyrcle(rectangle->GetUpLeftPoint(), 0.0f);
+	if (Collision(&cyrcle))
+	{
+		return true;
+	}
+	cyrcle.SetPosition(rectangle->GetUpRightPoint());
+	if (Collision(&cyrcle))
+	{
+		return true;
+	}
+	cyrcle.SetPosition(rectangle->GetDownRightPoint());
+	if (Collision(&cyrcle))
+	{
+		return true;
+	}
+	cyrcle.SetPosition(rectangle->GetDownLeftPoint());
+	if (Collision(&cyrcle))
+	{
+		return true;
+	}
+	return false;
+
+	Vec2F nearest_point;
+	const Vec2F& ul_corner = rectangle->GetUpLeftPoint();
+
+	if (treck.Distance(ul_corner, &nearest_point) < radius)
+	{
+		std::cout << "ul check" << std::endl;
+		Vec2F collision_direction = GetCollisionDirection(ul_corner, nearest_point).Normalize();
+		position += collision_direction * (radius + force_collision_coeffisient);
+		velocity -= collision_direction.ProjectSign(velocity);
+		force -= collision_direction.ProjectSign(force);
+		return true;
+	}
+	const Vec2F& dl_corner = rectangle->GetDownLeftPoint();
+	if (treck.Distance(dl_corner, &nearest_point) < radius)
+	{
+		Vec2F collision_direction = GetCollisionDirection(ul_corner, nearest_point).Normalize();
+		position = dl_corner + collision_direction * (radius + force_collision_coeffisient);
+		velocity -= collision_direction.ProjectSign(velocity);
+		force -= collision_direction.ProjectSign(force);
+		return true;
+	}
+	const Vec2F& dr_corner = rectangle->GetDownRightPoint();
+	if (treck.Distance(dr_corner, &nearest_point) < radius)
+	{
+		Vec2F collision_direction = GetCollisionDirection(ul_corner, nearest_point).Normalize();
+		position = dr_corner + collision_direction * (radius + force_collision_coeffisient);
+		velocity -= collision_direction.ProjectSign(velocity);
+		force -= collision_direction.ProjectSign(force);
+		return true;
+	}
+	const Vec2F& ur_corner = rectangle->GetUpRightPoint();
+	if (treck.Distance(ur_corner, &nearest_point) < radius)
+	{
+		Vec2F collision_direction = GetCollisionDirection(ul_corner, nearest_point).Normalize();
+		position = ur_corner + collision_direction * (radius + force_collision_coeffisient);
+		velocity -= collision_direction.ProjectSign(velocity);
+		force -= collision_direction.ProjectSign(force);
+		return true;
+	}
+
+	return false;
+}
+
 float DynamicEntity::GetAngularVelocity() const
 {
 	return angular_velocity;
@@ -394,6 +460,27 @@ Segment DynamicEntity::GetLastTreck() const
 {
 	return Segment(position, -velocity);
 }
+
+Vec2F DynamicEntity::GetCollisionDirection(const Vec2F& point) const
+{
+	Vec2F nearest_point;
+	if (GetTreck().Distance(point, &nearest_point) >= radius)
+	{
+		return Vec2F();
+	}
+
+	const Vec2F& nearest_intersection_point =
+		position + velocity.Length(position.Distance(nearest_point) - sqrt(radius * radius - (nearest_point - point).LengthPow2()));
+	return nearest_intersection_point - point;
+}
+
+Vec2F DynamicEntity::GetCollisionDirection(const Vec2F& point, const Vec2F& nearest_point) const
+{
+	const Vec2F& nearest_intersection_point =
+		position + velocity.Length(position.Distance(nearest_point) - sqrt(radius * radius - (nearest_point - point).LengthPow2()));
+	return nearest_intersection_point - point;
+}
+
 
 Segment DynamicEntity::GetTreck() const
 {
@@ -500,10 +587,10 @@ bool DynamicEntity::IsCollision(const MegaLaser* mega_laser) const
 bool DynamicEntity::IsCollision(const Map::Rectangle* rectangle) const
 {
 	return
-		IsCollision(rectangle->UpSide()) ||
-		IsCollision(rectangle->DownSide()) ||
-		IsCollision(rectangle->RightSide()) ||
-		IsCollision(rectangle->LeftSide());
+		IsCollision(rectangle->GetUpSide()) ||
+		IsCollision(rectangle->GetDownSide()) ||
+		IsCollision(rectangle->GetRightSide()) ||
+		IsCollision(rectangle->GetLeftSide());
 }
 
 bool DynamicEntity::IsCollision(const Map::Cyrcle* cyrcle) const

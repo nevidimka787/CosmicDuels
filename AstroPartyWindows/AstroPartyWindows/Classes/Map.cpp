@@ -40,14 +40,24 @@ Vec2F MapElement::GetPosition() const
 	return position;
 }
 
-EngineTypes::Map::property_t MapElement::Prorerties() const
-{
-	return properties;
-}
-
 Vec2F MapElement::GetVelocity() const
 {
 	return position - last_position;
+}
+
+bool MapElement::HasAllProrerties(EngineTypes::Map::property_t obtained_properties) const
+{
+	return (properties & obtained_properties) == obtained_properties;
+}
+
+bool MapElement::HasNoProrerties(EngineTypes::Map::property_t obtained_properties) const
+{
+	return (~properties & obtained_properties) == obtained_properties;
+}
+
+bool MapElement::HasSomeProrerties(EngineTypes::Map::property_t obtained_properties) const
+{
+	return properties & obtained_properties;
 }
 
 bool MapElement::IsAggressive() const
@@ -58,6 +68,16 @@ bool MapElement::IsAggressive() const
 bool MapElement::IsKiller() const
 {
 	return properties & MAP_PROPERTY_KILLER;
+}
+
+bool MapElement::IsCheckCollisionsInside() const
+{
+	return properties & MAP_PROPERTY_COLLIDE_INSIDE;
+}
+
+bool MapElement::IsCheckCollisionsOutside() const
+{
+	return properties & MAP_PROPERTY_COLLIDE_OUTSIDE;
 }
 
 bool MapElement::IsUnbreacable() const
@@ -73,6 +93,11 @@ void MapElement::Move(const Vec2F& move_vector)
 void MapElement::Move(const Vec2F* move_vector)
 {
 	position += *move_vector;
+}
+
+EngineTypes::Map::property_t MapElement::Prorerties() const
+{
+	return properties;
 }
 
 void MapElement::Update()
@@ -100,6 +125,11 @@ void MapElement::Set(const Vec2F* position, EngineTypes::Map::property_t propert
 	this->exist = exist;
 	this->position = *position;
 	this->properties = properties;
+}
+
+void MapElement::RessetVelocity()
+{
+	last_position = position;
 }
 
 void MapElement::SetPosition(const Vec2F& position)
@@ -146,89 +176,103 @@ Rectangle::Rectangle(const Segment& diagonal, EngineTypes::Map::property_t prope
 	MapElement(&diagonal.point, properties, exist),
 	point2(diagonal.point + diagonal.vector)
 {
+	NormaliseThis();
 }
 
 Rectangle::Rectangle(const Segment* diagonal, EngineTypes::Map::property_t properties, bool exist) :
 	MapElement(&diagonal->point, properties, exist),
 	point2(diagonal->point + diagonal->vector)
 {
+	NormaliseThis();
 }
 
 Rectangle::Rectangle(Vec2F point1, Vec2F point2, EngineTypes::Map::property_t properties, bool exist) :
 	MapElement(point1, properties, exist),
 	point2(point2)
 {
+	NormaliseThis();
 }
 
 Rectangle::Rectangle(const Vec2F* point1, const Vec2F* point2, EngineTypes::Map::property_t properties, bool exist) :
 	MapElement(point1, properties, exist),
 	point2(*point2)
 {
+	NormaliseThis();
 }
 
-Vec2F Rectangle::UpRightPoint() const
+Vec2F Rectangle::GetUpRightPoint() const
 {
 	return position;
 }
 
-Vec2F Rectangle::DownRightPoint() const
+Vec2F Rectangle::GetDownRightPoint() const
 {
 	return Vec2F(position.x, point2.y);
 }
 
-Vec2F Rectangle::DownLeftPoint() const
+Vec2F Rectangle::GetDownLeftPoint() const
 {
 	return point2;
 }
 
-Vec2F Rectangle::UpLeftPoint() const
+Vec2F Rectangle::GetUpLeftPoint() const
 {
 	return Vec2F(point2.x, position.y);
 }
 
-Segment Rectangle::UpSide() const
+Segment Rectangle::GetUpSide() const
 {
 	Vec2F temp;
 	temp.Set(point2.x, position.y);
 	return Segment(&position, &temp, true);
 }
 
-Segment Rectangle::DownSide() const
+Segment Rectangle::GetDownSide() const
 {
 	Vec2F temp;
 	temp.Set(position.x, point2.y);
 	return Segment(&temp, &point2, true);
 }
 
-Segment Rectangle::RightSide() const
+Segment Rectangle::GetRightSide() const
 {
 	Vec2F temp;
 	temp.Set(position.x, point2.y);
 	return Segment(&position, &temp, true);
 }
 
-Segment Rectangle::LeftSide() const
+Segment Rectangle::GetLeftSide() const
 {
 	Vec2F temp;
 	temp.Set(point2.x, position.y);
 	return Segment(&temp, &point2, true);
+}
+
+Vec2F Rectangle::GetSize() const
+{
+	return point2 - position;
+}
+
+Vec2F Rectangle::GetPosition() const
+{
+	return (point2 + position) / 2.0f;
 }
 
 bool Rectangle::IsCollision(const Beam* beam)
 {
-	if (UpSide().IsIntersection(beam))
+	if (GetUpSide().IsIntersection(beam))
 	{
 		return true;
 	}
-	if (RightSide().IsIntersection(beam))
+	if (GetRightSide().IsIntersection(beam))
 	{
 		return true;
 	}
-	if (DownSide().IsIntersection(beam))
+	if (GetDownSide().IsIntersection(beam))
 	{
 		return true;
 	}
-	if (LeftSide().IsIntersection(beam))
+	if (GetLeftSide().IsIntersection(beam))
 	{
 		return true;
 	}
@@ -239,11 +283,11 @@ bool Rectangle::IsCollision(const Beam* beam, Vec2F* out_position, float* distan
 {
 	Vec2F output_intersection_point;
 	float min_distance = INFINITY;
-	if (UpSide().Intersection(beam, out_position))
+	if (GetUpSide().Intersection(beam, out_position))
 	{
 		min_distance = (*out_position - beam->point).Length();
 	}
-	if (RightSide().Intersection(beam, &output_intersection_point))
+	if (GetRightSide().Intersection(beam, &output_intersection_point))
 	{
 		float distance = (output_intersection_point - beam->point).Length();
 		if (min_distance > distance)
@@ -252,7 +296,7 @@ bool Rectangle::IsCollision(const Beam* beam, Vec2F* out_position, float* distan
 			*out_position = output_intersection_point;
 		}
 	}
-	if (DownSide().Intersection(beam, &output_intersection_point))
+	if (GetDownSide().Intersection(beam, &output_intersection_point))
 	{
 		float distance = (output_intersection_point - beam->point).Length();
 		if (min_distance > distance)
@@ -261,7 +305,7 @@ bool Rectangle::IsCollision(const Beam* beam, Vec2F* out_position, float* distan
 			*out_position = output_intersection_point;
 		}
 	}
-	if (LeftSide().Intersection(beam, &output_intersection_point))
+	if (GetLeftSide().Intersection(beam, &output_intersection_point))
 	{
 		float distance = (output_intersection_point - beam->point).Length();
 		if (min_distance > distance)
@@ -282,19 +326,19 @@ bool Rectangle::IsCollision(const Beam* beam, Vec2F* out_position, float* distan
 
 bool Rectangle::IsCollision(const Line* line)
 {
-	if (UpSide().IsIntersection(line))
+	if (GetUpSide().IsIntersection(line))
 	{
 		return true;
 	}
-	if (RightSide().IsIntersection(line))
+	if (GetRightSide().IsIntersection(line))
 	{
 		return true;
 	}
-	if (DownSide().IsIntersection(line))
+	if (GetDownSide().IsIntersection(line))
 	{
 		return true;
 	}
-	if (LeftSide().IsIntersection(line))
+	if (GetLeftSide().IsIntersection(line))
 	{
 		return true;
 	}
@@ -303,19 +347,19 @@ bool Rectangle::IsCollision(const Line* line)
 
 bool Rectangle::IsCollision(const Segment* segment)
 {
-	if (UpSide().IsIntersection(segment))
+	if (GetUpSide().IsIntersection(segment))
 	{
 		return true;
 	}
-	if (RightSide().IsIntersection(segment))
+	if (GetRightSide().IsIntersection(segment))
 	{
 		return true;
 	}
-	if (DownSide().IsIntersection(segment))
+	if (GetDownSide().IsIntersection(segment))
 	{
 		return true;
 	}
-	if (LeftSide().IsIntersection(segment))
+	if (GetLeftSide().IsIntersection(segment))
 	{
 		return true;
 	}
@@ -414,6 +458,8 @@ void Rectangle::Set(const Segment& diagonal, EngineTypes::Map::property_t proper
 	this->point2 = diagonal.point + diagonal.vector;
 	this->position = diagonal.point;
 	this->properties = properties;
+
+	NormaliseThis();
 }
 
 void Rectangle::Set(const Segment* diagonal, EngineTypes::Map::property_t properties, bool exist)
@@ -422,6 +468,8 @@ void Rectangle::Set(const Segment* diagonal, EngineTypes::Map::property_t proper
 	this->point2 = diagonal->point + diagonal->vector;
 	this->position = diagonal->point;
 	this->properties = properties;
+
+	NormaliseThis();
 }
 
 void Rectangle::SetPosition(Vec2F position)

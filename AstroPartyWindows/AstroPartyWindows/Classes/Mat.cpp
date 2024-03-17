@@ -527,6 +527,16 @@ float Vec2F::Distance(const Vec2F* target_vector) const
 	return (*this - *target_vector).Length();
 }
 
+float Vec2F::DistancePow2(const Vec2F& target_vector) const
+{
+	return (*this - target_vector).LengthPow2();
+}
+
+float Vec2F::DistancePow2(const Vec2F* target_vector) const
+{
+	return (*this - *target_vector).LengthPow2();
+}
+
 float Vec2F::GetAngle() const
 {
 	return (atan2f(-y, x));
@@ -548,9 +558,29 @@ float Vec2F::Length() const
 	return sqrtf(x * x + y * y);
 }
 
+Vec2F Vec2F::Length(float length) const
+{
+	return *this / Length() * length;
+}
+
+void Vec2F::LengthThis(float length)
+{
+	*this /= Length() * length;
+}
+
 float Vec2F::LengthPow2() const
 {
 	return x * x + y * y;
+}
+
+Vec2F Vec2F::LengthPow2(float length) const
+{
+	return *this / sqrtf(LengthPow2() * length);
+}
+
+void Vec2F::LengthPow2This(float length)
+{
+	*this /= sqrtf(LengthPow2() * length);
 }
 
 Vec2F Vec2F::Normalize() const
@@ -732,6 +762,11 @@ void Vec2F::Set(double x, double y)
 {
 	this->x = (float)x;
 	this->y = (float)y;
+}
+
+float Vec2F::VecMul(const Vec2F& vector) const
+{
+	return x * vector.y - y * vector.x;
 }
 
 void Vec2F::operator=(const Vec2F& vector)

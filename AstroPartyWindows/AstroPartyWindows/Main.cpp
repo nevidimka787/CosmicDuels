@@ -1,5 +1,9 @@
 ﻿//#define SAMPLE
 
+#ifndef _DEBUG  // Release programm doesn't need a terminal.
+#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
+#endif
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 

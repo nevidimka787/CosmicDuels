@@ -128,11 +128,17 @@ public:
 
 	float Distance(const Vec2F& target) const;
 	float Distance(const Vec2F* target) const;
+	float DistancePow2(const Vec2F& target) const;
+	float DistancePow2(const Vec2F* target) const;
 	float GetAngle() const;
 	float GetAngle(Vec2F to_vector) const;
 	float GetAngleClockwise() const;
 	float Length() const;
+	Vec2F Length(float length) const;
+	void LengthThis(float length);
 	float LengthPow2() const;
+	Vec2F LengthPow2(float length) const;
+	void LengthPow2This(float length);
 	Vec2F Normalize() const;
 	Vec2F NormalizePow2() const;
 	void NormalizeThis();
@@ -173,6 +179,8 @@ public:
 	void Set(float x, float y);
 	void Set(double v);
 	void Set(double x, double y);
+
+	float VecMul(const Vec2F& vector) const;
 
 	void operator=(const Vec2F& vector);
 	void operator=(const Vec2D& vector);
