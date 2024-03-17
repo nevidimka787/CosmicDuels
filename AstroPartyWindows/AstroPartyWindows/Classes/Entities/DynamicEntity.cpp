@@ -407,48 +407,6 @@ bool DynamicEntity::CollisionOutside(const Map::Rectangle* rectangle)
 		return true;
 	}
 	return false;
-
-	Vec2F nearest_point;
-	const Vec2F& ul_corner = rectangle->GetUpLeftPoint();
-
-	if (treck.Distance(ul_corner, &nearest_point) < radius)
-	{
-		std::cout << "ul check" << std::endl;
-		Vec2F collision_direction = GetCollisionDirection(ul_corner, nearest_point).Normalize();
-		position += collision_direction * (radius + force_collision_coeffisient);
-		velocity -= collision_direction.ProjectSign(velocity);
-		force -= collision_direction.ProjectSign(force);
-		return true;
-	}
-	const Vec2F& dl_corner = rectangle->GetDownLeftPoint();
-	if (treck.Distance(dl_corner, &nearest_point) < radius)
-	{
-		Vec2F collision_direction = GetCollisionDirection(ul_corner, nearest_point).Normalize();
-		position = dl_corner + collision_direction * (radius + force_collision_coeffisient);
-		velocity -= collision_direction.ProjectSign(velocity);
-		force -= collision_direction.ProjectSign(force);
-		return true;
-	}
-	const Vec2F& dr_corner = rectangle->GetDownRightPoint();
-	if (treck.Distance(dr_corner, &nearest_point) < radius)
-	{
-		Vec2F collision_direction = GetCollisionDirection(ul_corner, nearest_point).Normalize();
-		position = dr_corner + collision_direction * (radius + force_collision_coeffisient);
-		velocity -= collision_direction.ProjectSign(velocity);
-		force -= collision_direction.ProjectSign(force);
-		return true;
-	}
-	const Vec2F& ur_corner = rectangle->GetUpRightPoint();
-	if (treck.Distance(ur_corner, &nearest_point) < radius)
-	{
-		Vec2F collision_direction = GetCollisionDirection(ul_corner, nearest_point).Normalize();
-		position = ur_corner + collision_direction * (radius + force_collision_coeffisient);
-		velocity -= collision_direction.ProjectSign(velocity);
-		force -= collision_direction.ProjectSign(force);
-		return true;
-	}
-
-	return false;
 }
 
 float DynamicEntity::GetAngularVelocity() const
