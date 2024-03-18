@@ -1,4 +1,4 @@
-# Astro Duels
+# Cosmic Duels
 The idea of this game was got from the game “Astro Party”.
 But this one had worse arcade physic, low count of maps and game rules to change.
 So, I wrote new engine on C++ by myself using OpenGL as graphic API.
