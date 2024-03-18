@@ -24,7 +24,7 @@
     <ProjectGuid>{3c13278c-4049-4908-9f1f-de6086e79a3d}</ProjectGuid>
     <RootNamespace>AstroPartyWindows</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>AstroPartyRemakeWindows</ProjectName>
+    <ProjectName>CosmicDuelsWindows</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

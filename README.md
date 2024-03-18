@@ -1,7 +1,12 @@
-# Pls come me up with a name!
+# Astro Duels
+The idea of this game was got from the game “Astro Party”.
+But this one had worse arcade physic, low count of maps and game rules to change.
+So, I wrote new engine on C++ by myself using OpenGL as graphic API.
+
 
 # Technique information
 For starting project use Visual Studio 2022.
+"Release" version of the game startup without console.
 Game use 3 threads.
 Physic calculation thread.
 Input output thread.
@@ -102,4 +107,13 @@ There are 4 bonuses, 3 buffs and 1 round rule changer in the game. Each ship can
 
 # Destroy and respawn.
 After destroy any ship becomes a pilot. After some time pilot will become to ship. After becoming a ship, the ship is unbreakable some time. Some game rules can change respawn process.
+
+# Maps
+Each map's element has 3 properties.
+1) Breakable or unbreakable.
+2) Destroying or not destroying ships and pilots.
+3) Destroying or not destroying not controlled object on the map.
+
+Each property changes color of the element so player can identifier its properties easily.
+Each property can be combined with each other so there are 8 different possible combinations.
 
