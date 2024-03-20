@@ -1,7 +1,5 @@
 #include "Game.h"
 
-
-
 void Game::AddEntity(const AnnihAreaGen& new_annih_area_gen)
 {
 	if (new_annih_area_gen.exist)
@@ -451,11 +449,8 @@ void Game::DestroyEntity(Bomb* destroyer, Ship* entity)
 	DestroySupportEntitiesBy(entity);
 	AddEntity(entity->CreateShards(global_timer));
 	AddBonuses(entity);
-	pilots[entity->GetPlayerNumber()] = entity->Destroy();
-	pilots_count++;
 	AddEntity(entity->Destroy());
-	ships[entity->GetPlayerNumber()].exist = false;
-	ships_count--;
+	RemoveEntity(entity);
 
 	camera.move_velocity_coefficient = CAMERA_LOW_MOVE_VELOCITY;
 	camera.resize_velocity_coefficient = CAMERA_LOW_RESIZE_VELOCITY;
@@ -628,10 +623,8 @@ void Game::DestroyEntity(Knife* destroyer, Ship* entity)
 	DestroySupportEntitiesBy(entity);
 	AddEntity(entity->CreateShards(global_timer));
 	AddBonuses(entity);
-	pilots[entity->GetPlayerNumber()] = entity->Destroy();
-	pilots_count++;
-	ships[entity->GetPlayerNumber()].exist = false;
-	ships_count--;
+	AddEntity(entity->Destroy());
+	RemoveEntity(entity);
 
 	camera.move_velocity_coefficient = CAMERA_LOW_MOVE_VELOCITY;
 	camera.resize_velocity_coefficient = CAMERA_LOW_RESIZE_VELOCITY;
@@ -730,10 +723,8 @@ void Game::DestroyEntity(Laser* destroyer, Ship* entity)
 	DestroySupportEntitiesBy(entity);
 	AddEntity(entity->CreateShards(global_timer));
 	AddBonuses(entity);
-	pilots[entity->GetPlayerNumber()] = entity->Destroy();
-	pilots_count++;
-	ships[entity->GetPlayerNumber()].exist = false;
-	ships_count--;
+	AddEntity(entity->Destroy());
+	RemoveEntity(entity);
 
 	camera.move_velocity_coefficient = CAMERA_LOW_MOVE_VELOCITY;
 	camera.resize_velocity_coefficient = CAMERA_LOW_RESIZE_VELOCITY;
@@ -831,7 +822,6 @@ void Game::DestroyEntity(MegaLaser* destroyer, Ship* entity)
 	AddEntity(entity->CreateShards(global_timer));
 	AddBonuses(entity);
 	AddEntity(entity->Destroy());
-	std::cout << "\nMegaLaser destroys ship\n";
 	RemoveEntity(entity);
 
 	camera.move_velocity_coefficient = CAMERA_LOW_MOVE_VELOCITY;
@@ -909,6 +899,8 @@ void Game::DestroyEntity(Ship* entity)
 		DecrementPlayersCountInTeam(entity->GetTeamNumber());
 	}
 	DestroySupportEntitiesBy(entity);
+	AddEntity(entity->CreateShards(global_timer));
+	AddBonuses(entity);
 	AddEntity(entity->Destroy());
 	RemoveEntity(entity);
 }
@@ -976,8 +968,6 @@ void Game::DestroySupportEntitiesBy(ControledEntity* produser)
 	}
 }
 
-
-
 void Game::SpawnEntity(Ship* spawner, Pilot* pilot)
 {
 	if (spawner->exist == false || pilot->exist == false)
@@ -986,7 +976,10 @@ void Game::SpawnEntity(Ship* spawner, Pilot* pilot)
 	}
 	if (game_rules & GAME_RULE_FRIEDNLY_SHEEP_CAN_RESTORE)
 	{
-		IncrementPlayersCountInTeam(spawner->GetTeamNumber());
+		if (!(game_rules & GAME_RULE_NEED_KILL_PILOT))
+		{
+			IncrementPlayersCountInTeam(spawner->GetTeamNumber());
+		}
 		AddEntity(pilot->Respawn());
 		RemoveEntity(pilot);
 
