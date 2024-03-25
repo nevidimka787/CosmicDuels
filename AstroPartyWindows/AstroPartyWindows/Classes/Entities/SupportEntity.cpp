@@ -27,7 +27,7 @@ SupportEntity::SupportEntity(const SupportEntity& support_entity) :
 
 SupportEntity::SupportEntity(
 	const ControledEntity* host,
-	Vec2F position,
+	const Vec2F& position,
 	float radius,
 	float angle,
 	bool exist)
@@ -38,7 +38,7 @@ SupportEntity::SupportEntity(
 		angle + host->GetAngle(),
 		exist),
 	host_p(host),
-	host_matrix_p(host->GetModelMatrixPointer()),
+	host_matrix_p(host->GetModelMatrixPointerConst()),
 	host_number(host->GetPlayerNumber()),
 	host_team(host->GetTeamNumber()),
 	local_angle(angle),
@@ -61,7 +61,7 @@ SupportEntity::SupportEntity(
 		angle + host->GetAngle(),
 		exist),
 	host_p(host),
-	host_matrix_p(host->GetModelMatrixPointer()),
+	host_matrix_p(host->GetModelMatrixPointerConst()),
 	host_number(host->GetPlayerNumber()),
 	host_team(host->GetTeamNumber()),
 	local_angle(angle),
@@ -71,14 +71,14 @@ SupportEntity::SupportEntity(
 	this->position *= *host_matrix_p;
 }
 
-bool SupportEntity::IsCreatedBy(ControledEntity* potential_host) const
+bool SupportEntity::IsCreatedBy(const ControledEntity& potential_host) const
 {
-	return host_number == potential_host->GetPlayerNumber();
+	return host_number == potential_host.GetPlayerNumber();
 }
 
-bool SupportEntity::IsCreatedByTeam(ControledEntity* potential_host) const
+bool SupportEntity::IsCreatedByTeam(const ControledEntity& potential_host) const
 {
-	return host_team == potential_host->GetTeamNumber();
+	return host_team == potential_host.GetTeamNumber();
 }
 
 float SupportEntity::GetAngle() const
@@ -101,7 +101,7 @@ Vec2F SupportEntity::GetGlobalPosition() const
 	return position;
 }
 
-const ControledEntity* SupportEntity::GetHostP()
+const ControledEntity* SupportEntity::GetHostP() const
 {
 	return host_p;
 }
@@ -121,7 +121,7 @@ GameTypes::players_count_t SupportEntity::GetPlayerMasterTeamNumber() const
 	return host_team;
 }
 
-Vec2F SupportEntity::GetPosition() const
+const Vec2F& SupportEntity::GetPosition() const
 {
 	return local_position;
 }
@@ -165,7 +165,7 @@ void SupportEntity::Set(
 	this->radius = radius;
 
 	this->host_p = host;
-	this->host_matrix_p = host->GetModelMatrixPointer();
+	this->host_matrix_p = host->GetModelMatrixPointerConst();
 }
 
 void SupportEntity::Set(
@@ -191,7 +191,7 @@ void SupportEntity::Set(
 	this->radius = radius;
 
 	this->host_p = host;
-	this->host_matrix_p = host->GetModelMatrixPointer();
+	this->host_matrix_p = host->GetModelMatrixPointerConst();
 }
 
 void SupportEntity::SetAngle(float angle)
@@ -222,7 +222,7 @@ void SupportEntity::SetNotNormalizeDirection(const Vec2F* direction)
 void SupportEntity::SetHost(const ControledEntity* host)
 {
 	host_p = host;
-	host_matrix_p = host->GetModelMatrixPointer();
+	host_matrix_p = host->GetModelMatrixPointerConst();
 }
 
 void SupportEntity::SetPosition(Vec2F position)

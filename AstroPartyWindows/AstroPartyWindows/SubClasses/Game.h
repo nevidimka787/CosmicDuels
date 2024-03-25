@@ -4,10 +4,13 @@
 #include "OpenGLRealisation.h"
 
 #include "../Classes/GameEngine.h"
+#include "../DebugClasses/loged_shared_mutex.h"
 
+#include <assert.h>
 #include <math.h>
 #include <shared_mutex>
 #include <thread>
+#include <vector>
 
 class Game;
 class OpenGL;
@@ -34,13 +37,13 @@ public:
 	bool pause_round;
 	//Index of array is ship's player number. Values of array are numbers of teams by every ship.
 	//Array changed in Game::Init::Menus.
-	GameTypes::entities_count_t* teams;
+	std::vector<GameTypes::players_count_t> teams;
 	//Index of array is ship's player number. Values of array are numbers of teams by every ship.
 	//If player not play in current level, then alue is zero.
-	GameTypes::entities_count_t* playing_teams;
+	std::vector<GameTypes::players_count_t> playing_teams;
 	//Index is team number
 	//Value is count of exist players in team
-	GameTypes::players_count_t* players_in_team;
+	std::vector<GameTypes::players_count_t> players_in_team;
 
 	GameTypes::maps_count_t selected_maps_id_array_length;
 
@@ -60,9 +63,9 @@ public:
 	GameTypes::maps_count_t current_event;
 
 	//Current scores of players.
-	GameTypes::score_t* scores;
+	std::vector<GameTypes::score_t> scores;
 	//Last scores of plauers. 
-	GameTypes::score_t* last_match_scores;
+	std::vector<GameTypes::score_t> last_match_scores;
 	//Id of the current map of the level.
 	GameTypes::maps_count_t current_map_id;
 	
@@ -117,26 +120,22 @@ public:
 
 	//game lists
 
-	//Array of flags store data about shoots of ships in current tic.
-	bool* ships_shooting_flags;
-	//Controled entities refer to this array.
-	bool* shoot_flags;
-	//Controled entities refer to this array.
-	bool* rotate_flags;
+	GameTypes::control_flags_t control_flags;
+
 	//Tumer for check double clk for ships' burnout.
-	GameTypes::tic_t* double_clk_timers;
-	//Controled entities refer to this array.
-	bool* burnout_flags;
+	std::vector<GameTypes::tic_t> double_clk_timers;
+	//Array of flags store data about shoots of ships in current tic.
+	std::vector<bool> ships_shooting_flags;
 	//If value in the array then ship can shoot.
-	GameTypes::tic_t* ships_can_shoot_flags;
+	std::vector<GameTypes::tic_t> ships_can_shoot_flags;
 	//This array contains flags for maps that will be used in the current match.
-	bool* map_pull_array;
+	std::vector<bool> map_pull_array;
 	//This array contains maps' ids that will be used in the current match.
-	GameTypes::maps_count_t* selected_maps_id_array;
+	std::vector<GameTypes::maps_count_t> selected_maps_id_array;
 	//This array contains objects that will be spawned in the current match.
-	bool* object_pull_array;
+	std::vector<bool> object_pull_array;
 	//This array contains bonuses, buffs and rules that will be spawned in the current match.
-	bool* bonus_pull_array;
+	std::vector<bool> bonus_pull_array;
 	EngineTypes::Bonus::inventory_t inventory_template_mask;
 
 	//game lists
@@ -146,40 +145,38 @@ public:
 	Logs logs;
 
 	//Array of shiips.
-	Ship* ships;
+	std::vector<Ship> ships;
 	//Array of pilots.
-	Pilot* pilots;
+	std::vector<Pilot> pilots;
 
-	AnnihAreaGen* annih_area_gens;
+	std::vector<AnnihAreaGen> annih_area_gens;
 	//Array of asteroids.
-	Asteroid* asteroids;
+	std::vector<Asteroid> asteroids;
 	//Array of bonuses.
-	Bonus* bonuses;
+	std::vector<Bonus> bonuses;
 	//Array of bombs.
-	Bomb* bombs;
+	std::vector<Bomb> bombs;
 	//Array of bullets.
-	Bullet* bullets;
+	std::vector<Bullet> bullets;
 	//Array of dynamic particles.
-	DynamicParticle* dynamic_particles;
+	std::vector<DynamicParticle> dynamic_particles;
 	//Array of knifes.
-	Knife* knifes;
+	std::vector<Knife> knifes;
 	//Array of lazers.
-	Laser* lasers;
+	std::vector<Laser> lasers;
 	//Array of particles.
-	Particle* particles;
+	std::vector<Particle> particles;
 
 	//Object stores data about map on current level.
 	Map::MapData map;
 	//Array of deceleration areas.
-	DecelerationArea* deceler_areas;
+	std::vector <DecelerationArea> deceler_areas;
 	//Array of gravity generators.
-	GravGen* grav_gens;
+	std::vector <GravGen> grav_gens;
 	//Array of turrets.
-	Turret* turrets;
-	//Array of lasers of the map.
-	MegaLaser* mega_lasers;
+	std::vector <Turret> turrets;
 	//Array of porttals
-	Portal* portals;
+	std::vector <Portal> portals;
 
 	Camera camera;
 
@@ -187,6 +184,27 @@ public:
 
 	//game mutexes
 
+#ifdef _DEBUG
+	loged_shared_mutex annih_area_gens_array_mtx = loged_shared_mutex("annih_area_gens_array_mtx");
+	loged_shared_mutex asteroids_array_mtx = loged_shared_mutex("asteroids_array_mtx");
+	loged_shared_mutex bombs_array_mtx = loged_shared_mutex("bombs_array_mtx");
+	loged_shared_mutex bonuses_array_mtx = loged_shared_mutex("bonuses_array_mtx");
+	loged_shared_mutex bullets_array_mtx = loged_shared_mutex("bullets_array_mtx");
+	loged_shared_mutex camera_data_mtx = loged_shared_mutex("camera_data_mtx");
+	loged_shared_mutex deceler_areas_array_mtx = loged_shared_mutex("deceler_areas_array_mtx");
+	loged_shared_mutex dynamic_particles_array_mtx = loged_shared_mutex("dynamic_particles_array_mtx");
+	loged_shared_mutex grav_gens_array_mtx = loged_shared_mutex("grav_gens_array_mtx");
+	loged_shared_mutex input_values_mtx = loged_shared_mutex("input_values_mtx");
+	loged_shared_mutex knifes_array_mtx = loged_shared_mutex("knifes_array_mtx");
+	loged_shared_mutex lasers_array_mtx = loged_shared_mutex("lasers_array_mtx");
+	loged_shared_mutex log_data_mtx = loged_shared_mutex("log_data_mtx");
+	loged_shared_mutex map_data_mtx = loged_shared_mutex("map_data_mtx");
+	loged_shared_mutex particles_array_mtx = loged_shared_mutex("particles_array_mtx");
+	loged_shared_mutex pilots_array_mtx = loged_shared_mutex("pilots_array_mtx");
+	loged_shared_mutex portals_array_mtx = loged_shared_mutex("portals_array_mtx");
+	loged_shared_mutex ships_array_mtx = loged_shared_mutex("ships_array_mtx");
+	loged_shared_mutex turrets_array_mtx = loged_shared_mutex("turrets_array_mtx");
+#else // _DEBUG
 	std::shared_mutex annih_area_gens_array_mtx;
 	std::shared_mutex asteroids_array_mtx;
 	std::shared_mutex bombs_array_mtx;
@@ -201,12 +219,12 @@ public:
 	std::shared_mutex lasers_array_mtx;
 	std::shared_mutex log_data_mtx;
 	std::shared_mutex map_data_mtx;
-	std::shared_mutex mega_lasers_array_mtx;
 	std::shared_mutex particles_array_mtx;
 	std::shared_mutex pilots_array_mtx;
 	std::shared_mutex portals_array_mtx;
 	std::shared_mutex ships_array_mtx;
 	std::shared_mutex turrets_array_mtx;
+#endif // _DEBUG
 
 	//The array store time of calculation indicated phase of indicated thread.
 	//first index -- number of thread
@@ -266,68 +284,62 @@ public:
 	void AddEntity(const Laser& new_lazsr);
 	
 	//Function adds entity to array that store entities of the same type.
-	void AddEntity(const MegaLaser& new_laser);
-	
-	//Function adds entity to array that store entities of the same type.
 	void AddEntity(const Particle& new_particle);
 
 	//Function adds entity to array that store entities of the same type.
 	void AddEntity(const Portal& new_portal);
 	
 	//Function adds entity to array that store entities of the same type.
-	void AddEntity(const Pilot& new_particle);
+	void AddEntity(const Pilot& new_pilot);
 	
 	//Function adds entity to array that store entities of the same type.
-	void AddEntity(const Ship& new_particle);
+	void AddEntity(const Ship& new_ship);
 	
 	//Function adds entity to array that store entities of the same type.
 	void AddEntity(const Turret& new_lazer);
 
 
 	//Function removes the specified entity from the array.
-	void RemoveEntity(AnnihAreaGen* annih_area_gen);
+	void RemoveEntity(AnnihAreaGen& annih_area_gen);
 	
 	//Function removes the specified entity from the array.
-	void RemoveEntity(Asteroid* deleting_asteroid);
+	void RemoveEntity(Asteroid& deleting_asteroid);
 
 	//Function removes the specified entity from the array.
-	void RemoveEntity(Bonus* deleting_bonus);
+	void RemoveEntity(Bonus& deleting_bonus);
 	
 	//Function removes the specified entity from the array.
-	void RemoveEntity(Bomb* deleting_bomb);
+	void RemoveEntity(Bomb& deleting_bomb);
 	
 	//Function removes the specified entity from the array.
-	void RemoveEntity(Bullet* deleting_bullet);
+	void RemoveEntity(Bullet& deleting_bullet);
 	
 	//Function adds entity to array that store entities of the same type.
-	void RemoveEntity(DecelerationArea* new_deceleration_area);
+	void RemoveEntity(DecelerationArea& new_deceleration_area);
 
 	//Function adds entity to array that store entities of the same type.
-	void RemoveEntity(DynamicParticle* new_deceleration_area);
+	void RemoveEntity(DynamicParticle& new_deceleration_area);
 	
 	//Function adds entity to array that store entities of the same type.
-	void RemoveEntity(GravGen* new_grav_gen);
+	void RemoveEntity(GravGen& new_grav_gen);
 	
 	//Function removes the specified entity from the array.
-	void RemoveEntity(Knife* deleting_knife);
+	void RemoveEntity(Knife& deleting_knife);
 	
 	//Function removes the specified entity from the array.
-	void RemoveEntity(Laser* deleting_laser);
+	void RemoveEntity(Laser& deleting_laser);
 	
 	//Function removes the specified entity from the array.
-	void RemoveEntity(MegaLaser* deleting_mega_laser);
+	void RemoveEntity(Particle& deleting_particle);
 	
 	//Function removes the specified entity from the array.
-	void RemoveEntity(Particle* deleting_particle);
+	void RemoveEntity(Pilot& deleting_particle);
 	
 	//Function removes the specified entity from the array.
-	void RemoveEntity(Pilot* deleting_particle);
+	void RemoveEntity(Ship& deleting_particle);
 	
 	//Function removes the specified entity from the array.
-	void RemoveEntity(Ship* deleting_particle);
-	
-	//Function removes the specified entity from the array.
-	void RemoveEntity(Turret* deleting_turret);
+	void RemoveEntity(Turret& deleting_turret);
 
 
 	
@@ -412,43 +424,43 @@ public:
 	void Event12();
 
 	//"Orbit"
-	void CreateMap0(Vec2F* ships_positions, float* ships_angles);
+	void CreateMap0(std::vector<Vec2F>& ships_positions, std::vector<float>& ships_angles);
 	
 	//"turret"
-	void CreateMap1(Vec2F* ships_positions, float* ships_angles);
+	void CreateMap1(std::vector<Vec2F>& ships_positions, std::vector<float>& ships_angles);
 	
 	//"Grav Gen"
-	void CreateMap2(Vec2F* ships_positions, float* ships_angles);
+	void CreateMap2(std::vector<Vec2F>& ships_positions, std::vector<float>& ships_angles);
 	
 	//"Deceleration area"
-	void CreateMap3(Vec2F* ships_positions, float* ships_angles);
+	void CreateMap3(std::vector<Vec2F>& ships_positions, std::vector<float>& ships_angles);
 	
 	//"Mega lasers"
-	void CreateMap4(Vec2F* ships_positions, float* ships_angles);
+	void CreateMap4(std::vector<Vec2F>& ships_positions, std::vector<float>& ships_angles);
 	
 	//"Dynamical"
-	void CreateMap5(Vec2F* ships_positions, float* ships_angles);
+	void CreateMap5(std::vector<Vec2F>& ships_positions, std::vector<float>& ships_angles);
 
 	//"Destryable"
-	void CreateMap6(Vec2F* ships_positions, float* ships_angles);
+	void CreateMap6(std::vector<Vec2F>& ships_positions, std::vector<float>& ships_angles);
 
 	//"Aggressive"
-	void CreateMap7(Vec2F* ships_positions, float* ships_angles);
+	void CreateMap7(std::vector<Vec2F>& ships_positions, std::vector<float>& ships_angles);
 
 	//"Broken"
-	void CreateMap8(Vec2F* ships_positions, float* ships_angles);
+	void CreateMap8(std::vector<Vec2F>& ships_positions, std::vector<float>& ships_angles);
 
 	//"Portal"
-	void CreateMap9(Vec2F* ships_positions, float* ships_angles);
+	void CreateMap9(std::vector<Vec2F>& ships_positions, std::vector<float>& ships_angles);
 
 	//"No center"
-	void CreateMap10(Vec2F* ships_positions, float* ships_angles);
+	void CreateMap10(std::vector<Vec2F>& ships_positions, std::vector<float>& ships_angles);
 
 	//"Collaider"
-	void CreateMap11(Vec2F* ships_positions, float* ships_angles);
+	void CreateMap11(std::vector<Vec2F>& ships_positions, std::vector<float>& ships_angles);
 
 	//"Kaleidoscope"
-	void CreateMap12(Vec2F* ships_positions, float* ships_angles);
+	void CreateMap12(std::vector<Vec2F>& ships_positions, std::vector<float>& ships_angles);
 
 	void CreateMapRoundResults(GameTypes::players_count_t players_count, GameTypes::score_t max_score, float cell_size);
 
@@ -475,15 +487,15 @@ public:
 	//Use temp_p1 temp_p2
 	template<typename EntityType>
 	void DynamicEntitiesCollisions(
-		EntityType* entities,
+		std::vector<EntityType>& entities,
 		GameTypes::entities_count_t entities_count);
 	
 	//The function calculates forces of collisions between entities from two arrays.
 	//Use temp_p1 temp_p2
 	template<typename Entity1Type, typename Entity2Type>
 	void DynamicEntitiesCollisions(
-		Entity1Type* entities1,
-		Entity2Type* entities2,
+		std::vector<Entity1Type>& entities1,
+		std::vector<Entity2Type>& entities2,
 		GameTypes::entities_count_t entities1_count, 
 		GameTypes::entities_count_t entities2_count);
 	
@@ -491,59 +503,59 @@ public:
 	//Use temp_p1
 	template<typename EntityType>
 	void DynamicEntitiesCollisions(
-		Map::MapData* map,
-		EntityType* entities,
+		Map::MapData& map,
+		std::vector<EntityType>& entities,
 		GameTypes::entities_count_t entities_count);
 
 	void DynamicEntitiesCollisions(
-		Map::MapData* map,
-		Asteroid* asteroids,
+		Map::MapData& map,
+		std::vector<Asteroid>& asteroids,
 		GameTypes::entities_count_t asteroid_count);
 	
 	//The function calculates forces of collisions between entities in the array and elements of the map.
 	void DynamicEntitiesCollisions(
-		Map::MapData* map,
-		Bomb* entities,
+		Map::MapData& map,
+		std::vector<Bomb>& bombs,
 		GameTypes::entities_count_t entities_count);
 
 	//The function calculates forces of collisions between entities in the array and elements of the map.
 	void DynamicEntitiesCollisions(
-		Map::MapData* map,
-		DynamicParticle* entities,
+		Map::MapData& map,
+		std::vector<DynamicParticle>& entities,
 		GameTypes::entities_count_t entities_count);
 	
 	//The function adds the specified force to all entities in the array.
 	//Use temp_p1 temp_p2
 	template<typename EntityType>
 	void DynamicEntitiesAddForce(
-		Vec2F force,
-		EntityType* entities,
+		const Vec2F& force,
+		std::vector<EntityType>& entities,
 		GameTypes::entities_count_t entities_count);
 	
 	//The function adds forces of the all gravity generators to all entities in the array.
 	//Use temp_p1 temp_p2
 	template<typename EntityType>
 	void DynamicEntitiesAddForce(
-		GravGen* grav_gens,
+		std::vector<GravGen>& grav_gens,
 		GameTypes::map_elements_count_t grav_gens_count,
-		EntityType* entities,
+		std::vector<EntityType>& entities,
 		GameTypes::entities_count_t entities_count);
 	
 	//The function adds forces of the all gravity generators to all entities in the array.
 	//Use temp_p1 temp_p2
 	void DynamicEntitiesAddForce(
-		GravGen* grav_gens,
+		std::vector<GravGen>& grav_gens,
 		GameTypes::map_elements_count_t grav_gens_count,
-		Bomb* entities,
+		std::vector<Bomb>& entities,
 		GameTypes::entities_count_t entities_count);
 	
 	//The function adds forces of the all gravity generators to all entities in the array.
 	//Use temp_p1 temp_p2
 	template<typename EntityType>
 	void DynamicEntitiesAddForce(
-		DecelerationArea* deceler_area,
+		std::vector<DecelerationArea>& deceler_area,
 		GameTypes::map_elements_count_t deceler_area_count,
-		EntityType* entities,
+		std::vector<EntityType>& entities,
 		GameTypes::entities_count_t entities_count);
 
 	//thread functions
@@ -727,89 +739,23 @@ public:
 	//t = n * k
 	void LasersDestroyTurrets();
 
-	//mtx: mega_laser -> asteroid -> bonus -> dynamic_particle
-	//t = n * k
-	void MegaLasersDestroyAsteroids();
-
-	//mtx: mega_laser -> bonus
-	//t = n * k
-	void MegaLasersDestroyBonuses();
-
-	//mtx: mega_laser -> bomb
-	//t = n * k
-	void MegaLasersDetonateBombs();
-
-	//mtx: mega_laser -> bullet
-	//t = n * k
-	void MegaLasersDestroyBullets();
-
-	//mtx: mega_laser -> knife
-	//t = n * k
-	void MegaLasersDestroyKnifes();
-
-	//mtx: mega_laser -> map -> dynamic_particle
-	//t = n * (m1 + m2 + m3)
-	void MegaLasersDestroyMap();
-
-	//mtx: mega_laser -> turret -> dynamic_particle
-	//t = n * k
-	void MegaLasersDestroyTurrets();
-
 	//mtx: portal -> particle
 	//t = n
 	void PortalsCreateParticles();
 
 	//mtx: portal -> asteroid -> particle
 	//t = n * k
-	void PortalsTPAsteroids();
-
-	//mtx: portal -> bomb -> particle
-	//t = n * k
-	void PortalsTPBombs();
-
-	//mtx: portal -> bonus -> particle
-	//t = n * k
-	void PortalsTPBonuses();
-
-	//mtx: portal -> bullet -> particle
-	//t = n * k
-	void PortalsTPBullets();
-
-	//mtx: portal -> particle -> dynamic_particles
-	//t = n * k
-	void PortalsTPDynamicParticles();
-
-	//mtx: portal -> pilot -> particle
-	//t = n * k
-	void PortalsTPPilots();
-
-	//mtx: portal -> ship -> particle
-	//t = n * k
-	void PortalsTPShips(); 
-
-	//mtx: pilot -> bomb -> dynamic_particle -> log
-	//t = n * k
-	void PilotsKilledByBombs();
-
-	//mtx: pilot -> bullet -> dynamic_particle -> log
-	//t = n * k
-	void PilotsKilledByBullet();
+	template<typename Entity_T>
+	void PortalsTPEntityes(std::vector<Entity_T>& entityes, const GameTypes::entities_count_t exist_entityes_count, std::shared_mutex& entity_array_mtx);
 
 	//mtx: pilot -> input_values
 	//t = n
 	void PilotsCheckInput();
 
-	//mtx: pilot -> knife -> dynamic_particle -> log
+	//mtx: pilot -> bomb -> dynamic_particle -> log
 	//t = n * k
-	void PilotsKilledByKnifes();
-
-	//mtx: pilot -> laser -> dynamic_particle -> log
-	//t = n * k
-	void PilotsKilledByLasers();
-
-	//mtx: pilot -> mega_laser -> dynamic_particle -> log
-	//t = n * k
-	void PilotsKilledByMegaLaser();
+	template<typename Entity_T>
+	void PilotsKilledBy(std::vector<Entity_T>& killers, GameTypes::entities_count_t killers_count, std::shared_mutex& killers_array_mtx);
 
 	//mtx: ship -> bonus
 	//t = n * k
@@ -835,7 +781,7 @@ public:
 	//t = n * k
 	void ShipsCreateExaust();
 
-	//mtx: ship -> pilot -> bomb -> knife -> bonus -> dynamic_entity -> log
+	//mtx: ship -> pilot -> annih_area_gen -> bomb -> bonus -> dynamic_entity -> log
 	//t = n * k
 	void ShipsDestroedByBombsOrActivateBombs();
 
@@ -850,10 +796,6 @@ public:
 	//mtx: ship -> pilot -> laser -> knife -> bonus -> dynamic_entity -> log
 	//t = n * k
 	void ShipsDestroedByLasers();
-
-	//mtx: ship -> pilot -> mega_laser -> knife -> bonus -> dynamic_entity -> log
-	//t = n * k
-	void ShipsDestroedByMegaLasers();
 
 	//mtx: turret -> bullet
 	//t = n
@@ -918,11 +860,6 @@ public:
 	void UpdateLasersPhase2();
 
 	//Update the position and velocity of entity.
-	//mtx: mega_laser
-	//t = n
-	void UpdateMegaLasersPhase2();
-
-	//Update the position and velocity of entity.
 	//mtx: particle
 	//t = n
 	void UpdateParticlesPhase2();
@@ -977,114 +914,107 @@ public:
 
 	void ResetAllThreadEvents();
 
-	void DestroyEntity(Bomb* destroyer, Asteroid* entity);
-	void DestroyEntity(Bomb* destroyer, Bonus* entity);
-	void DestroyEntity(Bomb* destroyer, Bullet* entity);
-	void DestroyEntity(Bomb* destroyer, Knife* entity);
-	void DestroyEntity(Bomb* destroyer, Ship* entity);
-	void DestroyEntity(Bomb* destroyer, Particle* entity);
-	void DestroyEntity(Bomb* destroyer, Pilot* entity);
-	void DestroyEntity(Bomb* destroyer, Turret* entity);
+	void DestroyEntity(const Bomb& destroyer, Asteroid& entity);
+	void DestroyEntity(const Bomb& destroyer, Bonus& entity);
+	void DestroyEntity(const Bomb& destroyer, Bullet& entity);
+	void DestroyEntity(const Bomb& destroyer, Knife& entity);
+	void DestroyEntity(const Bomb& destroyer, Ship& entity);
+	void DestroyEntity(const Bomb& destroyer, Particle& entity);
+	void DestroyEntity(const Bomb& destroyer, Pilot& entity);
+	void DestroyEntity(const Bomb& destroyer, Turret& entity);
 
-	void DestroyEntity(Bullet* destroyer, Asteroid* entity);
-	void DestroyEntity(Bullet* destroyer, Knife* entity);
-	void DestroyEntity(Bullet* destroyer, Ship* entity);
-	void DestroyEntity(Bullet* destroyer, Pilot* entity);
+	void DestroyEntity(const Bullet& destroyer, Asteroid& entity);
+	void DestroyEntity(const Bullet& destroyer, Knife& entity);
+	void DestroyEntity(const Bullet& destroyer, Ship& entity);
+	void DestroyEntity(const Bullet& destroyer, Pilot& entity);
 
-	void DestroyEntity(Knife* destroyer, Asteroid* entity);
-	void DestroyEntity(Knife* destroyer, Ship* entity);
-	void DestroyEntity(Knife* destroyer, Pilot* entity);
-	void DestroyEntity(Knife* destroyer, Turret* entity);
+	void DestroyEntity(const Knife& destroyer, Asteroid& entity);
+	void DestroyEntity(const Knife& destroyer, Ship& entity);
+	void DestroyEntity(const Knife& destroyer, Pilot& entity);
+	void DestroyEntity(const Knife& destroyer, Turret& entity);
 
-	void DestroyEntity(Laser* destroyer, Asteroid* entity);
-	void DestroyEntity(Laser* destroyer, Bonus* entity);
-	void DestroyEntity(Laser* destroyer, Bullet* entity);
-	void DestroyEntity(Laser* destroyer, Knife* entity);
-	void DestroyEntity(Laser* destroyer, Ship* entity);
-	void DestroyEntity(Laser* destroyer, Particle* entity);
-	void DestroyEntity(Laser* destroyer, Pilot* entity);
-	void DestroyEntity(Laser* destroyer, Turret* entity);
+	void DestroyEntity(const Laser& destroyer, Asteroid& entity);
+	void DestroyEntity(const Laser& destroyer, Bonus& entity);
+	void DestroyEntity(const Laser& destroyer, Bullet& entity);
+	void DestroyEntity(const Laser& destroyer, Knife& entity);
+	void DestroyEntity(const Laser& destroyer, Ship& entity);
+	void DestroyEntity(const Laser& destroyer, Particle& entity);
+	void DestroyEntity(const Laser& destroyer, Pilot& entity);
+	void DestroyEntity(const Laser& destroyer, Turret& entity);
 
-	void DestroyEntity(MegaLaser* destroyer, Asteroid* entity);
-	void DestroyEntity(MegaLaser* destroyer, Bonus* entity);
-	void DestroyEntity(MegaLaser* destroyer, Bullet* entity);
-	void DestroyEntity(MegaLaser* destroyer, Knife* entity);
-	void DestroyEntity(MegaLaser* destroyer, Ship* entity);
-	void DestroyEntity(MegaLaser* destroyer, Particle* entity);
-	void DestroyEntity(MegaLaser* destroyer, Pilot* entity);
+	void DestroyEntity(const Ship& destroyer, Pilot& entity);
 
-	void DestroyEntity(Ship* destroyer, Pilot* entity);
-
+	// Destroy an asteroid
+	// Divide it if this one enouth big.
+	void DestroyEntity(Asteroid& entity);
 	//Destroy entity by map.
-	void DestroyEntity(Asteroid* entity);
+	void DestroyEntity(Bonus& entity);
 	//Destroy entity by map.
-	void DestroyEntity(Bonus* entity);
+	void DestroyEntity(Bullet& entity);
 	//Destroy entity by map.
-	void DestroyEntity(Bullet* entity);
+	void DestroyEntity(Knife& entity);
 	//Destroy entity by map.
-	void DestroyEntity(Knife* entity);
+	void DestroyEntity(Ship& entity);
 	//Destroy entity by map.
-	void DestroyEntity(Ship* entity);
+	void DestroyEntity(Particle& entity);
 	//Destroy entity by map.
-	void DestroyEntity(Particle* entity);
-	//Destroy entity by map.
-	void DestroyEntity(Pilot* entity);
+	void DestroyEntity(Pilot& entity);
 		
-	void DestroySupportEntitiesBy(ControledEntity* produser);
+	void DestroySupportEntitiesBy(ControledEntity& produser);
 	
 	//The function spawn the ship from the pilot by spawner.
 	//After that the function removes the pilot.
-	void SpawnEntity(Ship* spawner, Pilot* pilot);
+	void SpawnEntity(const Ship& spawner, Pilot& pilot);
 
 	//portal-> entyty_mtx -> particle
 	template <typename EntityType>
-	void TeleportEntity(Portal* portal, EntityType* entity);
+	void TeleportEntity(const Portal& portal, EntityType& entity);
 
-	void AddBonuses(Ship* spawner);
+	void AddBonuses(Ship& spawner);
 		
 	//mtx: annih_area_gen -> bomb
-	void AnnihAreaGenShoot(AnnihAreaGen* annih_area_gen);
+	void AnnihAreaGenShoot(const AnnihAreaGen& annih_area_gen);
 
 	//Not checking nullprt!
 	//mtx: laser -> bomb -> knife -> bullet -> dynamic_particle
-	void ShipShoot(Ship* ship);
+	void ShipShoot(Ship& ship);
 
-	void ShipShoot_LaserLoopBombKnife(Ship* ship);
-	void ShipShoot_LaserLoopBomb(Ship* ship);
-	void ShipShoot_LaserLoopKnife(Ship* ship);
-	void ShipShoot_LaserBombKnife(Ship* ship);
-	void ShipShoot_LoopBombKnife(Ship* ship);
-	void ShipShoot_LaserLoop(Ship* ship);
-	void ShipShoot_LaserBomb(Ship* ship);
-	void ShipShoot_LoopBomb(Ship* ship);
-	void ShipShoot_LaserKnife(Ship* ship);
-	void ShipShoot_LoopKnife(Ship* ship);
+	void ShipShoot_LaserLoopBombKnife(const Ship& ship);
+	void ShipShoot_LaserLoopBomb(Ship& ship);
+	void ShipShoot_LaserLoopKnife(Ship& ship);
+	void ShipShoot_LaserBombKnife(Ship& ship);
+	void ShipShoot_LoopBombKnife(Ship& ship);
+	void ShipShoot_LaserLoop(Ship& ship);
+	void ShipShoot_LaserBomb(Ship& ship);
+	void ShipShoot_LoopBomb(Ship& ship);
+	void ShipShoot_LaserKnife(Ship& ship);
+	void ShipShoot_LoopKnife(Ship& ship);
 
 	//mtx: bomb
-	void ShipShoot_BombKnife(Ship* ship);
+	void ShipShoot_BombKnife(Ship& ship);
 
 	//mtx: knife
-	void ShipShoot_Knife(Ship* ship);
+	void ShipShoot_Knife(Ship& ship);
 
 	//mtx: bomb
-	void ShipShoot_Bomb(Ship* ship);
+	void ShipShoot_Bomb(Ship& ship);
 
 	//mtx: bullet
-	void ShipShoot_Loop(Ship* ship);
+	void ShipShoot_Loop(Ship& ship);
 
 	//mtx: laser
-	void ShipShoot_Laser(Ship* ship);
+	void ShipShoot_Laser(Ship& ship);
 
 	//mtx: bullet
-	void ShipShoot_NoBonus(Ship* ship);
+	void ShipShoot_NoBonus(Ship& ship);
 
 	//bomb by laser's host is created by asteroid
 	//need mtx: laser -> bomb -> asteroid
-	void CreateBomb(Laser* creator, Asteroid* producer);
+	void CreateBomb(const Laser& creator, const Asteroid& producer);
 
 	//loop by laser's host is created by asteroid
 	//need mtx: laser -> bullet -> asteroid
-	void CreateLoop(Laser* creator, Asteroid* producer);
+	void CreateLoop(const Laser& creator, const Asteroid& producer);
 
 	void IncrementScore(GameTypes::players_count_t team_number);
 	void DecrementScore(GameTypes::players_count_t team_number);
@@ -1123,13 +1053,13 @@ public:
 	GameTypes::score_t GetMaxScore();
 
 	//menu pointers
-	MenuFunctions* object_p__menu_functions;
-	//menu pointers
 	uint8_t* menu_p__ships_select_buttons;
 	//menu pointers
 	EngineTypes::Bonus::inventory_t* menu_p__start_bonus;
 
 	//open gl pointers
 	OpenGL* object_p__open_gl_realisation;
+	//menu pointers
+	MenuFunctions* object_p__menu_functions;
 };
 

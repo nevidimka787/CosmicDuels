@@ -256,29 +256,29 @@ bool DynamicEntity::Collision(const Map::Polygon* polygon)
 	return collision;
 }
 
-bool DynamicEntity::Collision(const Map::MapData* map)
+bool DynamicEntity::Collision(const Map::MapData& map)
 {
 	bool collision = false;
 	void* map_element;
-	for (EngineTypes::Map::array_length_t i = 0; i < map->cyrcles_array_length; i++)
+	for (EngineTypes::Map::array_length_t i = 0; i < map.cyrcles_array_length; i++)
 	{
-		map_element = (void*)map->CyrclePointer(i);
+		map_element = (void*)map.CyrclePointer(i);
 		if (((Map::Cyrcle*)map_element)->exist)
 		{
 			collision |= Collision((Map::Cyrcle*)map_element);
 		}
 	}
-	for (EngineTypes::Map::array_length_t i = 0; i < map->polygons_array_length; i++)
+	for (EngineTypes::Map::array_length_t i = 0; i < map.polygons_array_length; i++)
 	{
-		map_element = (void*)map->PolygonPointer(i);
+		map_element = (void*)map.PolygonPointer(i);
 		if (((Map::Polygon*)map_element)->exist)
 		{
 			collision |= Collision((Map::Polygon*)map_element);
 		}
 	}
-	for (EngineTypes::Map::array_length_t i = 0; i < map->rectangles_array_length; i++)
+	for (EngineTypes::Map::array_length_t i = 0; i < map.rectangles_array_length; i++)
 	{
-		map_element = (void*)map->RectanglePointer(i);
+		map_element = (void*)map.RectanglePointer(i);
 		if (((Map::Rectangle*)map_element)->exist)
 		{
 			collision |= Collision((Map::Rectangle*)map_element);
@@ -348,7 +348,8 @@ bool DynamicEntity::CollisionOutside(const Map::Rectangle* rectangle)
 	const Vec2F& rectangle_velocity = rectangle->GetVelocity();
 	const Vec2F& relative_velocity = velocity - rectangle_velocity;
 
-	const Segment treck(position - relative_velocity, relative_velocity);
+	//const Segment treck(position + relative_velocity, -relative_velocity * 2.0f - relative_velocity.LengthPow2(radius * radius));
+	const Segment treck(position + relative_velocity, -relative_velocity * 2.0f);
 	Segment side = rectangle->GetUpSide();
 	side.point.y += radius;
 	if (treck.IsIntersection(side))
@@ -470,7 +471,7 @@ Vec2F DynamicEntity::GetVelocity() const
 	return velocity;
 }
 
-bool DynamicEntity::IsCollision(Vec2F point) const
+bool DynamicEntity::IsCollision(const Vec2F& point) const
 {
 	return Segment(position, -velocity).Distance(point) < radius;
 }
@@ -480,7 +481,7 @@ bool DynamicEntity::IsCollision(const Vec2F* point) const
 	return Segment(position, -velocity).Distance(point) < radius;
 }
 
-bool DynamicEntity::IsCollision(Line line) const
+bool DynamicEntity::IsCollision(const Line& line) const
 {
 	return Segment(position, -velocity).Distance(&line) < radius;
 }
@@ -490,7 +491,7 @@ bool DynamicEntity::IsCollision(const Line* line) const
 	return Segment(position, -velocity).Distance(line) < radius;
 }
 
-bool DynamicEntity::IsCollision(Beam beam) const
+bool DynamicEntity::IsCollision(const Beam& beam) const
 {
 	return Segment(position, -velocity).Distance(&beam) < radius;
 }
@@ -500,7 +501,7 @@ bool DynamicEntity::IsCollision(const Beam* beam) const
 	return Segment(position, -velocity).Distance(beam) < radius;
 }
 
-bool DynamicEntity::IsCollision(Segment segment) const
+bool DynamicEntity::IsCollision(const Segment& segment) const
 {
 	return segment.Distance(position) < radius || GetTreck().IsIntersection(&segment);
 }
@@ -510,9 +511,14 @@ bool DynamicEntity::IsCollision(const Segment* segment) const
 	return segment->Distance(position) < radius || GetTreck().IsIntersection(segment);
 }
 
-bool DynamicEntity::IsCollision(DynamicEntity* entity) const
+bool DynamicEntity::IsCollision(const DynamicEntity* entity) const
 {
 	return Segment(position, -velocity).Distance(entity->GetPosition()) < radius + entity->radius;
+}
+
+bool DynamicEntity::IsCollision(const DynamicEntity& entity) const
+{
+	return Segment(position, -velocity).Distance(entity.GetPosition()) < radius + entity.radius;
 }
 
 bool DynamicEntity::IsCollision(const StaticEntity* entity) const
@@ -524,22 +530,6 @@ bool DynamicEntity::IsCollision(const Laser* laser) const
 {
 	Segment last = GetTreck();
 	return laser->GetSegment().Distance(&last) < radius + laser->width;
-}
-
-bool DynamicEntity::IsCollision(const MegaLaser* mega_laser) const
-{
-	Segment last = GetLastTreck();
-	Line perpendicular = Line(position, mega_laser->GetDirection().Perpendicular());
-	Segment segment = mega_laser->GetSegment();
-	Segment start = Segment(
-		segment.point + mega_laser->GetDirection().PerpendicularClockwise() * mega_laser->width,
-		mega_laser->GetDirection().Perpendicular() * mega_laser->width * 2.0f);
-	Vec2F intersect;
-	return
-		last.IsIntersection(&segment) ||
-		segment.Intersection(&perpendicular, &intersect) && intersect.Distance(position) < radius + mega_laser->width ||
-		start.Distance(&last) < radius ||
-		Segment(start.point + segment.vector, start.vector).Distance(&last) < radius;
 }
 
 bool DynamicEntity::IsCollision(const Map::Rectangle* rectangle) const
@@ -605,14 +595,14 @@ bool DynamicEntity::IsCollision(const Portal* portal) const
 	return Segment(position, -velocity).Distance(portal->GetPosition()) < portal->radius + radius;
 }
 
-bool DynamicEntity::IsCollision(const Map::MapData* map) const
+bool DynamicEntity::IsCollision(const Map::MapData& map) const
 {
 	void* element;
-	if (map->cyrcles_array_length > 0)
+	if (map.cyrcles_array_length > 0)
 	{
-		for (EngineTypes::Map::array_length_t cyrcle = 0, found_cyrcle = 0; found_cyrcle < map->cyrcles_array_length; cyrcle++)
+		for (EngineTypes::Map::array_length_t cyrcle = 0, found_cyrcle = 0; found_cyrcle < map.cyrcles_array_length; cyrcle++)
 		{
-			if (((Map::Cyrcle*)(element = (void*)map->CyrclePointer(cyrcle)))->exist)
+			if (((Map::Cyrcle*)(element = (void*)map.CyrclePointer(cyrcle)))->exist)
 			{
 				if (IsCollision((Map::Cyrcle*)element))
 				{
@@ -622,11 +612,11 @@ bool DynamicEntity::IsCollision(const Map::MapData* map) const
 			}
 		}
 	}
-	if (map->polygons_array_length > 0)
+	if (map.polygons_array_length > 0)
 	{
-		for (EngineTypes::Map::array_length_t polygon = 0, found_polygon = 0; found_polygon < map->polygons_array_length; polygon++)
+		for (EngineTypes::Map::array_length_t polygon = 0, found_polygon = 0; found_polygon < map.polygons_array_length; polygon++)
 		{
-			if (((Map::Polygon*)(element = (void*)map->PolygonPointer(polygon)))->exist)
+			if (((Map::Polygon*)(element = (void*)map.PolygonPointer(polygon)))->exist)
 			{
 				if (IsCollision((Map::Polygon*)element))
 				{
@@ -636,11 +626,11 @@ bool DynamicEntity::IsCollision(const Map::MapData* map) const
 			}
 		}
 	}
-	if (map->rectangles_array_length > 0)
+	if (map.rectangles_array_length > 0)
 	{
-		for (EngineTypes::Map::array_length_t rectangle = 0, found_rectangle = 0; found_rectangle < map->rectangles_array_length; rectangle++)
+		for (EngineTypes::Map::array_length_t rectangle = 0, found_rectangle = 0; found_rectangle < map.rectangles_array_length; rectangle++)
 		{
-			if (((Map::Rectangle*)(element = (void*)map->RectanglePointer(rectangle)))->exist)
+			if (((Map::Rectangle*)(element = (void*)map.RectanglePointer(rectangle)))->exist)
 			{
 				if (IsCollision((Map::Rectangle*)element))
 				{

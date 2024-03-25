@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include <math.h>
+#include <vector>
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -68,8 +70,8 @@ public:
 	float GetScale() const;
 	//All ships and pilots will be show in the camera.
 	void Focus(
-		const Ship* ships_array,
-		const Pilot* pilots_array,
+		const std::vector<Ship>& ships_array,
+		const std::vector<Pilot>& pilots_array,
 		GameTypes::players_count_t ships_count,
 		GameTypes::players_count_t pilots_count);
 

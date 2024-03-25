@@ -1,6 +1,7 @@
 #pragma once
 
 #include <shared_mutex>
+#include <vector>
 
 #include "MenuFunctions.h"
 
@@ -22,9 +23,9 @@ protected:
 	Vec2D* cursore_release_position;
 
 	//The array store data about pushed keys on keyboard.
-	bool* rotate_key_flags;
+	std::vector<bool> rotate_key_flags;
 	//The array store data about pushed keys on keyboard.
-	bool* shoot_key_flags;
+	std::vector<bool> shoot_key_flags;
 public:
 
 	//buffers
@@ -187,52 +188,36 @@ public:
 	//The function is main draw function and called every draw cycle.
 	void DrawFrame();
 
-	//The function draw line.
-	void DrawObject(const Line* line, bool update_shader = false);
-	//The function draw beam.
-	void DrawObject(const Beam* beam, bool update_shader = false);
-	//The function draw segment.
-	void DrawObject(const Segment* segment, bool update_shader = false);
-
-	//The function draw entity as vague object.
-	void DrawObject(const Entity* entity, bool update_shader = false);
-	//The function draw static entity as vague object.
-	void DrawObject(const StaticEntity* static_entity, bool update_shader = false);
-	//The function draw dynamic entity as vague object.
-	void DrawObject(const DynamicEntity* dynamic_entity, bool update_shader = false);
-
 	//The function draw annihilation area generator..
-	void DrawObject(const AnnihAreaGen* annih_area_gen, bool update_shader = false);
+	void DrawObject(const AnnihAreaGen& annih_area_gen, bool update_shader = false);
 	//The function draw asteroid.
-	void DrawObject(const Asteroid* asteroid, bool update_shader = false);
+	void DrawObject(const Asteroid& asteroid, bool update_shader = false);
 	//The function draw asteroid.
-	void DrawObject(const Bomb* bomb, bool update_shader = false);
+	void DrawObject(const Bomb& bomb, bool update_shader = false);
 	//The function draw bonus.
-	void DrawObject(const Bonus* bonus, bool update_shader = false);
+	void DrawObject(const Bonus& bonus, bool update_shader = false);
 	//The function draw bullet.
-	void DrawObject(const Bullet* bullet, bool update_shader = false);
+	void DrawObject(const Bullet& bullet, bool update_shader = false);
 	//The function draw deceleration area.
-	void DrawObject(const DecelerationArea* deceler_area, bool update_shader = false);
+	void DrawObject(const DecelerationArea& deceler_area, bool update_shader = false);
 	//The function draw dynamic particle.
-	void DrawObject(const DynamicParticle* dynamic_particle, bool update_shader = false);
+	void DrawObject(const DynamicParticle& dynamic_particle, bool update_shader = false);
 	//The function draw gravity generator.
-	void DrawObject(const GravGen* grav_gen, bool update_shader = false);
+	void DrawObject(const GravGen& grav_gen, bool update_shader = false);
 	//The function draw knife.
-	void DrawObject(const Knife* knife, bool update_shader = false);
+	void DrawObject(const Knife& knife, bool update_shader = false);
 	//The function draw laser.
-	void DrawObject(const Laser* mega_laser, bool update_shader = false);
-	//The function draw mega laser.
-	void DrawObject(const MegaLaser* mega_laser, bool update_shader = false);
+	void DrawObject(const Laser& mega_laser, bool update_shader = false);
 	//The function draw particle.
-	void DrawObject(const Particle* particle, bool update_shader = false);
+	void DrawObject(const Particle& particle, bool update_shader = false);
 	//The function draw portal.
-	void DrawObject(const Portal* portal, bool update_shader = false);
+	void DrawObject(const Portal& portal, bool update_shader = false);
 	//The function draw pilot.
-	void DrawObject(const Pilot* pilot, bool update_shader = false);
+	void DrawObject(const Pilot& pilot, bool update_shader = false);
 	//The function draw ship.
-	void DrawObject(const Ship* ship, bool update_shader = false);
+	void DrawObject(const Ship& ship, bool update_shader = false);
 	//The function draw turret.
-	void DrawObject(const Turret* turret, bool update_shader = false);
+	void DrawObject(const Turret& turret, bool update_shader = false);
 
 	//The function draw map's rectangle.
 	void DrawObject(const Map::Rectangle* rectangle, bool update_shader = false);
@@ -242,7 +227,10 @@ public:
 	void DrawObject(const Map::Polygon* polygon, bool update_shader = false);
 
 	//The function draw menu's button.
-	void DrawObject(Button* button, bool button_is_controller = false, bool update_shader = false);
+	void DrawObject(const Button& button, bool button_is_controller = false, bool update_shader = false);
+
+	template<typename Object_T, typename counter_t >
+	void DrawObjects(const std::vector<Object_T>* objects, const counter_t* objects_count);
 
 	//Draw functions
 
@@ -268,8 +256,6 @@ public:
 	void DrawKnifes();
 	//The function draw all lasers on the map.
 	void DrawLasers();
-	//The function draw all mega lasers on the map.
-	void DrawMegaLasers();
 	//The function draw all particles on the map.
 	void DrawParticles();
 	//The function draw all portals on the map.
@@ -330,8 +316,8 @@ public:
 	const bool* game_p__flag_all_entities_initialisate;
 	const bool* game_p__flag_round_results;
 
-	GameTypes::tic_t* game_p__global_timer;
-	GameTypes::tic_t* game_p__stuning_timer;
+	const GameTypes::tic_t* game_p__global_timer;
+	const GameTypes::tic_t* game_p__stuning_timer;
 
 	//Count of annihilation area generators on the map.
 	const GameTypes::entities_count_t* game_p__annih_area_gens_count;
@@ -369,40 +355,38 @@ public:
 	const GameTypes::map_elements_count_t* game_p__turrets_count;
 
 	//Array of annihilation area generators.
-	AnnihAreaGen** game_p__annih_area_gens;
+	const std::vector<AnnihAreaGen>* game_p__annih_area_gens;
 	//Array of asteroids.
-	Asteroid** game_p__asteroids;
+	const std::vector<Asteroid>* game_p__asteroids;
 	//Array of bombs.
-	Bomb** game_p__bombs;
+	const std::vector<Bomb>* game_p__bombs;
 	//Array of bonuses.
-	Bonus** game_p__bonuses;
+	const std::vector<Bonus>* game_p__bonuses;
 	//Array of bullets.
-	Bullet** game_p__bullets;
+	const std::vector<Bullet>* game_p__bullets;
 	//Array of particles.
-	DynamicParticle** game_p__dynamic_particles;
+	const std::vector<DynamicParticle>* game_p__dynamic_particles;
 	//Array of knifes.
-	Knife** game_p__knifes;
+	const std::vector<Knife>* game_p__knifes;
 	//Array of lazers.
-	Laser** game_p__lasers;
+	const std::vector<Laser>* game_p__lasers;
 	//Array of pilots.
-	Pilot** game_p__pilots;
+	const std::vector<Pilot>* game_p__pilots;
 	//Array of particles.
-	Particle** game_p__particles;
+	const std::vector<Particle>* game_p__particles;
 	//Array of ships
-	Ship** game_p__ships;
+	const std::vector<Ship>* game_p__ships;
 
 	//Object stores data about map on current level.
-	Map::MapData* game_p__map;
+	const Map::MapData* game_p__map;
 	//Array of deceleration_areas.
-	DecelerationArea** game_p__deceler_areas;
+	const std::vector<DecelerationArea>* game_p__deceler_areas;
 	//Array of gravity generators.
-	GravGen** game_p__grav_gens;
+	const std::vector<GravGen>* game_p__grav_gens;
 	//Array of portals
-	Portal** game_p__portals;
+	const std::vector<Portal>* game_p__portals;
 	//Array of turtets.
-	Turret** game_p__turrets;
-	//Array of lasers of the map.
-	MegaLaser** game_p__mega_lasers;
+	const std::vector<Turret>* game_p__turrets;
 
 	Menu** game_p__current_active_menu;
 
@@ -417,11 +401,9 @@ public:
 
 	Camera* game_p__camera;
 
-	bool** game_p__rotate_flags;
 	const bool* game_p__rotation_inverse;
-	bool** game_p__shoot_flags;
-	GameTypes::tic_t** game_p__double_clk_timers;
-	bool** game_p__burnout_flags;
+	std::vector<GameTypes::tic_t>* game_p__double_clk_timers;
+	GameTypes::control_flags_t* game_p__control_flags;
 
 	std::shared_mutex* game_p__annih_area_gens_array_mtx;
 	std::shared_mutex* game_p__asteroids_array_mtx;
@@ -437,7 +419,6 @@ public:
 	std::shared_mutex* game_p__lasers_array_mtx;
 	std::shared_mutex* game_p__log_data_mtx;
 	std::shared_mutex* game_p__map_data_mtx;
-	std::shared_mutex* game_p__mega_lasers_array_mtx;
 	std::shared_mutex* game_p__particles_array_mtx;
 	std::shared_mutex* game_p__portals_array_mtx;
 	std::shared_mutex* game_p__pilots_array_mtx;

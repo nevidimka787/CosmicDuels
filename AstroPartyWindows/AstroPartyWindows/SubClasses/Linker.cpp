@@ -57,7 +57,7 @@ Linker::Linker(Game* game_object, MenuFunctions* menu_functions_object, OpenGL* 
 	open_gl_object->game_p__bullets_array_mtx = &game_object->bullets_array_mtx;
 	open_gl_object->game_p__bullets_count = &game_object->bullets_count;
 	open_gl_object->game_p__double_clk_timers = &game_object->double_clk_timers;
-	open_gl_object->game_p__burnout_flags = &game_object->burnout_flags;
+	open_gl_object->game_p__control_flags = &game_object->control_flags;
 	open_gl_object->game_p__camera = &game_object->camera;
 	open_gl_object->game_p__camera_data_mtx = &game_object->camera_data_mtx;
 	open_gl_object->game_p__current_active_menu = &game_object->current_active_menu;
@@ -83,8 +83,6 @@ Linker::Linker(Game* game_object, MenuFunctions* menu_functions_object, OpenGL* 
 	open_gl_object->game_p__map = &game_object->map;
 	open_gl_object->game_p__map_data_mtx = &game_object->map_data_mtx;
 	open_gl_object->game_p__map_pull_select_menu = &game_object->map_pull_select_menu;
-	open_gl_object->game_p__mega_lasers = &game_object->mega_lasers;
-	open_gl_object->game_p__mega_lasers_array_mtx = &game_object->mega_lasers_array_mtx;
 	open_gl_object->game_p__mega_lasers_count = &game_object->mega_lasers_count;
 	open_gl_object->game_p__option_menu = &game_object->option_menu;
 	open_gl_object->game_p__particles = &game_object->particles;
@@ -98,14 +96,12 @@ Linker::Linker(Game* game_object, MenuFunctions* menu_functions_object, OpenGL* 
 	open_gl_object->game_p__pilots_array_mtx = &game_object->pilots_array_mtx;
 	open_gl_object->game_p__pilots_count = &game_object->pilots_count;
 	open_gl_object->game_p__players_count = &game_object->players_count;
-	open_gl_object->game_p__rotate_flags = &game_object->rotate_flags;
 	open_gl_object->game_p__rotation_inverse = &game_object->rotation_inverse;
 	open_gl_object->game_p__ships = &game_object->ships;
 	open_gl_object->game_p__ships_array_mtx = &game_object->ships_array_mtx;
 	open_gl_object->game_p__ships_control_menu = &game_object->ships_control_menu;
 	open_gl_object->game_p__ships_count = &game_object->ships_count;
 	open_gl_object->game_p__ships_select_menu = &game_object->ships_select_menu;
-	open_gl_object->game_p__shoot_flags = &game_object->shoot_flags;
 	open_gl_object->game_p__stuning_timer = &game_object->stuning_timer;
 	open_gl_object->game_p__play_match = &game_object->play_match;
 	open_gl_object->game_p__play_round = &game_object->play_round;

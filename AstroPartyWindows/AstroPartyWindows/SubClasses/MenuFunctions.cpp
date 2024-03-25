@@ -1,11 +1,13 @@
 #include "MenuFunctions.h"
 #include <GLFW/glfw3.h>
 
+#include <vector>
+
 #pragma warning(disable : 26495)
 
 inline void SetStatusToButton(Menu* menu, EngineTypes::Button::id_t button_id, EngineTypes::Button::status_t status_mask, bool value);
 inline void SetTextToButton(Menu* menu, EngineTypes::Button::id_t button_id, const char* text, EngineTypes::Button::text_size_t text_size = 0);
-inline bool MinimalCountTeamsSelected(GameTypes::entities_count_t* teams_array, GameTypes::players_count_t array_length, GameTypes::players_count_t players_count);
+inline bool MinimalCountTeamsSelected(std::vector<GameTypes::players_count_t>& teams_array, GameTypes::players_count_t array_length, GameTypes::players_count_t players_count);
 
 MenuFunctions::MenuFunctions()
 {
@@ -503,7 +505,7 @@ void MenuFunctions::ShipsSelectMenuFunction(Vec2F clk_pos, uint8_t clk_status)
 	}
 }
 
-inline bool MinimalCountTeamsSelected(GameTypes::entities_count_t* teams_array, GameTypes::players_count_t array_length, GameTypes::players_count_t players_count)
+inline bool MinimalCountTeamsSelected(std::vector<GameTypes::players_count_t>& teams_array, GameTypes::players_count_t array_length, GameTypes::players_count_t players_count)
 {
 	bool* flags_arr = new bool[players_count];
 	uint8_t found_teams = 0u;
@@ -619,10 +621,10 @@ void MenuFunctions::SpawnObjectsSelectMenuFunction(Vec2F clk_pos, uint8_t clk_st
 void MenuFunctions::ShipsControlMenuFunction(
 	Vec2F clk_pos,
 	uint8_t clk_status,
-	bool* rotate_flags,
-	bool* shoot_flags,
-	GameTypes::tic_t* double_clk_timers,
-	bool* burnout_flags)
+	std::vector<bool>& rotate_flags,
+	std::vector<bool>& shoot_flags,
+	std::vector<GameTypes::tic_t>& double_clk_timers,
+	std::vector<bool>& burnout_flags)
 {
 	Button* current_button;
 	for (EngineTypes::Menu::buttons_count_t i = 0; i < game_p__ships_control_menu->GetButtonsCount(); i++)
@@ -676,12 +678,12 @@ void MenuFunctions::ShipsControlMenuFunction(
 }
 
 void MenuFunctions::ShipsControlMenuFunction(
-	const bool* rotate_keys_pointers,
-	const bool* shoot_keys_pointers,
-	bool* rotate_flags,
-	bool* shoot_flags,
-	GameTypes::tic_t* double_clk_timers,
-	bool* burnout_flags)
+	const std::vector<bool>& rotate_keys_pointers,
+	const std::vector<bool>& shoot_keys_pointers,
+	std::vector<bool>& rotate_flags,
+	std::vector<bool>& shoot_flags,
+	std::vector<GameTypes::tic_t>& double_clk_timers,
+	std::vector<bool>& burnout_flags)
 {
 	for (GameTypes::players_count_t id = 0; id < GAME_PLAYERS_MAX_COUNT; id++)
 	{

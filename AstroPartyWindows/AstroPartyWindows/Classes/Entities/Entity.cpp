@@ -206,12 +206,17 @@ const Vec2F* Entity::GetPositionPointer() const
 	return &position;
 }
 
-bool Entity::IsCollision(Beam* beam) const
+bool Entity::IsCollision(const Beam& beam) const
+{
+	return beam.Distance(position) <= radius;
+}
+
+bool Entity::IsCollision(const Beam* beam) const
 {
 	return beam->Distance(position) <= radius;
 }
 
-bool Entity::IsCollision(Map::Cyrcle* cyrcle) const
+bool Entity::IsCollision(const Map::Cyrcle* cyrcle) const
 {
 	if (cyrcle->exist == false)
 	{
@@ -221,64 +226,55 @@ bool Entity::IsCollision(Map::Cyrcle* cyrcle) const
 	return GetDistance(&temp) < radius + cyrcle->GetRadius();
 }
 
-bool Entity::IsCollision(DecelerationArea* deceler_area) const
+bool Entity::IsCollision(const DecelerationArea* deceler_area) const
 {
 	return GetDistance(deceler_area) <= 0.0f;
 }
 
-bool Entity::IsCollision(DynamicEntity* dynamic_entity) const
+bool Entity::IsCollision(const DynamicEntity* dynamic_entity) const
 {
 	return GetDistance(&dynamic_entity->position) <= dynamic_entity->radius;
 }
 
-bool Entity::IsCollision(Entity* entity) const
+bool Entity::IsCollision(const Entity* entity) const
 {
 	return GetDistance(&entity->position) <= entity->radius;
 }
 
-bool Entity::IsCollision(Line* line) const
+bool Entity::IsCollision(const Line& line) const
+{
+	return line.Distance(&position) <= radius;
+}
+
+bool Entity::IsCollision(const Line* line) const
 {
 	return line->Distance(&position) <= radius;
 }
 
-bool Entity::IsCollision(Laser* laser) const
+bool Entity::IsCollision(const Laser* laser) const
 {
 	return laser->GetSegment().Distance(position) < radius + laser->width;
 }
 
-bool Entity::IsCollision(MegaLaser* mega_laser) const
+bool Entity::IsCollision(const Map::MapData& map) const
 {
-	Line perpendicular = Line(position, mega_laser->GetDirection().Perpendicular());
-	Segment segment = mega_laser->GetSegment();
-	Segment start = Segment(
-		segment.point + mega_laser->GetDirection().PerpendicularClockwise() * mega_laser->width,
-		mega_laser->GetDirection().Perpendicular() * mega_laser->width * 2.0f);
-	Vec2F intersect;
-	return
-		segment.Intersection(&perpendicular, &intersect) && intersect.Distance(position) < radius + mega_laser->width ||
-		start.Distance(position) < radius ||
-		Segment(start.point + segment.vector, start.vector).Distance(position) < radius;
-}
-
-bool Entity::IsCollision(Map::MapData* map) const
-{
-	for (uint8_t i = 0; i < map->rectangles_array_length; i++)
+	for (uint8_t i = 0; i < map.rectangles_array_length; i++)
 	{
-		if (IsCollision(map->RectanglePointer(i)))
+		if (IsCollision(map.RectanglePointer(i)))
 		{
 			return true;
 		}
 	}
-	for (uint8_t i = 0; i < map->cyrcles_array_length; i++)
+	for (uint8_t i = 0; i < map.cyrcles_array_length; i++)
 	{
-		if (IsCollision(map->CyrclePointer(i)))
+		if (IsCollision(map.CyrclePointer(i)))
 		{
 			return true;
 		}
 	}
-	for (uint8_t i = 0; i < map->polygons_array_length; i++)
+	for (uint8_t i = 0; i < map.polygons_array_length; i++)
 	{
-		if (IsCollision(map->PolygonPointer(i)))
+		if (IsCollision(map.PolygonPointer(i)))
 		{
 			return true;
 		}
@@ -286,7 +282,7 @@ bool Entity::IsCollision(Map::MapData* map) const
 	return false;
 }
 
-bool Entity::IsCollision(Map::Polygon* polygon) const
+bool Entity::IsCollision(const Map::Polygon* polygon) const
 {
 	if (!polygon->exist)
 	{
@@ -316,7 +312,7 @@ bool Entity::IsCollision(Map::Polygon* polygon) const
 	return false;
 }
 
-bool Entity::IsCollision(Map::Rectangle* rectangle) const
+bool Entity::IsCollision(const Map::Rectangle* rectangle) const
 {
 	if (rectangle->exist == false)
 	{
@@ -346,22 +342,27 @@ bool Entity::IsCollision(Map::Rectangle* rectangle) const
 	return false;
 }
 
-bool Entity::IsCollision(Segment* segment) const
+bool Entity::IsCollision(const Segment& segment) const
+{
+	return segment.Distance(&position) <= radius;
+}
+
+bool Entity::IsCollision(const Segment* segment) const
 {
 	return segment->Distance(&position) <= radius;
 }
 
-bool Entity::IsCollision(StaticEntity* static_entity) const
+bool Entity::IsCollision(const StaticEntity* static_entity) const
 {
 	return GetDistance(static_entity->GetPosition()) <= static_entity->radius;
 }
 
-bool Entity::IsCollision(Vec2F point) const
+bool Entity::IsCollision(const Vec2F& point) const
 {
 	return GetDistance(point) <= 0.0f;
 }
 
-bool Entity::IsCollision(Vec2F* point) const
+bool Entity::IsCollision(const Vec2F* point) const
 {
 	return GetDistance(point) <= 0.0f;
 }

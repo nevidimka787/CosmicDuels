@@ -89,6 +89,24 @@ Bomb::Bomb(
 {
 }
 
+Bomb::Bomb(const Bullet& bullet1, const Bullet& bullet2) :
+	KillerEntity(
+		(bullet1.GetPosition() + bullet2.GetPosition()) / 2.0f,
+		(bullet1.GetVelocity() + bullet2.GetVelocity()) / 2.0f,
+		BOMB_DEFAULT_RADIUS* BOMB_BOOM_RADIUS_COEF / 3.0f,
+		bullet1.GetHostTeamNumber(),
+		bullet2.GetHostTeamNumber(),
+		0.0f,
+		0.0f,
+		DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		BOMB_DEFAULT_RESISTANCE_AIR_COEFFICIENT),
+	activation_period(75),
+	animation_tic(0),
+	blinking_period(75),
+	status(BOMB_STATUS_BOOM)
+{
+}
+
 void Bomb::Activate()
 {
 	if (status & BOMB_STATUS_ACTIVE)
@@ -118,34 +136,34 @@ bool Bomb::CanRemove() const
 	return status & BOMB_STATUS_CAN_REMOVE;
 }
 
-bool Bomb::Collision(const Map::MapData* map)
+bool Bomb::Collision(const Map::MapData& map)
 {
 	void* map_element;
 	bool collision = false;
 
 	if (status & BOMB_STATUS_BOOM)
 	{
-		for (EngineTypes::Map::array_length_t i = 0; i < map->cyrcles_array_length; i++)
+		for (EngineTypes::Map::array_length_t i = 0; i < map.cyrcles_array_length; i++)
 		{
-			map_element = (void*)map->CyrclePointer(i);
+			map_element = (void*)map.CyrclePointer(i);
 			if (((Map::Cyrcle*)map_element)->exist && !(((Map::Cyrcle*)map_element)->Prorerties() & MAP_PROPERTY_UNBREACABLE) && DynamicEntity::IsCollision((Map::Cyrcle*)map_element))
 			{
 				((Map::Cyrcle*)map_element)->exist = false;
 				collision = true;
 			}
 		}
-		for (EngineTypes::Map::array_length_t i = 0; i < map->polygons_array_length; i++)
+		for (EngineTypes::Map::array_length_t i = 0; i < map.polygons_array_length; i++)
 		{
-			map_element = (void*)map->PolygonPointer(i);
+			map_element = (void*)map.PolygonPointer(i);
 			if (((Map::Polygon*)map_element)->exist && !(((Map::Polygon*)map_element)->Prorerties() & MAP_PROPERTY_UNBREACABLE) && DynamicEntity::IsCollision((Map::Polygon*)map_element))
 			{
 				((Map::Polygon*)map_element)->exist = false;
 				collision = true;
 			}
 		}
-		for (EngineTypes::Map::array_length_t i = 0; i < map->rectangles_array_length; i++)
+		for (EngineTypes::Map::array_length_t i = 0; i < map.rectangles_array_length; i++)
 		{
-			map_element = (void*)map->RectanglePointer(i);
+			map_element = (void*)map.RectanglePointer(i);
 			if (((Map::Rectangle*)map_element)->exist && !(((Map::Rectangle*)map_element)->Prorerties() & MAP_PROPERTY_UNBREACABLE) && DynamicEntity::IsCollision((Map::Rectangle*)map_element))
 			{
 				((Map::Rectangle*)map_element)->exist = false;
@@ -155,9 +173,9 @@ bool Bomb::Collision(const Map::MapData* map)
 		return collision;
 	}
 
-	for (EngineTypes::Map::array_length_t i = 0; i < map->cyrcles_array_length; i++)
+	for (EngineTypes::Map::array_length_t i = 0; i < map.cyrcles_array_length; i++)
 	{
-		map_element = (void*)map->CyrclePointer(i);
+		map_element = (void*)map.CyrclePointer(i);
 		if (((Map::Cyrcle*)map_element)->exist)
 		{
 			bool current_collision = DynamicEntity::Collision((Map::Cyrcle*)map_element);
@@ -173,9 +191,9 @@ bool Bomb::Collision(const Map::MapData* map)
 			collision |= current_collision;
 		}
 	}
-	for (EngineTypes::Map::array_length_t i = 0; i < map->polygons_array_length; i++)
+	for (EngineTypes::Map::array_length_t i = 0; i < map.polygons_array_length; i++)
 	{
-		map_element = (void*)map->PolygonPointer(i);
+		map_element = (void*)map.PolygonPointer(i);
 		if (((Map::Polygon*)map_element)->exist)
 		{
 			bool current_collision = DynamicEntity::Collision((Map::Polygon*)map_element);
@@ -191,9 +209,9 @@ bool Bomb::Collision(const Map::MapData* map)
 			collision |= current_collision;
 		}
 	}
-	for (EngineTypes::Map::array_length_t i = 0; i < map->rectangles_array_length; i++)
+	for (EngineTypes::Map::array_length_t i = 0; i < map.rectangles_array_length; i++)
 	{
-		map_element = (void*)map->RectanglePointer(i);
+		map_element = (void*)map.RectanglePointer(i);
 		if (((Map::Rectangle*)map_element)->exist)
 		{
 			bool current_collision = DynamicEntity::Collision((Map::Rectangle*)map_element);
@@ -250,18 +268,18 @@ bool Bomb::IsCreatedByTeam(const ControledEntity* host) const
 	return host_team_number == host_team;
 }
 
-GameTypes::players_count_t Bomb::GetTeamNumber(const ControledEntity* not_host) const
+GameTypes::players_count_t Bomb::GetTeamNumber(const ControledEntity& not_host) const
 {
-	if (host_number == not_host->GetTeamNumber() || host_number == AGGRESIVE_ENTITY_HOST_ID)
+	if (host_number == not_host.GetTeamNumber() || host_number == AGGRESIVE_ENTITY_HOST_ID)
 	{
 		return host_team_number;
 	}
 	return host_number;
 }
 
-bool Bomb::IsAggressiveFor(const ControledEntity* host) const
+bool Bomb::IsAggressiveFor(const ControledEntity& host) const
 {
-	GameTypes::players_count_t host_team = host->GetTeamNumber();
+	GameTypes::players_count_t host_team = host.GetTeamNumber();
 	return
 		host_number == host_team && host_team_number == host_team ||
 		host_number != host_team && host_team_number != host_team && host_number != host_team_number ||

@@ -144,22 +144,6 @@ void Game::AddEntity(const Laser& new_laser)
 	}
 }
 
-void Game::AddEntity(const MegaLaser& new_mega_laser)
-{
-	if (new_mega_laser.exist)
-	{
-		for (GameTypes::map_elements_count_t mega_laser = 0; mega_laser < GAME_MEGA_LASERS_MAX_COUNT; mega_laser++)
-		{
-			if (mega_lasers[mega_laser].exist == false)
-			{
-				mega_lasers[mega_laser] = new_mega_laser;
-				mega_lasers_count++;
-				return;
-			}
-		}
-	}
-}
-
 void Game::AddEntity(const Turret& new_turret)
 {
 	if (new_turret.exist)
@@ -250,678 +234,599 @@ void Game::AddEntity(const Ship& new_ship)
 	}
 }
 
-void Game::RemoveEntity(AnnihAreaGen* deleting_annih_area_gen)
+void Game::RemoveEntity(AnnihAreaGen& deleting_annih_area_gen)
 {
-	if (deleting_annih_area_gen->exist)
+	if (deleting_annih_area_gen.exist)
 	{
-		deleting_annih_area_gen->exist = false;
+		deleting_annih_area_gen.exist = false;
 		annih_area_gens_count--;
 	}
 }
 
-void Game::RemoveEntity(Asteroid* deleting_asteroid)
+void Game::RemoveEntity(Asteroid& deleting_asteroid)
 {
-	if (deleting_asteroid->exist)
+	if (deleting_asteroid.exist)
 	{
-		deleting_asteroid->exist = false;
+		deleting_asteroid.exist = false;
 		asteroids_count--;
 	}
 }
 
-void Game::RemoveEntity(Bomb* deleting_bomb)
+void Game::RemoveEntity(Bomb& deleting_bomb)
 {
-	if (deleting_bomb->exist)
+	if (deleting_bomb.exist)
 	{
-		deleting_bomb->exist = false;
+		deleting_bomb.exist = false;
 		bombs_count--;
 	}
 }
 
-void Game::RemoveEntity(Bonus* deleting_bonus)
+void Game::RemoveEntity(Bonus& deleting_bonus)
 {
-	if (deleting_bonus->exist)
+	if (deleting_bonus.exist)
 	{
-		deleting_bonus->exist = false;
+		deleting_bonus.exist = false;
 		bonuses_count--;
 	}
 }
 
-void Game::RemoveEntity(Bullet* deleting_bullet)
+void Game::RemoveEntity(Bullet& deleting_bullet)
 {
-	if (deleting_bullet->exist)
+	if (deleting_bullet.exist)
 	{
-		deleting_bullet->exist = false;
+		deleting_bullet.exist = false;
 		bullets_count--;
 	}
 }
 
-void Game::RemoveEntity(DecelerationArea* deleting_deceler_area)
+void Game::RemoveEntity(DecelerationArea& deleting_deceler_area)
 {
-	if (deleting_deceler_area->exist)
+	if (deleting_deceler_area.exist)
 	{
-		deleting_deceler_area->exist = false;
+		deleting_deceler_area.exist = false;
 		deceler_areas_count--;
 	}
 }
 
-void Game::RemoveEntity(DynamicParticle* deleting_dynamic_particle)
+void Game::RemoveEntity(DynamicParticle& deleting_dynamic_particle)
 {
-	if (deleting_dynamic_particle->exist)
+	if (deleting_dynamic_particle.exist)
 	{
-		deleting_dynamic_particle->exist = false;
+		deleting_dynamic_particle.exist = false;
 		dynamic_particles_count--;
 	}
 }
 
-void Game::RemoveEntity(GravGen* deleting_grav_gen)
+void Game::RemoveEntity(GravGen& deleting_grav_gen)
 {
-	if (deleting_grav_gen->exist)
+	if (deleting_grav_gen.exist)
 	{
-		deleting_grav_gen->exist = false;
+		deleting_grav_gen.exist = false;
 		grav_gens_count--;
 	}
 }
 
-void Game::RemoveEntity(Knife* deleting_knife)
+void Game::RemoveEntity(Knife& deleting_knife)
 {
-	if (deleting_knife->exist)
+	if (deleting_knife.exist)
 	{
-		deleting_knife->exist = false;
+		deleting_knife.exist = false;
 		knifes_count--;
 	}
 }
 
-void Game::RemoveEntity(Laser* deleting_lazer)
+void Game::RemoveEntity(Laser& deleting_lazer)
 {
-	if (deleting_lazer->exist)
+	if (deleting_lazer.exist)
 	{
-		deleting_lazer->exist = false;
+		deleting_lazer.exist = false;
 		lasers_count--;
 	}
 }
 
-void Game::RemoveEntity(MegaLaser* deleting_mega_lazer)
+void Game::RemoveEntity(Turret& deleting_turret)
 {
-	if (deleting_mega_lazer->exist)
+	if (deleting_turret.exist)
 	{
-		deleting_mega_lazer->exist = false;
-		mega_lasers_count--;
-	}
-}
-
-void Game::RemoveEntity(Turret* deleting_turret)
-{
-	if (deleting_turret->exist)
-	{
-		deleting_turret->exist = false;
+		deleting_turret.exist = false;
 		turrets_count--;
 	}
 }
 
-void Game::RemoveEntity(Particle* deleting_particle)
+void Game::RemoveEntity(Particle& deleting_particle)
 {
-	if (deleting_particle->exist)
+	if (deleting_particle.exist)
 	{
-		deleting_particle->exist = false;
+		deleting_particle.exist = false;
 		particles_count--;
 	}
 }
 
-void Game::RemoveEntity(Pilot* deleting_pilot)
+void Game::RemoveEntity(Pilot& deleting_pilot)
 {
-	if (deleting_pilot->exist)
+	if (deleting_pilot.exist)
 	{
-		deleting_pilot->exist = false;
+		deleting_pilot.exist = false;
 		pilots_count--;
 	}
 }
 
-void Game::RemoveEntity(Ship* deleting_ship)
+void Game::RemoveEntity(Ship& deleting_ship)
 {
-	if (deleting_ship->exist)
+	if (deleting_ship.exist)
 	{
-		deleting_ship->exist = false;
+		deleting_ship.exist = false;
 		ships_count--;
 	}
 }
 
 
 
-void Game::DestroyEntity(Bomb* destroyer, Asteroid* entity)
+void Game::DestroyEntity(const Bomb& destroyer, Asteroid& entity)
 {
-	if (destroyer->exist == false || entity->exist == false)
+	if (destroyer.exist == false || entity.exist == false)
 	{
 		return;
 	}
-	AddEntity(entity->CreateShards(global_timer));
-	if (entity->GetSize() > ASTEROID_SIZE_MEDIUM)
+	AddEntity(entity.CreateShards(global_timer));
+	if (entity.GetSize() > ASTEROID_SIZE_MEDIUM)
 	{
-		AddEntity(entity->Division());
-		AddEntity(entity->Division());
-		AddEntity(entity->Division());
-		entity->DecrementSize();
+		AddEntity(entity.Division());
+		AddEntity(entity.Division());
+		AddEntity(entity.Division());
+		entity.DecrementSize();
 	}
-	else if (entity->GetSize() > ASTEROID_SIZE_SMALL)
+	else if (entity.GetSize() > ASTEROID_SIZE_SMALL)
 	{
-		AddEntity(entity->Division());
-		entity->DecrementSize();
+		AddEntity(entity.Division());
+		entity.DecrementSize();
 	}
 	else
 	{
-		AddEntity(entity->Destroy());
+		AddEntity(entity.Destroy());
 		RemoveEntity(entity);
 	}
 }
 
-void Game::DestroyEntity(Bomb* destroyer, Bonus* entity)
+void Game::DestroyEntity(const Bomb& destroyer, Bonus& entity)
 {
 	RemoveEntity(entity);
 }
 
-void Game::DestroyEntity(Bomb* destroyer, Bullet* entity)
+void Game::DestroyEntity(const Bomb& destroyer, Bullet& entity)
 {
 	RemoveEntity(entity);
 }
 
-void Game::DestroyEntity(Bomb* destroyer, Knife* entity)
+void Game::DestroyEntity(const Bomb& destroyer, Knife& entity)
 {
 	RemoveEntity(entity);
 }
 
-void Game::DestroyEntity(Bomb* destroyer, Ship* entity)
+void Game::DestroyEntity(const Bomb& destroyer, Ship& entity)
 {
-	if (destroyer->exist == false || entity->exist == false)
+	if (destroyer.exist == false || entity.exist == false)
 	{
 		return;
 	}
 	if (!(game_rules && GAME_RULE_NEED_KILL_PILOT))
 	{
-		if (destroyer->IsAggressiveFor(entity))
+		if (destroyer.IsAggressiveFor(entity))
 		{
-			DecrementScore(entity->GetTeamNumber());
+			DecrementScore(entity.GetTeamNumber());
 		}
 		else
 		{
-			IncrementScore(destroyer->GetTeamNumber(entity));
+			IncrementScore(destroyer.GetTeamNumber(entity));
 		}
-		DecrementPlayersCountInTeam(entity->GetTeamNumber());
+		DecrementPlayersCountInTeam(entity.GetTeamNumber());
 	}
 	DestroySupportEntitiesBy(entity);
-	AddEntity(entity->CreateShards(global_timer));
+	AddEntity(entity.CreateShards(global_timer));
 	AddBonuses(entity);
-	AddEntity(entity->Destroy());
+	AddEntity(entity.Destroy());
 	RemoveEntity(entity);
 
 	camera.move_velocity_coefficient = CAMERA_LOW_MOVE_VELOCITY;
 	camera.resize_velocity_coefficient = CAMERA_LOW_RESIZE_VELOCITY;
 }
 
-void Game::DestroyEntity(Bomb* destroyer, Particle* entity)
+void Game::DestroyEntity(const Bomb& destroyer, Particle& entity)
 {
 	RemoveEntity(entity);
 }
 
-void Game::DestroyEntity(Bomb* destroyer, Pilot* entity)
+void Game::DestroyEntity(const Bomb& destroyer, Pilot& entity)
 {
-	if (destroyer->exist == false || entity->exist == false)
+	if (destroyer.exist == false || entity.exist == false)
 	{
 		return;
 	}
 	if (game_rules && GAME_RULE_NEED_KILL_PILOT)
 	{
-		if (destroyer->IsAggressiveFor(entity))
+		if (destroyer.IsAggressiveFor(entity))
 		{
-			DecrementScore(entity->GetTeamNumber());
+			DecrementScore(entity.GetTeamNumber());
 		}
 		else
 		{
-			IncrementScore(destroyer->GetTeamNumber(entity));
+			IncrementScore(destroyer.GetTeamNumber(entity));
 		}
-		DecrementPlayersCountInTeam(entity->GetTeamNumber());
+		DecrementPlayersCountInTeam(entity.GetTeamNumber());
 	}
-	AddEntity(entity->CreateShards(global_timer));
+	AddEntity(entity.CreateShards(global_timer));
 	RemoveEntity(entity);
 
 	camera.move_velocity_coefficient = CAMERA_LOW_MOVE_VELOCITY;
 	camera.resize_velocity_coefficient = CAMERA_LOW_RESIZE_VELOCITY;
 }
 
-void Game::DestroyEntity(Bomb* destroyer, Turret* entity)
+void Game::DestroyEntity(const Bomb& destroyer, Turret& entity)
 {
 	RemoveEntity(entity);
 }
 
-void Game::DestroyEntity(Bullet* destroyer, Asteroid* entity)
+void Game::DestroyEntity(const Bullet& destroyer, Asteroid& entity)
 {
-	if (destroyer->exist == false || entity->exist == false)
+	if (destroyer.exist == false || entity.exist == false)
 	{
 		return;
 	}
-	AddEntity(entity->CreateShards(global_timer));
-	if (entity->GetSize() > ASTEROID_SIZE_MEDIUM)
+	AddEntity(entity.CreateShards(global_timer));
+	if (entity.GetSize() > ASTEROID_SIZE_MEDIUM)
 	{
-		AddEntity(entity->Division());
-		AddEntity(entity->Division());
-		AddEntity(entity->Division());
-		entity->DecrementSize();
+		AddEntity(entity.Division());
+		AddEntity(entity.Division());
+		AddEntity(entity.Division());
+		entity.DecrementSize();
 	}
-	else if (entity->GetSize() > ASTEROID_SIZE_SMALL)
+	else if (entity.GetSize() > ASTEROID_SIZE_SMALL)
 	{
-		AddEntity(entity->Division());
-		entity->DecrementSize();
+		AddEntity(entity.Division());
+		entity.DecrementSize();
 	}
 	else
 	{
-		AddEntity(entity->Destroy());
+		AddEntity(entity.Destroy());
 		RemoveEntity(entity);
 	}
 }
 
-void Game::DestroyEntity(Bullet* destroyer, Knife* entity)
+void Game::DestroyEntity(const Bullet& destroyer, Knife& entity)
 {
 	RemoveEntity(entity);
 }
 
-void Game::DestroyEntity(Bullet* destroyer, Ship* entity)
+void Game::DestroyEntity(const Bullet& destroyer, Ship& entity)
 {
-	if (destroyer->exist == false || entity->exist == false)
+	if (destroyer.exist == false || entity.exist == false)
 	{
 		return;
 	}
 	if (!(game_rules && GAME_RULE_NEED_KILL_PILOT))
 	{
-		if (destroyer->CreatedByTeam(entity) || destroyer->GetHostTeamNumber() == AGGRESIVE_ENTITY_HOST_ID)
+		if (destroyer.CreatedByTeam(entity) || destroyer.GetHostTeamNumber() == AGGRESIVE_ENTITY_HOST_ID)
 		{
-			DecrementScore(entity->GetTeamNumber());
+			DecrementScore(entity.GetTeamNumber());
 		}
-		else if (destroyer->GetHostTeamNumber() != AGGRESIVE_ENTITY_HOST_ID)
+		else if (destroyer.GetHostTeamNumber() != AGGRESIVE_ENTITY_HOST_ID)
 		{
-			IncrementScore(destroyer->GetHostTeamNumber());
+			IncrementScore(destroyer.GetHostTeamNumber());
 		}
-		DecrementPlayersCountInTeam(entity->GetTeamNumber());
+		DecrementPlayersCountInTeam(entity.GetTeamNumber());
 	}
 	DestroySupportEntitiesBy(entity);
-	AddEntity(entity->CreateShards(global_timer));
+	AddEntity(entity.CreateShards(global_timer));
 	AddBonuses(entity);
-	AddEntity(entity->Destroy());
+	AddEntity(entity.Destroy());
 	RemoveEntity(entity);
 
 	camera.move_velocity_coefficient = CAMERA_LOW_MOVE_VELOCITY;
 	camera.resize_velocity_coefficient = CAMERA_LOW_RESIZE_VELOCITY;
 }
 
-void Game::DestroyEntity(Bullet* destroyer, Pilot* entity)
+void Game::DestroyEntity(const Bullet& destroyer, Pilot& entity)
 {
-	if (destroyer->exist == false || entity->exist == false)
+	if (destroyer.exist == false || entity.exist == false)
 	{
 		return;
 	}
 	if (game_rules && GAME_RULE_NEED_KILL_PILOT)
 	{
-		if (destroyer->CreatedByTeam(entity) || destroyer->GetHostTeamNumber() == AGGRESIVE_ENTITY_HOST_ID)
+		if (destroyer.CreatedByTeam(entity) || destroyer.GetHostTeamNumber() == AGGRESIVE_ENTITY_HOST_ID)
 		{
-			DecrementScore(entity->GetTeamNumber());
+			DecrementScore(entity.GetTeamNumber());
 		}
-		else if (destroyer->GetHostTeamNumber() != AGGRESIVE_ENTITY_HOST_ID)
+		else if (destroyer.GetHostTeamNumber() != AGGRESIVE_ENTITY_HOST_ID)
 		{
-			IncrementScore(destroyer->GetHostTeamNumber());
+			IncrementScore(destroyer.GetHostTeamNumber());
 		}
-		DecrementPlayersCountInTeam(entity->GetTeamNumber());
+		DecrementPlayersCountInTeam(entity.GetTeamNumber());
 	}
-	AddEntity(entity->CreateShards(global_timer));
-	pilots[entity->GetPlayerNumber()].exist = false;
+	AddEntity(entity.CreateShards(global_timer));
+	pilots[entity.GetPlayerNumber()].exist = false;
 	pilots_count--;
 
 	camera.move_velocity_coefficient = CAMERA_LOW_MOVE_VELOCITY;
 	camera.resize_velocity_coefficient = CAMERA_LOW_RESIZE_VELOCITY;
 }
 
-void Game::DestroyEntity(Knife* destroyer, Asteroid* entity)
+void Game::DestroyEntity(const Knife& destroyer, Asteroid& entity)
 {
-	if (destroyer->exist == false || entity->exist == false)
+	if (destroyer.exist == false || entity.exist == false)
 	{
 		return;
 	}
-	AddEntity(entity->CreateShards(global_timer));
-	if (entity->GetSize() > ASTEROID_SIZE_MEDIUM)
+	AddEntity(entity.CreateShards(global_timer));
+	if (entity.GetSize() > ASTEROID_SIZE_MEDIUM)
 	{
-		AddEntity(entity->Division());
-		AddEntity(entity->Division());
-		AddEntity(entity->Division());
-		entity->DecrementSize();
+		AddEntity(entity.Division());
+		AddEntity(entity.Division());
+		AddEntity(entity.Division());
+		entity.DecrementSize();
 	}
-	else if (entity->GetSize() > ASTEROID_SIZE_SMALL)
+	else if (entity.GetSize() > ASTEROID_SIZE_SMALL)
 	{
-		AddEntity(entity->Division());
-		entity->DecrementSize();
+		AddEntity(entity.Division());
+		entity.DecrementSize();
 	}
 	else
 	{
-		AddEntity(entity->Destroy());
+		AddEntity(entity.Destroy());
 		RemoveEntity(entity);
 	}
 }
 
-void Game::DestroyEntity(Knife* destroyer, Ship* entity)
+void Game::DestroyEntity(const Knife& destroyer, Ship& entity)
 {
-	if (destroyer->exist == false || entity->exist == false)
+	if (destroyer.exist == false || entity.exist == false)
 	{
 		return;
 	}
 	if (!(game_rules && GAME_RULE_NEED_KILL_PILOT))
 	{
-		if (destroyer->IsCreatedByTeam(entity))
+		if (destroyer.IsCreatedByTeam(entity))
 		{
-			DecrementScore(entity->GetTeamNumber());
+			DecrementScore(entity.GetTeamNumber());
 		}
 		else
 		{
-			IncrementScore(destroyer->GetPlayerMasterTeamNumber());
+			IncrementScore(destroyer.GetPlayerMasterTeamNumber());
 		}
-		DecrementPlayersCountInTeam(entity->GetTeamNumber());
+		DecrementPlayersCountInTeam(entity.GetTeamNumber());
 	}
 	DestroySupportEntitiesBy(entity);
-	AddEntity(entity->CreateShards(global_timer));
+	AddEntity(entity.CreateShards(global_timer));
 	AddBonuses(entity);
-	AddEntity(entity->Destroy());
+	AddEntity(entity.Destroy());
 	RemoveEntity(entity);
 
 	camera.move_velocity_coefficient = CAMERA_LOW_MOVE_VELOCITY;
 	camera.resize_velocity_coefficient = CAMERA_LOW_RESIZE_VELOCITY;
 }
 
-void Game::DestroyEntity(Knife* destroyer, Pilot* entity)
+void Game::DestroyEntity(const Knife& destroyer, Pilot& entity)
 {
-	if (destroyer->exist == false || entity->exist == false)
+	if (destroyer.exist == false || entity.exist == false)
 	{
 		return;
 	}
 	if (game_rules && GAME_RULE_NEED_KILL_PILOT)
 	{
-		if (destroyer->IsCreatedByTeam(entity))
+		if (destroyer.IsCreatedByTeam(entity))
 		{
-			DecrementScore(entity->GetTeamNumber());
+			DecrementScore(entity.GetTeamNumber());
 		}
 		else
 		{
-			IncrementScore(destroyer->GetPlayerMasterTeamNumber());
+			IncrementScore(destroyer.GetPlayerMasterTeamNumber());
 		}
-		DecrementPlayersCountInTeam(entity->GetTeamNumber());
+		DecrementPlayersCountInTeam(entity.GetTeamNumber());
 	}
-	AddEntity(entity->CreateShards(global_timer));
-	pilots[entity->GetPlayerNumber()].exist = false;
+	AddEntity(entity.CreateShards(global_timer));
+	pilots[entity.GetPlayerNumber()].exist = false;
 	pilots_count--;
 
 	camera.move_velocity_coefficient = CAMERA_LOW_MOVE_VELOCITY;
 	camera.resize_velocity_coefficient = CAMERA_LOW_RESIZE_VELOCITY;
 }
 
-void Game::DestroyEntity(Knife* destroyer, Turret* entity)
+void Game::DestroyEntity(const Knife& destroyer, Turret& entity)
 {
 	RemoveEntity(entity);
 }
 
-void Game::DestroyEntity(Laser* destroyer, Asteroid* entity)
+void Game::DestroyEntity(const Laser& destroyer, Asteroid& entity)
 {
-	if (destroyer->exist == false || entity->exist == false)
+	if (destroyer.exist == false || entity.exist == false)
 	{
 		return;
 	}
-	AddEntity(entity->CreateShards(global_timer));
-	if (entity->GetSize() > ASTEROID_SIZE_MEDIUM)
+	AddEntity(entity.CreateShards(global_timer));
+	if (entity.GetSize() > ASTEROID_SIZE_MEDIUM)
 	{
-		AddEntity(entity->Division());
-		AddEntity(entity->Division());
-		AddEntity(entity->Division());
-		entity->DecrementSize();
+		AddEntity(entity.Division());
+		AddEntity(entity.Division());
+		AddEntity(entity.Division());
+		entity.DecrementSize();
 	}
-	else if (entity->GetSize() > ASTEROID_SIZE_SMALL)
+	else if (entity.GetSize() > ASTEROID_SIZE_SMALL)
 	{
-		AddEntity(entity->Division());
-		entity->DecrementSize();
+		AddEntity(entity.Division());
+		entity.DecrementSize();
 	}
 	else
 	{
-		AddEntity(entity->Destroy());
+		AddEntity(entity.Destroy());
 		RemoveEntity(entity);
 	}
 }
 
-void Game::DestroyEntity(Laser* destroyer, Bonus* entity)
+void Game::DestroyEntity(const Laser& destroyer, Bonus& entity)
 {
 	RemoveEntity(entity);
 }
 
-void Game::DestroyEntity(Laser* destroyer, Bullet* entity)
+void Game::DestroyEntity(const Laser& destroyer, Bullet& entity)
 {
 	RemoveEntity(entity);
 }
 
-void Game::DestroyEntity(Laser* destroyer, Knife* entity)
+void Game::DestroyEntity(const Laser& destroyer, Knife& entity)
 {
 	RemoveEntity(entity);
 }
 
-void Game::DestroyEntity(Laser* destroyer, Ship* entity)
+void Game::DestroyEntity(const Laser& destroyer, Ship& entity)
 {
-	if (destroyer->exist == false || entity->exist == false)
+	if (destroyer.exist == false || entity.exist == false)
 	{
 		return;
 	}
 	if (!(game_rules && GAME_RULE_NEED_KILL_PILOT))
 	{
-		if (destroyer->IsCreatedByTeam(entity))
+		if (destroyer.IsCreatedByTeam(entity))
 		{
-			DecrementScore(entity->GetTeamNumber());
+			DecrementScore(entity.GetTeamNumber());
 		}
 		else
 		{
-			IncrementScore(destroyer->GetPlayerMasterTeamNumber());
+			IncrementScore(destroyer.GetPlayerMasterTeamNumber());
 		}
-		DecrementPlayersCountInTeam(entity->GetTeamNumber());
+		DecrementPlayersCountInTeam(entity.GetTeamNumber());
 	}
 	DestroySupportEntitiesBy(entity);
-	AddEntity(entity->CreateShards(global_timer));
+	AddEntity(entity.CreateShards(global_timer));
 	AddBonuses(entity);
-	AddEntity(entity->Destroy());
+	AddEntity(entity.Destroy());
 	RemoveEntity(entity);
 
 	camera.move_velocity_coefficient = CAMERA_LOW_MOVE_VELOCITY;
 	camera.resize_velocity_coefficient = CAMERA_LOW_RESIZE_VELOCITY;
 }
 
-void Game::DestroyEntity(Laser* destroyer, Particle* entity)
+void Game::DestroyEntity(const Laser& destroyer, Particle& entity)
 {
 	RemoveEntity(entity);
 }
 
-void Game::DestroyEntity(Laser* destroyer, Pilot* entity)
+void Game::DestroyEntity(const Laser& destroyer, Pilot& entity)
 {
-	if (destroyer->exist == false || entity->exist == false)
+	if (destroyer.exist == false || entity.exist == false)
 	{
 		return;
 	}
 	if (game_rules && GAME_RULE_NEED_KILL_PILOT)
 	{
-		if (destroyer->IsCreatedByTeam(entity))
+		if (destroyer.IsCreatedByTeam(entity))
 		{
-			DecrementScore(entity->GetTeamNumber());
+			DecrementScore(entity.GetTeamNumber());
 		}
 		else
 		{
-			IncrementScore(destroyer->GetPlayerMasterTeamNumber());
+			IncrementScore(destroyer.GetPlayerMasterTeamNumber());
 		}
-		DecrementPlayersCountInTeam(entity->GetTeamNumber());
+		DecrementPlayersCountInTeam(entity.GetTeamNumber());
 	}
-	AddEntity(entity->CreateShards(global_timer));
-	pilots[entity->GetPlayerNumber()].exist = false;
+	AddEntity(entity.CreateShards(global_timer));
+	pilots[entity.GetPlayerNumber()].exist = false;
 	pilots_count--;
 
 	camera.move_velocity_coefficient = CAMERA_LOW_MOVE_VELOCITY;
 	camera.resize_velocity_coefficient = CAMERA_LOW_RESIZE_VELOCITY;
 }
 
-void Game::DestroyEntity(Laser* destroyer, Turret* entity)
+void Game::DestroyEntity(const Laser& destroyer, Turret& entity)
 {
 	RemoveEntity(entity);
 }
 
-void Game::DestroyEntity(MegaLaser* destroyer, Asteroid* entity)
+void Game::DestroyEntity(const Ship& destroyer, Pilot& entity)
 {
-	if (destroyer->exist == false || entity->exist == false)
-	{
-		return;
-	}
-	AddEntity(entity->CreateShards(global_timer));
-	if (entity->GetSize() > ASTEROID_SIZE_MEDIUM)
-	{
-		AddEntity(entity->Division());
-		AddEntity(entity->Division());
-		AddEntity(entity->Division());
-		entity->DecrementSize();
-	}
-	else if (entity->GetSize() > ASTEROID_SIZE_SMALL)
-	{
-		AddEntity(entity->Division());
-		entity->DecrementSize();
-	}
-	else
-	{
-		AddEntity(entity->Destroy());
-		RemoveEntity(entity);
-	}
-}
-
-void Game::DestroyEntity(MegaLaser* destroyer, Bonus* entity)
-{
-	RemoveEntity(entity);
-}
-
-void Game::DestroyEntity(MegaLaser* destroyer, Bullet* entity)
-{
-	RemoveEntity(entity);
-}
-
-void Game::DestroyEntity(MegaLaser* destroyer, Knife* entity)
-{
-	RemoveEntity(entity);
-}
-
-void Game::DestroyEntity(MegaLaser* destroyer, Ship* entity)
-{
-	if (destroyer->exist == false || entity->exist == false)
-	{
-		return;
-	}
-	if (!(game_rules && GAME_RULE_NEED_KILL_PILOT))
-	{
-		DecrementScore(entity->GetTeamNumber());
-		DecrementPlayersCountInTeam(entity->GetTeamNumber());
-	}
-	DestroySupportEntitiesBy(entity);
-	AddEntity(entity->CreateShards(global_timer));
-	AddBonuses(entity);
-	AddEntity(entity->Destroy());
-	RemoveEntity(entity);
-
-	camera.move_velocity_coefficient = CAMERA_LOW_MOVE_VELOCITY;
-	camera.resize_velocity_coefficient = CAMERA_LOW_RESIZE_VELOCITY;
-}
-
-void Game::DestroyEntity(MegaLaser* destroyer, Particle* entity)
-{
-	RemoveEntity(entity);
-}
-
-void Game::DestroyEntity(MegaLaser* destroyer, Pilot* entity)
-{
-	if (destroyer->exist == false || entity->exist == false)
+	if (destroyer.exist == false || entity.exist == false)
 	{
 		return;
 	}
 	if (game_rules && GAME_RULE_NEED_KILL_PILOT)
 	{
-		DecrementScore(entity->GetTeamNumber());
-		DecrementPlayersCountInTeam(entity->GetTeamNumber());
-	}
-	AddEntity(entity->CreateShards(global_timer));
-	RemoveEntity(entity);
-}
-
-void Game::DestroyEntity(Ship* destroyer, Pilot* entity)
-{
-	if (destroyer->exist == false || entity->exist == false)
-	{
-		return;
-	}
-	if (game_rules && GAME_RULE_NEED_KILL_PILOT)
-	{
-		if (destroyer->IsSameTeams(entity))
+		if (destroyer.IsSameTeams(entity))
 		{
-			DecrementScore(destroyer->GetTeamNumber());
+			DecrementScore(destroyer.GetTeamNumber());
 		}
 		else
 		{
-			IncrementScore(destroyer->GetTeamNumber());
+			IncrementScore(destroyer.GetTeamNumber());
 		}
-		DecrementPlayersCountInTeam(entity->GetTeamNumber());
+		DecrementPlayersCountInTeam(entity.GetTeamNumber());
 	}
-	AddEntity(entity->CreateShards(global_timer));
+	AddEntity(entity.CreateShards(global_timer));
 	RemoveEntity(entity);
 }
 
-void Game::DestroyEntity(Asteroid* entity)
+void Game::DestroyEntity(Asteroid& entity)
 {
-	AddEntity(entity->CreateShards(global_timer));
+	switch (entity.GetSize())
+	{
+	case ASTEROID_SIZE_BIG:
+		AddEntity(entity.Division());	// 4
+		AddEntity(entity.Division());	// 3
+	case ASTEROID_SIZE_MEDIUM:
+		AddEntity(entity.Division());	// 2
+	case ASTEROID_SIZE_SMALL:
+		AddEntity(entity.Destroy());	// 1
+	default:
+		break;
+	}
+	AddEntity(entity.CreateShards(global_timer));
 	RemoveEntity(entity);
 }
 
-void Game::DestroyEntity(Bonus* entity)
+void Game::DestroyEntity(Bonus& entity)
 {
 	RemoveEntity(entity);
 }
 
-void Game::DestroyEntity(Bullet* entity)
+void Game::DestroyEntity(Bullet& entity)
 {
 	RemoveEntity(entity);
 }
 
-void Game::DestroyEntity(Knife* entity)
+void Game::DestroyEntity(Knife& entity)
 {
 	RemoveEntity(entity);
 }
 
-void Game::DestroyEntity(Ship* entity)
+void Game::DestroyEntity(Ship& entity)
 {
 	if (!(game_rules & GAME_RULE_NEED_KILL_PILOT))
 	{
-		DecrementScore(entity->GetTeamNumber());
-		DecrementPlayersCountInTeam(entity->GetTeamNumber());
+		DecrementScore(entity.GetTeamNumber());
+		DecrementPlayersCountInTeam(entity.GetTeamNumber());
 	}
 	DestroySupportEntitiesBy(entity);
-	AddEntity(entity->CreateShards(global_timer));
+	AddEntity(entity.CreateShards(global_timer));
 	AddBonuses(entity);
-	AddEntity(entity->Destroy());
+	AddEntity(entity.Destroy());
 	RemoveEntity(entity);
 }
 
-void Game::DestroyEntity(Particle* entity)
+void Game::DestroyEntity(Particle& entity)
 {
 	RemoveEntity(entity);
 }
 
-void Game::DestroyEntity(Pilot* entity)
+void Game::DestroyEntity(Pilot& entity)
 {
 	if (game_rules & GAME_RULE_NEED_KILL_PILOT)
 	{
-		DecrementScore(entity->GetTeamNumber());
-		DecrementPlayersCountInTeam(entity->GetTeamNumber());
+		DecrementScore(entity.GetTeamNumber());
+		DecrementPlayersCountInTeam(entity.GetTeamNumber());
 	}
-	AddEntity(entity->CreateShards(global_timer));
+	AddEntity(entity.CreateShards(global_timer));
 	RemoveEntity(entity);
 }
 
-void Game::DestroySupportEntitiesBy(ControledEntity* produser)
+void Game::DestroySupportEntitiesBy(ControledEntity& produser)
 {
 	for (GameTypes::entities_count_t laser = 0, found_lasers = 0; found_lasers < lasers_count; laser++)
 	{
@@ -929,7 +834,7 @@ void Game::DestroySupportEntitiesBy(ControledEntity* produser)
 		{
 			if (lasers[laser].CreatedBy(produser))
 			{
-				RemoveEntity(&lasers[laser]);
+				RemoveEntity(lasers[laser]);
 			}
 			else
 			{
@@ -943,7 +848,7 @@ void Game::DestroySupportEntitiesBy(ControledEntity* produser)
 		{
 			if (knifes[knife].IsCreatedBy(produser))
 			{
-				RemoveEntity(&knifes[knife]);
+				RemoveEntity(knifes[knife]);
 			}
 			else
 			{
@@ -958,7 +863,7 @@ void Game::DestroySupportEntitiesBy(ControledEntity* produser)
 			if (annih_area_gens[annih_area_gen].IsCreatedBy(produser))
 			{
 				//found_annih_area_gens++;
-				RemoveEntity(&annih_area_gens[annih_area_gen]);
+				RemoveEntity(annih_area_gens[annih_area_gen]);
 			}
 			else
 			{
@@ -968,9 +873,9 @@ void Game::DestroySupportEntitiesBy(ControledEntity* produser)
 	}
 }
 
-void Game::SpawnEntity(Ship* spawner, Pilot* pilot)
+void Game::SpawnEntity(const Ship& spawner, Pilot& pilot)
 {
-	if (spawner->exist == false || pilot->exist == false)
+	if (spawner.exist == false || pilot.exist == false)
 	{
 		return;
 	}
@@ -978,9 +883,9 @@ void Game::SpawnEntity(Ship* spawner, Pilot* pilot)
 	{
 		if (!(game_rules & GAME_RULE_NEED_KILL_PILOT))
 		{
-			IncrementPlayersCountInTeam(spawner->GetTeamNumber());
+			IncrementPlayersCountInTeam(spawner.GetTeamNumber());
 		}
-		AddEntity(pilot->Respawn());
+		AddEntity(pilot.Respawn());
 		RemoveEntity(pilot);
 
 		camera.move_velocity_coefficient = CAMERA_LOW_MOVE_VELOCITY;
@@ -988,9 +893,9 @@ void Game::SpawnEntity(Ship* spawner, Pilot* pilot)
 	}
 }
 
-void Game::AddBonuses(Ship* spawner)
+void Game::AddBonuses(Ship& spawner)
 {
-	Bonus ship_bonus = spawner->LoseBonus();
+	Bonus ship_bonus = spawner.LoseBonus();
 	while (ship_bonus.CanDivision())
 	{
 		AddEntity(ship_bonus.Division());
@@ -1002,47 +907,46 @@ void Game::AddBonuses(Ship* spawner)
 
 void Game::MemoryLock()
 {
-	annih_area_gens = new AnnihAreaGen[GAME_ANNIH_AREAS_GENS_MAX_COUNT];
+	annih_area_gens = std::vector<AnnihAreaGen>(GAME_ANNIH_AREAS_GENS_MAX_COUNT);
 	annih_area_gens_count = 0;
-	asteroids = new Asteroid[GAME_ASTEROIDS_MAX_COUNT];
+	asteroids = std::vector<Asteroid>(GAME_ASTEROIDS_MAX_COUNT);
 	asteroids_count = 0;
-	bombs = new Bomb[GAME_BOMBS_MAX_COUNT];
+	bombs = std::vector<Bomb>(GAME_BOMBS_MAX_COUNT);
 	bombs_count = 0;
-	bonuses = new Bonus[GAME_BONUSES_MAX_COUNT];
+	bonuses = std::vector<Bonus>(GAME_BONUSES_MAX_COUNT);
 	bonuses_count = 0;
-	bullets = new Bullet[GAME_BULLETS_MAX_COUNT];
+	bullets = std::vector<Bullet>(GAME_BULLETS_MAX_COUNT);
 	bullets_count = 0;
-	deceler_areas = new DecelerationArea[GAME_DECEL_AREAS_MAX_COUNT];
+	deceler_areas = std::vector<DecelerationArea>(GAME_DECEL_AREAS_MAX_COUNT);
 	deceler_areas_count = 0;
-	dynamic_particles = new DynamicParticle[GAME_PARTICLES_MAX_COUNT];
+	dynamic_particles = std::vector<DynamicParticle>(GAME_PARTICLES_MAX_COUNT);
 	dynamic_particles_count = 0;
-	grav_gens = new GravGen[GAME_GRAV_GENS_MAX_COUNT];
+	grav_gens = std::vector<GravGen>(GAME_GRAV_GENS_MAX_COUNT);
 	grav_gens_count = 0;
-	knifes = new Knife[GAME_KNIFES_MAX_COUNT];
+	knifes = std::vector<Knife>(GAME_KNIFES_MAX_COUNT);
 	knifes_count = 0;
-	lasers = new Laser[GAME_LASERS_MAX_COUNT];
+	lasers = std::vector<Laser>(GAME_LASERS_MAX_COUNT);
 	lasers_count = 0;
-	mega_lasers = new MegaLaser[GAME_MEGA_LASERS_MAX_COUNT];
-	mega_lasers_count = 0;
-	pilots = new Pilot[GAME_PLAYERS_MAX_COUNT];
+	pilots = std::vector<Pilot>(GAME_PLAYERS_MAX_COUNT);
 	pilots_count = 0;
-	particles = new Particle[GAME_PARTICLES_MAX_COUNT];
+	particles = std::vector<Particle>(GAME_PARTICLES_MAX_COUNT);
 	particles_count = 0;
-	portals = new Portal[GAME_PORTALS_MAX_COUNT];
+	portals = std::vector<Portal>(GAME_PORTALS_MAX_COUNT);
 	portals_count = 0;
-	ships = new Ship[GAME_PLAYERS_MAX_COUNT];
+	ships = std::vector<Ship>(GAME_PLAYERS_MAX_COUNT);
 	ships_count = 0;
-	turrets = new Turret[GAME_TURRETS_MAX_COUNT];
+	turrets = std::vector<Turret>(GAME_TURRETS_MAX_COUNT);
 	turrets_count = 0;
 
-	burnout_flags = new bool[GAME_PLAYERS_MAX_COUNT];
-	double_clk_timers = new GameTypes::tic_t[GAME_PLAYERS_MAX_COUNT];
-	ships_shooting_flags = new bool[GAME_PLAYERS_MAX_COUNT];
-	shoot_flags = new bool[GAME_PLAYERS_MAX_COUNT];
-	rotate_flags = new bool[GAME_PLAYERS_MAX_COUNT];
-	ships_can_shoot_flags = new GameTypes::tic_t[GAME_PLAYERS_MAX_COUNT];
-	scores = new GameTypes::score_t[GAME_PLAYERS_MAX_COUNT];
-	players_in_team = new GameTypes::players_count_t[GAME_PLAYERS_MAX_COUNT];
+	control_flags.burnout_flags = std::vector<bool>(GAME_PLAYERS_MAX_COUNT);
+	control_flags.shoot_flags = std::vector<bool>(GAME_PLAYERS_MAX_COUNT);
+	control_flags.rotate_flags = std::vector<bool>(GAME_PLAYERS_MAX_COUNT);
+
+	double_clk_timers = std::vector<GameTypes::tic_t>(GAME_PLAYERS_MAX_COUNT);
+	ships_shooting_flags = std::vector<bool>(GAME_PLAYERS_MAX_COUNT);
+	ships_can_shoot_flags = std::vector<GameTypes::tic_t>(GAME_PLAYERS_MAX_COUNT);
+	scores = std::vector<GameTypes::score_t>(GAME_PLAYERS_MAX_COUNT);
+	players_in_team = std::vector<GameTypes::players_count_t>(GAME_PLAYERS_MAX_COUNT);
 }
 
 void Game::MemorySetDefault()
@@ -1097,7 +1001,7 @@ void Game::MemorySetDefault()
 		}
 		if (entity < GAME_DECEL_AREAS_MAX_COUNT && deceler_areas[entity].exist)
 		{
-			deceler_areas->exist = false;
+			deceler_areas[entity].exist = false;
 		}
 		if (entity < GAME_DYNAMIC_PARTICLES_MAX_COUNT && dynamic_particles[entity].exist)
 		{
@@ -1114,10 +1018,6 @@ void Game::MemorySetDefault()
 		if (entity < GAME_LASERS_MAX_COUNT && lasers[entity].exist)
 		{
 			lasers[entity].exist = false;
-		}
-		if (entity < GAME_MEGA_LASERS_MAX_COUNT && mega_lasers[entity].exist)
-		{
-			mega_lasers[entity].exist = false;
 		}
 		if (entity < GAME_PARTICLES_MAX_COUNT && particles[entity].exist)
 		{
@@ -1151,47 +1051,46 @@ void Game::MemorySetDefault()
 
 void Game::MemoryFree()
 {
-	delete[] annih_area_gens;
+	annih_area_gens.clear();
 	annih_area_gens_count = 0;
-	delete[] asteroids;
+	asteroids.clear();
 	asteroids_count = 0;
-	delete[] bombs;
+	bombs.clear();
 	bombs_count = 0;
-	delete[] bonuses;
+	bonuses.clear();
 	bonuses_count = 0;
-	delete[] bullets;
+	bullets.clear();
 	bullets_count = 0;
-	delete[] deceler_areas;
+	deceler_areas.clear();
 	deceler_areas_count = 0;
-	delete[] grav_gens;
+	grav_gens.clear();
 	grav_gens_count = 0;
-	delete[] knifes;
+	knifes.clear();
 	knifes_count = 0;
-	delete[] lasers;
+	lasers.clear();
 	lasers_count = 0;
-	delete[] mega_lasers;
-	mega_lasers_count = 0;
-	delete[] particles;
+	particles.clear();
 	particles_count = 0;
-	delete[] portals;
+	portals.clear();
 	portals_count = 0;
-	delete[] pilots;
+	pilots.clear();
 	pilots_count = 0;
-	delete[] ships;
+	ships.clear();
 	ships_count = 0;
-	delete[] turrets;
+	turrets.clear();
 	turrets_count = 0;
 
 	players_count = 0;
-	delete[] players_in_team;
+	players_in_team.clear();
 
-	delete[] burnout_flags;
-	delete[] double_clk_timers;
-	delete[] ships_shooting_flags;
-	delete[] shoot_flags;
-	delete[] rotate_flags;
-	delete[] ships_can_shoot_flags;
-	delete[] scores;
+	control_flags.burnout_flags.clear();
+	control_flags.shoot_flags.clear();
+	control_flags.rotate_flags.clear();
+
+	double_clk_timers.clear();
+	ships_shooting_flags.clear();
+	ships_can_shoot_flags.clear();
+	scores.clear();
 }
 
 void Game::ClearShipsShootingFlags()

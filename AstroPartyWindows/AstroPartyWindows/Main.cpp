@@ -197,6 +197,21 @@ void PhysicsCalculationStarter()
     std::thread physics_calculation0(PhysicsCalculation0);
     physic_start.unlock();
 
+#ifdef _DEBUG
+
+    auto buff_time_point = global_time_point;;
+    auto buff_timer = main_game->global_timer + 1000;
+    while (main_game->global_timer != buff_timer) {
+        buff_timer = main_game->global_timer;
+
+        buff_time_point += std::chrono::microseconds(THREAD_PHYSIC_TIK_PERIOD * 100); //update waking up point
+        std::this_thread::sleep_until(buff_time_point); //wait waking up point
+    }
+
+    main_game->DebugLog__CheckMutexeslLock();
+
+#endif // _DEBUG
+
     physics_calculation0.join(); //wait completing of the physic calculation
 
     //waking up point

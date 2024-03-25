@@ -36,4 +36,14 @@ namespace GameTypes
 	typedef uint16_t element_size_t;
 
 	typedef uint8_t thread_flags_t;
+
+	typedef struct
+	{
+		//Controled entities refer to this array.
+		std::vector<bool> shoot_flags;
+		//Controled entities refer to this array.
+		std::vector<bool> rotate_flags;
+		//Controled entities refer to this array.
+		std::vector<bool> burnout_flags;
+	} control_flags_t;
 }

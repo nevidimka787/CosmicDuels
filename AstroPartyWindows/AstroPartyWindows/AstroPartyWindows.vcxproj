@@ -169,7 +169,6 @@
     <ClCompile Include="Classes\Entities\KillerEntity.cpp" />
     <ClCompile Include="Classes\Entities\Knife.cpp" />
     <ClCompile Include="Classes\Entities\Laser.cpp" />
-    <ClCompile Include="Classes\Entities\MegaLaser.cpp" />
     <ClCompile Include="Classes\Entities\Particle.cpp" />
     <ClCompile Include="Classes\Entities\Pilot.cpp" />
     <ClCompile Include="Classes\Entities\Portal.cpp" />
@@ -184,6 +183,7 @@
     <ClCompile Include="Classes\Menu.cpp" />
     <ClCompile Include="Classes\Shader.cpp" />
     <ClCompile Include="Classes\Texture.cpp" />
+    <ClCompile Include="DebugClasses\loged_shared_mutex.cpp" />
     <ClCompile Include="gald.c" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="stb_image.cpp" />
@@ -261,6 +261,7 @@
     <ClInclude Include="Constants\GameRealisationConstants.h" />
     <ClInclude Include="Constants\MenuRealisationConstants.h" />
     <ClInclude Include="Constants\OpenGLRealisationConstants.h" />
+    <ClInclude Include="loged_shared_mutex.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="SubClasses\Commands.h" />
     <ClInclude Include="SubClasses\Game.h" />

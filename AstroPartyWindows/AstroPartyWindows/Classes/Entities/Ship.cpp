@@ -1,6 +1,6 @@
 #include "../Entity.h"
 
-
+#include <vector>
 
 Ship::Ship() 
 	:
@@ -33,15 +33,12 @@ Ship::Ship(const Ship& ship)
 }
 
 Ship::Ship(
-	Vec2F position,
-	Vec2F velocity,
+	const Vec2F& position,
+	const Vec2F& velocity,
 	GameTypes::players_count_t player_number,
-	GameTypes::players_count_t player_team_number,
-	const void* burnout_input_value_pointer,
-	const void* rotate_input_value_pointer,
-	const void* shoot_input_value_pointer,
-	Vec2F* heat_box_vertexes_array,
-	EngineTypes::ControledEntity::heat_box_vertexes_count_t heat_box_vertexes_array_length,
+	GameTypes::players_count_t player_team,
+	const GameTypes::control_flags_t* controle_flags,
+	const std::vector<Vec2F>& heat_box_vertexes_array,
 	float angle,
 	EngineTypes::Bonus::inventory_t bonus_inventory,
 	EngineTypes::Ship::inventory_t buff_inventory,
@@ -61,12 +58,9 @@ Ship::Ship(
 		velocity,
 		radius,
 		player_number,
-		player_team_number,
-		burnout_input_value_pointer,
-		rotate_input_value_pointer,
-		shoot_input_value_pointer,
+		player_team,
+		controle_flags,
 		heat_box_vertexes_array,
-		heat_box_vertexes_array_length,
 		angle,
 		angular_velocity,
 		force_collision_coeffisient,
@@ -88,12 +82,9 @@ Ship::Ship(
 	const Vec2F* position,
 	const Vec2F* velocity,
 	GameTypes::players_count_t player_number,
-	GameTypes::players_count_t player_team_number,
-	const void* burnout_input_value_pointer,
-	const void* rotate_input_value_pointer,
-	const void* shoot_input_value_pointer,
-	Vec2F* heat_box_vertexes_array,
-	EngineTypes::ControledEntity::heat_box_vertexes_count_t heat_box_vertexes_array_length,
+	GameTypes::players_count_t player_team,
+	const GameTypes::control_flags_t* controle_flags,
+	const std::vector<Vec2F>& heat_box_vertexes_array,
 	float angle,
 	EngineTypes::Bonus::inventory_t bonus_inventory,
 	EngineTypes::Ship::inventory_t buff_inventory,
@@ -113,12 +104,9 @@ Ship::Ship(
 		velocity,
 		radius,
 		player_number,
-		player_team_number,
-		burnout_input_value_pointer,
-		rotate_input_value_pointer,
-		shoot_input_value_pointer,
+		player_team,
+		controle_flags,
 		heat_box_vertexes_array,
-		heat_box_vertexes_array_length,
 		angle,
 		angular_velocity,
 		force_collision_coeffisient,
@@ -233,8 +221,8 @@ Bullet Ship::CreateBullet()
 	return Bullet(
 		position + direction.Normalize() * radius,
 		direction * BULLET_DEFAULT_VELOCITY + velocity - direction.PerpendicularClockwise() * angular_velocity * radius,
-		player_number,
-		player_team_number,
+		GetPlayerNumber(),
+		GetTeamNumber(),
 		true,
 		angle);
 }
@@ -330,28 +318,28 @@ Bullet Ship::CreateTriple(uint8_t bullet_number)
 	{
 		return Bullet();
 	}
-
+	
 	switch (bullet_number)
 	{
 	case 0:
 		return Bullet(
 			position + direction * radius,
 			direction * BULLET_DEFAULT_VELOCITY + velocity,
-			player_number,
-			player_team_number);
+			GetPlayerNumber(),
+			GetTeamNumber());
 	case 1:
 		return Bullet(
 			position - direction.PerpendicularClockwise() * radius * 0.75f,
 			direction * BULLET_DEFAULT_VELOCITY + velocity,
-			player_number,
-			player_team_number);
+			GetPlayerNumber(),
+			GetTeamNumber());
 	case 2:
 		bullets_in_magazine -= 3;
 		return Bullet(
 			position + direction.PerpendicularClockwise() * radius * 0.75f,
 			direction * BULLET_DEFAULT_VELOCITY + velocity,
-			player_number,
-			player_team_number);
+			GetPlayerNumber(),
+			GetTeamNumber());
 	default:
 		return Bullet();
 	}
@@ -383,25 +371,13 @@ GameTypes::entities_count_t Ship::GetElemntFromList()
 	return objects_in_creating_proccess + (uint16_t)1;
 }
 
-Bullet Ship::CreateLoop(GameTypes::entities_count_t bullet_number)
-{
-	printf("WARNING::Ship::CreateLoop::The function is overdate. Use Ship::CreeatingEntities().");
-
-	Vec2F bullet_velocity = velocity + Vec2F(0.0f, 1.0f).Rotate(2.0f * (float)M_PI / (float)SHIP_BULLETS_IN_LOOP * (float)bullet_number) * BULLET_DEFAULT_VELOCITY;
-	return Bullet(&position, &bullet_velocity,
-		player_number, player_team_number, true,
-		0.0f, 0.0f,
-		DEFAULT_FORCE_COLLISION_COEFFICIENT, BULLET_DEFAULT_RESISTANCE_AIR_COEFFICIENT / 2.0f,
-		BULLET_DEFAULT_RADIUS / 2.0f);
-}
-
 Bomb Ship::CreateBomb()
 {
 	return Bomb(
-		Vec2F(-0.25f, 0.0f) * model_matrix,
+		Vec2F(-0.25f, 0.0f) * GetModelMatrix(),
 		velocity,
-		player_team_number,
-		player_team_number);
+		GetTeamNumber(),
+		GetTeamNumber());
 }
 
 Laser Ship::CreateLaser()
@@ -417,11 +393,9 @@ Knife Ship::CreateKnife(uint8_t knife_number)
 	switch (knife_number)
 	{
 	case 0:
-		new_knife_segment = Segment(Vec2F(-0.35f, sqrt(3.0f) / 4.0f), Vec2F(0.75f, 0.0f));
-		return Knife(this, &new_knife_segment);
+		return Knife(this, Segment(Vec2F(-0.35f, sqrt(3.0f) / 4.0f), Vec2F(0.75f, 0.0f)));
 	case 1:
-		new_knife_segment = Segment(Vec2F(-0.35f, sqrt(3.0f) / -4.0f), Vec2F(0.75f, 0.0f));
-		return Knife(this, &new_knife_segment);
+		return Knife(this, Segment(Vec2F(-0.35f, sqrt(3.0f) / -4.0f), Vec2F(0.75f, 0.0f)));
 	default:
 		return Knife();
 	}
@@ -443,14 +417,11 @@ Pilot Ship::Destroy()
 	Pilot new_pilot = Pilot(
 		position,
 		Vec2F(),
-		player_number,
-		player_team_number,
-		burnout_input_value_pointer,
-		rotate_input_value_pointer,
-		shoot_input_value_pointer,
+		GetPlayerNumber(),
+		GetTeamNumber(),
+		GetControleFlagsP(),
 		PILOT_DEFAULT_RESPAWN_TIMER,
-		nullptr,
-		0,
+		std::vector<Vec2F>(),
 		angle);
 	new_pilot.AddForce(velocity);
 	return new_pilot;
@@ -519,45 +490,23 @@ Bonus Ship::LoseBonus()
 
 void Ship::Set(const Ship* ship)
 {
-	angle = ship->angle;
-	angular_velocity = ship->angular_velocity;
+	ControledEntity::Set(ship);
+
 	bonus_inventory = ship->bonus_inventory;
 	buff_inventory = ship->buff_inventory;
-	burnout_input_value_pointer = ship->burnout_input_value_pointer;
 	burnout = ship->burnout;
 	burnout_coldown = ship->burnout_coldown;
-	direction = ship->direction;
-	exist = ship->exist;
-	force_collision_coeffisient = ship->force_collision_coeffisient;
-	force_resistance_air_coefficient = ship->force_resistance_air_coefficient;
-	heat_box_vertexes_array_length = ship->heat_box_vertexes_array_length;
-	player_number = ship->player_number;
-	player_team_number = ship->player_team_number;
-	position = ship->position;
-	radius = ship->radius;
-	rotate_input_value_pointer = ship->rotate_input_value_pointer;
-	shoot_input_value_pointer = ship->shoot_input_value_pointer;
 	unbrakable = ship->unbrakable;
-	velocity = ship->velocity;
-
-	delete[] heat_box_vertexes_array;
-	heat_box_vertexes_array = new Vec2F[heat_box_vertexes_array_length];
-	for (EngineTypes::ControledEntity::heat_box_vertexes_count_t vertex = 0; vertex < heat_box_vertexes_array_length; vertex++)
-	{
-		heat_box_vertexes_array[vertex] = ship->heat_box_vertexes_array[vertex];
-	}
+	magazine_size = ship->magazine_size;
 }
 
 void Ship::Set(
-	Vec2F position,
-	Vec2F velocity,
+	const Vec2F& position,
+	const Vec2F& velocity,
 	GameTypes::players_count_t player_number,
-	GameTypes::players_count_t player_team_number,
-	const void* burnout_input_value_pointer,
-	const void* rotate_input_value_pointer,
-	const void* shoot_input_value_pointer,
-	Vec2F* heat_box_vertexes_array,
-	EngineTypes::ControledEntity::heat_box_vertexes_count_t heat_box_vertexes_array_length,
+	GameTypes::players_count_t player_team,
+	const GameTypes::control_flags_t* controle_flags,
+	const std::vector<Vec2F>& heat_box_vertexes_array,
 	float angle,
 	EngineTypes::Bonus::inventory_t bonus_inventory,
 	EngineTypes::Ship::inventory_t buff_inventory,
@@ -572,54 +521,34 @@ void Ship::Set(
 	GameTypes::entities_count_t current_bullets_count,
 	bool exist)
 {
-	this->angle = angle;
-	this->angular_velocity = angular_velocity;
+	ControledEntity::Set(
+	position,
+		velocity,
+		radius,
+		player_number,
+		player_team,
+		controle_flags,
+		heat_box_vertexes_array,
+		angle,
+		angular_velocity,
+		force_collision_coeffisient,
+		force_resistance_air_coefficient);
+
 	this->bonus_inventory = bonus_inventory;
 	this->buff_inventory = buff_inventory;
-	this->bullets_in_magazine = current_bullets_count;
 	this->burnout = burnout;
 	this->burnout_coldown = burnout_coldown;
-	UpdateDirection();
-	this->exist = exist;
-	this->force_collision_coeffisient = force_collision_coeffisient;
-	this->force_resistance_air_coefficient = force_resistance_air_coefficient;
-	this->heat_box_vertexes_array_length = heat_box_vertexes_array_length;
-	this->magazine_size = max_bullets_count;
-	this->player_number = player_number;
-	this->player_team_number = player_team_number;
-	this->position = position;
-	this->radius = radius;
-	this->rotate_input_value_pointer = rotate_input_value_pointer;
-	this->shoot_input_value_pointer = shoot_input_value_pointer;
 	this->unbrakable = unbrakable;
-	this->velocity = velocity;
-
-	delete[] this->heat_box_vertexes_array;
-	if (heat_box_vertexes_array_length < 3 || heat_box_vertexes_array == nullptr)
-	{
-		this->heat_box_vertexes_array = nullptr;
-		SetDefaultMatrix();
-	}
-	else
-	{
-		this->heat_box_vertexes_array = new Vec2F[heat_box_vertexes_array_length];
-		for (EngineTypes::ControledEntity::heat_box_vertexes_count_t vertex = 0; vertex < heat_box_vertexes_array_length; vertex++)
-		{
-			this->heat_box_vertexes_array[vertex] = heat_box_vertexes_array[vertex];
-		}
-	}
+	this->magazine_size = max_bullets_count;
 }
 
 void Ship::Set(
 	const Vec2F* position,
 	const Vec2F* velocity,
 	GameTypes::players_count_t player_number,
-	GameTypes::players_count_t player_team_number,
-	const void* burnout_input_value_pointer,
-	const void* rotate_input_value_pointer,
-	const void* shoot_input_value_pointer,
-	Vec2F* heat_box_vertexes_array,
-	EngineTypes::ControledEntity::heat_box_vertexes_count_t heat_box_vertexes_array_length,
+	GameTypes::players_count_t player_team,
+	const GameTypes::control_flags_t* controle_flags,
+	const std::vector<Vec2F>& heat_box_vertexes_array,
 	float angle,
 	EngineTypes::Bonus::inventory_t bonus_inventory,
 	EngineTypes::Ship::inventory_t buff_inventory,
@@ -634,43 +563,25 @@ void Ship::Set(
 	GameTypes::entities_count_t current_bullets_count,
 	bool exist)
 {
-	this->angle = angle;
-	this->angular_velocity = angular_velocity;
+	ControledEntity::Set(
+		position,
+		velocity,
+		radius,
+		player_number,
+		player_team,
+		controle_flags,
+		heat_box_vertexes_array,
+		angle,
+		angular_velocity,
+		force_collision_coeffisient,
+		force_resistance_air_coefficient);
+
 	this->bonus_inventory = bonus_inventory;
 	this->buff_inventory = buff_inventory;
-	this->bullets_in_magazine = current_bullets_count;
 	this->burnout = burnout;
 	this->burnout_coldown = burnout_coldown;
-	this->burnout_input_value_pointer = burnout_input_value_pointer;
-	UpdateDirection();
-	this->exist = exist;
-	this->force_collision_coeffisient = force_collision_coeffisient;
-	this->force_resistance_air_coefficient = force_resistance_air_coefficient;
-	this->heat_box_vertexes_array_length = heat_box_vertexes_array_length;
-	this->magazine_size = max_bullets_count;
-	this->player_number = player_number;
-	this->player_team_number = player_team_number;
-	this->position = *position;
-	this->radius = radius;
-	this->rotate_input_value_pointer = rotate_input_value_pointer;
-	this->shoot_input_value_pointer = shoot_input_value_pointer;
 	this->unbrakable = unbrakable;
-	this->velocity = *velocity;
-
-	delete[] this->heat_box_vertexes_array;
-	if (heat_box_vertexes_array_length < 3 || heat_box_vertexes_array == nullptr)
-	{
-		this->heat_box_vertexes_array = nullptr;
-		SetDefaultMatrix();
-	}
-	else
-	{
-		this->heat_box_vertexes_array = new Vec2F[heat_box_vertexes_array_length];
-		for (EngineTypes::ControledEntity::heat_box_vertexes_count_t vertex = 0; vertex < heat_box_vertexes_array_length; vertex++)
-		{
-			this->heat_box_vertexes_array[vertex] = heat_box_vertexes_array[vertex];
-		}
-	}
+	this->magazine_size = max_bullets_count;
 }
 
 void Ship::SetSizeOfMagazine(GameTypes::entities_count_t bullets_count)
@@ -685,11 +596,6 @@ void Ship::SetSizeOfMagazine(GameTypes::entities_count_t bullets_count)
 void Ship::SetUnbrakablePeriod(GameTypes::tic_t period)
 {
 	unbrakable = period;
-}
-
-bool Ship::ShouldBurnout()
-{
-	return *(bool*)burnout_input_value_pointer;
 }
 
 bool Ship::SpendBonus(EngineTypes::Bonus::inventory_t bonus)
@@ -798,43 +704,22 @@ void Ship::Update()
 
 void Ship::UpdateMatrix()
 {
-	model_matrix.SetByPosition(position);
-	model_matrix.RotateThis(angle);
-	model_matrix.ScaleThis(Vec2F(4.5f, 3.0f) * radius);
+	Mat3x2F* mm = GetModelMatrixPointer();
+	mm->SetByPosition(position);
+	mm->RotateThis(angle);
+	mm->ScaleThis(Vec2F(4.5f, 3.0f) * radius);
 }
 
-
-void Ship::operator=(Ship ship)
+void Ship::operator=(const Ship& ship)
 {
-	angle = ship.angle;
-	angular_velocity = ship.angular_velocity;
-	bonus_inventory = ship.bonus_inventory;
-	buff_inventory = ship.buff_inventory;
-	bullets_in_magazine = ship.bullets_in_magazine;
-	burnout = ship.burnout;
-	burnout_coldown = ship.burnout_coldown;
-	direction = ship.direction;
-	exist = ship.exist;
-	force = ship.force;
-	force_collision_coeffisient = ship.force_collision_coeffisient;
-	force_resistance_air_coefficient = ship.force_resistance_air_coefficient;
-	heat_box_vertexes_array_length = ship.heat_box_vertexes_array_length;
-	magazine_size = ship.magazine_size;
-	player_number = ship.player_number;
-	player_team_number = ship.player_team_number;
-	position = ship.position;
-	radius = ship.radius;
-	rotate_input_value_pointer = ship.rotate_input_value_pointer;
-	shoot_input_value_pointer = ship.shoot_input_value_pointer;
-	unbrakable = ship.unbrakable;
-	velocity = ship.velocity;
+	ControledEntity::operator=(ship);
 
-	delete[] heat_box_vertexes_array;
-	heat_box_vertexes_array = new Vec2F[heat_box_vertexes_array_length];
-	for (EngineTypes::ControledEntity::heat_box_vertexes_count_t vertex = 0; vertex < heat_box_vertexes_array_length; vertex++)
-	{
-		heat_box_vertexes_array[vertex] = ship.heat_box_vertexes_array[vertex];
-	}
+	this->bonus_inventory = ship.bonus_inventory;
+	this->buff_inventory = ship.buff_inventory;
+	this->burnout = ship.burnout;
+	this->burnout_coldown = ship.burnout_coldown;
+	this->unbrakable = ship.unbrakable;
+	this->magazine_size = ship.magazine_size;
 }
 
 Ship::~Ship()

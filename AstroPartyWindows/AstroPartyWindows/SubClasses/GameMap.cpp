@@ -37,10 +37,14 @@ void Game::Event0()
 	Vec2F in_direction(0.0f, -MAP_ORBIT_MAP__INTERNAL_ORBIT_RADIUS);
 	Vec2F ex_direction(MAP_ORBIT_MAP__EXTERNAL_ORBIT_RADIUS, 0.0f);
 
-	Vec2F pos_2_3(center_position + in_direction.Rotate((float)(global_timer % EVENT0__INTERNAL_PERIOD) / (float)EVENT0__INTERNAL_PERIOD * M_PI * 2.0f));
-	Vec2F pos_4_5(center_position + in_direction.Rotate((float)(global_timer % EVENT0__INTERNAL_PERIOD) / (float)EVENT0__INTERNAL_PERIOD * M_PI * 2.0f - M_PI));
-	Vec2F pos_6_7(center_position + ex_direction.RotateClockwise((float)(global_timer % EVENT0__EXTERNAL_PERIOD) / (float)EVENT0__EXTERNAL_PERIOD * M_PI * 2.0f));
-	Vec2F pos_8_9(center_position + ex_direction.RotateClockwise((float)(global_timer % EVENT0__EXTERNAL_PERIOD) / (float)EVENT0__EXTERNAL_PERIOD * M_PI * 2.0f - M_PI));
+	Vec2F pos_2_3(center_position + in_direction.Rotate(
+		static_cast<float>(global_timer % EVENT0__INTERNAL_PERIOD) / static_cast<float>(EVENT0__INTERNAL_PERIOD) * static_cast<float>(M_PI) * 2.0f));
+	Vec2F pos_4_5(center_position + in_direction.Rotate(
+		static_cast<float>(global_timer % EVENT0__INTERNAL_PERIOD) / static_cast<float>(EVENT0__INTERNAL_PERIOD) * static_cast<float>(M_PI) * 2.0f - static_cast<float>(M_PI)));
+	Vec2F pos_6_7(center_position + ex_direction.RotateClockwise(
+		static_cast<float>(global_timer % EVENT0__EXTERNAL_PERIOD) / static_cast<float>(EVENT0__EXTERNAL_PERIOD) * static_cast<float>(M_PI) * 2.0f));
+	Vec2F pos_8_9(center_position + ex_direction.RotateClockwise(
+		static_cast<float>(global_timer % EVENT0__EXTERNAL_PERIOD) / static_cast<float>(EVENT0__EXTERNAL_PERIOD) * static_cast<float>(M_PI) * 2.0f - static_cast<float>(M_PI)));
 
 	float in_radius = 
 		MAP_ORBIT_MAP__GRAVGEN_SAVE_BARIER_RADIUS + 
@@ -614,123 +618,120 @@ void Game::Event9()
 {
 #define EVENT9__CENTER_POSITION 6.0f
 #define EVENT9__ANGLE_PORTAL_TP_POSITION	0.30f
-	if (object_pull_array[GAME_OBJECT_ASTEROID])
+	if (
+		!object_pull_array[GAME_OBJECT_ASTEROID] || 
+		(global_timer % 500) || asteroids_count >= 10)
 	{
-		asteroids_array_mtx.lock();
-		if (!(global_timer % 500) && asteroids_count < 10)
+		return;
+	}
+	asteroids_array_mtx.lock();
+	uint8_t spawn = 0x0F;//0000 1111
+	GameTypes::entities_count_t asteroids_found = 0;
+	for (auto& asteroid : asteroids)
+	{
+		if (asteroids_found >= asteroids_count) break;
+		if (asteroid.exist) continue;
+
+		Vec2F position = asteroid.GetPosition() - EVENT9__CENTER_POSITION;
+		if (spawn & 0x03 && position.x > 0.0f && position.x < EVENT9__ANGLE_PORTAL_TP_POSITION * 2.0f)
 		{
-			uint8_t spawn = 0x0F;//0000 1111
-			Asteroid* temp__asteroid_p = asteroids;
-			for (GameTypes::entities_count_t found_asteroids = 0; found_asteroids < asteroids_count; temp__asteroid_p++)
+			if (position.y > 0.0f && position.y < EVENT9__ANGLE_PORTAL_TP_POSITION * 2.0f)
 			{
-				if (temp__asteroid_p->exist)
-				{
-					Vec2F position = temp__asteroid_p->GetPosition() - EVENT9__CENTER_POSITION;
-					if (spawn & 0x03 && position.x > 0.0f && position.x < EVENT9__ANGLE_PORTAL_TP_POSITION * 2.0f)
-					{
-						if (position.y > 0.0f && position.y < EVENT9__ANGLE_PORTAL_TP_POSITION * 2.0f)
-						{
-							spawn &= 0xFF - 0x01;//up right
-						}
-						else if (position.y < 0.0f && position.y > EVENT9__ANGLE_PORTAL_TP_POSITION * -2.0f)
-						{
-							spawn &= 0xFF - 0x02;//down right
-						}
-					}
-					else if (spawn & 0x0C && position.x < 0.0f && position.x > EVENT9__ANGLE_PORTAL_TP_POSITION * -2.0f)
-					{
-						if (position.y > 0.0f && position.y < EVENT9__ANGLE_PORTAL_TP_POSITION * 2.0f)
-						{
-							spawn &= 0xFF - 0x04;//up left
-						}
-						else if (position.y < 0.0f && position.y > EVENT9__ANGLE_PORTAL_TP_POSITION * -2.0f)
-						{
-							spawn &= 0xFF - 0x08;//down left
-						}
-					}
-
-					if (!(spawn & 0x0F))
-					{
-						break;
-					}
-
-					found_asteroids++;
-				}
+				spawn &= 0xFF - 0x01;//up right
 			}
-
-			Ship* temp__ship_p = ships;
-			for (GameTypes::entities_count_t found_ships = 0; found_ships < ships_count; temp__ship_p++)
+			else if (position.y < 0.0f && position.y > EVENT9__ANGLE_PORTAL_TP_POSITION * -2.0f)
 			{
-				if (temp__ship_p->exist)
-				{
-					Vec2F position = temp__ship_p->GetPosition() - EVENT9__CENTER_POSITION;
-					if (spawn & 0x03 && position.x > 0.0f && position.x < EVENT9__ANGLE_PORTAL_TP_POSITION * 2.0f)
-					{
-						if (position.y > 0.0f && position.y < EVENT9__ANGLE_PORTAL_TP_POSITION * 2.0f)
-						{
-							spawn &= 0xFF - 0x01;//up right
-						}
-						else if (position.y < 0.0f && position.y > EVENT9__ANGLE_PORTAL_TP_POSITION * -2.0f)
-						{
-							spawn &= 0xFF - 0x02;//down right
-						}
-					}
-					else if (spawn & 0x0C && position.x < 0.0f && position.x > EVENT9__ANGLE_PORTAL_TP_POSITION * -2.0f)
-					{
-						if (position.y > 0.0f && position.y < EVENT9__ANGLE_PORTAL_TP_POSITION * 2.0f)
-						{
-							spawn &= 0xFF - 0x04;//up left
-						}
-						else if (position.y < 0.0f && position.y > EVENT9__ANGLE_PORTAL_TP_POSITION * -2.0f)
-						{
-							spawn &= 0xFF - 0x08;//down left
-						}
-					}
-
-					if (!(spawn & 0x0F))
-					{
-						break;
-					}
-
-					found_ships++;
-				}
-			}
-
-			if (spawn & 0x01)//up right
-			{
-				AddEntity(Asteroid(
-					Vec2F(EVENT9__ANGLE_PORTAL_TP_POSITION + EVENT9__CENTER_POSITION),
-					Vec2F(),
-					GenerateRandomInventory(BONUS_BONUS, 1, 1, 1, 1) | GenerateRandomInventory(BONUS_BUFF | BONUS_RULE_REVERSE, 1, 1, 1, 1),
-					ASTEROID_SIZE_MEDIUM));
-			}
-			if (spawn & 0x02)//down right
-			{
-				AddEntity(Asteroid(
-					Vec2F(EVENT9__ANGLE_PORTAL_TP_POSITION + EVENT9__CENTER_POSITION, -EVENT9__ANGLE_PORTAL_TP_POSITION + EVENT9__CENTER_POSITION),
-					Vec2F(),
-					GenerateRandomInventory(BONUS_BONUS, 1, 1, 1, 1) | GenerateRandomInventory(BONUS_BUFF | BONUS_RULE_REVERSE, 1, 1, 1, 1),
-					ASTEROID_SIZE_MEDIUM));
-			}
-			if (spawn & 0x04)//up left
-			{
-				AddEntity(Asteroid(
-					Vec2F(-EVENT9__ANGLE_PORTAL_TP_POSITION + EVENT9__CENTER_POSITION, EVENT9__ANGLE_PORTAL_TP_POSITION + EVENT9__CENTER_POSITION),
-					Vec2F(),
-					GenerateRandomInventory(BONUS_BONUS, 1, 1, 1, 1) | GenerateRandomInventory(BONUS_BUFF | BONUS_RULE_REVERSE, 1, 1, 1, 1),
-					ASTEROID_SIZE_MEDIUM));
-			}
-			if (spawn & 0x08)//donw left
-			{
-				AddEntity(Asteroid(
-					Vec2F(-EVENT9__ANGLE_PORTAL_TP_POSITION + EVENT9__CENTER_POSITION),
-					Vec2F(),
-					GenerateRandomInventory(BONUS_BONUS, 1, 1, 1, 1) | GenerateRandomInventory(BONUS_BUFF | BONUS_RULE_REVERSE, 1, 1, 1, 1),
-					ASTEROID_SIZE_MEDIUM));
+				spawn &= 0xFF - 0x02;//down right
 			}
 		}
-		asteroids_array_mtx.unlock();
+		else if (spawn & 0x0C && position.x < 0.0f && position.x > EVENT9__ANGLE_PORTAL_TP_POSITION * -2.0f)
+		{
+			if (position.y > 0.0f && position.y < EVENT9__ANGLE_PORTAL_TP_POSITION * 2.0f)
+			{
+				spawn &= 0xFF - 0x04;//up left
+			}
+			else if (position.y < 0.0f && position.y > EVENT9__ANGLE_PORTAL_TP_POSITION * -2.0f)
+			{
+				spawn &= 0xFF - 0x08;//down left
+			}
+		}
+
+		if (!(spawn & 0x0F))
+		{
+			break;
+		}
+
+		asteroids_found++;
 	}
+
+	for (auto& ship : ships)
+	{
+		if (!ship.exist) continue;
+
+		Vec2F position = ship.GetPosition() - EVENT9__CENTER_POSITION;
+		if (spawn & 0x03 && position.x > 0.0f && position.x < EVENT9__ANGLE_PORTAL_TP_POSITION * 2.0f)
+		{
+			if (position.y > 0.0f && position.y < EVENT9__ANGLE_PORTAL_TP_POSITION * 2.0f)
+			{
+				spawn &= 0xFF - 0x01;//up right
+			}
+			else if (position.y < 0.0f && position.y > EVENT9__ANGLE_PORTAL_TP_POSITION * -2.0f)
+			{
+				spawn &= 0xFF - 0x02;//down right
+			}
+		}
+		else if (spawn & 0x0C && position.x < 0.0f && position.x > EVENT9__ANGLE_PORTAL_TP_POSITION * -2.0f)
+		{
+			if (position.y > 0.0f && position.y < EVENT9__ANGLE_PORTAL_TP_POSITION * 2.0f)
+			{
+				spawn &= 0xFF - 0x04;//up left
+			}
+			else if (position.y < 0.0f && position.y > EVENT9__ANGLE_PORTAL_TP_POSITION * -2.0f)
+			{
+				spawn &= 0xFF - 0x08;//down left
+			}
+		}
+
+		if (!(spawn & 0x0F))
+		{
+			break;
+		}
+
+	}
+
+	if (spawn & 0x01)//up right
+	{
+		AddEntity(Asteroid(
+			Vec2F(EVENT9__ANGLE_PORTAL_TP_POSITION + EVENT9__CENTER_POSITION),
+			Vec2F(),
+			GenerateRandomInventory(BONUS_BONUS, 1, 1, 1, 1) | GenerateRandomInventory(BONUS_BUFF | BONUS_RULE_REVERSE, 1, 1, 1, 1),
+			ASTEROID_SIZE_MEDIUM));
+	}
+	if (spawn & 0x02)//down right
+	{
+		AddEntity(Asteroid(
+			Vec2F(EVENT9__ANGLE_PORTAL_TP_POSITION + EVENT9__CENTER_POSITION, -EVENT9__ANGLE_PORTAL_TP_POSITION + EVENT9__CENTER_POSITION),
+			Vec2F(),
+			GenerateRandomInventory(BONUS_BONUS, 1, 1, 1, 1) | GenerateRandomInventory(BONUS_BUFF | BONUS_RULE_REVERSE, 1, 1, 1, 1),
+			ASTEROID_SIZE_MEDIUM));
+	}
+	if (spawn & 0x04)//up left
+	{
+		AddEntity(Asteroid(
+			Vec2F(-EVENT9__ANGLE_PORTAL_TP_POSITION + EVENT9__CENTER_POSITION, EVENT9__ANGLE_PORTAL_TP_POSITION + EVENT9__CENTER_POSITION),
+			Vec2F(),
+			GenerateRandomInventory(BONUS_BONUS, 1, 1, 1, 1) | GenerateRandomInventory(BONUS_BUFF | BONUS_RULE_REVERSE, 1, 1, 1, 1),
+			ASTEROID_SIZE_MEDIUM));
+	}
+	if (spawn & 0x08)//donw left
+	{
+		AddEntity(Asteroid(
+			Vec2F(-EVENT9__ANGLE_PORTAL_TP_POSITION + EVENT9__CENTER_POSITION),
+			Vec2F(),
+			GenerateRandomInventory(BONUS_BONUS, 1, 1, 1, 1) | GenerateRandomInventory(BONUS_BUFF | BONUS_RULE_REVERSE, 1, 1, 1, 1),
+			ASTEROID_SIZE_MEDIUM));
+	}
+	asteroids_array_mtx.unlock();
 }
 
 void Game::Event10()
@@ -867,7 +868,7 @@ void Game::Event11()
 		{
 			if (asteroids[id].GetVelocity().LengthPow2() > 0.01f)
 			{
-				DestroyEntity(&asteroids[id]);
+				DestroyEntity(asteroids[id]);
 			}
 			else
 			{
@@ -887,7 +888,7 @@ void Game::Event11()
 				if (bonuses[id].GetDistance(Vec2F(MAP_COLLAIDER__CENTER)) < MAP_COLLAIDER__INTERNAL_CYRCLE_RADIUS)
 				{
 					std::cout << "Event11::Destroy lost bonus" << std::endl;
-						DestroyEntity(&bonuses[id]);
+						DestroyEntity(bonuses[id]);
 				}
 				else
 				{
@@ -937,7 +938,7 @@ void Game::Event12()
 		points[0].PerpendicularThis();
 	}
 
-	float angle = (global_timer % EVENT_12__ROTATION_PERIOD) / (float)EVENT_12__ROTATION_PERIOD * M_PI * 2.0f;
+	float angle = static_cast<float>(global_timer % EVENT_12__ROTATION_PERIOD) / static_cast<float>(EVENT_12__ROTATION_PERIOD) * static_cast<float>(M_PI) * 2.0f;
 
 	map_data_mtx.lock();
 	map.PolygonPointer(0)->SetAngle(M_PI_4 + angle);
@@ -995,7 +996,7 @@ void CreateMap0_PlaceTwoCyrclesAndGravGen(Game* game_object, Map::Cyrcle* cyrcle
 	game_object->AddEntity(GravGen(position, -gravity, MAP_ORBIT_MAP__GRAVGEN_RADIUS));
 }
 
-void CreateMap0_PlaceShips(Vec2F* ships_positions, float* ships_angles) {
+void CreateMap0_PlaceShips(std::vector<Vec2F>& ships_positions, std::vector<float>& ships_angles) {
 	Vec2F center_position(MAP_ORBIT_MAP__CENTER_POSITION);
 	Vec2F ship_position = MAP_ORBIT_MAP__RELATIVE_SHIP_POSITION;
 	ships_positions[0] = center_position + ship_position.RotateClockwise(-M_PI_2);
@@ -1009,7 +1010,7 @@ void CreateMap0_PlaceShips(Vec2F* ships_positions, float* ships_angles) {
 	ships_angles[3] = (float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
 }
 
-void Game::CreateMap0(Vec2F* ships_positions, float* ships_angles)
+void Game::CreateMap0(std::vector<Vec2F>& ships_positions, std::vector<float>& ships_angles)
 {
 
 	Map::Cyrcle* cyrcles = new Map::Cyrcle[MAP_ORBIT_MAP__CYRCLES_COUNT];
@@ -1056,7 +1057,7 @@ void Game::CreateMap0(Vec2F* ships_positions, float* ships_angles)
 	delete[] cyrcles;
 }
 
-void Game::CreateMap1(Vec2F* ships_positions, float* ships_angles)
+void Game::CreateMap1(std::vector<Vec2F>& ships_positions, std::vector<float>& ships_angles)
 {
 	/* Init static variables */
 
@@ -1128,7 +1129,7 @@ void Game::CreateMap1(Vec2F* ships_positions, float* ships_angles)
 	camera.SetSize();
 }
 
-void Game::CreateMap2(Vec2F* ships_positions, float* ships_angles)
+void Game::CreateMap2(std::vector<Vec2F>& ships_positions, std::vector<float>& ships_angles)
 {
 	Vec2F new_position;
 	Segment diagonal;
@@ -1201,7 +1202,7 @@ void Game::CreateMap2(Vec2F* ships_positions, float* ships_angles)
 	ships_angles[3] = (float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
 }
 
-void Game::CreateMap3(Vec2F* ships_positions, float* ships_angles)
+void Game::CreateMap3(std::vector<Vec2F>& ships_positions, std::vector<float>& ships_angles)
 {
 	Vec2F new_position;
 	Segment new_segment;
@@ -1293,7 +1294,7 @@ void Game::CreateMap3(Vec2F* ships_positions, float* ships_angles)
 	ships_angles[3] = (float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
 }
 
-void Game::CreateMap4(Vec2F* ships_positions, float* ships_angles)
+void Game::CreateMap4(std::vector<Vec2F>& ships_positions, std::vector<float>& ships_angles)
 {
 	/* Create map */
 
@@ -1356,7 +1357,7 @@ void Game::CreateMap4(Vec2F* ships_positions, float* ships_angles)
 	camera.SetSize(MAP_MEGA_LASERS__CAMERA_SIZE);
 }
 
-void Game::CreateMap5(Vec2F* ships_positions, float* ships_angles)
+void Game::CreateMap5(std::vector<Vec2F>& ships_positions, std::vector<float>& ships_angles)
 {
 #define MAP_DYNAMICAL__RECTANGLES_COUNT	5u
 #define MAP_DYNAMICAL__FRAME_RECTANGLE	0u
@@ -1452,7 +1453,7 @@ void Game::CreateMap5(Vec2F* ships_positions, float* ships_angles)
 	camera.SetSize(MAP_DYNAMICAL__CAMERA_SIZE);
 }
 
-void Game::CreateMap6(Vec2F* ships_positions, float* ships_angles)
+void Game::CreateMap6(std::vector<Vec2F>& ships_positions, std::vector<float>& ships_angles)
 {
 	/* Create map */
 
@@ -1525,7 +1526,7 @@ void Game::CreateMap6(Vec2F* ships_positions, float* ships_angles)
 	camera.SetSize(MAP_DYNAMICAL__CAMERA_SIZE);
 }
 
-void Game::CreateMap7(Vec2F* ships_positions, float* ships_angles)
+void Game::CreateMap7(std::vector<Vec2F>& ships_positions, std::vector<float>& ships_angles)
 {
 #define MAP_AGGRESSIVE__CENTER_POSITION		6.0f
 #define MAP_AGGRESSIVE__FRAME_SIZE			2.0f
@@ -1658,7 +1659,7 @@ void Game::CreateMap7(Vec2F* ships_positions, float* ships_angles)
 	camera.SetSize(MAP_DYNAMICAL__CAMERA_SIZE);
 }
 
-void Game::CreateMap8(Vec2F* ships_positions, float* ships_angles)
+void Game::CreateMap8(std::vector<Vec2F>& ships_positions, std::vector<float>& ships_angles)
 {
 #define MAP_BROKEN__CENTER_POSITION		6.0f
 #define MAP_BROKEN__FRAME_SIZE			2.0f
@@ -1771,7 +1772,7 @@ void Game::CreateMap8(Vec2F* ships_positions, float* ships_angles)
 	camera.SetSize(MAP_DYNAMICAL__CAMERA_SIZE);
 }
 
-void Game::CreateMap9(Vec2F* ships_positions, float* ships_angles)
+void Game::CreateMap9(std::vector<Vec2F>& ships_positions, std::vector<float>& ships_angles)
 {
 #define MAP_PORTAL__CENTER_POSITION				EVENT9__CENTER_POSITION
 #define MAP_PORTAL__FRAME_SIZE					2.0f
@@ -2008,7 +2009,7 @@ void Game::CreateMap9(Vec2F* ships_positions, float* ships_angles)
 	camera.SetSize(MAP_DYNAMICAL__CAMERA_SIZE);
 }
 
-void Game::CreateMap10(Vec2F* ships_positions, float* ships_angles)
+void Game::CreateMap10(std::vector<Vec2F>& ships_positions, std::vector<float>& ships_angles)
 {
 #define MAP_NO_CENTER__POLYGONS_COUNT	5
 
@@ -2078,7 +2079,7 @@ void Game::CreateMap10(Vec2F* ships_positions, float* ships_angles)
 			Vec2F(MAP_NO_CENTER_DESINTEGRATOR_MAX_SIZE),
 			points,
 			MAP_NO_CENTER__DESINTEGRATOR_POINTS_COUNT,
-			MAP_PROPERTY_CLOSED | MAP_PROPERTY_AGRESSIVE | MAP_PROPERTY_KILLER | MAP_PROPERTY_UNBREACABLE);
+			MAP_PROPERTY_CLOSED | MAP_PROPERTY_AGRESSIVE | MAP_PROPERTY_KILLER | MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
 	}
 
 	delete[] points;
@@ -2107,7 +2108,7 @@ void Game::CreateMap10(Vec2F* ships_positions, float* ships_angles)
 	camera.SetPosition(Vec2F(MAP_NO_CENTER__FRAME_POS));
 }
 
-void Game::CreateMap11(Vec2F* ships_positions, float* ships_angles)
+void Game::CreateMap11(std::vector<Vec2F>& ships_positions, std::vector<float>& ships_angles)
 {
 	Map::Rectangle* rectangles = new Map::Rectangle[MAP_COLLAIDER__RECTANGLES_COUNT];
 	rectangles[0].Set(
@@ -2164,7 +2165,7 @@ void Game::CreateMap11(Vec2F* ships_positions, float* ships_angles)
 	camera.SetSize();
 }
 
-void Game::CreateMap12(Vec2F* ships_positions, float* ships_angles)
+void Game::CreateMap12(std::vector<Vec2F>& ships_positions, std::vector<float>& ships_angles)
 {
 	/* Generate map */
 	

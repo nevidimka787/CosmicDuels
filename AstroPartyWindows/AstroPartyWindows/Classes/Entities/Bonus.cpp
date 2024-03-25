@@ -25,8 +25,8 @@ Bonus::Bonus(const Bonus& bonus)
 }
 
 Bonus::Bonus(
-	Vec2F position,
-	Vec2F velocity,
+	const Vec2F& position,
+	const Vec2F& velocity,
 	EngineTypes::Bonus::inventory_t bonus_inventory,
 	float angle,
 	float angular_velocity,

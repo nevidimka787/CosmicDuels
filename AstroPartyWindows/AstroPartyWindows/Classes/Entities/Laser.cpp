@@ -7,7 +7,8 @@ Laser::Laser() :
 	end_point(position),
 	properties(false),
 	shoot_time(0),
-	width(0.0f)
+	width(0.0f),
+	reflections_count(0)
 {
 }
 
@@ -16,7 +17,8 @@ Laser::Laser(const Laser& laser) :
 	end_point(laser.end_point),
 	properties(laser.properties),
 	shoot_time(laser.shoot_time),
-	width(laser.width)
+	width(laser.width),
+	reflections_count(laser.reflections_count)
 {
 	Update();
 }
@@ -27,90 +29,121 @@ Laser::Laser(
 	float width,
 	GameTypes::tic_t shoot_time,
 	EngineTypes::Laser::property_t properties,
-	bool exist) 
+	size_t reflections_count,
+	bool exist)
 	:
 	SupportEntity(
 		host,
 		&local_beam->point,
 		0.0f,
-		local_beam->vector.GetAngle(), 
+		local_beam->vector.GetAngle(),
 		exist),
 	end_point(local_beam->point),
 	properties(properties),
 	shoot_time(shoot_time),
-	width(width)
+	width(width),
+	reflections_count(reflections_count)
 {
 	Update();
 }
 
-bool Laser::Collision(Map::MapData* map)
+Laser::Laser(
+	const ControledEntity* host,
+	const Beam& local_beam,
+	float width,
+	GameTypes::tic_t shoot_time,
+	EngineTypes::Laser::property_t properties,
+	size_t reflections_count,
+	bool exist)
+	:
+	SupportEntity(
+		host,
+		&local_beam.point,
+		0.0f,
+		local_beam.vector.GetAngle(),
+		exist),
+	end_point(local_beam.point),
+	properties(properties),
+	shoot_time(shoot_time),
+	width(width),
+	reflections_count(reflections_count)
+{
+	Update();
+}
+
+bool Laser::Collision(Map::MapData& map, Vec2F& nearest_intersect_position, Vec2F& nearest_perpendicular_direction)
 {
 #define MAP_ELEMENT_TYPE__NONE_TYPE	0
 #define MAP_ELEMENT_TYPE__CYRCLE	1
 #define MAP_ELEMENT_TYPE__POLYGON	2
 #define MAP_ELEMENT_TYPE__RECTANGLE	3
 
-	Beam beam = GetBeamForMapData();
+	Beam beam(position, direction);
 	bool collision = false;
 	void* element_p;
 	EngineTypes::Map::array_length_t element;
 
 	float min_distance = INFINITY;
-	Vec2F nearest_intersect_position = position;
 	void* collision_element_p = nullptr;
 	uint8_t element_type = MAP_ELEMENT_TYPE__NONE_TYPE;
 
-	for (element = 0; element < map->cyrcles_array_length; element++)
+	for (element = 0; element < map.cyrcles_array_length; element++)
 	{
-		element_p = (void*)map->CyrclePointer(element);
+		element_p = (void*)map.CyrclePointer(element);
 		Vec2F intersect_position;
 		float distance_to_intersection;
+		Vec2F perpendicular_position;
 		if (((Map::Cyrcle*)element_p)->exist &&
-			((Map::Cyrcle*)element_p)->IsCollision(&beam, &intersect_position, &distance_to_intersection))
+			((Map::Cyrcle*)element_p)->IsCollision(&beam, &intersect_position, &distance_to_intersection, &perpendicular_position))
 		{
 			collision = true;
 			if (distance_to_intersection < min_distance)
 			{
 				min_distance = distance_to_intersection;
 				nearest_intersect_position = intersect_position;
+				nearest_perpendicular_direction = perpendicular_position;
 				collision_element_p = element_p;
 				element_type = MAP_ELEMENT_TYPE__CYRCLE;
 			}
 		}
 	}
 
-	for (EngineTypes::Map::array_length_t element = 0; element < map->polygons_array_length; element++)
+	for (EngineTypes::Map::array_length_t element = 0; element < map.polygons_array_length; element++)
 	{
-		element_p = (void*)map->PolygonPointer(element);
+		element_p = (void*)map.PolygonPointer(element);
 		Vec2F intersect_position;
+		Vec2F perpendicular_position;
 		float distance_to_intersection;
 		if (((Map::Polygon*)element_p)->exist &&
-			((Map::Polygon*)element_p)->IsCollision(&beam, &intersect_position, &distance_to_intersection))
+			((Map::Polygon*)element_p)->IsCollision(&beam, &intersect_position, &distance_to_intersection, &perpendicular_position))
 		{
 			collision = true;
 			if (distance_to_intersection < min_distance)
 			{
 				min_distance = distance_to_intersection;
 				nearest_intersect_position = intersect_position;
+				nearest_perpendicular_direction = perpendicular_position;
 				collision_element_p = element_p;
 				element_type = MAP_ELEMENT_TYPE__POLYGON;
 			}
 		}
 	}
 
-	for (EngineTypes::Map::array_length_t element = 0; element < map->rectangles_array_length; element++)
+	for (EngineTypes::Map::array_length_t element = 0; element < map.rectangles_array_length; element++)
 	{
-		element_p = (void*)map->RectanglePointer(element);
+		element_p = (void*)map.RectanglePointer(element);
 		Vec2F intersect_position;
+		Vec2F perpendicular_position;
 		float distance_to_intersection;
 		if (((Map::Rectangle*)element_p)->exist &&
-			((Map::Rectangle*)element_p)->IsCollision(&beam, &intersect_position, &distance_to_intersection))
+			((Map::Rectangle*)element_p)->IsCollision(&beam, &intersect_position, &distance_to_intersection, &perpendicular_position))
 		{
 			collision = true;
 			if (distance_to_intersection < min_distance)
 			{
 				min_distance = distance_to_intersection;
 				nearest_intersect_position = intersect_position;
+				nearest_perpendicular_direction = perpendicular_position;
 				collision_element_p = element_p;
 				element_type = MAP_ELEMENT_TYPE__RECTANGLE;
 			}
@@ -148,20 +181,9 @@ bool Laser::IsActive() const
 	return shoot_time > 0;
 }
 
-bool Laser::CreatedBy(ControledEntity* controled_entity)
+bool Laser::CreatedBy(const ControledEntity& controled_entity) const
 {
-	return host_number == controled_entity->GetPlayerNumber();
-}
-
-Beam Laser::GetBeam() const
-{
-	std::cout << "WARNING::Laser::GetBeam::Function outdated. Use Laser::GetSegment." << std::endl;
-	return Beam(position, direction);
-}
-
-Beam Laser::GetBeamForMapData() const
-{
-	return Beam(position, direction);
+	return host_number == controled_entity.GetPlayerNumber();
 }
 
 Segment Laser::GetSegment() const
@@ -191,6 +213,11 @@ GameTypes::players_count_t Laser::GetPlayerMasterTeamNumber() const
 bool Laser::GetProperty(EngineTypes::Laser::property_t property) const
 {
 	return (properties & property) != LASER_PROPERTY_NOTHING;
+}
+
+GameTypes::tic_t Laser::GetShootTime() const
+{
+	return shoot_time;
 }
 
 bool Laser::IsCollision(const Beam* beam) const
@@ -234,6 +261,7 @@ void Laser::Set(
 	float width,
 	GameTypes::tic_t shoot_time,
 	bool can_create_loops,
+	size_t reflections_count,
 	bool exist)
 {
 	UpdateDirection();
@@ -246,6 +274,7 @@ void Laser::Set(
 	local_position = local_beam->point;
 	shoot_time = shoot_time;
 	this->width = width;
+	this->reflections_count = reflections_count;
 	SupportEntity::Update();
 }
 
@@ -255,7 +284,15 @@ void Laser::Update()
 	{
 		return;
 	}
-	position = local_position * *host_matrix_p;
+	if (!(properties & LASER_PROPERTY_FREE_FROM_HOST))
+	{
+		position = local_position * *host_matrix_p;
+	}
+	else
+	{
+		direction.Set(local_direction.x, -local_direction.y);
+		position = local_position;
+	}
 	StaticEntity::Update();
 
 	if (shoot_time > 0)
@@ -282,6 +319,7 @@ void Laser::operator=(Laser laser)
 	properties = laser.properties;
 	shoot_time = laser.shoot_time;
 	width = laser.width;
+	reflections_count = laser.reflections_count;
 }
 
 Laser::~Laser()

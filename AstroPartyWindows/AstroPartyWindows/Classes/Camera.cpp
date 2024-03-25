@@ -1,5 +1,7 @@
 #include "Camera.h"
 
+#include <vector>
+
 #define min_x a11
 #define min_y a12
 #define max_x a21
@@ -70,8 +72,8 @@ float Camera::GetScale() const
 }
 
 void Camera::Focus(
-	const Ship* ships_array,
-	const Pilot* pilots_array,
+	const std::vector<Ship>& ships_array,
+	const std::vector<Pilot>& pilots_array,
 	GameTypes::players_count_t ships_count,
 	GameTypes::players_count_t pilots_count)
 {
@@ -83,107 +85,97 @@ void Camera::Focus(
 #define UPDATE_N	0x00
 
 	Mat2F current_limits;
-	Vec2F pos_buff;
 	uint8_t first_update = MAX_X | MAX_Y | MIN_X | MIN_Y;
 
-	const Ship* temp__ship_p = ships_array;
-	const Pilot* temp__pilot_p = pilots_array;
-
-	for (GameTypes::players_count_t found_ships = 0; found_ships < ships_count; temp__ship_p++)
+	for (const auto& ship : ships_array)
 	{
-		if (temp__ship_p->exist)
+		if (!ship.exist) continue;
+
+		const Vec2F& pos_buff = ship.GetPosition();
+		if (first_update & MAX_X)
 		{
-			pos_buff = temp__ship_p->GetPosition();
-			if (first_update & MAX_X)
-			{
-				first_update &= UPDATE_F - MAX_X;
-				current_limits.max_x = pos_buff.x;
-			}
-			else if (pos_buff.x > current_limits.max_x)
-			{
-				current_limits.max_x = pos_buff.x;
-			}
+			first_update &= UPDATE_F - MAX_X;
+			current_limits.max_x = pos_buff.x;
+		}
+		else if (pos_buff.x > current_limits.max_x)
+		{
+			current_limits.max_x = pos_buff.x;
+		}
 
-			if (first_update & MAX_Y)
-			{
-				first_update &= UPDATE_F - MAX_Y;
-				current_limits.max_y = pos_buff.y;
-			}
-			else if (pos_buff.y > current_limits.max_y)
-			{
-				current_limits.max_y = pos_buff.y;
-			}
+		if (first_update & MAX_Y)
+		{
+			first_update &= UPDATE_F - MAX_Y;
+			current_limits.max_y = pos_buff.y;
+		}
+		else if (pos_buff.y > current_limits.max_y)
+		{
+			current_limits.max_y = pos_buff.y;
+		}
 
-			if (first_update & MIN_X)
-			{
-				first_update &= UPDATE_F - MIN_X;
-				current_limits.min_x = pos_buff.x;
-			}
-			else if (pos_buff.x < current_limits.min_x)
-			{
-				current_limits.min_x = pos_buff.x;
-			}
+		if (first_update & MIN_X)
+		{
+			first_update &= UPDATE_F - MIN_X;
+			current_limits.min_x = pos_buff.x;
+		}
+		else if (pos_buff.x < current_limits.min_x)
+		{
+			current_limits.min_x = pos_buff.x;
+		}
 
-			if (first_update & MIN_Y)
-			{
-				first_update &= UPDATE_F - MIN_Y;
-				current_limits.min_y = pos_buff.y;
-			}
-			else if (pos_buff.y < current_limits.min_y)
-			{
-				current_limits.min_y = pos_buff.y;
-			}
-
-			found_ships++;
+		if (first_update & MIN_Y)
+		{
+			first_update &= UPDATE_F - MIN_Y;
+			current_limits.min_y = pos_buff.y;
+		}
+		else if (pos_buff.y < current_limits.min_y)
+		{
+			current_limits.min_y = pos_buff.y;
 		}
 	}
 
-	for (GameTypes::players_count_t found_pilots = 0; found_pilots < pilots_count; temp__pilot_p++)
+	for (const auto& pilot : pilots_array)
 	{
-		if (temp__pilot_p->exist)
+		if (!pilot.exist) continue;
+
+		const Vec2F& pos_buff = pilot.GetPosition();
+		if (first_update & MAX_X)
 		{
-			pos_buff = temp__pilot_p->GetPosition();
-			if (first_update & MAX_X)
-			{
-				first_update &= UPDATE_F - MAX_X;
-				current_limits.max_x = pos_buff.x;
-			}
-			else if (pos_buff.x > current_limits.max_x)
-			{
-				current_limits.max_x = pos_buff.x;
-			}
+			first_update &= UPDATE_F - MAX_X;
+			current_limits.max_x = pos_buff.x;
+		}
+		else if (pos_buff.x > current_limits.max_x)
+		{
+			current_limits.max_x = pos_buff.x;
+		}
 
-			if (first_update & MAX_Y)
-			{
-				first_update &= UPDATE_F - MAX_Y;
-				current_limits.max_y = pos_buff.y;
-			}
-			else if (pos_buff.y > current_limits.max_y)
-			{
-				current_limits.max_y = pos_buff.y;
-			}
+		if (first_update & MAX_Y)
+		{
+			first_update &= UPDATE_F - MAX_Y;
+			current_limits.max_y = pos_buff.y;
+		}
+		else if (pos_buff.y > current_limits.max_y)
+		{
+			current_limits.max_y = pos_buff.y;
+		}
 
-			if (first_update & MIN_X)
-			{
-				first_update &= UPDATE_F - MIN_X;
-				current_limits.min_x = pos_buff.x;
-			}
-			else if (pos_buff.x < current_limits.min_x)
-			{
-				current_limits.min_x = pos_buff.x;
-			}
+		if (first_update & MIN_X)
+		{
+			first_update &= UPDATE_F - MIN_X;
+			current_limits.min_x = pos_buff.x;
+		}
+		else if (pos_buff.x < current_limits.min_x)
+		{
+			current_limits.min_x = pos_buff.x;
+		}
 
-			if (first_update & MIN_Y)
-			{
-				first_update &= UPDATE_F - MIN_Y;
-				current_limits.min_y = pos_buff.y;
-			}
-			else if (pos_buff.y < current_limits.min_y)
-			{
-				current_limits.min_y = pos_buff.y;
-			}
-
-			found_pilots++;
+		if (first_update & MIN_Y)
+		{
+			first_update &= UPDATE_F - MIN_Y;
+			current_limits.min_y = pos_buff.y;
+		}
+		else if (pos_buff.y < current_limits.min_y)
+		{
+			current_limits.min_y = pos_buff.y;
 		}
 	}
 
@@ -209,7 +201,7 @@ void Camera::Focus(
 		current_limits.min_y = hight_limits.min_y;
 	}
 
-	pos_buff.Set((current_limits.max_x + current_limits.min_x) / 2.0f, (current_limits.max_y + current_limits.min_y) / 2.0f);
+	const Vec2F& pos_buff = Vec2F((current_limits.max_x + current_limits.min_x) / 2.0f, (current_limits.max_y + current_limits.min_y) / 2.0f);
 
 	new_view_area_size_x = fmaxf(current_limits.max_x - current_limits.min_x, (current_limits.max_y - current_limits.min_y) * scale) / 2.0f;
 	new_view_area_size_x += margin;

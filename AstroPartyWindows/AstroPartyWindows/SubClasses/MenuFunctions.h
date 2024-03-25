@@ -2,6 +2,8 @@
 
 #include "../Classes/GameEngine.h"
 
+#include <vector>
+
 class MenuFunctions
 {
 private:
@@ -45,18 +47,18 @@ public:
 	void ShipsControlMenuFunction(
 		Vec2F clk_pos,
 		uint8_t clk_status,
-		bool* rotate_flags,
-		bool* shoot_flags,
-		GameTypes::tic_t* double_clk_timers,
-		bool* burnout_flags);
+		std::vector<bool>& rotate_flags,
+		std::vector<bool>& shoot_flags,
+		std::vector<GameTypes::tic_t>& double_clk_timers,
+		std::vector<bool>& burnout_flags);
 	//The function can change rotate and shoot flags. The function get rotate data from flags.
 	void ShipsControlMenuFunction(
-		const bool* rotate_keys_pointers,
-		const bool* shoot_keys_pointers,
-		bool* rotate_flags,
-		bool* shoot_flags,
-		GameTypes::tic_t* double_clk_timers,
-		bool* burnout_flags);
+		const std::vector<bool>& rotate_keys_pointers,
+		const std::vector<bool>& shoot_keys_pointers,
+		std::vector<bool>& rotate_flags,
+		std::vector<bool>& shoot_flags,
+		std::vector<GameTypes::tic_t>& double_clk_timers,
+		std::vector<bool>& burnout_flags);
 
 	bool ShouldExit();
 
@@ -69,11 +71,11 @@ public:
 	bool* game_p__pause_round;
 	bool* game_p__flag_end_match;
 
-	bool** game_p__bonus_pull_array;
-	bool** game_p__map_pull_array;
-	bool** game_p__object_pull_array;
+	std::vector<bool>* game_p__bonus_pull_array;
+	std::vector<bool>* game_p__map_pull_array;
+	std::vector<bool>* game_p__object_pull_array;
 
-	GameTypes::entities_count_t** game_p__teams;
+	std::vector<GameTypes::players_count_t>* game_p__teams;
 	GameTypes::game_rules_t* game_p__game_rules;
 	 
 	Menu** game_p__current_active_menu;

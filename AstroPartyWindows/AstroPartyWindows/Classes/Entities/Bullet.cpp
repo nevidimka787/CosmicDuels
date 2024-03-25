@@ -75,13 +75,13 @@ Bullet::Bullet(
 {
 }
 
-bool Bullet::Collision(Map::MapData* map)
+bool Bullet::Collision(Map::MapData& map)
 {
 	void* element_p;
 	EngineTypes::Map::array_length_t element;
-	for (element = 0; element < map->cyrcles_array_length; element++)
+	for (element = 0; element < map.cyrcles_array_length; element++)
 	{
-		element_p = (void*)map->CyrclePointer(element);
+		element_p = (void*)map.CyrclePointer(element);
 		if (((Map::Cyrcle*)element_p)->exist && DynamicEntity::IsCollision((Map::Cyrcle*)element_p))
 		{
 			if (!((Map::Cyrcle*)element_p)->IsUnbreacable())
@@ -91,9 +91,9 @@ bool Bullet::Collision(Map::MapData* map)
 			return true;
 		}
 	}
-	for (element = 0; element < map->polygons_array_length; element++)
+	for (element = 0; element < map.polygons_array_length; element++)
 	{
-		element_p = (void*)map->PolygonPointer(element);
+		element_p = (void*)map.PolygonPointer(element);
 		if (((Map::Polygon*)element_p)->exist && DynamicEntity::IsCollision((Map::Polygon*)element_p))
 		{
 			if (!((Map::Polygon*)element_p)->IsUnbreacable())
@@ -103,9 +103,9 @@ bool Bullet::Collision(Map::MapData* map)
 			return true;
 		}
 	}
-	for (element = 0; element < map->rectangles_array_length; element++)
+	for (element = 0; element < map.rectangles_array_length; element++)
 	{
-		element_p = (void*)map->RectanglePointer(element);
+		element_p = (void*)map.RectanglePointer(element);
 		if (((Map::Rectangle*)element_p)->exist && DynamicEntity::IsCollision((Map::Rectangle*)element_p))
 		{
 			if (!((Map::Rectangle*)element_p)->IsUnbreacable())

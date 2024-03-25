@@ -18,22 +18,22 @@ Knife::Knife(const Knife& knife) :
 
 Knife::Knife(
 	const ControledEntity* host,
-	const Segment* local_segment,
+	const Segment& local_segment,
 	EngineTypes::Knife::knife_health_t health,
 	bool exist) 
 	:
 	SupportEntity(
 		host,
-		&local_segment->point,
-		local_segment->vector.Length(),
-		local_segment->vector.GetAngleClockwise(),
+		&local_segment.point,
+		local_segment.vector.Length(),
+		local_segment.vector.GetAngleClockwise(),
 		exist),
 	health(health)
 {
 	Update();
 }
 
-bool Knife::Collision(Map::MapData* map)
+bool Knife::Collision(Map::MapData& map)
 {
 	if (health == 0)
 	{
@@ -45,9 +45,9 @@ bool Knife::Collision(Map::MapData* map)
 	void* element_p;
 	EngineTypes::Map::array_length_t element;
 
-	for (element = 0; element < map->cyrcles_array_length; element++)
+	for (element = 0; element < map.cyrcles_array_length; element++)
 	{
-		element_p = (void*)map->CyrclePointer(element);
+		element_p = (void*)map.CyrclePointer(element);
 		if (((Map::Cyrcle*)element_p)->exist &&
 			!((Map::Cyrcle*)element_p)->IsUnbreacable() &&
 			((Map::Cyrcle*)element_p)->IsCollision(&segment))
@@ -63,9 +63,9 @@ bool Knife::Collision(Map::MapData* map)
 		}
 	}
 
-	for (EngineTypes::Map::array_length_t element = 0; element < map->polygons_array_length; element++)
+	for (EngineTypes::Map::array_length_t element = 0; element < map.polygons_array_length; element++)
 	{
-		element_p = (void*)map->PolygonPointer(element);
+		element_p = (void*)map.PolygonPointer(element);
 		if (((Map::Polygon*)element_p)->exist &&
 			!((Map::Polygon*)element_p)->IsUnbreacable() &&
 			((Map::Polygon*)element_p)->IsCollision(&segment))
@@ -81,9 +81,9 @@ bool Knife::Collision(Map::MapData* map)
 		}
 	}
 
-	for (EngineTypes::Map::array_length_t element = 0; element < map->rectangles_array_length; element++)
+	for (EngineTypes::Map::array_length_t element = 0; element < map.rectangles_array_length; element++)
 	{
-		element_p = (void*)map->RectanglePointer(element);
+		element_p = (void*)map.RectanglePointer(element);
 		if (((Map::Rectangle*)element_p)->exist &&
 			!((Map::Rectangle*)element_p)->IsUnbreacable() &&
 			((Map::Rectangle*)element_p)->IsCollision(&segment))
@@ -104,6 +104,21 @@ bool Knife::Collision(Map::MapData* map)
 Segment Knife::GetSegment() const
 {
 	return Segment(position, direction * radius);
+}
+
+bool Knife::IsCollision(const Line& line) const
+{
+	return GetSegment().IsIntersection(line);
+}
+
+bool Knife::IsCollision(const Beam& beam) const
+{
+	return GetSegment().IsIntersection(beam);
+}
+
+bool Knife::IsCollision(const Segment& segment) const
+{
+	return GetSegment().IsIntersection(segment);
 }
 
 void Knife::Set(const Knife* knife)
@@ -132,7 +147,7 @@ void Knife::Set(
 {
 	this->exist = exist;
 	this->health = health;
-	host_matrix_p = host->GetModelMatrixPointer();
+	host_matrix_p = host->GetModelMatrixPointerConst();
 	host_p = host;
 	host_number = host->GetPlayerNumber();
 	host_team = host->GetTeamNumber();

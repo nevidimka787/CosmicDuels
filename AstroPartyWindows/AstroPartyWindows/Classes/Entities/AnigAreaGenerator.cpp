@@ -18,7 +18,7 @@ AnnihAreaGen::AnnihAreaGen(const AnnihAreaGen& annih_area_generator)
 
 AnnihAreaGen::AnnihAreaGen(
 	const ControledEntity* host,
-	Vec2F position,
+	const Vec2F& position,
 	EngineTypes::Ship::inventory_t buff_inventory,
 	float radius,
 	float angle,
@@ -49,7 +49,7 @@ bool AnnihAreaGen::IsHaveShield() const
 	return buff_inventory & SHIP_BUFF_SHIELD;
 }
 
-Bomb AnnihAreaGen::Shoot()
+const Bomb& AnnihAreaGen::Shoot() const
 {
 	return Bomb(
 		position + direction * (radius + BOMB_DEFAULT_RADIUS) + host_p->GetVelocity() * 2.0f,

@@ -324,6 +324,59 @@ bool Rectangle::IsCollision(const Beam* beam, Vec2F* out_position, float* distan
 	return false;
 }
 
+bool Rectangle::IsCollision(const Beam* beam, Vec2F* out_position, float* distance_to_out_position, Vec2F* perpendicular_position) const
+{
+	Vec2F output_intersection_point;
+	float min_distance = INFINITY;
+	if (GetUpSide().Intersection(beam, out_position))
+	{
+		min_distance = (*out_position - beam->point).Length();
+		const Vec2F& side_vec = GetUpSide().vector;
+		*perpendicular_position = side_vec.VecMul(beam->vector) > 0.0f ? side_vec.Perpendicular() : side_vec.PerpendicularClockwise();
+	}
+	if (GetRightSide().Intersection(beam, &output_intersection_point))
+	{
+		float distance = (output_intersection_point - beam->point).Length();
+		if (min_distance > distance)
+		{
+			min_distance = distance;
+			*out_position = output_intersection_point;
+			const Vec2F& side_vec = GetRightSide().vector;
+			*perpendicular_position = side_vec.VecMul(beam->vector) > 0.0f ? side_vec.Perpendicular() : side_vec.PerpendicularClockwise();
+		}
+	}
+	if (GetDownSide().Intersection(beam, &output_intersection_point))
+	{
+		float distance = (output_intersection_point - beam->point).Length();
+		if (min_distance > distance)
+		{
+			min_distance = distance;
+			*out_position = output_intersection_point;
+			const Vec2F& side_vec = GetDownSide().vector;
+			*perpendicular_position = side_vec.VecMul(beam->vector) > 0.0f ? side_vec.Perpendicular() : side_vec.PerpendicularClockwise();
+		}
+	}
+	if (GetLeftSide().Intersection(beam, &output_intersection_point))
+	{
+		float distance = (output_intersection_point - beam->point).Length();
+		if (min_distance > distance)
+		{
+			min_distance = distance;
+			*out_position = output_intersection_point;
+			const Vec2F& side_vec = GetLeftSide().vector;
+			*perpendicular_position = side_vec.VecMul(beam->vector) > 0.0f ? side_vec.Perpendicular() : side_vec.PerpendicularClockwise();
+		}
+	}
+
+	if (min_distance != INFINITY)
+	{
+		*distance_to_out_position = min_distance;
+		return true;
+	}
+
+	return false;
+}
+
 bool Rectangle::IsCollision(const Line* line)
 {
 	if (GetUpSide().IsIntersection(line))
@@ -566,6 +619,31 @@ bool Cyrcle::IsCollision(const Beam* beam, Vec2F* out_position, float* distance_
 	return true;
 }
 
+bool Cyrcle::IsCollision(const Beam* beam, Vec2F* out_position, float* distance_to_out_position, Vec2F* perpendicular_direction) const
+{
+	Vec2F neares_point_on_line;
+
+	float distance = Line(beam).Distance(position, &neares_point_on_line);
+
+	if (distance > radius)
+	{
+		return false;
+	}
+
+	float sub_vector_length = sqrtf(radius * radius - (neares_point_on_line - position).LengthPow2());
+
+	*out_position =
+		(beam->point.Distance(position) > radius) ?
+		(neares_point_on_line - beam->vector.Normalize() * sub_vector_length) :
+		(neares_point_on_line + beam->vector.Normalize() * sub_vector_length);
+
+	*distance_to_out_position = beam->point.Distance(out_position);
+
+	*perpendicular_direction = *out_position - position;
+
+	return true;
+}
+
 bool Cyrcle::IsCollision(const Line* line) const
 {
 	return line->Distance(position) < radius;
@@ -791,6 +869,61 @@ bool Polygon::IsCollision(const Beam* beam, Vec2F* out_position, float* distance
 			{
 				min_distance = distance;
 				*out_position = output_intersection_point;
+			}
+		}
+	}
+
+	if (min_distance != INFINITY)
+	{
+		*distance_to_out_position = min_distance;
+		return true;
+	}
+
+	return false;
+}
+
+bool Polygon::IsCollision(const Beam* beam, Vec2F* out_position, float* distance_to_out_position, Vec2F* perpendicular_direction) const
+{
+	if (points_count <= 1)
+	{
+		return false;
+	}
+	Segment side = Segment(points_array[0], points_array[1], true);
+
+	float min_distance = INFINITY;
+	Vec2F output_intersection_point;
+
+	if (side.Intersection(beam, out_position))
+	{
+		min_distance = beam->point.Distance(out_position);
+		*perpendicular_direction = side.vector.VecMul(beam->vector) > 0.0f ? side.vector.Perpendicular() : side.vector.PerpendicularClockwise();
+	}
+	if (points_count > 2 && properties & MAP_PROPERTY_CLOSED)
+	{
+		side.Set(points_array[0], points_array[points_count - 1], true);
+		if (side.Intersection(beam, &output_intersection_point))
+		{
+			float distance = beam->point.Distance(output_intersection_point);
+			if (min_distance > distance)
+			{
+				min_distance = distance;
+				*out_position = output_intersection_point;
+				*perpendicular_direction = side.vector.VecMul(beam->vector) > 0.0f ? side.vector.Perpendicular() : side.vector.PerpendicularClockwise();
+			}
+		}
+	}
+
+	for (EngineTypes::Map::array_length_t p = 2; p < points_count; p++)
+	{
+		side.Set(points_array[p - 1], points_array[p], true);
+		if (side.Intersection(beam, &output_intersection_point))
+		{
+			float distance = beam->point.Distance(output_intersection_point);
+			if (min_distance > distance)
+			{
+				min_distance = distance;
+				*out_position = output_intersection_point;
+				*perpendicular_direction = side.vector.VecMul(beam->vector) > 0.0f ? side.vector.Perpendicular() : side.vector.PerpendicularClockwise();
 			}
 		}
 	}

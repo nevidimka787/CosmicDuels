@@ -106,6 +106,7 @@ namespace Map
 		Vec2F GetPosition() const; // position of the rectangle's center
 		bool IsCollision(const Beam* beam);
 		bool IsCollision(const Beam* beam, Vec2F* out_position, float* distance_to_out_position) const;
+		bool IsCollision(const Beam* beam, Vec2F* out_position, float* distance_to_out_position, Vec2F* perpendicular_vector) const;
 		bool IsCollision(const Line* line);
 		bool IsCollision(const Segment* segment);
 		void Move(Vec2F move_vector);
@@ -155,9 +156,15 @@ namespace Map
 
 		bool IsCollision(const Beam* beam) const;
 		bool IsCollision(
-			const Beam* beam, 
+			const Beam* beam,
 			Vec2F* out_position,
 			float* distance_to_out_position // distance from beam point to the nearest intersection position
+		) const;
+		bool IsCollision(
+			const Beam* beam,
+			Vec2F* out_position,
+			float* distance_to_out_position, // distance from beam point to the nearest intersection position
+			Vec2F* perpendicular_position
 		) const;
 		bool IsCollision(const Line* line) const;
 		bool IsCollision(const Segment* segment) const;
@@ -222,6 +229,7 @@ namespace Map
 		bool IsClosed() const;
 		bool IsCollision(const Beam* beam) const;
 		bool IsCollision(const Beam* beam, Vec2F* out_position, float* distance_to_out_position) const;
+		bool IsCollision(const Beam* beam, Vec2F* out_position, float* distance_to_out_position, Vec2F* perpendicular_vector) const;
 		bool IsCollision(const Line* line) const;
 		bool IsCollision(const Segment* segment) const;
 		//If polygon should update enges then function returns true.

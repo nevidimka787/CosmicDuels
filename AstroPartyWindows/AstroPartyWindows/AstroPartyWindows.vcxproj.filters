@@ -74,6 +74,12 @@
     <Filter Include="Classes\Файлы ресурсов\Entities">
       <UniqueIdentifier>{5a37d09f-a626-4f04-8eb6-f4be861f5120}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Classes\Файлы заголовков\Debug">
+      <UniqueIdentifier>{29534c9b-9586-4e0c-bfa5-8290df00c612}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Classes\Файлы ресурсов\Debug">
+      <UniqueIdentifier>{5fc7c62d-c34b-44f3-873b-4a2be7821720}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -181,9 +187,6 @@
     <ClCompile Include="Classes\Entities\Laser.cpp">
       <Filter>Classes\Файлы ресурсов\Entities</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Entities\MegaLaser.cpp">
-      <Filter>Classes\Файлы ресурсов\Entities</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Entities\Particle.cpp">
       <Filter>Classes\Файлы ресурсов\Entities</Filter>
     </ClCompile>
@@ -207,6 +210,9 @@
     </ClCompile>
     <ClCompile Include="SubClasses\Commands.cpp">
       <Filter>Classes\Файлы ресурсов</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugClasses\loged_shared_mutex.cpp">
+      <Filter>Classes\Файлы ресурсов\Debug</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -430,6 +436,9 @@
     </ClInclude>
     <ClInclude Include="SubClasses\Commands.h">
       <Filter>Classes\Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="loged_shared_mutex.h">
+      <Filter>Classes\Файлы заголовков\Debug</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

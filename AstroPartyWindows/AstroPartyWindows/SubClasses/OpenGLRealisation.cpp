@@ -104,21 +104,21 @@ void OpenGL::CallControleMenuFunction(Menu* menu, const Vec2D* glob_clk_pos, uin
     object_p__menu_functions->ShipsControlMenuFunction(
         clk_pos,
         clk_status,
-        *game_p__rotate_flags,
-        *game_p__shoot_flags,
+        game_p__control_flags->burnout_flags,
+        game_p__control_flags->shoot_flags,
         *game_p__double_clk_timers,
-        *game_p__burnout_flags);
+        game_p__control_flags->burnout_flags);
 }
 
 void OpenGL::FirstUpdatePlayersFlags(GameTypes::players_count_t player)
 {
-    (*game_p__rotate_flags)[player] = true;
+    (game_p__control_flags->rotate_flags)[player] = true;
     if ((button_commands & (OPEN_GL_REALISATION_COMMAND_SHIP_ROTATE << player)) == OPEN_GL_REALISATION_COMMAND_NOTHING)
     {
         button_commands |= (OPEN_GL_REALISATION_COMMAND_SHIP_ROTATE << player);
         if ((*game_p__double_clk_timers)[player] > 0)
         {
-            (*game_p__burnout_flags)[player] = true;
+            (game_p__control_flags->burnout_flags)[player] = true;
             (*game_p__double_clk_timers)[player] = -GAME_BURNOUT_COULDOWN;
         }
     }
@@ -126,7 +126,7 @@ void OpenGL::FirstUpdatePlayersFlags(GameTypes::players_count_t player)
 
 void OpenGL::SecondUpdatePlayersFlags(GameTypes::players_count_t player)
 {
-    (*game_p__rotate_flags)[player] = false;
+    (game_p__control_flags->rotate_flags)[player] = false;
     if ((button_commands & (OPEN_GL_REALISATION_COMMAND_SHIP_ROTATE << player)) != OPEN_GL_REALISATION_COMMAND_NOTHING)
     {
         button_commands &= OPEN_GL_REALISATION_COMMAND_FULL - (OPEN_GL_REALISATION_COMMAND_SHIP_ROTATE << player);
@@ -211,10 +211,10 @@ void OpenGL::ProcessInput(GLFWwindow* window)
         object_p__menu_functions->ShipsControlMenuFunction(
             rotate_key_flags,
             shoot_key_flags,
-            *game_p__rotate_flags,
-            *game_p__shoot_flags,
+            game_p__control_flags->rotate_flags,
+            game_p__control_flags->shoot_flags,
             *game_p__double_clk_timers,
-            *game_p__burnout_flags);
+            game_p__control_flags->burnout_flags);
 #endif //OPEN_GL_REALISATION__SHIPS_CONTROLED_BY_KEYBOARD == true
 #if  OPEN_GL_REALISATION__SHIPS_CONTROLED_BY_SCREEN_BUTTONS == true
         glfwGetCursorPos(window, &cursore_current_position->x, &cursore_current_position->y);
@@ -412,8 +412,8 @@ void OpenGL::InitGlad()
 
 void OpenGL::InitMemory()
 {
-    rotate_key_flags = new bool[GAME_PLAYERS_MAX_COUNT];
-    shoot_key_flags = new bool[GAME_PLAYERS_MAX_COUNT];
+    rotate_key_flags = std::vector<bool>(GAME_PLAYERS_MAX_COUNT);
+    shoot_key_flags = std::vector<bool>(GAME_PLAYERS_MAX_COUNT);
 }
 
 void OpenGL::InitOpenGL()
@@ -565,12 +565,6 @@ void OpenGL::DrawFrame()
             DrawBonuses();
         }
         game_p__bonuses_array_mtx->unlock();
-        game_p__mega_lasers_array_mtx->lock();
-        if (*game_p__mega_lasers_count > 0)
-        {
-            DrawMegaLasers();
-        }
-        game_p__mega_lasers_array_mtx->unlock();
         game_p__bullets_array_mtx->lock();
         if (*game_p__bullets_count > 0)
         {
@@ -642,37 +636,7 @@ void OpenGL::DrawFrame()
     //draw_lock0_mtx.unlock();
 }
 
-void OpenGL::DrawObject(const Line* line, bool update_shader)
-{
-
-}
-
-void OpenGL::DrawObject(const Beam* beam, bool update_shader)
-{
-
-}
-
-void OpenGL::DrawObject(const Segment* segment, bool update_shader)
-{
-
-}
-
-void OpenGL::DrawObject(const Entity* entity, bool update_shader)
-{
-
-}
-
-void OpenGL::DrawObject(const StaticEntity* static_entity, bool update_shader)
-{
-
-}
-
-void OpenGL::DrawObject(const DynamicEntity* dynamic_entity, bool update_shader)
-{
-
-}
-
-void OpenGL::DrawObject(const AnnihAreaGen* annih_area_gen, bool update_shader)
+void OpenGL::DrawObject(const AnnihAreaGen& annih_area_gen, bool update_shader)
 {
     if(update_shader)
     {
@@ -684,20 +648,20 @@ void OpenGL::DrawObject(const AnnihAreaGen* annih_area_gen, bool update_shader)
         annih_area_gen_shader.SetUniform("camera_size", temp__game__camera_size);
     }
     annih_area_gen_shader.SetUniform("shield", 0);
-    annih_area_gen_shader.SetUniform("position", annih_area_gen->GetGlobalPosition());
-    annih_area_gen_shader.SetUniform("angle", annih_area_gen->GetGlobalAngle());
-    annih_area_gen_shader.SetUniform("radius", annih_area_gen->radius);
+    annih_area_gen_shader.SetUniform("position", annih_area_gen.GetGlobalPosition());
+    annih_area_gen_shader.SetUniform("angle", annih_area_gen.GetGlobalAngle());
+    annih_area_gen_shader.SetUniform("radius", annih_area_gen.radius);
     annih_area_generator_buffer.Draw();
 
-    if (annih_area_gen->IsHaveShield())
+    if (annih_area_gen.IsHaveShield())
     {
         annih_area_gen_shader.SetUniform("shield", 1);
-        annih_area_gen_shader.SetUniform("radius", annih_area_gen->radius * 1.1f);
+        annih_area_gen_shader.SetUniform("radius", annih_area_gen.radius * 1.1f);
         annih_area_generator_buffer.Draw();
     }
 }
 
-void OpenGL::DrawObject(const Asteroid* asteroid, bool update_shader)
+void OpenGL::DrawObject(const Asteroid& asteroid, bool update_shader)
 {
     if (update_shader)
     {
@@ -715,14 +679,14 @@ void OpenGL::DrawObject(const Asteroid* asteroid, bool update_shader)
         asteroid_shader.SetUniform("camera_position", temp__game__camera_position);
         asteroid_shader.SetUniform("camera_size", temp__game__camera_size);
     }
-    asteroid_shader.SetUniform("position", asteroid->GetPosition());
-    asteroid_shader.SetUniform("radius", asteroid->radius);
-    asteroid_shader.SetUniform("size", asteroid->GetSize());
-    asteroid_shader.SetUniform("inventory", asteroid->bonus_inventory);
+    asteroid_shader.SetUniform("position", asteroid.GetPosition());
+    asteroid_shader.SetUniform("radius", asteroid.radius);
+    asteroid_shader.SetUniform("size", asteroid.GetSize());
+    asteroid_shader.SetUniform("inventory", asteroid.bonus_inventory);
     asteroid_buffer.Draw();
 }
 
-void OpenGL::DrawObject(const Bomb* bomb, bool update_shader)
+void OpenGL::DrawObject(const Bomb& bomb, bool update_shader)
 {
     if (update_shader)
     {
@@ -736,15 +700,15 @@ void OpenGL::DrawObject(const Bomb* bomb, bool update_shader)
         bomb_shader.SetUniform("camera_position", temp__game__camera_position);
         bomb_shader.SetUniform("camera_size", temp__game__camera_size);
     }
-    bomb_shader.SetUniform("position", bomb->GetPosition());
-    bomb_shader.SetUniform("angle", bomb->GetAngle());
-    bomb_shader.SetUniform("size", bomb->radius);
-    bomb_shader.SetUniform("animation", 1.0f - (float)bomb->GetAnimationTic() / (float)bomb->blinking_period);
-    bomb_shader.SetUniform("status", (int)bomb->IsActive() + (int)bomb->IsBoom() * 2);
+    bomb_shader.SetUniform("position", bomb.GetPosition());
+    bomb_shader.SetUniform("angle", bomb.GetAngle());
+    bomb_shader.SetUniform("size", bomb.radius);
+    bomb_shader.SetUniform("animation", 1.0f - (float)bomb.GetAnimationTic() / (float)bomb.blinking_period);
+    bomb_shader.SetUniform("status", (int)bomb.IsActive() + (int)bomb.IsBoom() * 2);
     bomb_buffer.Draw();
 }
 
-void OpenGL::DrawObject(const Bonus* bonus, bool update_shader)
+void OpenGL::DrawObject(const Bonus& bonus, bool update_shader)
 {
     if (update_shader)
     {
@@ -770,14 +734,14 @@ void OpenGL::DrawObject(const Bonus* bonus, bool update_shader)
         bonus_shader.SetUniform("camera_position", temp__game__camera_position);
         bonus_shader.SetUniform("camera_size", temp__game__camera_size);
     }
-    bonus_shader.SetUniform("angle", bonus->GetAngle());
-    bonus_shader.SetUniform("position", bonus->GetPosition());
-    bonus_shader.SetUniform("size", bonus->radius);
-    bonus_shader.SetUniform("inventory", bonus->bonus_inventory);
+    bonus_shader.SetUniform("angle", bonus.GetAngle());
+    bonus_shader.SetUniform("position", bonus.GetPosition());
+    bonus_shader.SetUniform("size", bonus.radius);
+    bonus_shader.SetUniform("inventory", bonus.bonus_inventory);
     bonus_buffer.Draw();
 }
 
-void OpenGL::DrawObject(const Bullet* bullet, bool update_shader)
+void OpenGL::DrawObject(const Bullet& bullet, bool update_shader)
 {
     if (update_shader)
     {
@@ -793,13 +757,13 @@ void OpenGL::DrawObject(const Bullet* bullet, bool update_shader)
         bullet_shader.SetUniform("camera_position", temp__game__camera_position);
         bullet_shader.SetUniform("camera_size", temp__game__camera_size);
     }
-    bullet_shader.SetUniform("angle", bullet->GetAngle());
-    bullet_shader.SetUniform("position", bullet->GetPosition());
-    bullet_shader.SetUniform("radius", bullet->radius);
+    bullet_shader.SetUniform("angle", bullet.GetAngle());
+    bullet_shader.SetUniform("position", bullet.GetPosition());
+    bullet_shader.SetUniform("radius", bullet.radius);
     bullet_buffer.Draw();
 }
 
-void OpenGL::DrawObject(const DecelerationArea* deceler_area, bool update_shader)
+void OpenGL::DrawObject(const DecelerationArea& deceler_area, bool update_shader)
 {
     if (update_shader)
     {
@@ -809,13 +773,13 @@ void OpenGL::DrawObject(const DecelerationArea* deceler_area, bool update_shader
         deceler_area_shader.SetUniform("camera_position", temp__game__camera_position);
         deceler_area_shader.SetUniform("camera_size", temp__game__camera_size);
     }
-    deceler_area_shader.SetUniform("position", deceler_area->GetPosition());
-    deceler_area_shader.SetUniform("size", deceler_area->radius);
-    deceler_area_shader.SetUniform("decel_param", deceler_area->deceleration_parameter);
+    deceler_area_shader.SetUniform("position", deceler_area.GetPosition());
+    deceler_area_shader.SetUniform("size", deceler_area.radius);
+    deceler_area_shader.SetUniform("decel_param", deceler_area.deceleration_parameter);
     deceler_area_buffer.Draw();
 }
 
-void OpenGL::DrawObject(const DynamicParticle* dynamic_particle, bool update_shader)
+void OpenGL::DrawObject(const DynamicParticle& dynamic_particle, bool update_shader)
 {
     if (update_shader)
     {
@@ -826,16 +790,16 @@ void OpenGL::DrawObject(const DynamicParticle* dynamic_particle, bool update_sha
         dynamic_particle_shader.SetUniform("camera_size", temp__game__camera_size);
     }
 
-    dynamic_particle_shader.SetUniform("position", dynamic_particle->GetPosition());
-    dynamic_particle_shader.SetUniform("angle", dynamic_particle->GetAngle());
-    dynamic_particle_shader.SetUniform("radius", dynamic_particle->radius);
-    dynamic_particle_shader.SetUniform("type", (int)dynamic_particle->GetType());
-    dynamic_particle_shader.SetUniform("animation", dynamic_particle->animation);
-    dynamic_particle_shader.SetUniform("color", dynamic_particle->color);
+    dynamic_particle_shader.SetUniform("position", dynamic_particle.GetPosition());
+    dynamic_particle_shader.SetUniform("angle", dynamic_particle.GetAngle());
+    dynamic_particle_shader.SetUniform("radius", dynamic_particle.radius);
+    dynamic_particle_shader.SetUniform("type", (int)dynamic_particle.GetType());
+    dynamic_particle_shader.SetUniform("animation", dynamic_particle.animation);
+    dynamic_particle_shader.SetUniform("color", dynamic_particle.color);
     dynamic_particle_buffer.Draw();
 }
 
-void OpenGL::DrawObject(const GravGen* grav_gen, bool update_shader)
+void OpenGL::DrawObject(const GravGen& grav_gen, bool update_shader)
 {
     if (update_shader)
     {
@@ -845,13 +809,13 @@ void OpenGL::DrawObject(const GravGen* grav_gen, bool update_shader)
         grav_gen_shader.SetUniform("camera_position", temp__game__camera_position);
         grav_gen_shader.SetUniform("camera_size", temp__game__camera_size);
     }
-    grav_gen_shader.SetUniform("position", grav_gen->GetPosition());
-    grav_gen_shader.SetUniform("size", grav_gen->radius);
-    grav_gen_shader.SetUniform("gravity", grav_gen->gravity);
+    grav_gen_shader.SetUniform("position", grav_gen.GetPosition());
+    grav_gen_shader.SetUniform("size", grav_gen.radius);
+    grav_gen_shader.SetUniform("gravity", grav_gen.gravity);
     grav_gen_buffer.Draw();
 }
 
-void OpenGL::DrawObject(const Knife* knife, bool update_shader)
+void OpenGL::DrawObject(const Knife& knife, bool update_shader)
 {
     if (update_shader)
     {
@@ -861,11 +825,11 @@ void OpenGL::DrawObject(const Knife* knife, bool update_shader)
         knife_shader.SetUniform("camera_position", temp__game__camera_position);
         knife_shader.SetUniform("camera_size", temp__game__camera_size);
     }
-    knife_shader.SetUniform("segment", knife->GetSegment());
+    knife_shader.SetUniform("segment", knife.GetSegment());
     knife_buffer.Draw();
 }
 
-void OpenGL::DrawObject(const Laser* laser, bool update_shader)
+void OpenGL::DrawObject(const Laser& laser, bool update_shader)
 {
     if (update_shader)
     {
@@ -875,32 +839,14 @@ void OpenGL::DrawObject(const Laser* laser, bool update_shader)
         laser_shader.SetUniform("camera_position", temp__game__camera_position);
         laser_shader.SetUniform("camera_size", temp__game__camera_size);
     }
-    laser_shader.SetUniform("segment", laser->GetSegment());
-    laser_shader.SetUniform("life", (float)laser->GetLifeTime() / (float)LASER_DEFAULT_SHOOT_TIME);
-    laser_shader.SetUniform("width", laser->width);
-    laser_shader.SetUniform("properties", (int)laser->properties);
+    laser_shader.SetUniform("segment", laser.GetSegment());
+    laser_shader.SetUniform("life", (float)laser.GetLifeTime() / (float)LASER_DEFAULT_SHOOT_TIME);
+    laser_shader.SetUniform("width", laser.width);
+    laser_shader.SetUniform("properties", (int)laser.properties);
     laser_buffer.Draw();
 }
 
-void OpenGL::DrawObject(const MegaLaser* mega_laser, bool update_shader)
-{
-    if (update_shader)
-    {
-        mega_laser_buffer.Use();
-        mega_laser_shader.Use();
-        mega_laser_shader.SetUniform("scale", window_scale);
-        mega_laser_shader.SetUniform("camera_position", temp__game__camera_position);
-        mega_laser_shader.SetUniform("camera_size", temp__game__camera_size);
-    }
-    mega_laser_shader.SetUniform("is_active", mega_laser->IsShooting(*game_p__global_timer));
-    mega_laser_shader.SetUniform("angle", mega_laser->GetDirectionNotNormalize().GetAngle());
-    mega_laser_shader.SetUniform("position", mega_laser->GetPosition());
-    mega_laser_shader.SetUniform("vector", mega_laser->GetDirectionNotNormalize() * mega_laser->radius);
-    mega_laser_shader.SetUniform("width", mega_laser->width);
-    mega_laser_buffer.Draw();
-}
-
-void OpenGL::DrawObject(const Particle* particle, bool update_shader)
+void OpenGL::DrawObject(const Particle& particle, bool update_shader)
 {
     if (update_shader)
     {
@@ -911,16 +857,16 @@ void OpenGL::DrawObject(const Particle* particle, bool update_shader)
         particle_shader.SetUniform("camera_size", temp__game__camera_size);
     }
 
-    particle_shader.SetUniform("position", particle->GetPosition());
-    particle_shader.SetUniform("angle", (particle->GetType() == PARTICLE_TYPE_BACKGROUND) ? (float)*game_p__stuning_timer / (float)GAME_BOMB_STUNING_TIME : particle->GetAngle());
-    particle_shader.SetUniform("radius", particle->radius);
-    particle_shader.SetUniform("type", (int)particle->GetType());
-    particle_shader.SetUniform("animation", particle->animation);
-    particle_shader.SetUniform("color", particle->color);
+    particle_shader.SetUniform("position", particle.GetPosition());
+    particle_shader.SetUniform("angle", (particle.GetType() == PARTICLE_TYPE_BACKGROUND) ? (float)*game_p__stuning_timer / (float)GAME_BOMB_STUNING_TIME : particle.GetAngle());
+    particle_shader.SetUniform("radius", particle.radius);
+    particle_shader.SetUniform("type", (int)particle.GetType());
+    particle_shader.SetUniform("animation", particle.animation);
+    particle_shader.SetUniform("color", particle.color);
     particle_buffer.Draw();
 }
 
-void OpenGL::DrawObject(const Portal* portal, bool update_shader)
+void OpenGL::DrawObject(const Portal& portal, bool update_shader)
 {
     if (update_shader)
     {
@@ -932,14 +878,13 @@ void OpenGL::DrawObject(const Portal* portal, bool update_shader)
         portal_shader.SetUniform("glob_time", (int)(*game_p__global_timer % (unsigned)INT32_MAX));
     }
 
-    portal_shader.SetUniform("position", portal->GetPosition());
-    //portal_shader.SetUniform("angle", portal->GetAngle());
-    portal_shader.SetUniform("radius", portal->radius);
-    portal_shader.SetUniform("connected", (int)portal->IsConnected());
+    portal_shader.SetUniform("position", portal.GetPosition());
+    portal_shader.SetUniform("radius", portal.radius);
+    portal_shader.SetUniform("connected", (int)portal.IsConnected());
     portal_buffer.Draw();
 }
 
-void OpenGL::DrawObject(const Pilot* pilot, bool update_shader)
+void OpenGL::DrawObject(const Pilot& pilot, bool update_shader)
 {
     if (update_shader)
     {
@@ -951,26 +896,20 @@ void OpenGL::DrawObject(const Pilot* pilot, bool update_shader)
         pilot_shader.SetUniform("camera_size", temp__game__camera_size);
     }
     GameTypes::players_count_t number_of_player_in_team = 0;
-    for (GameTypes::players_count_t player = 0; player < GAME_PLAYERS_MAX_COUNT; player++)
+    for (auto& ship : *game_p__ships)
     {
-        if ((*game_p__ships)[player].GetPlayerNumber() == pilot->GetPlayerNumber())
-        {
-            break;
-        }
-        if ((*game_p__ships)[player].GetTeamNumber() == pilot->GetTeamNumber())
-        {
-            number_of_player_in_team++;
-        }
+        if (ship.GetPlayerNumber() == pilot.GetPlayerNumber()) break;
+        if (ship.GetTeamNumber() == pilot.GetTeamNumber()) number_of_player_in_team++;
     }
 
-    pilot_shader.SetUniform("model", pilot->GetModelMatrixPointer());
-    pilot_shader.SetUniform("team", pilot->GetTeamNumber());
+    pilot_shader.SetUniform("model", pilot.GetModelMatrixPointerConst());
+    pilot_shader.SetUniform("team", pilot.GetTeamNumber());
     pilot_shader.SetUniform("player", number_of_player_in_team);
-    pilot_shader.SetUniform("life", (float)pilot->GetRespawnDellay() / (float)PILOT_DEFAULT_RESPAWN_TIMER);
+    pilot_shader.SetUniform("life", (float)pilot.GetRespawnDellay() / (float)PILOT_DEFAULT_RESPAWN_TIMER);
     pilot_buffer.Draw();
 }
 
-void OpenGL::DrawObject(const Ship* ship, bool update_shader)
+void OpenGL::DrawObject(const Ship& ship, bool update_shader)
 {
 #define PLAYER_SHIELD 0x0F00
     if (update_shader)
@@ -985,31 +924,25 @@ void OpenGL::DrawObject(const Ship* ship, bool update_shader)
     ship_buffer.Use();
 
     GameTypes::players_count_t number_of_player_in_team = 0;
-    for (GameTypes::players_count_t player = 0; player < GAME_PLAYERS_MAX_COUNT; player++)
+    for (auto& pilot : *game_p__pilots)
     {
-        if ((*game_p__ships)[player].GetPlayerNumber() == ship->GetPlayerNumber())
-        {
-            break;
-        }
-        if ((*game_p__ships)[player].GetTeamNumber() == ship->GetTeamNumber())
-        {
-            number_of_player_in_team++;
-        }
+        if (ship.GetPlayerNumber() == pilot.GetPlayerNumber()) break;
+        if (ship.GetTeamNumber() == pilot.GetTeamNumber()) number_of_player_in_team++;
     }
 
-    ship_shader.SetUniform("model", ship->GetModelMatrixPointer());
-    ship_shader.SetUniform("team", ship->GetTeamNumber());
+    ship_shader.SetUniform("model", ship.GetModelMatrixPointerConst());
+    ship_shader.SetUniform("team", ship.GetTeamNumber());
 
     ship_shader.SetUniform("current_tic", (int)((*game_p__global_timer) & ((1u << 31u) - 1u)));
-    ship_shader.SetUniform("inventory", ship->GetBonusInventoryAsBoolList() + ((*game_p__rotation_inverse) ? 256 : 0));
-    ship_shader.SetUniform("bullets_count", ship->GetBulletsCountInMagasine());
-    ship_shader.SetUniform("magazine_size", ship->GetSizeOfMagazine());
+    ship_shader.SetUniform("inventory", ship.GetBonusInventoryAsBoolList() + ((*game_p__rotation_inverse) ? 256 : 0));
+    ship_shader.SetUniform("bullets_count", ship.GetBulletsCountInMagasine());
+    ship_shader.SetUniform("magazine_size", ship.GetSizeOfMagazine());
 
-    ship_shader.SetUniform("player", number_of_player_in_team | (ship->IsUnbrakable() ? 0xF000 : 0x0000));
+    ship_shader.SetUniform("player", number_of_player_in_team | (ship.IsUnbrakable() ? 0xF000 : 0x0000));
 
     ship_shader.SetUniform("type", (int)0);//0 - is ship
 
-    if (ship->IsHaveBuff(SHIP_BUFF_TRIPLE))
+    if (ship.IsHaveBuff(SHIP_BUFF_TRIPLE))
     {
         ship_triple_texture.Use();
     }
@@ -1020,19 +953,19 @@ void OpenGL::DrawObject(const Ship* ship, bool update_shader)
 
     ship_buffer.Draw();
 
-    if (ship->IsHaveBuff(SHIP_BUFF_SHIELD))
+    if (ship.IsHaveBuff(SHIP_BUFF_SHIELD))
     {
         ship_shader.SetUniform("player", PLAYER_SHIELD);
         ship_buffer.Draw();
     }
 
     ship_bullet_buffer.Use();
-    ship_shader.SetUniform("position", ship->GetPosition());
+    ship_shader.SetUniform("position", ship.GetPosition());
     ship_shader.SetUniform("type", (int)1);//1 - is bullets
     ship_bullet_buffer.Draw();
 }
 
-void OpenGL::DrawObject(const Turret* turret, bool update_shader)
+void OpenGL::DrawObject(const Turret& turret, bool update_shader)
 {
 
     if (update_shader)
@@ -1044,9 +977,9 @@ void OpenGL::DrawObject(const Turret* turret, bool update_shader)
         turret_shader.SetUniform("camera_position", temp__game__camera_position);
         turret_shader.SetUniform("camera_size", temp__game__camera_size);
     }
-    turret_shader.SetUniform("angle", turret->GetAngle());
-    turret_shader.SetUniform("position", turret->GetPosition());
-    turret_shader.SetUniform("size", turret->radius);
+    turret_shader.SetUniform("angle", turret.GetAngle());
+    turret_shader.SetUniform("position", turret.GetPosition());
+    turret_shader.SetUniform("size", turret.radius);
     turret_buffer.Draw();
 }
 
@@ -1109,7 +1042,7 @@ void OpenGL::DrawObject(const Map::Polygon* polygon, bool update_shader)
 }
 
 
-void OpenGL::DrawObject(Button* button, bool button_is_controller, bool update_shader)
+void OpenGL::DrawObject(const Button& button, bool button_is_controller, bool update_shader)
 {
     if (update_shader)
     {
@@ -1127,25 +1060,25 @@ void OpenGL::DrawObject(Button* button, bool button_is_controller, bool update_s
         }
     }
     Color3F color;
-    if (button->GetStatus(BUTTON_STATUS_ACTIVE))
+    if (button.GetStatus(BUTTON_STATUS_ACTIVE))
     {
-        if (button->GetStatus(BUTTON_STATUS_TRUE))
+        if (button.GetStatus(BUTTON_STATUS_TRUE))
         {
             color = Color3F(0.1f, 0.6f, 0.1f);
         }
-        else if (button->GetStatus(BUTTON_STATUS_CUSTOM_RED))
+        else if (button.GetStatus(BUTTON_STATUS_CUSTOM_RED))
         {
             color = Color3F(1.0f, 0.0f, 0.0f);
         }
-        else if (button->GetStatus(BUTTON_STATUS_CUSTOM_GREEN))
+        else if (button.GetStatus(BUTTON_STATUS_CUSTOM_GREEN))
         {
             color = Color3F(0.0f, 1.0f, 0.0f);
         }
-        else if (button->GetStatus(BUTTON_STATUS_CUSTOM_BLUE))
+        else if (button.GetStatus(BUTTON_STATUS_CUSTOM_BLUE))
         {
             color = Color3F(0.0f, 0.0f, 1.0f);
         }
-        else if (button->GetStatus(BUTTON_STATUS_CUSTOM_PURPURE))
+        else if (button.GetStatus(BUTTON_STATUS_CUSTOM_PURPURE))
         {
             color = Color3F(1.0f, 0.0f, 1.0f);
         }
@@ -1153,7 +1086,7 @@ void OpenGL::DrawObject(Button* button, bool button_is_controller, bool update_s
         {
             color = Color3F(0.6f, 0.1f, 0.1f);
         }
-        if (button->GetStatus(BUTTON_STATUS_SELECT))
+        if (button.GetStatus(BUTTON_STATUS_SELECT))
         {
             color *= 0.6f;
         }
@@ -1163,14 +1096,14 @@ void OpenGL::DrawObject(Button* button, bool button_is_controller, bool update_s
         color = Color3F(0.3f, 0.3f, 0.3f);
     }
 
-    //StaticBuffer buffer = button_buffers.button_buffers[GetButtonIdInArray(&button_buffers, button->GetId())];
+    //StaticBuffer buffer = button_buffers.button_buffers[GetButtonIdInArray(&button_buffers, button.GetId())];
 
     if (button_is_controller)
     {
-        controler_shader.SetUniform("position", button->GetPosition());
-        controler_shader.SetUniform("size", button->GetSize());
+        controler_shader.SetUniform("position", button.GetPosition());
+        controler_shader.SetUniform("size", button.GetSize());
         controler_shader.SetUniform("color", &color);
-        if (button->GetAreaP()->GetPointsArrayP()[1].x > 0.5f * BUTTON_CONTROLER_SIZE)
+        if (button.GetAreaP()->GetPointsArrayP()[1].x > 0.5f * BUTTON_CONTROLER_SIZE)
         {
             button_horisontal_buffer.Use();
             button_horisontal_buffer.Draw();
@@ -1183,12 +1116,12 @@ void OpenGL::DrawObject(Button* button, bool button_is_controller, bool update_s
     }
     else
     {
-        button_shader.SetUniform("position", button->GetPosition());
-        button_shader.SetUniform("size", button->GetSize());
+        button_shader.SetUniform("position", button.GetPosition());
+        button_shader.SetUniform("size", button.GetSize());
         button_shader.SetUniform("color", &color);
-        button_shader.SetUniform("text", button->GetText(), button->GetTextLength());
-        button_shader.SetUniform("text_length", button->GetTextLength());
-        button_shader.SetUniform("text_size", button->text_size);
+        button_shader.SetUniform("text", button.GetText(), button.GetTextLength());
+        button_shader.SetUniform("text_length", button.GetTextLength());
+        button_shader.SetUniform("text_size", button.text_size);
         button_buffer.Draw();
     }
 }
@@ -1205,14 +1138,8 @@ void OpenGL::DrawAnnihAreaGens()
     annih_area_gen_shader.SetUniform("scale", window_scale);
     annih_area_gen_shader.SetUniform("camera_position", temp__game__camera_position);
     annih_area_gen_shader.SetUniform("camera_size", temp__game__camera_size);
-    for (GameTypes::entities_count_t annih_area_gen = 0, found_annih_area_gens = 0; found_annih_area_gens < *game_p__annih_area_gens_count; annih_area_gen++)
-    {
-        if ((*game_p__annih_area_gens)[annih_area_gen].exist)
-        {
-            found_annih_area_gens++;
-            DrawObject(&(*game_p__annih_area_gens)[annih_area_gen]);
-        }
-    }
+
+    DrawObjects(game_p__annih_area_gens, game_p__annih_area_gens_count);
 }
 
 void OpenGL::DrawAsteroids()
@@ -1230,14 +1157,8 @@ void OpenGL::DrawAsteroids()
     asteroid_shader.SetUniform("scale", window_scale);
     asteroid_shader.SetUniform("camera_position", temp__game__camera_position);
     asteroid_shader.SetUniform("camera_size", temp__game__camera_size);
-    for (GameTypes::entities_count_t asteroid = 0, found_ateroids = 0; found_ateroids < *game_p__asteroids_count; asteroid++)
-    {
-        if ((*game_p__asteroids)[asteroid].exist)
-        {
-            found_ateroids++;
-            DrawObject(&(*game_p__asteroids)[asteroid]);
-        }
-    }
+
+    DrawObjects(game_p__asteroids, game_p__asteroids_count);
 }
 
 void OpenGL::DrawBombs()
@@ -1251,14 +1172,8 @@ void OpenGL::DrawBombs()
     bomb_shader.SetUniform("scale", window_scale);
     bomb_shader.SetUniform("camera_position", temp__game__camera_position);
     bomb_shader.SetUniform("camera_size", temp__game__camera_size);
-    for (GameTypes::entities_count_t bomb = 0, found_bombs = 0; found_bombs < *game_p__bombs_count; bomb++)
-    {
-        if ((*game_p__bombs)[bomb].exist)
-        {
-            found_bombs++;
-            DrawObject(&(*game_p__bombs)[bomb]);
-        }
-    }
+
+    DrawObjects(game_p__bombs, game_p__bombs_count);
 }
 
 void OpenGL::DrawBonuses()
@@ -1284,14 +1199,8 @@ void OpenGL::DrawBonuses()
     bonus_shader.SetUniform("scale", window_scale);
     bonus_shader.SetUniform("camera_position", temp__game__camera_position);
     bonus_shader.SetUniform("camera_size", temp__game__camera_size);
-    for (GameTypes::entities_count_t bonus = 0, found_bonus = 0; found_bonus < *game_p__bonuses_count; bonus++)
-    {
-        if ((*game_p__bonuses)[bonus].exist)
-        {
-            found_bonus++;
-            DrawObject(&(*game_p__bonuses)[bonus]);
-        }
-    }
+
+    DrawObjects(game_p__bonuses, game_p__bonuses_count);
 }
 
 void OpenGL::DrawBullets()
@@ -1307,14 +1216,8 @@ void OpenGL::DrawBullets()
     bullet_shader.SetUniform("scale", window_scale);
     bullet_shader.SetUniform("camera_position", temp__game__camera_position);
     bullet_shader.SetUniform("camera_size", temp__game__camera_size);
-    for (GameTypes::entities_count_t bullet = 0, found_bullets = 0; found_bullets < *game_p__bullets_count; bullet++)
-    {
-        if ((*game_p__bullets)[bullet].exist)
-        {
-            found_bullets++;
-            DrawObject(&(*game_p__bullets)[bullet]);
-        }
-    }
+
+    DrawObjects(game_p__bullets, game_p__bullets_count);
 }
 
 void OpenGL::DrawGravityGenerators()
@@ -1324,14 +1227,8 @@ void OpenGL::DrawGravityGenerators()
     grav_gen_shader.SetUniform("scale", window_scale);
     grav_gen_shader.SetUniform("camera_position", temp__game__camera_position);
     grav_gen_shader.SetUniform("camera_size", temp__game__camera_size);
-    for (GameTypes::entities_count_t grav_gen = 0, found_grav_gens = 0; found_grav_gens < *game_p__grav_gens_count; grav_gen++)
-    {
-        if ((*game_p__grav_gens)[grav_gen].exist)
-        {
-            found_grav_gens++;
-            DrawObject(&(*game_p__grav_gens)[grav_gen]);
-        }
-    }
+
+    DrawObjects(game_p__grav_gens, game_p__grav_gens_count);
 }
 
 void OpenGL::DrawDecelerationAreas()
@@ -1341,14 +1238,8 @@ void OpenGL::DrawDecelerationAreas()
     deceler_area_shader.SetUniform("scale", window_scale);
     deceler_area_shader.SetUniform("camera_position", temp__game__camera_position);
     deceler_area_shader.SetUniform("camera_size", temp__game__camera_size);
-    for (GameTypes::entities_count_t deceler_area = 0, found_deceler_area = 0; found_deceler_area < *game_p__deceler_areas_count; deceler_area++)
-    {
-        if ((*game_p__deceler_areas)[deceler_area].exist)
-        {
-            found_deceler_area++;
-            DrawObject(&(*game_p__deceler_areas)[deceler_area]);
-        }
-    }
+
+    DrawObjects(game_p__deceler_areas, game_p__deceler_areas_count);
 }
 
 void OpenGL::DrawDynamicParticles()
@@ -1358,17 +1249,8 @@ void OpenGL::DrawDynamicParticles()
     dynamic_particle_shader.SetUniform("scale", window_scale);
     dynamic_particle_shader.SetUniform("camera_position", temp__game__camera_position);
     dynamic_particle_shader.SetUniform("camera_size", temp__game__camera_size);
-    for (GameTypes::entities_count_t dynamic_particle = 0, found_dynamic_particles = 0; found_dynamic_particles < *game_p__dynamic_particles_count; dynamic_particle++)
-    {
-        if ((*game_p__dynamic_particles)[dynamic_particle].exist)
-        {
-            found_dynamic_particles++;
-            if ((*game_p__dynamic_particles)[dynamic_particle].IsActive())
-            {
-                DrawObject(&(*game_p__dynamic_particles)[dynamic_particle]);
-            }
-        }
-    }
+
+    DrawObjects(game_p__dynamic_particles, game_p__dynamic_particles_count);
 }
 
 void OpenGL::DrawKnifes()
@@ -1378,14 +1260,8 @@ void OpenGL::DrawKnifes()
     knife_shader.SetUniform("scale", window_scale);
     knife_shader.SetUniform("camera_position", temp__game__camera_position);
     knife_shader.SetUniform("camera_size", temp__game__camera_size);
-    for (GameTypes::entities_count_t knife = 0, found_knifes = 0; found_knifes < *game_p__knifes_count; knife++)
-    {
-        if ((*game_p__knifes)[knife].exist)
-        {
-            found_knifes++;
-            DrawObject(&(*game_p__knifes)[knife]);
-        }
-    }
+
+    DrawObjects(game_p__knifes, game_p__knifes_count);
 }
 
 void OpenGL::DrawLasers()
@@ -1395,31 +1271,8 @@ void OpenGL::DrawLasers()
     laser_shader.SetUniform("scale", window_scale);
     laser_shader.SetUniform("camera_position", temp__game__camera_position);
     laser_shader.SetUniform("camera_size", temp__game__camera_size);
-    for (GameTypes::entities_count_t laser = 0, found_lasers = 0; found_lasers < *game_p__lasers_count; laser++)
-    {
-        if ((*game_p__lasers)[laser].exist)
-        {
-            found_lasers++;
-            DrawObject(&(*game_p__lasers)[laser]);
-        }
-    }
-}
 
-void OpenGL::DrawMegaLasers()
-{
-    mega_laser_buffer.Use();
-    mega_laser_shader.Use();
-    mega_laser_shader.SetUniform("scale", window_scale);
-    mega_laser_shader.SetUniform("camera_position", temp__game__camera_position);
-    mega_laser_shader.SetUniform("camera_size", temp__game__camera_size);
-    for (GameTypes::entities_count_t mega_laser = 0, found_mega_lasers = 0; found_mega_lasers < *game_p__mega_lasers_count; mega_laser++)
-    {
-        if ((*game_p__mega_lasers)[mega_laser].exist)
-        {
-            found_mega_lasers++;
-            DrawObject(&(*game_p__mega_lasers)[mega_laser]);
-        }
-    }
+    DrawObjects(game_p__lasers, game_p__lasers_count);
 }
 
 void OpenGL::DrawParticles()
@@ -1429,16 +1282,16 @@ void OpenGL::DrawParticles()
     particle_shader.SetUniform("scale", window_scale);
     particle_shader.SetUniform("camera_position", temp__game__camera_position);
     particle_shader.SetUniform("camera_size", temp__game__camera_size);
-    for (GameTypes::entities_count_t particle = 0, found_particles = 0; found_particles < *game_p__particles_count; particle++)
+
+    GameTypes::entities_count_t found_particles = 0;
+    for (auto& particle : *game_p__particles)
     {
-        if ((*game_p__particles)[particle].exist)
-        {
-            found_particles++;
-            if ((*game_p__particles)[particle].IsActive())
-            {
-                DrawObject(&(*game_p__particles)[particle]);
-            }
-        }
+        if (found_particles >= *game_p__particles_count) break;
+        if (!particle.exist) continue;
+        ++found_particles;
+        if (!particle.IsActive()) continue;
+
+        DrawObject(particle);
     }
 }
 
@@ -1449,14 +1302,8 @@ void OpenGL::DrawPortals()
     portal_shader.SetUniform("scale", window_scale);
     portal_shader.SetUniform("camera_position", temp__game__camera_position);
     portal_shader.SetUniform("camera_size", temp__game__camera_size);
-    for (GameTypes::entities_count_t portal = 0, found_portals = 0; found_portals < *game_p__portals_count; portal++)
-    {
-        if ((*game_p__portals)[portal].exist)
-        {
-            found_portals++;
-            DrawObject(&(*game_p__portals)[portal]);
-        }
-    }
+
+    DrawObjects(game_p__portals, game_p__portals_count);
 }
 
 void OpenGL::DrawPilots()
@@ -1467,14 +1314,8 @@ void OpenGL::DrawPilots()
     pilot_shader.SetUniform("scale", window_scale);
     pilot_shader.SetUniform("camera_position", temp__game__camera_position);
     pilot_shader.SetUniform("camera_size", temp__game__camera_size);
-    for (GameTypes::players_count_t pilot = 0, found_pilots = 0; found_pilots < *game_p__pilots_count; pilot++)
-    {
-        if ((*game_p__pilots)[pilot].exist == true)
-        {
-            found_pilots++;
-            DrawObject(&(*game_p__pilots)[pilot]);
-        }
-    }
+
+    DrawObjects(game_p__pilots, game_p__pilots_count);
 }
 
 void OpenGL::DrawShips()
@@ -1484,14 +1325,8 @@ void OpenGL::DrawShips()
     ship_shader.SetUniform("scale", window_scale);
     ship_shader.SetUniform("camera_position", temp__game__camera_position);
     ship_shader.SetUniform("camera_size", temp__game__camera_size);
-    for (GameTypes::players_count_t ship = 0, found_ships = 0; found_ships < *game_p__ships_count; ship++)
-    {
-        if ((*game_p__ships)[ship].exist == true)
-        {
-            found_ships++;
-            DrawObject(&(*game_p__ships)[ship]);
-        }
-    }
+
+    DrawObjects(game_p__ships, game_p__ships_count);
 }
 
 void OpenGL::DrawTurrets()
@@ -1502,16 +1337,37 @@ void OpenGL::DrawTurrets()
     turret_shader.SetUniform("scale", window_scale);
     turret_shader.SetUniform("camera_position", temp__game__camera_position);
     turret_shader.SetUniform("camera_size", temp__game__camera_size);
-    for (GameTypes::entities_count_t turret = 0, found_turrets = 0; found_turrets < *game_p__turrets_count; turret++)
-    {
-        if ((*game_p__turrets)[turret].exist)
-        {
-            found_turrets++;
-            DrawObject(&(*game_p__turrets)[turret]);
-        }
-    }
+
+    DrawObjects(game_p__turrets, game_p__turrets_count);
 }
 
+template<typename Object_T, typename counter_t>
+void OpenGL::DrawObjects(const std::vector<Object_T>* objects, const counter_t* objects_count)
+{
+    GameTypes::entities_count_t objects_found = 0;
+    for (auto& object : *objects)
+    {
+        if (objects_found >= *objects_count) break;
+        if (!object.exist) continue;
+        ++objects_found;
+
+        DrawObject(object);
+    }
+}
+template void OpenGL::DrawObjects(const std::vector<AnnihAreaGen>* objects, const GameTypes::entities_count_t* objects_count);
+template void OpenGL::DrawObjects(const std::vector<Asteroid>* objects, const GameTypes::entities_count_t* objects_count);
+template void OpenGL::DrawObjects(const std::vector<Bomb>* objects, const GameTypes::entities_count_t* objects_count);
+template void OpenGL::DrawObjects(const std::vector<Bonus>* objects, const GameTypes::entities_count_t* objects_count);
+template void OpenGL::DrawObjects(const std::vector<Bullet>* objects, const GameTypes::entities_count_t* objects_count);
+template void OpenGL::DrawObjects(const std::vector<GravGen>* objects, const GameTypes::map_elements_count_t* objects_count);
+template void OpenGL::DrawObjects(const std::vector<DecelerationArea>* objects, const GameTypes::map_elements_count_t* objects_count);
+template void OpenGL::DrawObjects(const std::vector<DynamicParticle>* objects, const GameTypes::entities_count_t* objects_count);
+template void OpenGL::DrawObjects(const std::vector<Knife>* objects, const GameTypes::entities_count_t* objects_count);
+template void OpenGL::DrawObjects(const std::vector<Laser>* objects, const GameTypes::entities_count_t* objects_count);
+template void OpenGL::DrawObjects(const std::vector<Portal>* objects, const GameTypes::map_elements_count_t* objects_count);
+template void OpenGL::DrawObjects(const std::vector<Pilot>* objects, const GameTypes::players_count_t* objects_count);
+template void OpenGL::DrawObjects(const std::vector<Ship>* objects, const GameTypes::players_count_t* objects_count);
+template void OpenGL::DrawObjects(const std::vector<Turret>* objects, const GameTypes::map_elements_count_t* objects_count);
 
 void OpenGL::DrawCurrentMap()
 {
@@ -1605,7 +1461,7 @@ void OpenGL::DrawIndicatedMenu(const Menu* menu)
         button_shader.SetUniform("scale", window_scale);
         for (EngineTypes::Menu::buttons_count_t button = 0; button < menu->GetButtonsCount(); button++)
         {
-            DrawObject(&menu->current_buttons[button]);
+            DrawObject(menu->current_buttons[button]);
         }
 #if OPEN_GL_REALISATION__SHIPS_CONTROLED_BY_SCREEN_BUTTONS == true
     }
@@ -1667,8 +1523,6 @@ void OpenGL::FreeBuffers()
 
 void OpenGL::FreeMemory()
 {
-    delete[] rotate_key_flags;
-    delete[] shoot_key_flags;
 }
 
 void OpenGL::FreeShaders()

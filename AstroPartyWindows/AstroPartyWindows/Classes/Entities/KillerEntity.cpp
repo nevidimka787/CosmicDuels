@@ -68,29 +68,29 @@ KillerEntity::KillerEntity(
 {
 }
 
-bool KillerEntity::CreatedBy(ControledEntity* controled_entity)
+bool KillerEntity::CreatedBy(const ControledEntity& controled_entity) const
 {
-	return host_number == controled_entity->GetPlayerNumber();
+	return host_number == controled_entity.GetPlayerNumber();
 }
 
-bool KillerEntity::CreatedByTeam(ControledEntity* controled_entity)
+bool KillerEntity::CreatedByTeam(const ControledEntity & controled_entity) const
 {
-	return host_team_number == controled_entity->GetTeamNumber();
+	return host_team_number == controled_entity.GetTeamNumber();
 }
 
-GameTypes::players_count_t KillerEntity::GetHostNumber()
+GameTypes::players_count_t KillerEntity::GetHostNumber() const
 {
 	return host_number;
 }
 
-GameTypes::players_count_t KillerEntity::GetHostTeamNumber()
+GameTypes::players_count_t KillerEntity::GetHostTeamNumber() const
 {
 	return host_team_number;
 }
 
-bool KillerEntity::SameTeam(KillerEntity* killer_entity)
+bool KillerEntity::SameTeam(const KillerEntity& killer_entity) const
 {
-	return host_team_number == killer_entity->host_team_number;
+	return host_team_number == killer_entity.host_team_number;
 }
 
 void KillerEntity::Set(KillerEntity* killer_entity)

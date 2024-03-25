@@ -33,29 +33,16 @@ void Game::PhysicThread0()
 		ShipsDestroedByBullets();
 		ShipsDestroedByKnifes();
 		ShipsDestroedByLasers();
-		ShipsDestroedByMegaLasers();
 	}
 	
 	if (pilots_count > 0)
 	{
-		PilotsKilledByBombs();
-		PilotsKilledByBullet();
+		PilotsKilledBy(bombs, bombs_count, bombs_array_mtx);
+		PilotsKilledBy(bullets, bullets_count, bullets_array_mtx);
+		PilotsKilledBy(knifes, knifes_count, knifes_array_mtx);
+		PilotsKilledBy(lasers, lasers_count, lasers_array_mtx);
 		PilotsCheckInput();
-		PilotsKilledByKnifes();
 		PilotsRespawnAuto();
-		PilotsKilledByLasers();
-		PilotsKilledByMegaLaser();
-	}
-	
-	if (mega_lasers_count > 0)
-	{
-		MegaLasersDestroyAsteroids();
-		MegaLasersDestroyBonuses();
-		MegaLasersDetonateBombs();
-		MegaLasersDestroyBullets();
-		//MegaLasersDestroyMap(); -- not realisated
-		MegaLasersDestroyKnifes();
-		MegaLasersDestroyTurrets();
 	}
 	
 	if (lasers_count > 0)
@@ -107,13 +94,13 @@ void Game::PhysicThread0()
 		{
 			PortalsCreateParticles();
 		}
-		PortalsTPShips();
-		PortalsTPAsteroids();
-		PortalsTPBombs();
-		PortalsTPBonuses();
-		PortalsTPBullets();
-		PortalsTPDynamicParticles();
-		PortalsTPPilots();
+		PortalsTPEntityes(ships, ships_count, ships_array_mtx);
+		PortalsTPEntityes(asteroids, asteroids_count, asteroids_array_mtx);
+		PortalsTPEntityes(bombs, bombs_count, bombs_array_mtx);
+		PortalsTPEntityes(bonuses, bonuses_count, bonuses_array_mtx);
+		PortalsTPEntityes(bullets, bullets_count, bullets_array_mtx);
+		PortalsTPEntityes(dynamic_particles, dynamic_particles_count, dynamic_particles_array_mtx);
+		PortalsTPEntityes(pilots, pilots_count, pilots_array_mtx);
 	}
 
 	CameraFocusesOnPlayers();
@@ -205,11 +192,13 @@ void Game::PhysicThread0()
 	if (ships_count > 0)
 	{
 		ships_array_mtx.lock();
+		pilots_array_mtx.lock();
 		map_data_mtx.lock();
 		dynamic_particles_array_mtx.lock();
-		DynamicEntitiesCollisions(&map, ships, ships_count);
+		DynamicEntitiesCollisions(map, ships, ships_count);
 		dynamic_particles_array_mtx.unlock();
 		map_data_mtx.unlock();
+		pilots_array_mtx.unlock();
 		ships_array_mtx.unlock();
 	}
 
@@ -218,7 +207,7 @@ void Game::PhysicThread0()
 		pilots_array_mtx.lock();
 		map_data_mtx.lock();
 		dynamic_particles_array_mtx.lock();
-		DynamicEntitiesCollisions(&map, pilots, pilots_count);
+		DynamicEntitiesCollisions(map, pilots, pilots_count);
 		dynamic_particles_array_mtx.unlock();
 		map_data_mtx.unlock();
 		pilots_array_mtx.unlock();
@@ -230,7 +219,7 @@ void Game::PhysicThread0()
 		bonuses_array_mtx.lock();
 		map_data_mtx.lock();
 		dynamic_particles_array_mtx.lock();
-		DynamicEntitiesCollisions(&map, asteroids, asteroids_count);
+		DynamicEntitiesCollisions(map, asteroids, asteroids_count);
 		dynamic_particles_array_mtx.unlock();
 		bonuses_array_mtx.unlock();
 		map_data_mtx.unlock();
@@ -241,14 +230,14 @@ void Game::PhysicThread0()
 	{
 		bombs_array_mtx.lock();
 		map_data_mtx.lock();
-		DynamicEntitiesCollisions(&map, bombs, bombs_count);
+		DynamicEntitiesCollisions(map, bombs, bombs_count);
 		map_data_mtx.unlock();
 		bombs_array_mtx.unlock();
 	}
 
 	dynamic_particles_array_mtx.lock();
 	map_data_mtx.lock();
-	DynamicEntitiesCollisions(&map, dynamic_particles, dynamic_particles_count);
+	DynamicEntitiesCollisions(map, dynamic_particles, dynamic_particles_count);
 	map_data_mtx.unlock();
 	dynamic_particles_array_mtx.unlock();
 	
@@ -260,7 +249,6 @@ void Game::PhysicThread0()
 	UpdateLasersPhase2();
 	UpdateKnifesPhase2();
 	UpdateBulletsPhase2();
-	UpdateMegaLasersPhase2();
 	UpdateBonusesPhase2();
 	UpdateBombsPhase2();
 	UpdateTurretsPhase2();
@@ -492,28 +480,11 @@ void Game::InitGame()
 	flag_round_results = false;
 	global_timer = 0;
 
-	teams = new GameTypes::entities_count_t[GAME_PLAYERS_MAX_COUNT];
-	playing_teams = new GameTypes::entities_count_t[GAME_PLAYERS_MAX_COUNT];
-	for (GameTypes::players_count_t i = 0; i < GAME_PLAYERS_MAX_COUNT; i++)
-	{
-		teams[i] = 0;
-		playing_teams[i] = 0;
-	}
-	object_pull_array = new bool[GAME_OBJECT_TYPES_COUNT];
-	map_pull_array = new bool[GAME_MAPS_COUNT];
-	bonus_pull_array = new bool[GAME_BONUS_INVENTORY_SIZE];
-	for (GameTypes::objects_types_count_t i = 0; i < GAME_OBJECT_TYPES_COUNT; i++)
-	{
-		object_pull_array[i] = true;
-	}
-	for (GameTypes::objects_types_count_t i = 0; i < GAME_MAPS_COUNT; i++)
-	{
-		map_pull_array[i] = true;
-	}
-	for (GameTypes::objects_types_count_t i = 0; i < GAME_BONUS_INVENTORY_SIZE; i++)
-	{
-		bonus_pull_array[i] = true;
-	}
+	teams = std::vector<GameTypes::players_count_t>(GAME_PLAYERS_MAX_COUNT, 0); // no team
+	playing_teams = std::vector<GameTypes::players_count_t>(GAME_PLAYERS_MAX_COUNT, 0); // no team
+	object_pull_array = std::vector<bool>(GAME_OBJECT_TYPES_COUNT, true);
+	map_pull_array = std::vector<bool>(GAME_MAPS_COUNT, true);
+	bonus_pull_array = std::vector<bool>(GAME_BONUS_INVENTORY_SIZE, true);
 }
 
 void Game::InitMatch()
@@ -566,10 +537,14 @@ skip_bonus_pull_set:
 		}
 	}
 
-	if (selected_maps_id_array_length == 0)
+	if (!selected_maps_id_array_length)
 	{
 		selected_maps_id_array_length = GAME_MAPS_COUNT;
-		selected_maps_id_array = new GameTypes::maps_count_t[GAME_MAPS_COUNT];
+	}
+	selected_maps_id_array = std::vector<GameTypes::maps_count_t>(selected_maps_id_array_length);
+
+	if (selected_maps_id_array_length == GAME_MAPS_COUNT)
+	{
 		for (GameTypes::maps_count_t map_id = 0; map_id < GAME_MAPS_COUNT; map_id++)
 		{
 			selected_maps_id_array[map_id] = map_id;
@@ -577,15 +552,14 @@ skip_bonus_pull_set:
 	}
 	else
 	{
-		selected_maps_id_array = new GameTypes::maps_count_t[selected_maps_id_array_length];
-
 		for (GameTypes::maps_count_t map_id = 0, found = 0; found < selected_maps_id_array_length; map_id++)
 		{
-			if (map_pull_array[map_id] == true)
+			if (!map_pull_array[map_id])
 			{
-				selected_maps_id_array[found] = map_id;
-				found++;
+				continue;
 			}
+			selected_maps_id_array[found] = map_id;
+			found++;
 		}
 	}
 
@@ -633,8 +607,8 @@ void Game::InitLevel()
 	current_map_id = GenerateRandomMapId();
 	//std::cout << "void Game::InitLevel()::current_map_id=" << (current_map_id = <map number>) << std::endl;
 
-	Vec2F ships_positions[GAME_PLAYERS_MAX_COUNT];
-	float ships_angles[GAME_PLAYERS_MAX_COUNT];
+	std::vector<Vec2F> ships_positions = std::vector<Vec2F>(GAME_PLAYERS_MAX_COUNT, Vec2F());
+	std::vector<float> ships_angles = std::vector<float>(GAME_PLAYERS_MAX_COUNT, 0.0f);
 
 	const GameTypes::score_t max_score = GetMaxScore();
 	
@@ -707,7 +681,7 @@ void Game::InitLevel()
 		ships_can_shoot_flags[player] = SHIP_DEFAULT_UNBRAKABLE_PERIOD;
 		players_in_team[player] = 0;
 		double_clk_timers[player] = 0;
-		burnout_flags[player] = false;
+		control_flags.burnout_flags[player] = false;
 	}
 
 	if (game_rules & GAME_RULE_PLAYERS_SPAWN_DIRECTION_RANDOMIZE)
@@ -745,6 +719,8 @@ void Game::InitLevel()
 		start_bonus |= GenerateRandomInventory(BONUS_BONUS, 1, 1, 1, 1) * ((game_rules & GAME_RULE_TRIPLE_BONUSES) ? BONUS_CELL : 1);
 	}
 
+	//std::cout << "void Game::InitLevel()::current_map_id=" << (start_bonus = <bonus number>) << std::endl;
+
 	//Set start bonus
 
 	ships_control_menu.Clear();
@@ -775,11 +751,8 @@ void Game::InitLevel()
 					Vec2F(),						//velocity
 					player,							//player number
 					playing_teams[player],			//team number
-					(void*)&burnout_flags[player],	//burnout flag pointer
-					(void*)&rotate_flags[player],	//rotate flag pointer
-					(void*)&shoot_flags[player],	//shoot flag pointer
-					nullptr,						//heatbox vertexs array
-					0,								//heatbox vertexs count
+					&control_flags,					//controle flags
+					std::vector<Vec2F>(),			//heatbox vertexs array
 					ships_angles[player],			//angle
 					start_bonus));					//bonus inventory
 
@@ -818,8 +791,6 @@ void Game::InitLevel()
 #endif
 		}
 	}
-	
-	ships_count = players_count;
 
 	MutexesUnlock();
 
@@ -841,131 +812,125 @@ void Game::InitMenus()
 	points[3].Set(1.0f, 0.0f);
 	Area* area = new Area(points, 4);
 
-	Button* buttons = new Button[3];
+	std::vector<Button> buttons = std::vector<Button>(0);
 	Vec2F position;
 	position.Set(-0.5f, 0.95f);
 	Vec2F size;
 	size.Set(1.0f, -0.60f);
-	buttons[0].Set(BUTTON_ID__START_MATCH, &position, &size, area, "PLAY", 20);
-	buttons[0].status |= BUTTON_STATUS_ACTIVE;
+	buttons.push_back(Button(BUTTON_ID__START_MATCH, &position, &size, area, "PLAY", 20, BUTTON_STATUS_ACTIVE));
 	position.Set(-0.5f, 0.3f);
 	size.Set(0.475f, -0.25f);
-	buttons[1].Set(BUTTON_ID__GO_TO_OPTINS_MENU, &position, &size, area, "Options", 6);
-	buttons[1].status |= BUTTON_STATUS_ACTIVE;
+	buttons.push_back(Button(BUTTON_ID__GO_TO_OPTINS_MENU, &position, &size, area, "Options", 6, BUTTON_STATUS_ACTIVE));
 	position.Set(0.025f, 0.3f);
-	buttons[2].Set(BUTTON_ID__EXIT, &position, &size, area, "Exit", 6);
-	buttons[2].status |= BUTTON_STATUS_ACTIVE;
+	buttons.push_back(Button(BUTTON_ID__EXIT, &position, &size, area, "Exit", 6, BUTTON_STATUS_ACTIVE));
 	position.Set(0.0f, 0.0f);
 	size.Set(1.0f, -1.0f);
-	main_menu.Set(&position, &size, buttons, 3);
-	delete[] buttons;
+	main_menu.Set(&position, &size, buttons);
+	buttons.clear();
 
 	//option menu
-	buttons = new Button[15];
 	size.Set(1.5f, -0.1f);
 #define GAME_OPTION_MENU_BORD	0.11f
 #define GAME_OPTION_MENU_UP_Y	0.9f
 #define GAME_OPTIONS_STAT_X		-0.75f
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 0 * GAME_OPTION_MENU_BORD);
-	buttons[0].Set(BUTTON_ID__SET_RANDOM_SPAWN, &position, &size, area, "Random spawn", 5);
+	buttons.push_back(Button(BUTTON_ID__SET_RANDOM_SPAWN, &position, &size, area, "Random spawn", 5));
 	buttons[0].status = ((game_rules & GAME_RULE_PLAYERS_SPAWN_POSITION_RANDOMIZE) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 1 * GAME_OPTION_MENU_BORD);
-	buttons[1].Set(BUTTON_ID__SET_RANDOM_SPAWN_DIRECTION, &position, &size, area, "Random spawn direction", 5);
+	buttons.push_back(Button(BUTTON_ID__SET_RANDOM_SPAWN_DIRECTION, &position, &size, area, "Random spawn direction", 5));
 	buttons[1].status = ((game_rules & GAME_RULE_PLAYERS_SPAWN_DIRECTION_RANDOMIZE) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 2 * GAME_OPTION_MENU_BORD);
-	buttons[2].Set(BUTTON_ID__SET_SPAWN_THIS_BONUS, &position, &size, area, "Spawn this bonus", 5);
+	buttons.push_back(Button(BUTTON_ID__SET_SPAWN_THIS_BONUS, &position, &size, area, "Spawn this bonus", 5));
 	buttons[2].status = ((game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_BONUS) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 3 * GAME_OPTION_MENU_BORD);
-	buttons[3].Set(BUTTON_ID__SET_SPAWN_THIS_DIFFERENT_BONUSES, &position, &size, area, "Can spawn this different bonuses", 4);
+	buttons.push_back(Button(BUTTON_ID__SET_SPAWN_THIS_DIFFERENT_BONUSES, &position, &size, area, "Can spawn this different bonuses", 4));
 	buttons[3].status = ((game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_DIFFERENT_BONUS) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | ((game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_BONUS) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_FALSE);
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 4 * GAME_OPTION_MENU_BORD);
-	buttons[4].Set(BUTTON_ID__SET_TRIPLE_BONUSES, &position, &size, area, "Triple bonuses", 5);
+	buttons.push_back(Button(BUTTON_ID__SET_TRIPLE_BONUSES, &position, &size, area, "Triple bonuses", 5));
 	buttons[4].status = ((game_rules & GAME_RULE_TRIPLE_BONUSES) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 5 * GAME_OPTION_MENU_BORD);
-	buttons[5].Set(BUTTON_ID__SET_SPAWN_THIS_TRIPLE_BAFF, &position, &size, area, "Spawn this triple", 5);
+	buttons.push_back(Button(BUTTON_ID__SET_SPAWN_THIS_TRIPLE_BAFF, &position, &size, area, "Spawn this triple", 5));
 	buttons[5].status = ((game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_TRIPLE) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 6 * GAME_OPTION_MENU_BORD);
-	buttons[6].Set(BUTTON_ID__SET_SPAWN_THIS_SHIELD_BAFF, &position, &size, area, "Spawn this shield", 5);
+	buttons.push_back(Button(BUTTON_ID__SET_SPAWN_THIS_SHIELD_BAFF, &position, &size, area, "Spawn this shield", 5));
 	buttons[6].status = ((game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_SHIELD) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 7 * GAME_OPTION_MENU_BORD);
-	buttons[7].Set(BUTTON_ID__SET_KNIFES_CAN_DESTROY_BULLETS, &position, &size, area, "Knifes can destroy bullets", 5);
+	buttons.push_back(Button(BUTTON_ID__SET_KNIFES_CAN_DESTROY_BULLETS, &position, &size, area, "Knifes can destroy bullets", 5));
 	buttons[7].status = ((game_rules & GAME_RULE_KNIFES_CAN_DESTROY_BULLETS) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 8 * GAME_OPTION_MENU_BORD);
-	buttons[8].Set(BUTTON_ID__SET_NEED_KILL_PILOT, &position, &size, area, "Need kill pilot", 5);
+	buttons.push_back(Button(BUTTON_ID__SET_NEED_KILL_PILOT, &position, &size, area, "Need kill pilot", 5));
 	buttons[8].status = ((game_rules & GAME_RULE_NEED_KILL_PILOT) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | ((game_rules & GAME_RULE_NEED_KILL_PILOT) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_FALSE);
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 9 * GAME_OPTION_MENU_BORD);
-	buttons[9].Set(BUTTON_ID__SET_FRIEDLY_SHEEP_CAN_RESTORE, &position, &size, area, "Friendly sheep can restore", 5);
+	buttons.push_back(Button(BUTTON_ID__SET_FRIEDLY_SHEEP_CAN_RESTORE, &position, &size, area, "Friendly sheep can restore", 5));
 	buttons[9].status = ((game_rules & GAME_RULE_FRIEDNLY_SHEEP_CAN_RESTORE) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 10 * GAME_OPTION_MENU_BORD);
-	buttons[10].Set(BUTTON_ID__SET_ACTIVE_FRIENDLY_FIRE, &position, &size, area, "Frendly fire", 5);
+	buttons.push_back(Button(BUTTON_ID__SET_ACTIVE_FRIENDLY_FIRE, &position, &size, area, "Frendly fire", 5));
 	buttons[10].status = ((game_rules & GAME_RULE_FRENDLY_FIRE) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 11 * GAME_OPTION_MENU_BORD);
-	buttons[11].Set(BUTTON_ID__GO_TO_SELECT_BONUSES_MENU, &position, &size, area, "Bonus pull menu", 5);
+	buttons.push_back(Button(BUTTON_ID__GO_TO_SELECT_BONUSES_MENU, &position, &size, area, "Bonus pull menu", 5));
 	buttons[11].status = (game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_BONUS) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_FALSE;
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 12 * GAME_OPTION_MENU_BORD);
-	buttons[12].Set(BUTTON_ID__GO_TO_SELECT_MAP_MENU, &position, &size, area, "Map pull menu", 5);
+	buttons.push_back(Button(BUTTON_ID__GO_TO_SELECT_MAP_MENU, &position, &size, area, "Map pull menu", 5));
 	buttons[12].status |= BUTTON_STATUS_ACTIVE;
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 13 * GAME_OPTION_MENU_BORD);
-	buttons[13].Set(BUTTON_ID__GO_TO_SELECT_OBJECTS_MENU, &position, &size, area, "Spawning objects menu", 5);
+	buttons.push_back(Button(BUTTON_ID__GO_TO_SELECT_OBJECTS_MENU, &position, &size, area, "Spawning objects menu", 5));
 	buttons[13].status |= BUTTON_STATUS_ACTIVE;
 	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 14 * GAME_OPTION_MENU_BORD);
-	buttons[14].Set(BUTTON_ID__SET_ACTIVE_BALANCE, &position, &size, area, "Auto balance", 5);
+	buttons.push_back(Button(BUTTON_ID__SET_ACTIVE_BALANCE, &position, &size, area, "Auto balance", 5));
 	buttons[14].status = ((game_rules & GAME_RULE_BALANCE_ACTIVE) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
 	position.Set(0.0f, 0.0f);
 	size.Set(1.5f, GAME_OPTION_MENU_UP_Y - 1.0f - 15.0f * GAME_OPTION_MENU_BORD);
-	option_menu.Set(&position, &size, buttons, 15);
+	option_menu.Set(&position, &size, buttons);
 	option_menu.HardRecalculate();
-	delete[] buttons;
+	buttons.clear();
 
 	//pause menu
-	buttons = new Button[2];
 	position.Set(-0.4f, 0.825f);
 	size.Set(0.8f, -0.2f);
-	buttons[0].Set(BUTTON_ID__RESUME_MATCH, &position, &size, area, "Resume", 6);
+	buttons.push_back(Button(BUTTON_ID__RESUME_MATCH, &position, &size, area, "Resume", 6));
 	buttons[0].status |= BUTTON_STATUS_ACTIVE;
 	position.Set(-0.4f, 0.6f);
-	buttons[1].Set(BUTTON_ID__GO_TO_MAIN_MENU, &position, &size, area, "Main menu", 6);
+	buttons.push_back(Button(BUTTON_ID__GO_TO_MAIN_MENU, &position, &size, area, "Main menu", 6));
 	buttons[1].status |= BUTTON_STATUS_ACTIVE;
 	position.Set(0.0f, 0.0f);
 	size.Set(1.0f, -1.0f);
-	pause_menu.Set(&position, &size, buttons, 2);
-	delete[] buttons;
+	pause_menu.Set(&position, &size, buttons);
+	buttons.clear();
 
 	//sheeps select menu
-	buttons = new Button[5];;
 	size.Set(0.475f, -0.25f);
 	position.Set(-0.5f, 0.9f);
-	buttons[0].Set(BUTTON_ID__SELECT_SHIP_1, &position, &size, area, "Player 1", 6);
+	buttons.push_back(Button(BUTTON_ID__SELECT_SHIP_1, &position, &size, area, "Player 1", 6));
 	buttons[0].status |= BUTTON_STATUS_ACTIVE;
 	position.Set(0.025f, 0.9f);
-	buttons[1].Set(BUTTON_ID__SELECT_SHIP_2, &position, &size, area, "Player 2", 6);
+	buttons.push_back(Button(BUTTON_ID__SELECT_SHIP_2, &position, &size, area, "Player 2", 6));
 	buttons[1].status |= BUTTON_STATUS_ACTIVE;
 	position.Set(0.025f, 0.6f);
-	buttons[2].Set(BUTTON_ID__SELECT_SHIP_3, &position, &size, area, "Player 3", 6);
+	buttons.push_back(Button(BUTTON_ID__SELECT_SHIP_3, &position, &size, area, "Player 3", 6));
 	buttons[2].status |= BUTTON_STATUS_ACTIVE;
 	position.Set(-0.5f, 0.6f);
-	buttons[3].Set(BUTTON_ID__SELECT_SHIP_4, &position, &size, area, "Player 4", 6);
+	buttons.push_back(Button(BUTTON_ID__SELECT_SHIP_4, &position, &size, area, "Player 4", 6));
 	buttons[3].status |= BUTTON_STATUS_ACTIVE;
 	position.Set(-0.5f, 0.3f);
 	size.Set(1.0f, -0.25f);
-	buttons[4].Set(BUTTON_ID__START_GAME, &position, &size, area, "Start game", 7);
+	buttons.push_back(Button(BUTTON_ID__START_GAME, &position, &size, area, "Start game", 7));
 	buttons[4].status |= BUTTON_STATUS_FALSE;
 	position.Set(0.0f, 0.0f);
 	size.Set(1.0f, -1.0f);
-	ships_select_menu.Set(&position, &size, buttons, 5);
-	delete[] buttons;
+	ships_select_menu.Set(&position, &size, buttons);
+	buttons.clear();
 
 	//maps select menu
 #define GAME_PULL_MENU_UP_Y				0.9f
 #define GAME_PULL_MENU_RIGHT_BORDER		0.55f
 #define GAME_PULL_MENU_DOWN_BORDER		0.3f
 #define GAME_PULL_MENU_BUTTON_SIZE_Y	-0.25f
-	buttons = new Button[GAME_MAPS_COUNT];
+
 	size.Set(0.5f, GAME_PULL_MENU_BUTTON_SIZE_Y);
 	for (uint8_t i = 0; i < GAME_MAPS_COUNT; i++)
 	{
 		position.Set(-0.5f + (float)(i % 2) * GAME_PULL_MENU_RIGHT_BORDER, GAME_PULL_MENU_UP_Y - (float)(i / 2) * GAME_PULL_MENU_DOWN_BORDER);
-		buttons[i].Set(BUTTON_ID__SELECT_MAP + i, &position, &size, area, "", 5, BUTTON_STATUS_TRUE);
+		buttons.push_back(Button(BUTTON_ID__SELECT_MAP + i, &position, &size, area, "", 5, BUTTON_STATUS_TRUE));
 		buttons[i].status |= BUTTON_STATUS_ACTIVE;
 	}
 	buttons[MAP_ORBIT_MAP].SetText("Orbit");
@@ -988,27 +953,25 @@ void Game::InitMenus()
 	buttons[MAP_KALEIDOSCOPE].text_size = 4u;
 	position.Set(0.0f, 0.0f);
 	size.Set(1.0f, -GAME_PULL_MENU_DOWN_BORDER * (float)(((GAME_MAPS_COUNT + 1) / 2) + 1));
-	map_pull_select_menu.Set(&position, &size, buttons, GAME_MAPS_COUNT);
-	delete[] buttons;
+	map_pull_select_menu.Set(&position, &size, buttons);
+	buttons.clear();
 
 	//spawning objects select menu
-	buttons = new Button[GAME_OBJECTS_COUNT];
 	position.Set(-0.5f, 0.9f);
 	size.Set(0.475f, -0.475f);
-	buttons[0].Set(BUTTON_ID__SELECT_OBJECT_ASTEROID, &position, &size, area, "Asteroid", 6, (object_pull_array[GAME_OBJECT_ASTEROID] == true) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE);
+	buttons.push_back(Button(BUTTON_ID__SELECT_OBJECT_ASTEROID, &position, &size, area, "Asteroid", 6, (object_pull_array[GAME_OBJECT_ASTEROID] == true) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE));
 	buttons[0].status |= BUTTON_STATUS_ACTIVE;
 	position.Set(0.0f, 0.0f);
 	size.Set(0.5f, -0.5f);
-	spawning_objects_select_menu.Set(&position, &size, buttons, 1);
-	delete[] buttons;
+	spawning_objects_select_menu.Set(&position, &size, buttons);
+	buttons.clear();
 
 	//spawning bonuses select menu
-	buttons = new Button[GAME_BONUS_INVENTORY_SIZE];
 	size.Set(0.5f, -0.25f);
 	for (uint8_t bonus = 0; bonus < GAME_BONUS_INVENTORY_SIZE; bonus++)
 	{
 		position.Set(-0.5f + (float)(bonus % 2) * GAME_PULL_MENU_RIGHT_BORDER, GAME_PULL_MENU_UP_Y -(float)(bonus / 2) * GAME_PULL_MENU_DOWN_BORDER);
-		buttons[bonus].Set(BUTTON_ID__SELECT_BONUS + bonus, &position, &size, area, "", 7, (bonus_pull_array[bonus] == true) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE);
+		buttons.push_back(Button(BUTTON_ID__SELECT_BONUS + bonus, &position, &size, area, "", 7, (bonus_pull_array[bonus] == true) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE));
 		buttons[bonus].status |= BUTTON_STATUS_ACTIVE;
 	}
 	buttons[GAME_BONUS_ID_LOOP].SetText("Loop");
@@ -1021,8 +984,8 @@ void Game::InitMenus()
 	buttons[GAME_BONUS_ID_REVERS].SetText("Revers");
 	position.Set(0.0f, 0.0f);
 	size.Set(1.0f, -GAME_PULL_MENU_DOWN_BORDER * (float)(((GAME_BONUS_INVENTORY_SIZE + 1) / 2) + 1));
-	bonus_pull_select_menu.Set(&position, &size, buttons, GAME_BONUS_INVENTORY_SIZE);
-	delete[] buttons;
+	bonus_pull_select_menu.Set(&position, &size, buttons);
+	buttons.clear();
 
 #if OPEN_GL_REALISATION__SHIPS_CONTROLED_BY_SCREEN_BUTTONS == true
 	//ship control menu
@@ -1129,7 +1092,7 @@ void Game::DecrementPlayersCountInTeam(GameTypes::players_count_t team_number)
 {
 	if (team_number > 0 && players_in_team[team_number - 1])
 	{
-		players_in_team[team_number - 1]--;
+		--players_in_team[team_number - 1];
 	}
 	flag_update_end_match = true;
 }
@@ -1138,7 +1101,7 @@ void Game::IncrementPlayersCountInTeam(GameTypes::players_count_t team_number)
 {
 	if (team_number > 0)
 	{
-		players_in_team[team_number - 1]++;
+		++players_in_team[team_number - 1];
 	}
 	flag_update_end_match = true;
 }
@@ -1151,26 +1114,20 @@ void Game::CheckEndMatch()
 		{
 			RoundResultsInit();
 		}
+		return;
 	}
-	else if(flag_update_end_match)
+
+	if (!flag_update_end_match) return;
+
+	GameTypes::players_count_t not_empty_teams_count = 0;
+	for (auto& players_count : players_in_team)
 	{
-		for (GameTypes::players_count_t team = 0; team < GAME_PLAYERS_MAX_COUNT; team++)
-		{
-			if (players_in_team[team])
-			{
-				if (flag_update_end_match)
-				{
-					flag_update_end_match = false;
-				}
-				else
-				{
-					return;
-				}
-			}
-		}
-		end_match_tic = global_timer + GAME_END_MATCH_DELLAY;
-		flag_update_end_match = false;
+		if (players_count > 0) ++not_empty_teams_count;
 	}
+	flag_update_end_match = false;
+	if (not_empty_teams_count > 1) return;
+
+	end_match_tic = global_timer + GAME_END_MATCH_DELLAY;
 }
 
 void Game::RoundResultsInit()
@@ -1280,10 +1237,6 @@ bool Game::RoundResults()
 		}
 	}
 
-	if (!logs.HaveData() && !play_match)
-	{
-		delete[] ships;
-	}
 	return  logs.HaveData();
 }
 
@@ -1322,7 +1275,6 @@ void Game::MutexesLock()
 	ships_array_mtx.lock();
 	pilots_array_mtx.lock();
 	input_values_mtx.lock();
-	mega_lasers_array_mtx.lock();
 	lasers_array_mtx.lock();
 	bombs_array_mtx.lock();
 	knifes_array_mtx.lock();
@@ -1346,7 +1298,6 @@ void Game::MutexesUnlock()
 	ships_array_mtx.unlock();
 	pilots_array_mtx.unlock();
 	input_values_mtx.unlock();
-	mega_lasers_array_mtx.unlock();
 	lasers_array_mtx.unlock();
 	bombs_array_mtx.unlock();
 	knifes_array_mtx.unlock();
@@ -1493,16 +1444,41 @@ void Th_12(std::shared_mutex* mtx_p, bool* return_data)
 	*return_data = false;
 }
 
+#ifdef _DEBUG
+/*
+	deceler_area
+	grav_gen
+	camera
+	portal
+	ship
+	pilot
+	annih_area_generator
+	input_values
+	laser
+	bomb
+	knife
+	turret
+	bullet
+	asteroid
+	bonus
+	map
+	particle
+	dynamic_particle
+	log
+*/
 void Game::DebugLog__CheckMutexeslLock()
 {
+	loged_shared_mutex tmp_mtx("tmp");
+	tmp_mtx.printLogs();
+
 	std::shared_mutex* mtx_00 = &deceler_areas_array_mtx;
 	std::shared_mutex* mtx_01 = &grav_gens_array_mtx;
 	std::shared_mutex* mtx_02 = &camera_data_mtx;
-	std::shared_mutex* mtx_03 = &ships_array_mtx;
-	std::shared_mutex* mtx_04 = &pilots_array_mtx;
-	std::shared_mutex* mtx_05 = &annih_area_gens_array_mtx;
-	std::shared_mutex* mtx_06 = &input_values_mtx;
-	std::shared_mutex* mtx_07 = &mega_lasers_array_mtx;
+	std::shared_mutex* mtx_03 = &portals_array_mtx;
+	std::shared_mutex* mtx_04 = &ships_array_mtx;
+	std::shared_mutex* mtx_05 = &pilots_array_mtx;
+	std::shared_mutex* mtx_06 = &annih_area_gens_array_mtx;
+	std::shared_mutex* mtx_07 = &input_values_mtx;
 	std::shared_mutex* mtx_08 = &lasers_array_mtx;
 	std::shared_mutex* mtx_09 = &bombs_array_mtx;
 	std::shared_mutex* mtx_0A = &knifes_array_mtx;
@@ -1515,7 +1491,7 @@ void Game::DebugLog__CheckMutexeslLock()
 	std::shared_mutex* mtx_11 = &dynamic_particles_array_mtx;
 	std::shared_mutex* mtx_12 = &log_data_mtx;
 
-	bool data[19];
+	bool data[19] = {0};
 	for (uint8_t i = 0; i < 18; i++)
 	{
 		data[i] = true;
@@ -1524,22 +1500,22 @@ void Game::DebugLog__CheckMutexeslLock()
 	std::thread th_00(Th_00, mtx_00, &data[0x00]);//deceler area
 	std::thread th_01(Th_01, mtx_01, &data[0x01]);//grav gen
 	std::thread th_02(Th_02, mtx_02, &data[0x02]);//camera
-	std::thread th_03(Th_03, mtx_03, &data[0x03]);//ship
-	std::thread th_04(Th_04, mtx_04, &data[0x04]);//pilot
-	std::thread th_05(Th_05, mtx_11, &data[0x05]);//annih_area_gen
-	std::thread th_06(Th_06, mtx_05, &data[0x06]);//input
-	std::thread th_07(Th_07, mtx_06, &data[0x07]);//mega laser
-	std::thread th_08(Th_08, mtx_07, &data[0x08]);//laser
-	std::thread th_09(Th_09, mtx_08, &data[0x09]);//bomb
-	std::thread th_0A(Th_0A, mtx_09, &data[0x0A]);//knife
-	std::thread th_0B(Th_0B, mtx_0A, &data[0x0B]);//turret
-	std::thread th_0C(Th_0C, mtx_0B, &data[0x0C]);//bullet
-	std::thread th_0D(Th_0D, mtx_0C, &data[0x0D]);//asteroid
-	std::thread th_0E(Th_0E, mtx_0D, &data[0x0E]);//bonus
-	std::thread th_0F(Th_0F, mtx_0E, &data[0x0F]);//map
-	std::thread th_10(Th_10, mtx_0F, &data[0x10]);//particle
-	std::thread th_11(Th_11, mtx_10, &data[0x11]);//dynamic particle
-	std::thread th_12(Th_12, mtx_11, &data[0x12]);//log
+	std::thread th_03(Th_03, mtx_03, &data[0x03]);//portals
+	std::thread th_04(Th_04, mtx_04, &data[0x04]);//ship
+	std::thread th_05(Th_05, mtx_05, &data[0x05]);//pilot
+	std::thread th_06(Th_06, mtx_06, &data[0x06]);//annih_area_gen
+	std::thread th_07(Th_07, mtx_07, &data[0x07]);//input
+	std::thread th_08(Th_08, mtx_08, &data[0x08]);//laser
+	std::thread th_09(Th_09, mtx_09, &data[0x09]);//bomb
+	std::thread th_0A(Th_0A, mtx_0A, &data[0x0A]);//knife
+	std::thread th_0B(Th_0B, mtx_0B, &data[0x0B]);//turret
+	std::thread th_0C(Th_0C, mtx_0C, &data[0x0C]);//bullet
+	std::thread th_0D(Th_0D, mtx_0D, &data[0x0D]);//asteroid
+	std::thread th_0E(Th_0E, mtx_0E, &data[0x0E]);//bonus
+	std::thread th_0F(Th_0F, mtx_0F, &data[0x0F]);//map
+	std::thread th_10(Th_10, mtx_10, &data[0x10]);//particle
+	std::thread th_11(Th_11, mtx_11, &data[0x11]);//dynamic particle
+	std::thread th_12(Th_12, mtx_12, &data[0x12]);//log
 
 	std::this_thread::sleep_for(std::chrono::seconds(1));
 
@@ -1608,7 +1584,7 @@ end_of_cycle:
 	{
 		printf("unlock\n");
 	}
-	printf(" 3. Ships:         ");
+	printf(" 3. Portal:        ");
 	if (data[0x03])
 	{
 		printf("lock\n");
@@ -1617,7 +1593,7 @@ end_of_cycle:
 	{
 		printf("unlock\n");
 	}
-	printf(" 4. Pilots:        ");
+	printf(" 4. Ships:         ");
 	if (data[0x04])
 	{
 		printf("lock\n");
@@ -1626,7 +1602,7 @@ end_of_cycle:
 	{
 		printf("unlock\n");
 	}
-	printf(" 5. AnnihAreaGens:  ");
+	printf(" 5. Pilots:        ");
 	if (data[0x05])
 	{
 		printf("lock\n");
@@ -1635,7 +1611,7 @@ end_of_cycle:
 	{
 		printf("unlock\n");
 	}
-	printf(" 6. Input values:  ");
+	printf(" 6. AnnihAreaGens: ");
 	if (data[0x06])
 	{
 		printf("lock\n");
@@ -1644,7 +1620,7 @@ end_of_cycle:
 	{
 		printf("unlock\n");
 	}
-	printf(" 7. Mega lasers:   ");
+	printf(" 7. Input values:  ");
 	if (data[0x07])
 	{
 		printf("lock\n");
@@ -1680,7 +1656,7 @@ end_of_cycle:
 	{
 		printf("unlock\n");
 	}
-	printf("11. Turrets:        ");
+	printf("11. Turrets:       ");
 	if (data[0x0B])
 	{
 		printf("lock\n");
@@ -1773,3 +1749,5 @@ end_of_cycle:
 	th_11.join();
 	th_12.join();
 }
+
+#endif

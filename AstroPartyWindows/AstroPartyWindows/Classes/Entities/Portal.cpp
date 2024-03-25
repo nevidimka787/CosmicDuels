@@ -1,7 +1,5 @@
 #include "../Entity.h"
 
-
-
 Portal::Portal()
 	:
 	StaticEntity(),
@@ -122,7 +120,7 @@ void Portal::Connect(const Entity* entity)
 	tp_position_pointer = entity->GetPositionPointer();
 }
 
-Particle Portal::CreateParticles(GameTypes::tic_t current_tic)
+Particle Portal::CreateParticles(GameTypes::tic_t current_tic) const
 {
 	return Particle(
 		current_tic,
@@ -136,7 +134,7 @@ Particle Portal::CreateParticles(GameTypes::tic_t current_tic)
 		current_tic + PARTICLE_POSTPONE_PORTAL_IN + PARTICLE_PERIOD_PORTAL_IN);
 }
 
-Particle Portal::CreateParticlesTP(GameTypes::tic_t current_tic, float radius)
+Particle Portal::CreateParticlesTP(GameTypes::tic_t current_tic, float radius) const
 {
 	if (tp_mode == PORTAL_MODE_POSITION)
 	{
@@ -238,15 +236,15 @@ void Portal::SetMode(EngineTypes::Portal::mode_t mode)
 }
 
 template <typename EntityType>
-void Portal::Teleport(EntityType* entity)
+void Portal::Teleport(EntityType& entity) const
 {
 	if (tp_mode == PORTAL_MODE_POINTER)
 	{
-		entity->SetPosition(tp_position_pointer);
+		entity.SetPosition(tp_position_pointer);
 	}
 	else if (tp_mode == PORTAL_MODE_POSITION)
 	{
-		entity->SetPosition(tp_position);
+		entity.SetPosition(tp_position);
 	}
 	else
 	{
@@ -254,17 +252,17 @@ void Portal::Teleport(EntityType* entity)
 		return;
 	}
 
-	entity->Rotate(angle);
-	entity->SetVelocity(entity->GetVelocity().RotateClockwise(angle));
-	entity->ClearForce();
+	entity.Rotate(angle);
+	entity.SetVelocity(entity.GetVelocity().RotateClockwise(angle));
+	entity.ClearForce();
 }
-template void Portal::Teleport<Asteroid>(Asteroid* asteroid);
-template void Portal::Teleport<Bomb>(Bomb* asteroid);
-template void Portal::Teleport<Bonus>(Bonus* asteroid);
-template void Portal::Teleport<Bullet>(Bullet* asteroid);
-template void Portal::Teleport<DynamicParticle>(DynamicParticle* asteroid);
-template void Portal::Teleport<Pilot>(Pilot* asteroid);
-template void Portal::Teleport<Ship>(Ship* asteroid);
+template void Portal::Teleport<Asteroid>(Asteroid& asteroid) const;
+template void Portal::Teleport<Bomb>(Bomb& asteroid) const;
+template void Portal::Teleport<Bonus>(Bonus& asteroid) const;
+template void Portal::Teleport<Bullet>(Bullet& asteroid) const;
+template void Portal::Teleport<DynamicParticle>(DynamicParticle& asteroid) const;
+template void Portal::Teleport<Pilot>(Pilot& asteroid) const;
+template void Portal::Teleport<Ship>(Ship& asteroid) const;
 
 void Portal::operator=(Portal portal)
 {

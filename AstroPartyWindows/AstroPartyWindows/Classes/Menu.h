@@ -116,7 +116,6 @@ public:
 	void TakeData(Button* button);
 
 	void operator=(Button button);
-	void operator&=(Button button);
 
 	~Button();
 };
@@ -126,17 +125,15 @@ class Menu
 protected:
 	Vec2F position;
 	Vec2F size;
-	Button* default_buttons;
-	EngineTypes::Menu::buttons_count_t buttons_count;
+	std::vector<Button> default_buttons;
 public:
-	Button* current_buttons;
+	std::vector<Button> current_buttons;
 	Menu();
 	Menu(const Menu& menu);
 	Menu(
 		const Vec2F* position, 
 		const Vec2F* size,
-		const Button* buttons = nullptr,
-		EngineTypes::Menu::buttons_count_t buttons_count = 0);
+		const std::vector<Button>& buttons);
 
 	void AddButton(EngineTypes::Menu::buttons_count_t button_number, const Button* button);
 	//Delete all buttons from the menu.
@@ -153,8 +150,7 @@ public:
 	void Set(
 		const Vec2F* position,
 		const Vec2F* size,
-		const Button* buttons = nullptr,
-		EngineTypes::Menu::buttons_count_t buttons_count = 0);
+		const std::vector<Button>& buttons);
 	void SetPosition(Vec2F position);
 	void SetPosition(const Vec2F* position);
 	void UpdateDefaultButtons();
