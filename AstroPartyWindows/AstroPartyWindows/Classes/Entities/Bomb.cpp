@@ -101,7 +101,7 @@ Bomb::Bomb(const Bullet& bullet1, const Bullet& bullet2) :
 		DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		BOMB_DEFAULT_RESISTANCE_AIR_COEFFICIENT),
 	activation_period(75),
-	animation_tic(0),
+	animation_tic(75),
 	blinking_period(75),
 	status(BOMB_STATUS_BOOM)
 {

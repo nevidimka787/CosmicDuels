@@ -754,7 +754,9 @@ void Game::InitLevel()
 					&control_flags,					//controle flags
 					std::vector<Vec2F>(),			//heatbox vertexs array
 					ships_angles[player],			//angle
-					start_bonus));					//bonus inventory
+					start_bonus,					//bonus inventory
+					BONUS_NOTHING,					//buff inventory
+					300u));							//unbreacable period
 
 			players_count++;
 			IncrementPlayersCountInTeam(playing_teams[player]);

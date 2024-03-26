@@ -828,48 +828,44 @@ void Game::DestroyEntity(Pilot& entity)
 
 void Game::DestroySupportEntitiesBy(ControledEntity& produser)
 {
-	for (GameTypes::entities_count_t laser = 0, found_lasers = 0; found_lasers < lasers_count; laser++)
+	GameTypes::entities_count_t found = 0;
+	for (auto& entity : lasers)
 	{
-		if (lasers[laser].exist)
+		if (found >= lasers_count) break;
+		if (!entity.exist) continue;
+
+		if (entity.CreatedBy(produser))
 		{
-			if (lasers[laser].CreatedBy(produser))
-			{
-				RemoveEntity(lasers[laser]);
-			}
-			else
-			{
-				found_lasers++;
-			}
+			RemoveEntity(entity);
+			continue;
 		}
+		++found;
 	}
-	for (GameTypes::entities_count_t knife = 0, found_knifes = 0; found_knifes < knifes_count; knife++)
+	found = 0;
+	for (auto& entity : knifes)
 	{
-		if (knifes[knife].exist)
+		if (found >= knifes_count) break;
+		if (!entity.exist) continue;
+
+		if (entity.IsCreatedBy(produser))
 		{
-			if (knifes[knife].IsCreatedBy(produser))
-			{
-				RemoveEntity(knifes[knife]);
-			}
-			else
-			{
-				found_knifes++;
-			}
+			RemoveEntity(entity);
+			continue;
 		}
+		++found;
 	}
-	for (GameTypes::entities_count_t annih_area_gen = 0, found_annih_area_gens = 0; found_annih_area_gens < annih_area_gens_count; annih_area_gen++)
+	found = 0;
+	for (auto& entity : annih_area_gens)
 	{
-		if (annih_area_gens[annih_area_gen].exist)
+		if (found >= annih_area_gens_count) break;
+		if (!entity.exist) continue;
+
+		if (entity.IsCreatedBy(produser))
 		{
-			if (annih_area_gens[annih_area_gen].IsCreatedBy(produser))
-			{
-				//found_annih_area_gens++;
-				RemoveEntity(annih_area_gens[annih_area_gen]);
-			}
-			else
-			{
-				found_annih_area_gens++;
-			}
+			RemoveEntity(entity);
+			continue;
 		}
+		++found;
 	}
 }
 

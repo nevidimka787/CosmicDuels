@@ -2029,7 +2029,7 @@ void Game::PilotsKilledBy<Bullet>(std::vector<Bullet>& killers, GameTypes::entit
 			if (killer.is_ignore != BULLET_IGNORE_NOTHING || !pilot.IsCollision(&killer))
 			{
 				++bullets_found;
-				break;
+				continue;
 			}
 			if (!(game_rules & GAME_RULE_FRENDLY_FIRE) && killer.CreatedByTeam(pilot))
 			{
@@ -2254,7 +2254,7 @@ void Game::ShipsDestroedByBombsOrActivateBombs()
 				log_data_mtx.unlock();
 				dynamic_particles_array_mtx.unlock();
 				bonuses_array_mtx.unlock();
-				continue;
+				break;
 			}
 			if (
 				!bomb.IsActive() &&
