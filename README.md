@@ -5,7 +5,7 @@ So, I wrote new engine on C++ by myself using OpenGL as graphic API.
 
 # Instalation
 Just unzip CosmicDuelsEXE.zip to empty folder.
-Actual file: https://cloud.mail.ru/public/Nmh3/cwnjnQdNz
+Actual file: https://cloud.mail.ru/public/Yv3r/vKq1YNcM7
 
 # Technique information
 For starting project use Visual Studio 2022.
