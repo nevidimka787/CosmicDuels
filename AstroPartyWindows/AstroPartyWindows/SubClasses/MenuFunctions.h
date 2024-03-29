@@ -60,6 +60,8 @@ public:
 		std::vector<GameTypes::tic_t>& double_clk_timers,
 		std::vector<bool>& burnout_flags);
 
+	void UpdateOptionsMenu();
+
 	bool ShouldExit();
 
 	~MenuFunctions();
@@ -86,6 +88,6 @@ public:
 	Menu* game_p__pause_menu;
 	Menu* game_p__ships_select_menu;
 	Menu* game_p__map_pull_select_menu;
-	Menu* game_p__spawning_objects_select_menu;
+	Menu* game_p__objects_pull_menu;
 	Menu* game_p__ships_control_menu;
 };

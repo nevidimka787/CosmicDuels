@@ -23,86 +23,93 @@ void::MenuFunctions::Back()
 	if (*game_p__current_active_menu == game_p__main_menu)
 	{
 		Exit();
+		return;
 	}
-	else if (*game_p__current_active_menu == game_p__option_menu || *game_p__current_active_menu == game_p__ships_select_menu)
+	if (
+		*game_p__current_active_menu == game_p__option_menu ||
+		*game_p__current_active_menu == game_p__ships_select_menu)
 	{
 		OpenMainMenu();
+		return;
 	}
-	else if (*game_p__current_active_menu == game_p__map_pull_select_menu ||
-		*game_p__current_active_menu == game_p__spawning_objects_select_menu ||
+	if (
+		*game_p__current_active_menu == game_p__map_pull_select_menu ||
+		*game_p__current_active_menu == game_p__objects_pull_menu ||
 		*game_p__current_active_menu == game_p__bonus_pull_select_menu)
 	{
 		OpenOptionsMenu();
+		return;
 	}
-	else if (*game_p__current_active_menu == game_p__ships_control_menu)
+	if (*game_p__current_active_menu == game_p__ships_control_menu)
 	{
 		*game_p__pause_round = true;
 		OpenPauseMenu();
+		return;
 	}
-	else if (*game_p__current_active_menu == game_p__pause_menu)
+	if (*game_p__current_active_menu == game_p__pause_menu)
 	{
 		*game_p__pause_round = false;
 		*game_p__current_active_menu = game_p__ships_control_menu;
+		return;
 	}
 }
 
 void MenuFunctions::OpenBonusPullSelectMenu()
 {
 	*game_p__current_active_menu = game_p__bonus_pull_select_menu;
-	Vec2F position;
-	(*game_p__current_active_menu)->SetPosition(&position);
+	
+	(*game_p__current_active_menu)->SetPosition(std::move(Vec2F()));
 }
 
 void MenuFunctions::OpenOptionsMenu()
 {
+	UpdateOptionsMenu();
 	*game_p__current_active_menu = game_p__option_menu;
-	Vec2F position;
-	(*game_p__current_active_menu)->SetPosition(&position);
+	
+	(*game_p__current_active_menu)->SetPosition(std::move(Vec2F()));
 }
 
 void MenuFunctions::OpenMainMenu()
 {
 	*game_p__current_active_menu = game_p__main_menu;
-	Vec2F position;
-	(*game_p__current_active_menu)->SetPosition(&position);
+	
+	(*game_p__current_active_menu)->SetPosition(std::move(Vec2F()));
 }
 
 void MenuFunctions::OpenPauseMenu()
 {
 	*game_p__current_active_menu = game_p__pause_menu;
-	Vec2F position;
-	(*game_p__current_active_menu)->SetPosition(&position);
+	
+	(*game_p__current_active_menu)->SetPosition(std::move(Vec2F()));
 }
 
 void MenuFunctions::OpenSheepsSelectMenu()
 {
 	*game_p__current_active_menu = game_p__ships_select_menu;
-	Vec2F position;
-	(*game_p__current_active_menu)->SetPosition(&position);
+	
+	(*game_p__current_active_menu)->SetPosition(std::move(Vec2F()));
 }
 
 void MenuFunctions::OpenMapPullSelectMenu()
 {
 	*game_p__current_active_menu = game_p__map_pull_select_menu;
-	Vec2F position;
-	(*game_p__current_active_menu)->SetPosition(&position);
+	
+	(*game_p__current_active_menu)->SetPosition(std::move(Vec2F()));
 }
 
 void MenuFunctions::OpenSpawnObjectsSelectMenu()
 {
-	*game_p__current_active_menu = game_p__spawning_objects_select_menu;
-	Vec2F position;
-	(*game_p__current_active_menu)->SetPosition(&position);
+	*game_p__current_active_menu = game_p__objects_pull_menu;
+	
+	(*game_p__current_active_menu)->SetPosition(std::move(Vec2F()));
 }
 
 void MenuFunctions::OpenSheepsControlMenu()
 {
 	*game_p__current_active_menu = game_p__ships_control_menu;
-	Vec2F position;
-	(*game_p__current_active_menu)->SetPosition(&position);
+	
+	(*game_p__current_active_menu)->SetPosition(std::move(Vec2F()));
 }
-
-
 
 void MenuFunctions::StartMatch()
 {
@@ -177,7 +184,7 @@ inline void SetTextToButton(Menu* menu, EngineTypes::Button::id_t button_id, con
 			std::cout << "Set text: " << text << std::endl;
 			if (text_size)
 			{
-				menu->current_buttons[i].text_size = text_size;
+				menu->current_buttons[i].SetTextSize(text_size);
 			}
 			return;
 		}
@@ -238,33 +245,33 @@ void MenuFunctions::MainMenuFunction(Vec2F clk_pos, uint8_t clk_status)
 		if (clk_status == OPEN_GL_REALISATION_BUTTON_LOST)
 		{
 			current_button->SetStatus(BUTTON_STATUS_SELECT, false);
-			goto CycleEnd;
+			break;
 		}
-		if (current_button->GetStatus(BUTTON_STATUS_ACTIVE) && current_button->HavePoint(clk_pos))
+		if (!current_button->GetStatus(BUTTON_STATUS_ACTIVE) || !current_button->HavePoint(clk_pos))
 		{
-			switch(clk_status)
+			continue;
+		}
+		switch(clk_status)
+		{
+		case GLFW_PRESS:
+			current_button->SetStatus(BUTTON_STATUS_SELECT, true);
+			return;
+		case GLFW_RELEASE:
+			current_button->SetStatus(BUTTON_STATUS_SELECT, false);
+			switch (current_button->GetId())
 			{
-			case GLFW_PRESS:
-				current_button->SetStatus(BUTTON_STATUS_SELECT, true);
+			case BUTTON_ID__START_MATCH:
+				OpenSheepsSelectMenu();
 				return;
-			case GLFW_RELEASE:
-				current_button->SetStatus(BUTTON_STATUS_SELECT, false);
-				switch (current_button->GetId())
-				{
-				case BUTTON_ID__START_MATCH:
-					OpenSheepsSelectMenu();
-					return;
-				case BUTTON_ID__GO_TO_OPTINS_MENU:
-					OpenOptionsMenu();
-					return;
-				case BUTTON_ID__EXIT:
-					Exit();
-				default:
-					return;
-				}
+			case BUTTON_ID__GO_TO_OPTINS_MENU:
+				OpenOptionsMenu();
+				return;
+			case BUTTON_ID__EXIT:
+				Exit();
+			default:
+				return;
 			}
 		}
-	CycleEnd:;
 	}
 }
 
@@ -328,7 +335,7 @@ void MenuFunctions::OptionMenuFunction(Vec2F clk_pos, uint8_t clk_status)
 					current_button->SetStatus(BUTTON_STATUS_TRUE, ChangeOption(GAME_RULE_FRIEDNLY_SHEEP_CAN_RESTORE));
 					return;
 				case BUTTON_ID__SET_ACTIVE_FRIENDLY_FIRE:
-					current_button->SetStatus(BUTTON_STATUS_TRUE, ChangeOption(GAME_RULE_FRENDLY_FIRE));
+					current_button->SetStatus(BUTTON_STATUS_TRUE, ChangeOption(GAME_RULE_FRIENDLY_FIRE));
 					return;
 				case BUTTON_ID__SET_NEED_KILL_PILOT:
 					option = ChangeOption(GAME_RULE_NEED_KILL_PILOT);
@@ -431,7 +438,7 @@ void MenuFunctions::ShipsSelectMenuFunction(Vec2F clk_pos, uint8_t clk_status)
 				case BUTTON_ID__SELECT_SHIP_2:
 				case BUTTON_ID__SELECT_SHIP_3:
 				case BUTTON_ID__SELECT_SHIP_4:
-					switch (current_button->status & (BUTTON_STATUS_CUSTOM_RED | BUTTON_STATUS_CUSTOM_GREEN | BUTTON_STATUS_CUSTOM_BLUE | BUTTON_STATUS_CUSTOM_PURPURE))
+					switch (current_button->GetStatus() & (BUTTON_STATUS_CUSTOM_RED | BUTTON_STATUS_CUSTOM_GREEN | BUTTON_STATUS_CUSTOM_BLUE | BUTTON_STATUS_CUSTOM_PURPURE))
 					{
 					case BUTTON_STATUS_FALSE:
 						current_button->SetOnlyCustomStatus(BUTTON_STATUS_CUSTOM_RED | BUTTON_STATUS_ACTIVE);
@@ -576,9 +583,9 @@ void MenuFunctions::MapPullSelectMenuFunction(Vec2F clk_pos, uint8_t clk_status)
 void MenuFunctions::SpawnObjectsSelectMenuFunction(Vec2F clk_pos, uint8_t clk_status)
 {
 	Button* current_button;
-	for (EngineTypes::Menu::buttons_count_t i = 0; i < game_p__spawning_objects_select_menu->GetButtonsCount(); i++)
+	for (EngineTypes::Menu::buttons_count_t i = 0; i < game_p__objects_pull_menu->GetButtonsCount(); i++)
 	{
-		current_button = &game_p__spawning_objects_select_menu->current_buttons[i];
+		current_button = &game_p__objects_pull_menu->current_buttons[i];
 		if (clk_status == OPEN_GL_REALISATION_BUTTON_LOST)
 		{
 			current_button->SetStatus(BUTTON_STATUS_SELECT, false);
@@ -705,6 +712,60 @@ void MenuFunctions::ShipsControlMenuFunction(
 		else
 		{
 			rotate_flags[id] = false;
+		}
+	}
+}
+
+void MenuFunctions::UpdateOptionsMenu()
+{
+	for (EngineTypes::Menu::buttons_count_t i = 0; i < game_p__option_menu->GetButtonsCount(); i++)
+	{
+		Button& button = game_p__option_menu->current_buttons[i];
+
+		switch (button.GetId())
+		{
+		case BUTTON_ID__GO_TO_SELECT_BONUSES_MENU:
+			if (!(*game_p__game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_BONUS))		button.SetStatus(BUTTON_STATUS_ACTIVE, false);
+			break;
+		case BUTTON_ID__SET_SPAWN_THIS_BONUS:
+			if (*game_p__game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_BONUS)			button.SetStatus(BUTTON_STATUS_TRUE, true);
+			break;
+		case BUTTON_ID__SET_SPAWN_THIS_DIFFERENT_BONUSES:
+			if (*game_p__game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_DIFFERENT_BONUS) button.SetStatus(BUTTON_STATUS_TRUE, true);
+			if (!(*game_p__game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_BONUS))		button.SetStatus(BUTTON_STATUS_ACTIVE, false);
+			break;
+		case BUTTON_ID__SET_TRIPLE_BONUSES:
+			if (*game_p__game_rules & GAME_RULE_TRIPLE_BONUSES)						button.SetStatus(BUTTON_STATUS_TRUE, true);
+			if (!(*game_p__game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_BONUS))		button.SetStatus(BUTTON_STATUS_ACTIVE, false);
+			break;
+		case BUTTON_ID__SET_SPAWN_THIS_TRIPLE_BAFF:
+			if (*game_p__game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_TRIPLE)			button.SetStatus(BUTTON_STATUS_TRUE, true);
+			break;
+		case BUTTON_ID__SET_SPAWN_THIS_SHIELD_BAFF:
+			if (*game_p__game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_SHIELD)			button.SetStatus(BUTTON_STATUS_TRUE, true);
+			break;
+		case BUTTON_ID__SET_RANDOM_SPAWN:
+			if (*game_p__game_rules & GAME_RULE_PLAYERS_SPAWN_POSITION_RANDOMIZE)	button.SetStatus(BUTTON_STATUS_TRUE, true);
+			break;
+		case BUTTON_ID__SET_RANDOM_SPAWN_DIRECTION:
+			if (*game_p__game_rules & GAME_RULE_PLAYERS_SPAWN_DIRECTION_RANDOMIZE)	button.SetStatus(BUTTON_STATUS_TRUE, true);
+			break;
+		case BUTTON_ID__SET_KNIFES_CAN_DESTROY_BULLETS:
+			if (*game_p__game_rules & GAME_RULE_KNIFES_CAN_DESTROY_BULLETS)			button.SetStatus(BUTTON_STATUS_TRUE, true);
+			break;
+		case BUTTON_ID__SET_NEED_KILL_PILOT:
+			if (*game_p__game_rules & GAME_RULE_NEED_KILL_PILOT)					button.SetStatus(BUTTON_STATUS_TRUE, true);
+			break;
+		case BUTTON_ID__SET_FRIEDLY_SHEEP_CAN_RESTORE:
+			if (*game_p__game_rules & GAME_RULE_FRIEDNLY_SHEEP_CAN_RESTORE)			button.SetStatus(BUTTON_STATUS_TRUE, true);
+			if (!(*game_p__game_rules & GAME_RULE_NEED_KILL_PILOT))					button.SetStatus(BUTTON_STATUS_ACTIVE, false);
+			break;
+		case BUTTON_ID__SET_ACTIVE_FRIENDLY_FIRE:
+			if (*game_p__game_rules & GAME_RULE_FRIENDLY_FIRE)						button.SetStatus(BUTTON_STATUS_TRUE, true);
+			break;
+		case BUTTON_ID__SET_ACTIVE_BALANCE:
+			if (*game_p__game_rules & GAME_RULE_BALANCE_ACTIVE)						button.SetStatus(BUTTON_STATUS_TRUE, true);
+			break;
 		}
 	}
 }

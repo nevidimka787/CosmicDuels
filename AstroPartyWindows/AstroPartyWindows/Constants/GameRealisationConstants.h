@@ -174,7 +174,7 @@ turrets, mega lasers
 //NOT USE
 #define GAME_RULE_TEAM_PLAY								(1u << 7u)
 //Palyer can kill player from same team. 
-#define GAME_RULE_FRENDLY_FIRE							(1u << 8u)
+#define GAME_RULE_FRIENDLY_FIRE							(1u << 8u)
 //Player can restor player frome same team.
 #define GAME_RULE_FRIEDNLY_SHEEP_CAN_RESTORE			(1u << 9u)
 //If the rule apply then pilots can autorestore and for completing math need kill pilots

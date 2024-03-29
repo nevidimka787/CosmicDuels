@@ -3,7 +3,8 @@
 out vec4 frag_color;
 
 in vec2 pixel_position;
-in vec2 texture_position;
+in vec2 position_on_text_area;
+in vec2 wrap_size;
 
 uniform vec2 position;//position
 uniform vec2 size;//size
@@ -15,58 +16,104 @@ uniform int text_length;
 uniform float scale;
 
 uniform int text[500];
+uniform float corners[256];
+uniform int corners_count;
 
 uniform sampler2D text_texture;
 
 vec2 curent_texture_position;
 
-vec2 GetCellPosition(int cell_id, int index)
+bool IsIntersect(vec2 point1, vec2 point2, vec2 beam_pos, vec2 beam_vec)
 {
-	return vec2(
-		(cell_id % 16 - index) / 16.0f,
-		(cell_id / 16) / 16.0f);
+	vec2 seg_dir = normalize(point1 - point2);
+	vec2 beam_dir = normalize(beam_vec);
+
+	float denomination = cross(vec3(seg_dir, 0.0), vec3(beam_dir, 0.0)).z;
+
+	if (abs(denomination) < 0.00001)
+	{
+		return false;
+	}
+
+	vec2 d = beam_pos - point1;
+	float t = cross(vec3(d, 0.0), vec3(beam_vec, 0.0)).z / denomination;
+	float u = cross(vec3(d, 0.0), vec3(seg_dir, 0.0)).z / denomination;
+
+	return (t >= 0.0 && t <= 1.0 && u >= 0.0);
 }
 
-bool TexturePositionInNeedCell(vec2 position, int cell_id)
+bool IsPixelInTheBox()
 {
-	return position.x > (cell_id % 16) / 16.0f &&
+	bool inside = false;
+    int i, j = corners_count - 1;
+	vec2 point = pixel_position;
+
+    for (i = 0; i < corners_count; j = i++) {
+		vec2 polygon_i = vec2(corners[i * 2], corners[i * 2 + 1]);
+		vec2 polygon_j = vec2(corners[j * 2], corners[j * 2 + 1]);
+
+        if (((polygon_i.y > point.y) != (polygon_j.y > point.y)) &&
+            point.x < 
+			(polygon_j.x - polygon_i.x) * (point.y - polygon_i.y) / 
+			(polygon_j.y - polygon_i.y) + polygon_i.x)
+		{
+            inside = !inside;
+        }
+    }
+    return inside;
+}
+
+vec2 GetCellPosition(int symbol)
+{
+	return vec2(
+		(symbol % 16) / 16.0f,
+		(symbol / 16) / 16.0f);
+}
+
+bool TexturePositionInRightCell(vec2 position, int cell_id)
+{
+	return 
+		position.x > (cell_id % 16) / 16.0f &&
 		position.x < (cell_id % 16 + 1) / 16.0f &&
 		position.y > (cell_id / 16) / 16.0f &&
 		position.y < (cell_id / 16 + 1) / 16.0f;
 }
 
-bool PixelInTextarea(vec2 pixel_pos, vec2 textarea_pos)
-{
-	return pixel_pos.x < textarea_pos.x + text_size / 200.0f / abs(size.x) * text_length &&
-	pixel_pos.x > textarea_pos.x - text_size / 200.0f / abs(size.x) * text_length &&
-	pixel_pos.y < (textarea_pos.y + text_size / 200.0f / abs(size.y)) * scale &&
-	pixel_pos.y > (textarea_pos.y - text_size / 200.0f / abs(size.y)) * scale;
-}
-
 void main()
 {
+	if (!IsPixelInTheBox()) discard;
+
 	bool white = false; 
-	vec2 current_texture_position;
-	if(PixelInTextarea(pixel_position, vec2(0.5f, 0.5f)))
+
+	frag_color = vec4(length(pixel_position * size), 0.0f, 0.0f, 1.0f);
+
+	if (
+		position_on_text_area.x < 0.0 ||
+		position_on_text_area.y < 0.0 ||
+		position_on_text_area.x > text_length ||
+		position_on_text_area.y > 1.0)
 	{
-		for(int letter = 0; letter < text_length; letter++)
-		{
-			current_texture_position = texture_position + GetCellPosition(text[letter], letter);
-			if(texture(text_texture, current_texture_position).z > 0.9f &&
-				TexturePositionInNeedCell(current_texture_position, text[letter]))
-			{
-				frag_color = vec4(0.95f, 0.95f, 0.95f, 1.0f);
-				white = true;
-			}
-		}
-		if(!white)
-		{
-			frag_color = vec4(color * 0.7f, 1.0f);
-		}
+		frag_color = vec4(color, 1.0);
+		return;
 	}
-	else
+
+	frag_color = vec4(color * 0.7, 1.0);
+
+	for(int letter = 0; letter < text_length; letter++)
 	{
-		frag_color = vec4(color, 1.0f);
+		int letter_number = int(position_on_text_area.x);
+		if (letter_number > letter) continue;
+
+		vec2 position_on_texture = position_on_text_area - vec2(letter_number, 0.0); // trunck position to [0;1]
+		position_on_texture /= 16.0f; // scale position to [1; 1/16] because texture has 16 by 16 symbols
+		position_on_texture += GetCellPosition(text[letter]); // select cell at the texture
+		if(
+			texture(text_texture, position_on_texture).z > 0.9f &&
+			TexturePositionInRightCell(position_on_texture, text[letter]))
+		{
+			frag_color = vec4(0.95f, 0.95f, 0.95f, 1.0f);
+		}
+		return;
 	}
 }
 

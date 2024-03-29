@@ -159,17 +159,14 @@ void OpenGL::FramebufferSizeCallback(GLFWwindow* window, int width, int height)
 
 void OpenGL::LimitMenuPosition(Menu* menu)
 {
-    Vec2F new_position = Vec2F();
-    new_position.y = -menu->GetSize().y - 2.0f / window_scale;
-    //std::cout << new_position.y << std::endl;
-    if (menu->GetPosition().y > new_position.y)
+    const float& egde_y = -menu->GetSize().y - 2.0f / window_scale;
+    if (menu->GetPosition().y > egde_y)
     {
-        menu->SetPosition(&new_position);
+        menu->SetPosition(Vec2F(0.0f, egde_y));
     }
     if (menu->GetPosition().y < 0.0f)
     {
-        new_position.y = 0.0f;
-        menu->SetPosition(&new_position);
+        menu->SetPosition(Vec2F(0.0f, 0.0f));
     }
 }
 
@@ -266,10 +263,10 @@ void OpenGL::ProcessInput(GLFWwindow* window)
     {
         glfwGetCursorPos(window, &cursore_current_position->x, &cursore_current_position->y);
 
-        Vec2D move_vector_d = *cursore_current_position - *cursore_last_position;
-        Vec2F move_vector = Vec2F(0.0f, (float)move_vector_d.y / window_height * -2.0f / window_scale);
+        const auto& move_vector_d = *cursore_current_position - *cursore_last_position;
+        const auto& move_vector = Vec2F(0.0f, static_cast<float>(move_vector_d.y) / window_height * -2.0f / window_scale);
 
-        (*game_p__current_active_menu)->Move(&move_vector);
+        (*game_p__current_active_menu)->Move(move_vector);
         LimitMenuPosition(*game_p__current_active_menu);
         *cursore_last_position = *cursore_current_position;
     }
@@ -349,23 +346,13 @@ void OpenGL::InitBuffers()
     turret_buffer.Initialisate(points, 6);
 
     points[0].Set(1.0f, 1.0f);
-    points[1].Set(0.0f, 1.0f);
-    points[2].Set(1.0f, 0.0f);
-    points[3].Set(0.0f, 0.0f);
-    points[4].Set(0.0f, 1.0f);
-    points[5].Set(1.0f, 0.0f);
+    points[1].Set(-1.0f, 1.0f);
+    points[2].Set(1.0f, -1.0f);
+    points[3].Set(-1.0f, -1.0f);
+    points[4].Set(-1.0f, 1.0f);
+    points[5].Set(1.0f, -1.0f);
 
     button_buffer.Initialisate(points, 6);
-
-    points[0].Set(0.0f, 0.0f);
-    points[1].Set(1.0f, 0.0f);
-    points[2].Set(0.5f, 0.5f);
-    points[3].Set(0.0f, 0.0f);
-    points[4].Set(0.0f, 1.0f);
-    points[5].Set(0.5f, 0.5f);
-
-    button_horisontal_buffer.Initialisate(&points[0], 3);
-    button_vertical_buffer.Initialisate(&points[3], 3);
 
     points[0].Set(1.0f, 0.02f);
     points[1].Set(0.0f, 0.02f);
@@ -1042,22 +1029,14 @@ void OpenGL::DrawObject(const Map::Polygon* polygon, bool update_shader)
 }
 
 
-void OpenGL::DrawObject(const Button& button, bool button_is_controller, bool update_shader)
+void OpenGL::DrawObject(const Button& button, bool update_shader)
 {
     if (update_shader)
     {
-        if (button_is_controller)
-        {
-            controler_shader.Use();
-            controler_shader.SetUniform("scale", window_scale);
-        }
-        else
-        {
-            button_buffer.Use();
-            button_shader.Use();
-            symbols_texture.Use();
-            button_shader.SetUniform("scale", window_scale);
-        }
+        button_buffer.Use();
+        button_shader.Use();
+        symbols_texture.Use();
+        button_shader.SetUniform("scale", window_scale);
     }
     Color3F color;
     if (button.GetStatus(BUTTON_STATUS_ACTIVE))
@@ -1098,32 +1077,15 @@ void OpenGL::DrawObject(const Button& button, bool button_is_controller, bool up
 
     //StaticBuffer buffer = button_buffers.button_buffers[GetButtonIdInArray(&button_buffers, button.GetId())];
 
-    if (button_is_controller)
-    {
-        controler_shader.SetUniform("position", button.GetPosition());
-        controler_shader.SetUniform("size", button.GetSize());
-        controler_shader.SetUniform("color", &color);
-        if (button.GetAreaP()->GetPointsArrayP()[1].x > 0.5f * BUTTON_CONTROLER_SIZE)
-        {
-            button_horisontal_buffer.Use();
-            button_horisontal_buffer.Draw();
-        }
-        else
-        {
-            button_vertical_buffer.Use();
-            button_vertical_buffer.Draw();
-        }
-    }
-    else
-    {
-        button_shader.SetUniform("position", button.GetPosition());
-        button_shader.SetUniform("size", button.GetSize());
-        button_shader.SetUniform("color", &color);
-        button_shader.SetUniform("text", button.GetText(), button.GetTextLength());
-        button_shader.SetUniform("text_length", button.GetTextLength());
-        button_shader.SetUniform("text_size", button.text_size);
-        button_buffer.Draw();
-    }
+    button_shader.SetUniform("position", button.GetPosition());
+    button_shader.SetUniform("size", button.GetSize());
+    button_shader.SetUniform("color", &color);
+    button_shader.SetUniform("text", button.GetText(), button.GetTextLength());
+    button_shader.SetUniform("text_length", button.GetTextLength());
+    button_shader.SetUniform("text_size", button.GetTexSize());
+    button_shader.SetUniform("corners", button.GetAreaP()->GetArrayP());
+    button_shader.SetUniform("corners_count", static_cast<int>(button.GetAreaP()->GetArrayP().size()));
+    button_buffer.Draw();
 }
 
 //Draw functions

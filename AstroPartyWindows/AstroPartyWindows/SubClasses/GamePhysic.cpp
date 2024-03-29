@@ -2031,7 +2031,7 @@ void Game::PilotsKilledBy<Bullet>(std::vector<Bullet>& killers, GameTypes::entit
 				++bullets_found;
 				continue;
 			}
-			if (!(game_rules & GAME_RULE_FRENDLY_FIRE) && killer.CreatedByTeam(pilot))
+			if (!(game_rules & GAME_RULE_FRIENDLY_FIRE) && killer.CreatedByTeam(pilot))
 			{
 				RemoveEntity(killer);
 				continue;
@@ -2065,7 +2065,7 @@ void Game::PilotsKilledBy(std::vector<Entity_T>& killers, GameTypes::entities_co
 			++knifes_found;
 
 			if (
-				!(game_rules & GAME_RULE_FRENDLY_FIRE) && killer.IsCreatedByTeam(pilot) ||
+				!(game_rules & GAME_RULE_FRIENDLY_FIRE) && killer.IsCreatedByTeam(pilot) ||
 				!pilot.IsCollision(killer.GetSegment())) continue;
 
 			dynamic_particles_array_mtx.lock();
@@ -2215,7 +2215,7 @@ void Game::ShipsRespawnOrDestroyPilots()
 				continue;
 			}
 			
-			if (!(game_rules & GAME_RULE_FRENDLY_FIRE) && same_team || !collision) continue;
+			if (!(game_rules & GAME_RULE_FRIENDLY_FIRE) && same_team || !collision) continue;
 			
 			dynamic_particles_array_mtx.lock();
 			log_data_mtx.lock();
@@ -2301,7 +2301,7 @@ void Game::ShipsDestroedByBullets()
 				continue;
 			}
 
-			if (!(game_rules & GAME_RULE_FRENDLY_FIRE) && bullet.CreatedByTeam(ship))
+			if (!(game_rules & GAME_RULE_FRIENDLY_FIRE) && bullet.CreatedByTeam(ship))
 			{
 				RemoveEntity(bullet);
 				continue;
@@ -2347,7 +2347,7 @@ void Game::ShipsDestroedByKnifes()
 			if (!knife.exist) continue;
 
 			if (
-				!(game_rules & GAME_RULE_FRENDLY_FIRE) && knife.IsCreatedByTeam(ship) ||
+				!(game_rules & GAME_RULE_FRIENDLY_FIRE) && knife.IsCreatedByTeam(ship) ||
 				ship.IsUnbrakable() ||
 				knife.IsCreatedBy(ship) ||
 				!ship.IsCollision(knife.GetSegment()))
@@ -2389,7 +2389,7 @@ void Game::ShipsDestroedByLasers()
 			if (!laser.exist) continue;
 
 			if (
-				!(game_rules & GAME_RULE_FRENDLY_FIRE) && laser.IsCreatedByTeam(ship) && !laser.IsCreatedBy(ship) ||
+				!(game_rules & GAME_RULE_FRIENDLY_FIRE) && laser.IsCreatedByTeam(ship) && !laser.IsCreatedBy(ship) ||
 				ship.IsUnbrakable() ||
 				!laser.GetProperty(LASER_PROPERTY_FREE_FROM_HOST) && laser.IsCreatedBy(ship) ||
 				!ship.IsCollision(laser.GetSegment()))

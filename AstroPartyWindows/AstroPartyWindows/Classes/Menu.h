@@ -7,6 +7,8 @@
 #include "../Types/AllTypes.h"
 #include "../Constants/AllConstants.h"
 
+#include <vector>
+
 class Button;
 class Menu;
 class Area;
@@ -14,24 +16,20 @@ class Area;
 class Area
 {
 private:
-	Vec2F* points;
-	EngineTypes::Area::points_count_t points_count;
-
-	//Vec2F horisontal_vector;
-	//EngineTypes::Area::points_count_t intersections_count;
+	std::vector<Vec2F> points;
 public:
 	Area();
 	Area(const Area& area);
-	Area(const Vec2F* points, EngineTypes::Area::points_count_t points_count);
+	Area(const std::vector<Vec2F>& points);
 
 	EngineTypes::Area::points_count_t GetPointsCount() const;
-	const Vec2F* GetPointsArrayP() const;
-	bool HavePointInside(Vec2F point) const;
+	bool HavePointInside(const Vec2F& point) const;
 	bool HavePointInside(const Vec2F* point) const;
+	const std::vector<Vec2F>& GetArrayP() const;
 	void Set(const Area* area);
-	void Set(const Vec2F* points, EngineTypes::Area::points_count_t points_count);
+	void Set(const std::vector<Vec2F>& points);
 
-	void operator=(Area area);
+	void operator=(const Area& area);
 
 	~Area();
 };
@@ -43,29 +41,20 @@ protected:
 	Vec2F position;
 	Vec2F size;
 	Area area;
-	EngineTypes::Button::text_t* text;
-	EngineTypes::Button::text_length_t text_length;
+	std::string text;
 	EngineTypes::Button::id_t id;
-public:
 	uint8_t text_size;
 	EngineTypes::Button::status_t status;
+public:
 
 	Button();
 	Button(const Button& button);
 	Button(
 		EngineTypes::Button::id_t id,
-		Vec2F position,
-		Vec2F size,
-		const Area* area,
-		const char* text = "",
-		EngineTypes::Button::text_size_t text_size = BUTTON_DEFAULT_TEXT_SIZE,
-		EngineTypes::Button::status_t status = BUTTON_STATUS_FALSE);
-	Button(
-		EngineTypes::Button::id_t id,
-		const Vec2F* position,
-		const Vec2F* size,
-		const Area* area,
-		const char* text = "",
+		const Vec2F& position,
+		const Vec2F& size,
+		const Area& area,
+		const std::string& text = "",
 		EngineTypes::Button::text_size_t text_size = BUTTON_DEFAULT_TEXT_SIZE,
 		EngineTypes::Button::status_t status = BUTTON_STATUS_FALSE);
 
@@ -73,49 +62,34 @@ public:
 	EngineTypes::Button::id_t GetId() const;
 	Vec2F GetPosition() const;
 	Vec2F GetSize() const;
+	EngineTypes::Button::status_t GetStatus() const;
 	bool GetStatus(EngineTypes::Button::status_t status_mask) const;
 	//Return pointer to memory space this text.
-	EngineTypes::Button::text_t* GetText() const;
-	//Create a new memory space and return pointer to it.
-	char* GetTextC() const;
-	//Create a new memory space and return pointer to it.
-	EngineTypes::Button::text_t* GetTextU() const;
+	std::string GetText() const;
 	EngineTypes::Button::text_length_t GetTextLength() const;
-	bool HavePoint(Vec2F point) const;
-	bool HavePoint(const Vec2F* point) const;
-	void Move(Vec2F move_vector);
-	void Move(const Vec2F* move_vector);
-	void Set(const Button* button);
+	EngineTypes::Button::text_size_t GetTexSize() const;
+	bool HavePoint(const Vec2F& point) const;
+	void Move(const Vec2F& move_vector);
 	void Set(
 		EngineTypes::Button::id_t id,
-		Vec2F position,
-		Vec2F size,
-		const Area* area,
-		const char* text = "",
+		const Vec2F& position,
+		const Vec2F& size,
+		const Area& area,
+		const std::string& text = "",
 		EngineTypes::Button::text_size_t text_size = BUTTON_DEFAULT_TEXT_SIZE,
 		EngineTypes::Button::status_t status = BUTTON_STATUS_FALSE);
-	void Set(
-		EngineTypes::Button::id_t id, 
-		const Vec2F* position, 
-		const Vec2F* size,
-		const Area* area,
-		const char* text = "",
-		EngineTypes::Button::text_size_t text_size = BUTTON_DEFAULT_TEXT_SIZE,
-		EngineTypes::Button::status_t status = BUTTON_STATUS_FALSE);
-	void SetArea(const Area* area);
+	void SetArea(const Area& area);
 	void SetId(EngineTypes::Button::id_t id);
 	void SetOnlyCustomStatus(EngineTypes::Button::status_t status_mask);
-	void SetPosition(Vec2F* position);
-	void SetSize(Vec2F* size);
+	void SetPosition(const Vec2F& position);
+	void SetSize(const Vec2F& size);
 	void SetStatus(EngineTypes::Button::status_t status_mask, bool value);
-	void SetText(const char* text);
-	void SetText(const char* text, EngineTypes::Button::text_length_t text_length);
-	void SetText(const EngineTypes::Button::text_t* text);
-	void SetText(const EngineTypes::Button::text_t* text, EngineTypes::Button::text_length_t text_length);
+	void SetText(const std::string& text);
+	void SetTextSize(EngineTypes::Button::text_size_t text_size);
 	//not change id and statuse
-	void TakeData(Button* button);
+	void TakeData(const Button& button);
 
-	void operator=(Button button);
+	void operator=(const Button& button);
 
 	~Button();
 };
@@ -135,7 +109,7 @@ public:
 		const Vec2F* size,
 		const std::vector<Button>& buttons);
 
-	void AddButton(EngineTypes::Menu::buttons_count_t button_number, const Button* button);
+	void AddButton(EngineTypes::Menu::buttons_count_t button_number, const Button& button);
 	//Delete all buttons from the menu.
 	void Clear();
 	void DeleteButton(EngineTypes::Menu::buttons_count_t button_number);
@@ -143,17 +117,16 @@ public:
 	Vec2F GetPosition() const;
 	Vec2F GetSize() const;
 	void HardRecalculate();
-	void Move(Vec2F move_vector);
-	void Move(const Vec2F* move_vector);
+	void Move(const Vec2F& move_vector);
 	void Recalculate();
-	void Set(const Menu* menu);
 	void Set(
-		const Vec2F* position,
-		const Vec2F* size,
+		const Vec2F& position,
+		const Vec2F& size,
 		const std::vector<Button>& buttons);
-	void SetPosition(Vec2F position);
-	void SetPosition(const Vec2F* position);
+	void SetPosition(const Vec2F& position);
 	void UpdateDefaultButtons();
+
+	void operator=(const Menu& menu);
 
 	~Menu();
 };

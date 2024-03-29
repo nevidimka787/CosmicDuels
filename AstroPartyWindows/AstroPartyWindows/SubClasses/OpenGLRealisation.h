@@ -227,7 +227,7 @@ public:
 	void DrawObject(const Map::Polygon* polygon, bool update_shader = false);
 
 	//The function draw menu's button.
-	void DrawObject(const Button& button, bool button_is_controller = false, bool update_shader = false);
+	void DrawObject(const Button& button, bool update_shader = false);
 
 	template<typename Object_T, typename counter_t >
 	void DrawObjects(const std::vector<Object_T>* objects, const counter_t* objects_count);

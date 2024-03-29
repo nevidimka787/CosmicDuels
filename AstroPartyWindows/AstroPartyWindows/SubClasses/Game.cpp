@@ -802,192 +802,276 @@ void Game::InitLevel()
 	//ResetAllThreadEvents();
 }
 
+void InitMenu_MainMenu(Menu& main_menu)
+{
+	const auto& area = Area({
+	Vec2F(-1.0f),
+	Vec2F(-1.0f, 1.0f),
+	Vec2F(1.0f),
+	Vec2F(1.0f, -1.0f)
+	});
+	const auto& buttons = {
+		Button(BUTTON_ID__START_MATCH,		 Vec2F( 0.0f,   0.6f),  Vec2F(1.4f,  0.6f) / 2.0f, area, "PLAY",   25, BUTTON_STATUS_ACTIVE),
+		Button(BUTTON_ID__GO_TO_OPTINS_MENU, Vec2F(-0.375f, 0.05f), Vec2F(0.65f, 0.3f) / 2.0f, area, "Options", 8, BUTTON_STATUS_ACTIVE),
+		Button(BUTTON_ID__EXIT,				 Vec2F( 0.375f, 0.05f), Vec2F(0.65f, 0.3f) / 2.0f, area, "Exit",    8, BUTTON_STATUS_ACTIVE)
+	};
+	main_menu.Set(Vec2F(0.0f, 0.0f), Vec2F(1.0f, -1.2f), buttons);
+}
+
+void InitMenu_ShipsSelectMenu(Menu& ship_select_menu)
+{
+	const auto& area_play = Area({
+		Vec2F(-0.3f,  0.3f),
+		Vec2F( 0.3f,  0.3f),
+		Vec2F( 0.6f,  0.0f),
+		Vec2F( 0.3f, -0.3f),
+		Vec2F(-0.3f, -0.3f),
+		Vec2F(-0.6f,  0.0f)
+	});
+	const auto& area_player = Area({
+		Vec2F( 1.0f,  0.0f),
+		Vec2F( 0.0f,  1.0f),
+		Vec2F(-1.0f,  0.0f),
+		Vec2F( 0.0f, -1.0f)
+	});
+	const auto& buttons = {
+		Button(BUTTON_ID__SELECT_SHIP_1, Vec2F(-0.6,  0.7f), Vec2F(0.25f, 0.25f),  area_player, "Player 1",    5, BUTTON_STATUS_ACTIVE),
+		Button(BUTTON_ID__SELECT_SHIP_2, Vec2F( 0.6,  0.7f), Vec2F(0.25f, 0.25f),  area_player, "Player 2",    5, BUTTON_STATUS_ACTIVE),
+		Button(BUTTON_ID__SELECT_SHIP_3, Vec2F( 0.6,  0.1f), Vec2F(0.25f, 0.25f),  area_player, "Player 3",    5, BUTTON_STATUS_ACTIVE),
+		Button(BUTTON_ID__SELECT_SHIP_4, Vec2F(-0.6f, 0.1f), Vec2F(0.25f, 0.25f),  area_player, "Player 4",    5, BUTTON_STATUS_ACTIVE),
+		Button(BUTTON_ID__START_GAME,    Vec2F(0.0f,  0.4f), Vec2F(1.0f, 1.0f),    area_play,   "Start game", 10)
+	};
+	ship_select_menu.Set(Vec2F(0.0f, 0.0f), Vec2F(1.0f, -1.2f), buttons);
+}
+
+void InitMenu_OptionsMenu(Menu& options_menu, GameTypes::game_rules_t gr)
+{
+	const auto& area = Area({
+		Vec2F(-1.0f),
+		Vec2F(-1.0f, 1.0f),
+		Vec2F(1.0f),
+		Vec2F(1.0f, -1.0f)
+	});
+	auto buttons = std::vector<Button>(0);
+	struct data_t {
+		EngineTypes::Button::id_t id;
+		std::string text;
+		EngineTypes::Button::text_size_t text_size;
+	};
+
+	const std::vector<struct data_t>& data = { // buttons data
+		{ BUTTON_ID__GO_TO_SELECT_MAP_MENU,				"Map pull",					7 },
+		{ BUTTON_ID__GO_TO_SELECT_BONUSES_MENU,			"Bonus pull",				7 },
+		{ BUTTON_ID__GO_TO_SELECT_OBJECTS_MENU,			"Objects pull",				7 },
+		{ BUTTON_ID__SET_SPAWN_THIS_BONUS,				"Bonuses & buffs",			5 },
+		{ BUTTON_ID__SET_SPAWN_THIS_DIFFERENT_BONUSES,	"Different start bonuses",	5 },
+		{ BUTTON_ID__SET_TRIPLE_BONUSES,				"Triple bonuses",			5 },
+		{ BUTTON_ID__SET_SPAWN_THIS_TRIPLE_BAFF,		"Spawn with triple",		5 },
+		{ BUTTON_ID__SET_SPAWN_THIS_SHIELD_BAFF,		"Spawn with shield",		5 },
+		{ BUTTON_ID__SET_RANDOM_SPAWN,					"Random spawn",				5 },
+		{ BUTTON_ID__SET_RANDOM_SPAWN_DIRECTION,		"Random spawn direction",	5 },
+		{ BUTTON_ID__SET_KNIFES_CAN_DESTROY_BULLETS,	"Knifes destroy bullets",	5 },
+		{ BUTTON_ID__SET_NEED_KILL_PILOT,				"Must kill pilot",			5 },
+		{ BUTTON_ID__SET_FRIEDLY_SHEEP_CAN_RESTORE,		"Friendly sheeps restore",	5 },
+		{ BUTTON_ID__SET_ACTIVE_FRIENDLY_FIRE,			"Frendly fire",				5 },
+		{ BUTTON_ID__SET_ACTIVE_BALANCE,				"Auto balance",				5 },
+	};
+
+	const float bd = 0.11f;		// menu board
+	const float uy = 0.9f;		// menu up y
+	const float sx = 0.0f;	// menu start x
+	const auto& size = Vec2F(0.7f, 0.05f);
+	size_t i = 0; // button number
+	for (const auto& v : data)
+	{
+		const auto& position = Vec2F(sx, uy - i * bd);
+		buttons.push_back(std::move(Button(v.id, position, size, area, v.text, v.text_size, BUTTON_STATUS_ACTIVE)));
+		++i;
+	}
+	options_menu.Set(Vec2F(0.0f, 0.0f), Vec2F(1.0f, -bd * (buttons.size() + 2)), buttons);
+}
+
+void InitMenu_CreditMenu(Menu& credit_menu)
+{
+	const auto& area = Area({
+		Vec2F(0.0f),
+		Vec2F(0.0f, 1.0f),
+		Vec2F(1.0f),
+		Vec2F(1.0f, 0.0f)
+	});
+	const auto& buttons = {
+		Button(BUTTON_ID__EXIT,				 Vec2F(0.025f,  0.3f),  Vec2F(1.0f,   -0.60f), area, "Exit",    6, BUTTON_STATUS_ACTIVE)
+	};
+	credit_menu.Set(Vec2F(0.0f, 0.0f), Vec2F(1.0f, -1.0f), buttons);
+}
+
+void InitMenu_MapPullSelectMenu(Menu& map_pull_select_menu)
+{
+	const auto& area = Area({
+		Vec2F(-1.0f),
+		Vec2F(-1.0f, 1.0f),
+		Vec2F(1.0f),
+		Vec2F(1.0f, -1.0f)
+	});
+
+	struct data_t {
+		EngineTypes::Button::id_t map_id;
+		std::string text;
+		EngineTypes::Button::text_size_t text_size;
+	};
+	const EngineTypes::Button::id_t i = BUTTON_ID__SELECT_MAP;
+	const std::vector<struct data_t> data = {
+		{ i +  0,	"Orbit",			6 },
+		{ i +  1,	"Turret",			6 },
+		{ i +  2,	"Gravity",			5 },
+		{ i +  3,	"Deceleration",		4 },
+		{ i +  4,	"Gates",			6 },
+		{ i +  5,	"Dynamical",		5 },
+		{ i +  6,	"Destructible",		4 },
+		{ i +  7,	"Aggressive",		5 },
+		{ i +  8,	"Stars",			6 },
+		{ i +  9,	"Portals",			5 },
+		{ i + 10,	"Danger center",	4 },
+		{ i + 11,	"Collaider",		5 },
+		{ i + 12,	"Kaleidoscope",		4 }
+	};
+
+	const float uy = 0.85f;		// menu up Y
+	const float lx = -0.55f;	// menu left X
+	const float rb = 0.55f;		// menu right border
+	const float db = 0.3;		// menu down border
+	const float bsy = 0.125f;	// menu button size Y
+
+	auto buttons = std::vector<Button>(0);
+
+	const auto& size = Vec2F(0.25f, bsy);
+	size_t number = 0;
+	for (const auto& v : data)
+	{
+		const auto& position = Vec2F(
+			lx + static_cast<float>(number % 3) * rb,
+			uy - static_cast<float>(number / 3) * db);
+
+		buttons.push_back(std::move(Button(v.map_id, position, size, area, v.text, v.text_size, BUTTON_STATUS_TRUE | BUTTON_STATUS_ACTIVE)));
+		++number;
+	}
+
+	map_pull_select_menu.Set(Vec2F(0.0f, 0.0f), Vec2F(1.0f, -db * static_cast<float>(((buttons.size() + 1) / 3) + 1)), buttons);
+}
+
+void InitMenu_BonusPullSelectMenu(Menu& bonus_pull_select_menu)
+{
+	const auto& area = Area({
+		Vec2F(-1.0f),
+		Vec2F(-1.0f, 1.0f),
+		Vec2F(1.0f),
+		Vec2F(1.0f, -1.0f)
+	});
+
+	struct data {
+		EngineTypes::Button::id_t map_id;
+		std::string text;
+		EngineTypes::Button::text_size_t text_size;
+	};
+	const EngineTypes::Button::id_t i = BUTTON_ID__SELECT_BONUS;
+	const std::vector<struct data> data = {
+		{ i +  0,	"Loop",		8 },
+		{ i +  1,	"Laser",	8 },
+		{ i +  2,	"Bomb",		8 },
+		{ i +  3,	"Knife",	8 },
+		{ i +  4,	"Triple",	8 },
+		{ i +  5,	"Shield",	8 },
+		{ i +  6,	"Stream",	8 },
+		{ i +  7,	"Revers",	8 }
+	};
+
+	const float uy =  0.85f;	// menu up Y
+	const float lx = -0.35f;	// menu left X
+	const float rb =  0.7f;		// menu right border
+	const float db =  0.3;		// menu down border
+	const float bsy = 0.125f;	// menu button size Y
+
+	auto buttons = std::vector<Button>(0);
+
+	const auto& size = Vec2F(0.325f, 0.125f);
+
+	size_t number = 0;
+	for (const auto& v : data)
+	{
+		const auto& position = Vec2F(
+			lx + static_cast<float>(number % 2) * rb,
+			uy - static_cast<float>(number / 2) * db);
+
+		buttons.push_back(Button(v.map_id, position, size, area, v.text, v.text_size, BUTTON_STATUS_ACTIVE | BUTTON_STATUS_TRUE));
+		++number;
+	}
+	bonus_pull_select_menu.Set(Vec2F(0.0f, 0.0f), Vec2F(1.0f, -db * static_cast<float>(((buttons.size() + 1) / 2) + 1)), buttons);
+}
+
+void InitMenu_ObjectsPullSelectMenu(Menu& objects_pull_select_menu)
+{
+	const auto& area = Area({
+		Vec2F(-1.0f),
+		Vec2F(-1.0f, 1.0f),
+		Vec2F(1.0f),
+		Vec2F(1.0f, -1.0f)
+	});
+	const auto& buttons = { 
+		Button(BUTTON_ID__SELECT_OBJECT_ASTEROID, Vec2F(-0.3f, 0.85f), Vec2F(0.325f, 0.125f), area, "Asteroid", 6, BUTTON_STATUS_ACTIVE)
+	};
+	objects_pull_select_menu.Set(Vec2F(0.0f, 0.0f), Vec2F(1.0f, -0.5f), buttons);
+}
+
+void InitMenu_PauseMenu(Menu& pause_menu)
+{
+	const auto& area = Area({
+		Vec2F(-1.0f),
+		Vec2F(-1.0f, 1.0f),
+		Vec2F(1.0f),
+		Vec2F(1.0f, -1.0f)
+	});
+
+	const auto& buttons = {
+		Button(BUTTON_ID__RESUME_MATCH,    Vec2F(-0.0f, 0.725f), Vec2F(0.4f, 0.1f), area, "Resume",    6, BUTTON_STATUS_ACTIVE),
+		Button(BUTTON_ID__GO_TO_MAIN_MENU, Vec2F(-0.0f, 0.5f),   Vec2F(0.4f, 0.1f), area, "Main menu", 6, BUTTON_STATUS_ACTIVE),
+	};
+	pause_menu.Set(Vec2F(0.0f, 0.0f), Vec2F(1.0f, -0.7f), buttons);
+
+}
+
+
 void Game::InitMenus()
 {
-	//arrays
+	InitMenu_MainMenu(main_menu);
 
-	//main menu
-	Vec2F* points = new Vec2F[4];
-	points[0].Set(0.0f, 0.0f);
-	points[1].Set(0.0f, 1.0f);
-	points[2].Set(1.0f, 1.0f);
-	points[3].Set(1.0f, 0.0f);
-	Area* area = new Area(points, 4);
+	InitMenu_OptionsMenu(option_menu, game_rules);
 
-	std::vector<Button> buttons = std::vector<Button>(0);
-	Vec2F position;
-	position.Set(-0.5f, 0.95f);
-	Vec2F size;
-	size.Set(1.0f, -0.60f);
-	buttons.push_back(Button(BUTTON_ID__START_MATCH, &position, &size, area, "PLAY", 20, BUTTON_STATUS_ACTIVE));
-	position.Set(-0.5f, 0.3f);
-	size.Set(0.475f, -0.25f);
-	buttons.push_back(Button(BUTTON_ID__GO_TO_OPTINS_MENU, &position, &size, area, "Options", 6, BUTTON_STATUS_ACTIVE));
-	position.Set(0.025f, 0.3f);
-	buttons.push_back(Button(BUTTON_ID__EXIT, &position, &size, area, "Exit", 6, BUTTON_STATUS_ACTIVE));
-	position.Set(0.0f, 0.0f);
-	size.Set(1.0f, -1.0f);
-	main_menu.Set(&position, &size, buttons);
-	buttons.clear();
+	//buttons[0].status = ((game_rules & GAME_RULE_PLAYERS_SPAWN_POSITION_RANDOMIZE) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
+	//buttons[1].status = ((game_rules & GAME_RULE_PLAYERS_SPAWN_DIRECTION_RANDOMIZE) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
+	//buttons[2].status = ((game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_BONUS) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
+	//buttons[3].status = ((game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_DIFFERENT_BONUS) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | ((game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_BONUS) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_FALSE);
+	//buttons[4].status = ((game_rules & GAME_RULE_TRIPLE_BONUSES) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
+	//buttons[5].status = ((game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_TRIPLE) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
+	//buttons[6].status = ((game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_SHIELD) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
+	//buttons[7].status = ((game_rules & GAME_RULE_KNIFES_CAN_DESTROY_BULLETS) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
+	//buttons[8].status = ((game_rules & GAME_RULE_NEED_KILL_PILOT) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | ((game_rules & GAME_RULE_NEED_KILL_PILOT) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_FALSE);
+	//buttons[9].status = ((game_rules & GAME_RULE_FRIEDNLY_SHEEP_CAN_RESTORE) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
+	//buttons[10].status = ((game_rules & GAME_RULE_FRENDLY_FIRE) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
+	//buttons[11].status = (game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_BONUS) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_FALSE;
+	//buttons[12].status |= BUTTON_STATUS_ACTIVE;
+	//buttons[13].status |= BUTTON_STATUS_ACTIVE;
+	//buttons[14].status = ((game_rules & GAME_RULE_BALANCE_ACTIVE) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
 
-	//option menu
-	size.Set(1.5f, -0.1f);
-#define GAME_OPTION_MENU_BORD	0.11f
-#define GAME_OPTION_MENU_UP_Y	0.9f
-#define GAME_OPTIONS_STAT_X		-0.75f
-	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 0 * GAME_OPTION_MENU_BORD);
-	buttons.push_back(Button(BUTTON_ID__SET_RANDOM_SPAWN, &position, &size, area, "Random spawn", 5));
-	buttons[0].status = ((game_rules & GAME_RULE_PLAYERS_SPAWN_POSITION_RANDOMIZE) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
-	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 1 * GAME_OPTION_MENU_BORD);
-	buttons.push_back(Button(BUTTON_ID__SET_RANDOM_SPAWN_DIRECTION, &position, &size, area, "Random spawn direction", 5));
-	buttons[1].status = ((game_rules & GAME_RULE_PLAYERS_SPAWN_DIRECTION_RANDOMIZE) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
-	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 2 * GAME_OPTION_MENU_BORD);
-	buttons.push_back(Button(BUTTON_ID__SET_SPAWN_THIS_BONUS, &position, &size, area, "Spawn this bonus", 5));
-	buttons[2].status = ((game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_BONUS) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
-	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 3 * GAME_OPTION_MENU_BORD);
-	buttons.push_back(Button(BUTTON_ID__SET_SPAWN_THIS_DIFFERENT_BONUSES, &position, &size, area, "Can spawn this different bonuses", 4));
-	buttons[3].status = ((game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_DIFFERENT_BONUS) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | ((game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_BONUS) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_FALSE);
-	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 4 * GAME_OPTION_MENU_BORD);
-	buttons.push_back(Button(BUTTON_ID__SET_TRIPLE_BONUSES, &position, &size, area, "Triple bonuses", 5));
-	buttons[4].status = ((game_rules & GAME_RULE_TRIPLE_BONUSES) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
-	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 5 * GAME_OPTION_MENU_BORD);
-	buttons.push_back(Button(BUTTON_ID__SET_SPAWN_THIS_TRIPLE_BAFF, &position, &size, area, "Spawn this triple", 5));
-	buttons[5].status = ((game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_TRIPLE) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
-	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 6 * GAME_OPTION_MENU_BORD);
-	buttons.push_back(Button(BUTTON_ID__SET_SPAWN_THIS_SHIELD_BAFF, &position, &size, area, "Spawn this shield", 5));
-	buttons[6].status = ((game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_SHIELD) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
-	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 7 * GAME_OPTION_MENU_BORD);
-	buttons.push_back(Button(BUTTON_ID__SET_KNIFES_CAN_DESTROY_BULLETS, &position, &size, area, "Knifes can destroy bullets", 5));
-	buttons[7].status = ((game_rules & GAME_RULE_KNIFES_CAN_DESTROY_BULLETS) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
-	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 8 * GAME_OPTION_MENU_BORD);
-	buttons.push_back(Button(BUTTON_ID__SET_NEED_KILL_PILOT, &position, &size, area, "Need kill pilot", 5));
-	buttons[8].status = ((game_rules & GAME_RULE_NEED_KILL_PILOT) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | ((game_rules & GAME_RULE_NEED_KILL_PILOT) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_FALSE);
-	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 9 * GAME_OPTION_MENU_BORD);
-	buttons.push_back(Button(BUTTON_ID__SET_FRIEDLY_SHEEP_CAN_RESTORE, &position, &size, area, "Friendly sheep can restore", 5));
-	buttons[9].status = ((game_rules & GAME_RULE_FRIEDNLY_SHEEP_CAN_RESTORE) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
-	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 10 * GAME_OPTION_MENU_BORD);
-	buttons.push_back(Button(BUTTON_ID__SET_ACTIVE_FRIENDLY_FIRE, &position, &size, area, "Frendly fire", 5));
-	buttons[10].status = ((game_rules & GAME_RULE_FRENDLY_FIRE) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
-	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 11 * GAME_OPTION_MENU_BORD);
-	buttons.push_back(Button(BUTTON_ID__GO_TO_SELECT_BONUSES_MENU, &position, &size, area, "Bonus pull menu", 5));
-	buttons[11].status = (game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_BONUS) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_FALSE;
-	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 12 * GAME_OPTION_MENU_BORD);
-	buttons.push_back(Button(BUTTON_ID__GO_TO_SELECT_MAP_MENU, &position, &size, area, "Map pull menu", 5));
-	buttons[12].status |= BUTTON_STATUS_ACTIVE;
-	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 13 * GAME_OPTION_MENU_BORD);
-	buttons.push_back(Button(BUTTON_ID__GO_TO_SELECT_OBJECTS_MENU, &position, &size, area, "Spawning objects menu", 5));
-	buttons[13].status |= BUTTON_STATUS_ACTIVE;
-	position.Set(GAME_OPTIONS_STAT_X, GAME_OPTION_MENU_UP_Y - 14 * GAME_OPTION_MENU_BORD);
-	buttons.push_back(Button(BUTTON_ID__SET_ACTIVE_BALANCE, &position, &size, area, "Auto balance", 5));
-	buttons[14].status = ((game_rules & GAME_RULE_BALANCE_ACTIVE) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
-	position.Set(0.0f, 0.0f);
-	size.Set(1.5f, GAME_OPTION_MENU_UP_Y - 1.0f - 15.0f * GAME_OPTION_MENU_BORD);
-	option_menu.Set(&position, &size, buttons);
-	option_menu.HardRecalculate();
-	buttons.clear();
+	InitMenu_PauseMenu(pause_menu);
 
-	//pause menu
-	position.Set(-0.4f, 0.825f);
-	size.Set(0.8f, -0.2f);
-	buttons.push_back(Button(BUTTON_ID__RESUME_MATCH, &position, &size, area, "Resume", 6));
-	buttons[0].status |= BUTTON_STATUS_ACTIVE;
-	position.Set(-0.4f, 0.6f);
-	buttons.push_back(Button(BUTTON_ID__GO_TO_MAIN_MENU, &position, &size, area, "Main menu", 6));
-	buttons[1].status |= BUTTON_STATUS_ACTIVE;
-	position.Set(0.0f, 0.0f);
-	size.Set(1.0f, -1.0f);
-	pause_menu.Set(&position, &size, buttons);
-	buttons.clear();
+	InitMenu_ShipsSelectMenu(ships_select_menu);
+	
+	InitMenu_MapPullSelectMenu(map_pull_select_menu);
 
-	//sheeps select menu
-	size.Set(0.475f, -0.25f);
-	position.Set(-0.5f, 0.9f);
-	buttons.push_back(Button(BUTTON_ID__SELECT_SHIP_1, &position, &size, area, "Player 1", 6));
-	buttons[0].status |= BUTTON_STATUS_ACTIVE;
-	position.Set(0.025f, 0.9f);
-	buttons.push_back(Button(BUTTON_ID__SELECT_SHIP_2, &position, &size, area, "Player 2", 6));
-	buttons[1].status |= BUTTON_STATUS_ACTIVE;
-	position.Set(0.025f, 0.6f);
-	buttons.push_back(Button(BUTTON_ID__SELECT_SHIP_3, &position, &size, area, "Player 3", 6));
-	buttons[2].status |= BUTTON_STATUS_ACTIVE;
-	position.Set(-0.5f, 0.6f);
-	buttons.push_back(Button(BUTTON_ID__SELECT_SHIP_4, &position, &size, area, "Player 4", 6));
-	buttons[3].status |= BUTTON_STATUS_ACTIVE;
-	position.Set(-0.5f, 0.3f);
-	size.Set(1.0f, -0.25f);
-	buttons.push_back(Button(BUTTON_ID__START_GAME, &position, &size, area, "Start game", 7));
-	buttons[4].status |= BUTTON_STATUS_FALSE;
-	position.Set(0.0f, 0.0f);
-	size.Set(1.0f, -1.0f);
-	ships_select_menu.Set(&position, &size, buttons);
-	buttons.clear();
+	InitMenu_ObjectsPullSelectMenu(objects_pull_menu);
 
-	//maps select menu
-#define GAME_PULL_MENU_UP_Y				0.9f
-#define GAME_PULL_MENU_RIGHT_BORDER		0.55f
-#define GAME_PULL_MENU_DOWN_BORDER		0.3f
-#define GAME_PULL_MENU_BUTTON_SIZE_Y	-0.25f
-
-	size.Set(0.5f, GAME_PULL_MENU_BUTTON_SIZE_Y);
-	for (uint8_t i = 0; i < GAME_MAPS_COUNT; i++)
-	{
-		position.Set(-0.5f + (float)(i % 2) * GAME_PULL_MENU_RIGHT_BORDER, GAME_PULL_MENU_UP_Y - (float)(i / 2) * GAME_PULL_MENU_DOWN_BORDER);
-		buttons.push_back(Button(BUTTON_ID__SELECT_MAP + i, &position, &size, area, "", 5, BUTTON_STATUS_TRUE));
-		buttons[i].status |= BUTTON_STATUS_ACTIVE;
-	}
-	buttons[MAP_ORBIT_MAP].SetText("Orbit");
-	buttons[MAP_ORBIT_MAP].text_size = 6u;
-	buttons[MAP_TURRET_ON_CENTER].SetText("Turret");
-	buttons[MAP_TURRET_ON_CENTER].text_size = 6u;
-	buttons[MAP_CYRCLE_ON_CENTER].SetText("Grav gen");
-	buttons[MAP_DECELERATION_AREA].SetText("Deceler");
-	buttons[MAP_MEGA_LASERS].SetText("Mega laser");
-	buttons[MAP_DYNAMICAL].SetText("Dynamical");
-	buttons[MAP_DESTROYABLE].SetText("Destructible");
-	buttons[MAP_DESTROYABLE].text_size = 4u;
-	buttons[MAP_AGGRESSIVE].SetText("Aggressive");
-	buttons[MAP_AGGRESSIVE].text_size = 4u;
-	buttons[MAP_BROKEN].SetText("Broken");
-	buttons[MAP_PORTAL].SetText("Portal");
-	buttons[MAP_NO_CENTER].SetText("No Center");
-	buttons[MAP_COLLAIDER].SetText("Collaider");
-	buttons[MAP_KALEIDOSCOPE].SetText("Kaleidoscope");
-	buttons[MAP_KALEIDOSCOPE].text_size = 4u;
-	position.Set(0.0f, 0.0f);
-	size.Set(1.0f, -GAME_PULL_MENU_DOWN_BORDER * (float)(((GAME_MAPS_COUNT + 1) / 2) + 1));
-	map_pull_select_menu.Set(&position, &size, buttons);
-	buttons.clear();
-
-	//spawning objects select menu
-	position.Set(-0.5f, 0.9f);
-	size.Set(0.475f, -0.475f);
-	buttons.push_back(Button(BUTTON_ID__SELECT_OBJECT_ASTEROID, &position, &size, area, "Asteroid", 6, (object_pull_array[GAME_OBJECT_ASTEROID] == true) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE));
-	buttons[0].status |= BUTTON_STATUS_ACTIVE;
-	position.Set(0.0f, 0.0f);
-	size.Set(0.5f, -0.5f);
-	spawning_objects_select_menu.Set(&position, &size, buttons);
-	buttons.clear();
-
-	//spawning bonuses select menu
-	size.Set(0.5f, -0.25f);
-	for (uint8_t bonus = 0; bonus < GAME_BONUS_INVENTORY_SIZE; bonus++)
-	{
-		position.Set(-0.5f + (float)(bonus % 2) * GAME_PULL_MENU_RIGHT_BORDER, GAME_PULL_MENU_UP_Y -(float)(bonus / 2) * GAME_PULL_MENU_DOWN_BORDER);
-		buttons.push_back(Button(BUTTON_ID__SELECT_BONUS + bonus, &position, &size, area, "", 7, (bonus_pull_array[bonus] == true) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE));
-		buttons[bonus].status |= BUTTON_STATUS_ACTIVE;
-	}
-	buttons[GAME_BONUS_ID_LOOP].SetText("Loop");
-	buttons[GAME_BONUS_ID_LASER].SetText("Laser");
-	buttons[GAME_BONUS_ID_BOMB].SetText("Bomb");
-	buttons[GAME_BONUS_ID_KNIFE].SetText("Knife");
-	buttons[GAME_BONUS_ID_TRIPLE].SetText("Triple");
-	buttons[GAME_BONUS_ID_SHIELD].SetText("Shield");
-	buttons[GAME_BONUS_ID_STREAM].SetText("Stream");
-	buttons[GAME_BONUS_ID_REVERS].SetText("Revers");
-	position.Set(0.0f, 0.0f);
-	size.Set(1.0f, -GAME_PULL_MENU_DOWN_BORDER * (float)(((GAME_BONUS_INVENTORY_SIZE + 1) / 2) + 1));
-	bonus_pull_select_menu.Set(&position, &size, buttons);
-	buttons.clear();
+	InitMenu_BonusPullSelectMenu(bonus_pull_select_menu);
+	
 
 #if OPEN_GL_REALISATION__SHIPS_CONTROLED_BY_SCREEN_BUTTONS == true
 	//ship control menu
@@ -997,8 +1081,6 @@ void Game::InitMenus()
 #endif
 
 	current_active_menu = &main_menu;
-
-	delete area;
 }
 
 void Game::NextLevel()

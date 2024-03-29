@@ -242,14 +242,25 @@ public:
 	//Buttons on the game screen to controle ships and players.
 	Menu ships_control_menu;
 
+//	main_menu
+//	|---options_menu
+// 	|	|---bonus_pull_select_menu
+// 	|	|---map_pull_select_menu
+// 	|	|---spawning_objects_select_menu
+//	|---credit_menu
+//	|---ships_select_menu
+//		|---pause_menu
+
 	Menu main_menu;
+
 	Menu option_menu;
+	Menu credits_menu;
+	Menu ships_select_menu;
 	Menu pause_menu;
 
-	Menu ships_select_menu;
 	Menu bonus_pull_select_menu;
 	Menu map_pull_select_menu;
-	Menu spawning_objects_select_menu;
+	Menu objects_pull_menu;
 
 	//menu objects
 
