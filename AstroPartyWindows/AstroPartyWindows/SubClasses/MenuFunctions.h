@@ -18,6 +18,7 @@ public:
 
 	void Back();
 
+	void OpenCreditMenu();
 	void OpenBonusPullSelectMenu();
 	void OpenOptionsMenu();
 	void OpenMainMenu();
@@ -83,6 +84,7 @@ public:
 	Menu** game_p__current_active_menu;
 
 	Menu* game_p__bonus_pull_select_menu;
+	Menu* game_p__credits_menu;
 	Menu* game_p__option_menu;
 	Menu* game_p__main_menu;
 	Menu* game_p__pause_menu;

@@ -811,9 +811,10 @@ void InitMenu_MainMenu(Menu& main_menu)
 	Vec2F(1.0f, -1.0f)
 	});
 	const auto& buttons = {
-		Button(BUTTON_ID__START_MATCH,		 Vec2F( 0.0f,   0.6f),  Vec2F(1.4f,  0.6f) / 2.0f, area, "PLAY",   25, BUTTON_STATUS_ACTIVE),
-		Button(BUTTON_ID__GO_TO_OPTINS_MENU, Vec2F(-0.375f, 0.05f), Vec2F(0.65f, 0.3f) / 2.0f, area, "Options", 8, BUTTON_STATUS_ACTIVE),
-		Button(BUTTON_ID__EXIT,				 Vec2F( 0.375f, 0.05f), Vec2F(0.65f, 0.3f) / 2.0f, area, "Exit",    8, BUTTON_STATUS_ACTIVE)
+		Button(BUTTON_ID__START_MATCH,		  Vec2F( 0.0f,   0.6f),  Vec2F(1.4f,  0.6f) / 2.0f, area, "PLAY",   25, BUTTON_STATUS_ACTIVE),
+		Button(BUTTON_ID__GO_TO_OPTINS_MENU,  Vec2F(-0.375f, 0.05f), Vec2F(0.65f, 0.3f) / 2.0f, area, "Options", 8, BUTTON_STATUS_ACTIVE),
+		Button(BUTTON_ID__GO_TO_CREDITS_MENU, Vec2F( 0.375f, 0.05f), Vec2F(0.65f, 0.3f) / 2.0f, area, "Credits", 8, BUTTON_STATUS_ACTIVE),
+		Button(BUTTON_ID__EXIT,               Vec2F( 0.85f,  0.95f), Vec2F(0.14f, 0.04f)      , area, "Exit",    5, BUTTON_STATUS_ACTIVE)
 	};
 	main_menu.Set(Vec2F(0.0f, 0.0f), Vec2F(1.0f, -1.2f), buttons);
 }
@@ -894,15 +895,47 @@ void InitMenu_OptionsMenu(Menu& options_menu, GameTypes::game_rules_t gr)
 void InitMenu_CreditMenu(Menu& credit_menu)
 {
 	const auto& area = Area({
-		Vec2F(0.0f),
-		Vec2F(0.0f, 1.0f),
+		Vec2F(-1.0f),
+		Vec2F(-1.0f, 1.0f),
 		Vec2F(1.0f),
-		Vec2F(1.0f, 0.0f)
+		Vec2F(1.0f, -1.0f)
 	});
-	const auto& buttons = {
-		Button(BUTTON_ID__EXIT,				 Vec2F(0.025f,  0.3f),  Vec2F(1.0f,   -0.60f), area, "Exit",    6, BUTTON_STATUS_ACTIVE)
+	struct data_t {
+		std::string text;
+		EngineTypes::Button::text_size_t text_size;
+		Vec2F size;
 	};
-	credit_menu.Set(Vec2F(0.0f, 0.0f), Vec2F(1.0f, -1.0f), buttons);
+
+	const std::vector<struct data_t>& data = { // buttons data
+		{"Autonr: Nevidmika787",      7, Vec2F(0.9f, 0.06f) },
+		{"Game engine: Nevidmika787", 7, Vec2F(0.9f, 0.06f) },
+		{"UI: Nevidmika787",          7, Vec2F(0.9f, 0.06f) },
+		{"Graphic: Nevidmika787",     7, Vec2F(0.9f, 0.06f) },
+		{"Testers:",                  7, Vec2F(0.5f, 0.08f) },
+		{"Nevidimka787",              6, Vec2F(0.7f, 0.05f) },
+		{"james_mloor",               6, Vec2F(0.7f, 0.05f) },
+		{"mentalvani",                6, Vec2F(0.7f, 0.05f) },
+		{"pypsik69420",               6, Vec2F(0.7f, 0.05f) },
+		{"wizbent",                   6, Vec2F(0.7f, 0.05f) },
+		{"aavakhonin",                6, Vec2F(0.7f, 0.05f) }
+	};
+
+	auto buttons = std::vector<Button>(0);
+
+	const float bd = 0.11f;		// menu board
+	const float uy = 0.9f;		// menu up y
+	const float sx = 0.0f;	// menu start x
+	size_t i = 0; // button number
+
+	float pos_y = uy;
+	for (const auto& v : data)
+	{
+		const auto& position = Vec2F(sx, pos_y);
+		buttons.push_back(std::move(Button(BUTTON_ID__NOTHING, position, v.size, area, v.text, v.text_size, BUTTON_STATUS_ACTIVE)));
+		++i;
+		pos_y -= v.size.y + data[i < data.size() ? i : i - 1].size.y * 1.25f;
+	}
+	credit_menu.Set(Vec2F(0.0f, 0.0f), Vec2F(1.0f, -uy - 0.2f), buttons);
 }
 
 void InitMenu_MapPullSelectMenu(Menu& map_pull_select_menu)
@@ -1046,21 +1079,7 @@ void Game::InitMenus()
 
 	InitMenu_OptionsMenu(option_menu, game_rules);
 
-	//buttons[0].status = ((game_rules & GAME_RULE_PLAYERS_SPAWN_POSITION_RANDOMIZE) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
-	//buttons[1].status = ((game_rules & GAME_RULE_PLAYERS_SPAWN_DIRECTION_RANDOMIZE) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
-	//buttons[2].status = ((game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_BONUS) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
-	//buttons[3].status = ((game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_DIFFERENT_BONUS) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | ((game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_BONUS) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_FALSE);
-	//buttons[4].status = ((game_rules & GAME_RULE_TRIPLE_BONUSES) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
-	//buttons[5].status = ((game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_TRIPLE) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
-	//buttons[6].status = ((game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_SHIELD) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
-	//buttons[7].status = ((game_rules & GAME_RULE_KNIFES_CAN_DESTROY_BULLETS) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
-	//buttons[8].status = ((game_rules & GAME_RULE_NEED_KILL_PILOT) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | ((game_rules & GAME_RULE_NEED_KILL_PILOT) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_FALSE);
-	//buttons[9].status = ((game_rules & GAME_RULE_FRIEDNLY_SHEEP_CAN_RESTORE) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
-	//buttons[10].status = ((game_rules & GAME_RULE_FRENDLY_FIRE) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
-	//buttons[11].status = (game_rules & GAME_RULE_PLAYERS_SPAWN_THIS_BONUS) ? BUTTON_STATUS_ACTIVE : BUTTON_STATUS_FALSE;
-	//buttons[12].status |= BUTTON_STATUS_ACTIVE;
-	//buttons[13].status |= BUTTON_STATUS_ACTIVE;
-	//buttons[14].status = ((game_rules & GAME_RULE_BALANCE_ACTIVE) ? BUTTON_STATUS_TRUE : BUTTON_STATUS_FALSE) | BUTTON_STATUS_ACTIVE;
+	InitMenu_CreditMenu(credits_menu);
 
 	InitMenu_PauseMenu(pause_menu);
 

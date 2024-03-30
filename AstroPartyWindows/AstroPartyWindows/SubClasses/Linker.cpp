@@ -17,6 +17,7 @@ Linker::Linker(Game* game_object, MenuFunctions* menu_functions_object, OpenGL* 
 
 	menu_functions_object->game_p__bonus_pull_array = &game_object->bonus_pull_array;
 	menu_functions_object->game_p__bonus_pull_select_menu = &game_object->bonus_pull_select_menu;
+	menu_functions_object->game_p__credits_menu = &game_object->credits_menu;
 	menu_functions_object->game_p__current_active_menu = &game_object->current_active_menu;
 	menu_functions_object->game_p__flag_end_match = &game_object->flag_end_match;
 	menu_functions_object->game_p__game_rules = &game_object->game_rules;

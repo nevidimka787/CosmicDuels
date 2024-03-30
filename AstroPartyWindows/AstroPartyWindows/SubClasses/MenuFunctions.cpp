@@ -27,7 +27,8 @@ void::MenuFunctions::Back()
 	}
 	if (
 		*game_p__current_active_menu == game_p__option_menu ||
-		*game_p__current_active_menu == game_p__ships_select_menu)
+		*game_p__current_active_menu == game_p__ships_select_menu ||
+		*game_p__current_active_menu == game_p__credits_menu)
 	{
 		OpenMainMenu();
 		return;
@@ -52,6 +53,13 @@ void::MenuFunctions::Back()
 		*game_p__current_active_menu = game_p__ships_control_menu;
 		return;
 	}
+}
+
+void MenuFunctions::OpenCreditMenu()
+{
+	*game_p__current_active_menu = game_p__credits_menu;
+
+	(*game_p__current_active_menu)->SetPosition(std::move(Vec2F()));
 }
 
 void MenuFunctions::OpenBonusPullSelectMenu()
@@ -239,6 +247,7 @@ void MenuFunctions::BonusPullSelectMenuFunction(Vec2F clk_pos, uint8_t clk_statu
 void MenuFunctions::MainMenuFunction(Vec2F clk_pos, uint8_t clk_status)
 {
 	Button* current_button;
+
 	for (EngineTypes::Menu::buttons_count_t i = 0; i < game_p__main_menu->GetButtonsCount(); i++)
 	{
 		current_button = &game_p__main_menu->current_buttons[i];
@@ -247,7 +256,9 @@ void MenuFunctions::MainMenuFunction(Vec2F clk_pos, uint8_t clk_status)
 			current_button->SetStatus(BUTTON_STATUS_SELECT, false);
 			break;
 		}
-		if (!current_button->GetStatus(BUTTON_STATUS_ACTIVE) || !current_button->HavePoint(clk_pos))
+		if (
+			!current_button->GetStatus(BUTTON_STATUS_ACTIVE) || 
+			!current_button->HavePoint(clk_pos))
 		{
 			continue;
 		}
@@ -268,6 +279,10 @@ void MenuFunctions::MainMenuFunction(Vec2F clk_pos, uint8_t clk_status)
 				return;
 			case BUTTON_ID__EXIT:
 				Exit();
+				return;
+			case BUTTON_ID__GO_TO_CREDITS_MENU:
+				OpenCreditMenu();
+				return;
 			default:
 				return;
 			}
@@ -470,6 +485,10 @@ void MenuFunctions::ShipsSelectMenuFunction(Vec2F clk_pos, uint8_t clk_status)
 						if (MinimalCountTeamsSelected(*game_p__teams, GAME_PLAYERS_MAX_COUNT, GAME_PLAYERS_MAX_COUNT))
 						{
 							SetStatusToButton(game_p__ships_select_menu, BUTTON_ID__START_GAME, BUTTON_STATUS_ACTIVE, true);
+						}
+						else
+						{
+							SetStatusToButton(game_p__ships_select_menu, BUTTON_ID__START_GAME, BUTTON_STATUS_ACTIVE, false);
 						}
 						return;
 					case BUTTON_STATUS_CUSTOM_BLUE:

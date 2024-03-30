@@ -23,25 +23,6 @@ uniform sampler2D text_texture;
 
 vec2 curent_texture_position;
 
-bool IsIntersect(vec2 point1, vec2 point2, vec2 beam_pos, vec2 beam_vec)
-{
-	vec2 seg_dir = normalize(point1 - point2);
-	vec2 beam_dir = normalize(beam_vec);
-
-	float denomination = cross(vec3(seg_dir, 0.0), vec3(beam_dir, 0.0)).z;
-
-	if (abs(denomination) < 0.00001)
-	{
-		return false;
-	}
-
-	vec2 d = beam_pos - point1;
-	float t = cross(vec3(d, 0.0), vec3(beam_vec, 0.0)).z / denomination;
-	float u = cross(vec3(d, 0.0), vec3(seg_dir, 0.0)).z / denomination;
-
-	return (t >= 0.0 && t <= 1.0 && u >= 0.0);
-}
-
 bool IsPixelInTheBox()
 {
 	bool inside = false;

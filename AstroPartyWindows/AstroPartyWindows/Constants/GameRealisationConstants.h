@@ -217,6 +217,9 @@ turrets, mega lasers
 
 	//buttons
 
+// nothing
+#define BUTTON_ID__NOTHING				0u
+
 	//main menu
 
 //button id
@@ -226,7 +229,9 @@ turrets, mega lasers
 //button id
 #define BUTTON_ID__GO_TO_OPTINS_MENU	3u
 //button id
-#define BUTTON_ID__EXIT					4u
+#define BUTTON_ID__GO_TO_CREDITS_MENU	4u
+//button id
+#define BUTTON_ID__EXIT					5u
 
 	//main menu
 
