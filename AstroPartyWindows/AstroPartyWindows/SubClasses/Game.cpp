@@ -941,10 +941,12 @@ void InitMenu_CreditMenu(Menu& credit_menu)
 void InitMenu_MapPullSelectMenu(Menu& map_pull_select_menu)
 {
 	const auto& area = Area({
-		Vec2F(-1.0f),
-		Vec2F(-1.0f, 1.0f),
-		Vec2F(1.0f),
-		Vec2F(1.0f, -1.0f)
+		Vec2F(-0.2f,  0.05f),
+		Vec2F( 0.2f,  0.05f),
+		Vec2F( 0.3f,  0.0f),
+		Vec2F( 0.2f, -0.05f),
+		Vec2F(-0.2f, -0.05f),
+		Vec2F(-0.3f,  0.0f),
 	});
 
 	struct data_t {
@@ -972,73 +974,170 @@ void InitMenu_MapPullSelectMenu(Menu& map_pull_select_menu)
 	const float uy = 0.85f;		// menu up Y
 	const float lx = -0.55f;	// menu left X
 	const float rb = 0.55f;		// menu right border
-	const float db = 0.3;		// menu down border
+	const float db = 0.2;		// menu down border
 	const float bsy = 0.125f;	// menu button size Y
 
 	auto buttons = std::vector<Button>(0);
 
-	const auto& size = Vec2F(0.25f, bsy);
+	const auto& size = Vec2F(1.2f, 1.5f);
+
+	const std::vector<Vec2F>& positions = {
+		Vec2F( 0.0f, 0.0f),
+		Vec2F(-0.6f, -db / 2.0f),
+		Vec2F( 0.6f, -db / 2.0f)
+	};
+
 	size_t number = 0;
 	for (const auto& v : data)
 	{
-		const auto& position = Vec2F(
-			lx + static_cast<float>(number % 3) * rb,
-			uy - static_cast<float>(number / 3) * db);
+		const auto& position = positions[number % 3] + Vec2F(0.0f, uy - static_cast<float>(number / 3) * db);
 
 		buttons.push_back(std::move(Button(v.map_id, position, size, area, v.text, v.text_size, BUTTON_STATUS_TRUE | BUTTON_STATUS_ACTIVE)));
 		++number;
 	}
 
-	map_pull_select_menu.Set(Vec2F(0.0f, 0.0f), Vec2F(1.0f, -db * static_cast<float>(((buttons.size() + 1) / 3) + 1)), buttons);
+	map_pull_select_menu.Set(Vec2F(0.0f, 0.0f), Vec2F(1.0f, -db * static_cast<float>(((buttons.size() + 1) / 3) + 1.3f)), buttons);
 }
 
 void InitMenu_BonusPullSelectMenu(Menu& bonus_pull_select_menu)
 {
-	const auto& area = Area({
-		Vec2F(-1.0f),
-		Vec2F(-1.0f, 1.0f),
-		Vec2F(1.0f),
-		Vec2F(1.0f, -1.0f)
-	});
+	const Vec2F loop_size(0.075f, 0.175f);
+	const std::vector<Area>& areas = {
+		Area({ // LOOP
+			 Vec2F(-loop_size.x, loop_size.y),
+			 loop_size,
+			 Vec2F(-loop_size.x, loop_size.y).PerpendicularClockwise(),
+			 loop_size.PerpendicularClockwise(),
+			-Vec2F(-loop_size.x, loop_size.y),
+			-loop_size,
+			-Vec2F(-loop_size.x, loop_size.y).PerpendicularClockwise(),
+			-loop_size.PerpendicularClockwise()
+		}),
+		Area({ // LASER
+			Vec2F(-0.525f,  0.05),
+			Vec2F( 0.525f,  0.05),
+			Vec2F( 0.525f, -0.05),
+			Vec2F(-0.525f, -0.05)
+		}),
+		Area({ // BOMB
+			 Vec2F(0.0f,  0.3f ),
+			 Vec2F(0.05f, 0.1f ),
+			 Vec2F(0.1f,  0.05f),
+			 Vec2F(0.0f,  0.3f ).PerpendicularClockwise(),
+			 Vec2F(0.05f, 0.1f ).PerpendicularClockwise(),
+			 Vec2F(0.1f,  0.05f).PerpendicularClockwise(),
+			-Vec2F(0.0f,  0.3f ),
+			-Vec2F(0.05f, 0.1f ),
+			-Vec2F(0.1f,  0.05f),
+			 Vec2F(0.0f,  0.3f ).Perpendicular(),
+			 Vec2F(0.05f, 0.1f ).Perpendicular(),
+			 Vec2F(0.1f,  0.05f).Perpendicular(),
+		}),
+		Area({ // KNIFE
+			Vec2F(-0.1f,  -0.05f),
+			Vec2F(-0.15f, -0.1f),
+			Vec2F(-0.15f,  0.2f),
+			Vec2F(-0.05f,  0.3f),
+			Vec2F(-0.1f,   0.2f),
+			Vec2F(-0.1f,   0.05f),
+			Vec2F( 0.1f,   0.05f),
+			Vec2F( 0.1f,   0.2f),
+			Vec2F( 0.05f,  0.3f),
+			Vec2F( 0.15f,  0.2f),
+			Vec2F( 0.15f, -0.1f),
+			Vec2F( 0.1f,  -0.05f)
+		}),
+		Area({ // TRIPLE
+			Vec2F(-0.1f,  -0.05f),
+			Vec2F(-0.15f, -0.1f),
+			Vec2F(-0.15f,  0.05f),
+			Vec2F(-0.1f,   0.2f),
+			Vec2F(-0.1f,   0.1f),
+			Vec2F(-0.05f,  0.2f),
+			Vec2F(-0.05f,  0.3f),
+			Vec2F( 0.0f,   0.35f),
+			Vec2F( 0.05f,  0.3f),
+			Vec2F( 0.05f,  0.2f),
+			Vec2F( 0.1f,   0.1f),
+			Vec2F( 0.1f,   0.2f),
+			Vec2F( 0.15f,  0.05f),
+			Vec2F( 0.15f, -0.1f),
+			Vec2F( 0.1f,  -0.05f)
+		}),
+		Area({ // SHIELD
+			Vec2F(-0.15f, -0.1f),
+			Vec2F(-0.05f,  0.35f),
+			Vec2F( 0.05f,  0.35f),
+			Vec2F( 0.15f, -0.1f)
+		}),
+		Area({ // STREAM
+			Vec2F(-0.2f, -0.05f),
+			Vec2F(-0.2f,  0.05f),
+			Vec2F(-0.15f, 0.05f),
+			Vec2F(-0.05f, 0.15f),
+			Vec2F( 0.0f,  0.45f),
+			Vec2F( 0.05f, 0.15f),
+			Vec2F( 0.15f, 0.05f),
+			Vec2F( 0.2f,  0.05f),
+			Vec2F( 0.2f, -0.05f)
+		}),
+		Area({ // REVERS
+			 Vec2F(-0.15f,  0.05f),
+			 Vec2F(-0.15f,  0.1f),
+			 Vec2F(-0.05f,  0.2f),
+			 Vec2F( 0.0f,   0.2f),
+			 Vec2F( 0.0f,   0.15f),
+			 Vec2F( 0.075f, 0.225f),
+			 Vec2F( 0.0f,   0.3f),
+			 Vec2F( 0.0f,   0.25f),
+			 Vec2F(-0.1f,   0.25f),
+			 Vec2F(-0.2f,   0.15f),
+			 Vec2F(-0.2f,   0.0f),
+			 Vec2F(-0.15f, -0.05f),
+			-Vec2F(-0.15f,  0.05f),
+			-Vec2F(-0.15f,  0.1f),
+			-Vec2F(-0.05f,  0.2f),
+			-Vec2F( 0.0f,   0.2f),
+			-Vec2F( 0.0f,   0.15f),
+			-Vec2F( 0.075f, 0.225f),
+			-Vec2F( 0.0f,   0.3f),
+			-Vec2F( 0.0f,   0.25f),
+			-Vec2F(-0.1f,   0.25f),
+			-Vec2F(-0.2f,   0.15f),
+			-Vec2F(-0.2f,   0.0f),
+			-Vec2F(-0.15f, -0.05f)
+		})
+	};
 
 	struct data {
 		EngineTypes::Button::id_t map_id;
 		std::string text;
 		EngineTypes::Button::text_size_t text_size;
+		Vec2F position;
 	};
 	const EngineTypes::Button::id_t i = BUTTON_ID__SELECT_BONUS;
 	const std::vector<struct data> data = {
-		{ i +  0,	"Loop",		8 },
-		{ i +  1,	"Laser",	8 },
-		{ i +  2,	"Bomb",		8 },
-		{ i +  3,	"Knife",	8 },
-		{ i +  4,	"Triple",	8 },
-		{ i +  5,	"Shield",	8 },
-		{ i +  6,	"Stream",	8 },
-		{ i +  7,	"Revers",	8 }
+		{ i +  0,	"Loop",		4, Vec2F(-0.625f, 0.725f) },
+		{ i +  1,	"Laser",	4, Vec2F( 0.275f, 0.75f)  },
+		{ i +  2,	"Bomb",		4, Vec2F(-0.6f,   0.2f)   },
+		{ i +  3,	"Knife",	4, Vec2F(-0.05f,  0.2f)   },
+		{ i +  4,	"Triple",	4, Vec2F(-0.6f,  -0.5f)   },
+		{ i +  5,	"Shield",	4, Vec2F(-0.05f, -0.5f)   },
+		{ i +  6,	"Stream",	4, Vec2F( 0.55f,  0.2f)   },
+		{ i +  7,	"Revers",	4, Vec2F( 0.55f, -0.35f)  }
 	};
-
-	const float uy =  0.85f;	// menu up Y
-	const float lx = -0.35f;	// menu left X
-	const float rb =  0.7f;		// menu right border
-	const float db =  0.3;		// menu down border
-	const float bsy = 0.125f;	// menu button size Y
 
 	auto buttons = std::vector<Button>(0);
 
-	const auto& size = Vec2F(0.325f, 0.125f);
+	const auto& size = Vec2F(1.0f);
 
 	size_t number = 0;
 	for (const auto& v : data)
 	{
-		const auto& position = Vec2F(
-			lx + static_cast<float>(number % 2) * rb,
-			uy - static_cast<float>(number / 2) * db);
-
-		buttons.push_back(Button(v.map_id, position, size, area, v.text, v.text_size, BUTTON_STATUS_ACTIVE | BUTTON_STATUS_TRUE));
+		buttons.push_back(Button(v.map_id, v.position, size, areas[number], v.text, v.text_size, BUTTON_STATUS_ACTIVE | BUTTON_STATUS_TRUE));
 		++number;
 	}
-	bonus_pull_select_menu.Set(Vec2F(0.0f, 0.0f), Vec2F(1.0f, -db * static_cast<float>(((buttons.size() + 1) / 2) + 1)), buttons);
+	bonus_pull_select_menu.Set(Vec2F(0.0f, 0.0f), Vec2F(1.0f, -1.8f), buttons);
 }
 
 void InitMenu_ObjectsPullSelectMenu(Menu& objects_pull_select_menu)
@@ -1050,7 +1149,7 @@ void InitMenu_ObjectsPullSelectMenu(Menu& objects_pull_select_menu)
 		Vec2F(1.0f, -1.0f)
 	});
 	const auto& buttons = { 
-		Button(BUTTON_ID__SELECT_OBJECT_ASTEROID, Vec2F(-0.3f, 0.85f), Vec2F(0.325f, 0.125f), area, "Asteroid", 6, BUTTON_STATUS_ACTIVE)
+		Button(BUTTON_ID__SELECT_OBJECT_ASTEROID, Vec2F(-0.3f, 0.85f), Vec2F(0.325f, 0.125f), area, "Asteroid", 6, BUTTON_STATUS_ACTIVE | BUTTON_STATUS_TRUE)
 	};
 	objects_pull_select_menu.Set(Vec2F(0.0f, 0.0f), Vec2F(1.0f, -0.5f), buttons);
 }
