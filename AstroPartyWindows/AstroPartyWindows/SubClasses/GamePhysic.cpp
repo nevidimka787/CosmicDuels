@@ -2301,7 +2301,10 @@ void Game::ShipsDestroedByBullets()
 				continue;
 			}
 
-			if (!(game_rules & GAME_RULE_FRIENDLY_FIRE) && bullet.CreatedByTeam(ship))
+			if (
+				!(game_rules & GAME_RULE_FRIENDLY_FIRE) &&
+				bullet.CreatedByTeam(ship) &&
+				!bullet.CreatedBy(ship))
 			{
 				RemoveEntity(bullet);
 				continue;

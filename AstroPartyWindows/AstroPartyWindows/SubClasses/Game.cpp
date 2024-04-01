@@ -907,10 +907,10 @@ void InitMenu_CreditMenu(Menu& credit_menu)
 	};
 
 	const std::vector<struct data_t>& data = { // buttons data
-		{"Autonr: Nevidmika787",      7, Vec2F(0.9f, 0.06f) },
-		{"Game engine: Nevidmika787", 7, Vec2F(0.9f, 0.06f) },
-		{"UI: Nevidmika787",          7, Vec2F(0.9f, 0.06f) },
-		{"Graphic: Nevidmika787",     7, Vec2F(0.9f, 0.06f) },
+		{"Autonr: Nevidimka787",      7, Vec2F(0.9f, 0.06f) },
+		{"Game engine: Nevidimka787", 7, Vec2F(0.9f, 0.06f) },
+		{"UI: Nevidimka787",          7, Vec2F(0.9f, 0.06f) },
+		{"Graphic: Nevidimka787",     7, Vec2F(0.9f, 0.06f) },
 		{"Testers:",                  7, Vec2F(0.5f, 0.08f) },
 		{"Nevidimka787",              6, Vec2F(0.7f, 0.05f) },
 		{"james_mloor",               6, Vec2F(0.7f, 0.05f) },
