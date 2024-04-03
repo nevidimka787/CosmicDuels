@@ -344,20 +344,11 @@ void Asteroid::UpdateRadius()
 	}
 }
 
-void Asteroid::operator=(Asteroid asteroid)
+void Asteroid::operator=(const Asteroid& asteroid)
 {
-	angle = asteroid.angle;
-	angular_velocity = asteroid.angular_velocity;
-	bonus_inventory = asteroid.bonus_inventory;
-	direction = asteroid.direction;
-	exist = asteroid.exist;
-	force = asteroid.force;
-	force_collision_coeffisient = asteroid.force_collision_coeffisient;
-	force_resistance_air_coefficient = asteroid.force_resistance_air_coefficient;
-	position = asteroid.position;
-	radius = asteroid.radius;
+	Bonus::operator=(asteroid);
+
 	size = asteroid.size;
-	velocity = asteroid.velocity;
 }
 
 Asteroid::~Asteroid()

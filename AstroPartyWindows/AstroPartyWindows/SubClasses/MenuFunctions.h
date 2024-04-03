@@ -38,6 +38,7 @@ public:
 	bool ChangeOption(GameTypes::game_rules_t option_number);
 
 	void BonusPullSelectMenuFunction(Vec2F clk_pos, uint8_t clk_status);
+	void CreditsMenuFunction(Vec2F clk_pos, uint8_t clk_status);
 	void MainMenuFunction(Vec2F clk_pos, uint8_t clk_status);
 	void OptionMenuFunction(Vec2F clk_pos, uint8_t clk_status);
 	void PauseMenuFunction(Vec2F clk_pos, uint8_t clk_status);

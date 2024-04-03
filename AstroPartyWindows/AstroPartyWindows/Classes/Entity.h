@@ -153,13 +153,14 @@ class DynamicEntity : public Entity
 private:
 	bool CollisionInside(const Map::Rectangle* rectangle);
 	bool CollisionOutside(const Map::Rectangle* rectangle);
+	bool CollisionCheckIntersections(const Map::Rectangle* rectangle, Vec2F& new_position, Vec2F& force_vector);
+	bool CollisionCheckPosition(const Map::Rectangle* rectangle, Vec2F& new_position, Vec2F& force_vector);
 	Vec2F GetCollisionDirection(const Vec2F& point, const Vec2F& neares_point) const;
 protected:
 	float angular_velocity;
 	Vec2F velocity;
 	//This variable set only by force functions.
 	Vec2F force;
-
 public:
 	float force_collision_coeffisient;
 	//the distance the ship will be pushed to the side
@@ -167,8 +168,8 @@ public:
 	DynamicEntity();
 	DynamicEntity(const DynamicEntity& dynamic_entity);
 	DynamicEntity(
-		Vec2F position,
-		Vec2F velocity,
+		const Vec2F& position,
+		const Vec2F& velocity,
 		float radius,
 		float angle = 0.0f,
 		float angular_velocity = 0.0f,
@@ -185,13 +186,13 @@ public:
 		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
 		bool exist = true);
 
-	void AddForce(Vec2F force);
+	void AddForce(const Vec2F& force);
 	void AddForce(const Vec2F* force);
 	void AddForceAlongDirection(float force);
 	void AddAngularVelocity(float angulat_velocity);
-	void AddGravityForce(float gravity_coeffisient, Vec2F forced_point);
+	void AddGravityForce(float gravity_coeffisient, const Vec2F& forced_point);
 	void AddGravityForce(float gravity_coeffisient, const Vec2F* forced_point);
-	void AddVelocity(Vec2F velocity);
+	void AddVelocity(const Vec2F& velocity);
 	void AddVelocity(const Vec2F* velocity);
 	//The function sets the sum of all forces those affecting to this entity to zero.
 	void ClearForce();
@@ -239,8 +240,8 @@ public:
 	bool IsCollision(const Map::MapData& map) const;
 	void Set(const DynamicEntity* dynamic_entity);
 	void Set(
-		Vec2F position,
-		Vec2F velocity,
+		const Vec2F& position,
+		const Vec2F& velocity,
 		float radius,
 		float angle = 0.0f,
 		float angular_velocity = 0.0f,
@@ -260,11 +261,11 @@ public:
 	void SetCoefficients(
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT);
-	void SetVelocity(Vec2F velocity);
+	void SetVelocity(const Vec2F& velocity);
 	void SetVelocity(const Vec2F* velocity);
 	void Update();
 
-	void operator=(DynamicEntity dynamic_entity);
+	void operator=(const DynamicEntity& dynamic_entity);
 
 	~DynamicEntity();
 };
@@ -436,7 +437,7 @@ public:
 	bool IsActive() const;
 	void Update(GameTypes::tic_t current_tic);
 
-	void operator=(DynamicParticle dynamical_entity);
+	void operator=(const DynamicParticle& dynamical_entity);
 
 	~DynamicParticle();
 };
@@ -496,7 +497,7 @@ public:
 		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
 		bool exist = true);
 
-	void operator=(Bonus entity);
+	void operator=(const Bonus& entity);
 
 	~Bonus();
 };
@@ -563,7 +564,7 @@ public:
 		bool exist = true);
 	void UpdateRadius();
 
-	void operator=(Asteroid asteroid);
+	void operator=(const Asteroid& asteroid);
 
 	~Asteroid();
 };
@@ -628,7 +629,7 @@ public:
 		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
 		bool exist = true);
 
-	void operator=(KillerEntity killer_entity);
+	void operator=(const KillerEntity& killer_entity);
 
 	~KillerEntity();
 };
@@ -736,7 +737,7 @@ public:
 	bool ShouldShoot() const;
 	void UpdateMatrix();
 
-	void operator=(ControledEntity entity);
+	void operator=(const ControledEntity& entity);
 
 	~ControledEntity();
 };
@@ -1084,7 +1085,7 @@ public:
 	void Update();
 	void UpdateDirection();
 
-	void operator=(SupportEntity support_entity);
+	void operator=(const SupportEntity& support_entity);
 
 	~SupportEntity();
 };

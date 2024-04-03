@@ -33,8 +33,6 @@ void OpenGL::CallMenuFunction(Menu* menu, const Vec2D* glob_clk_pos, uint8_t clk
         return;
     }
 
-    std::cout << "OpenGL::CallMenuFunction::glob_clk_pos:" << *glob_clk_pos << std::endl;
-
     Vec2F clk_pos = Vec2F(
         ((float)glob_clk_pos->x / window_width - 0.5f) * 2.0f,
         ((float)glob_clk_pos->y / -window_height) * 2.0f / window_scale + 1.0f);

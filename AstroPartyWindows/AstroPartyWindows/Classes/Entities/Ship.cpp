@@ -219,7 +219,7 @@ Bullet Ship::CreateBullet()
 	reoading_dellay = SHIP_DEFAULT_REALOADING_DELLAY;
 
 	return Bullet(
-		position + direction.Normalize() * radius,
+		position + direction.Normalize() * (radius - BULLET_DEFAULT_RADIUS),
 		direction * BULLET_DEFAULT_VELOCITY + velocity - direction.PerpendicularClockwise() * angular_velocity * radius,
 		GetPlayerNumber(),
 		GetTeamNumber(),

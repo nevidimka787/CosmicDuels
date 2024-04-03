@@ -446,6 +446,7 @@ EngineTypes::Bonus::inventory_t Game::GenerateRandomInventory(
 		}
 	}
 
+	std::cout << "ita:" << inventory << std::endl;
 	return inventory;
 }
 
@@ -917,7 +918,16 @@ void InitMenu_CreditMenu(Menu& credit_menu)
 		{"mentalvani",                6, Vec2F(0.7f, 0.05f) },
 		{"pypsik69420",               6, Vec2F(0.7f, 0.05f) },
 		{"wizbent",                   6, Vec2F(0.7f, 0.05f) },
-		{"aavakhonin",                6, Vec2F(0.7f, 0.05f) }
+		{"aavakhonin",                6, Vec2F(0.7f, 0.05f) },
+		{"senpai42",                  6, Vec2F(0.7f, 0.05f) },
+		{"whhatislove",               6, Vec2F(0.7f, 0.05f) },
+		{"buvanchu",                  6, Vec2F(0.7f, 0.05f) },
+		{"sca1ewizard",               6, Vec2F(0.7f, 0.05f) },
+		{"this_is_denis",             6, Vec2F(0.7f, 0.05f) },
+		{"chelsemlg",                 6, Vec2F(0.7f, 0.05f) },
+		{"pupen482",                  6, Vec2F(0.7f, 0.05f) },
+		{"nejimellika",               6, Vec2F(0.7f, 0.05f) },
+		{"arkeks",                    6, Vec2F(0.7f, 0.05f) },
 	};
 
 	auto buttons = std::vector<Button>(0);
@@ -930,12 +940,13 @@ void InitMenu_CreditMenu(Menu& credit_menu)
 	float pos_y = uy;
 	for (const auto& v : data)
 	{
-		const auto& position = Vec2F(sx, pos_y);
+		const auto& position = Vec2F( (v.text == "Testers:") ? -0.40f : sx, pos_y);
 		buttons.push_back(std::move(Button(BUTTON_ID__NOTHING, position, v.size, area, v.text, v.text_size, BUTTON_STATUS_ACTIVE)));
 		++i;
 		pos_y -= v.size.y + data[i < data.size() ? i : i - 1].size.y * 1.25f;
 	}
-	credit_menu.Set(Vec2F(0.0f, 0.0f), Vec2F(1.0f, -uy - 0.2f), buttons);
+	std::cout << "size y = " << pos_y << std::endl;
+	credit_menu.Set(Vec2F(0.0f, 0.0f), Vec2F(1.0f, -1.0f + pos_y - 0.2f), buttons);
 }
 
 void InitMenu_MapPullSelectMenu(Menu& map_pull_select_menu)

@@ -138,27 +138,19 @@ void DynamicParticle::Update(GameTypes::tic_t current_tic)
 	}
 }
 
-void DynamicParticle::operator=(DynamicParticle dynamical_entity)
+void DynamicParticle::operator=(const DynamicParticle& dynamical_entity)
 {
+	DynamicEntity::operator=(dynamical_entity);
+
 	active = dynamical_entity.active;
-	angle = dynamical_entity.angle;
-	angular_velocity = dynamical_entity.angular_velocity;
 	animation = dynamical_entity.animation;
 	animation_period = dynamical_entity.animation_period;
 	animation_postpone = dynamical_entity.animation_postpone;
 	color = dynamical_entity.color;
-	UpdateDirection();
-	exist = dynamical_entity.exist;
 	finish_tic = dynamical_entity.finish_tic;
-	force = dynamical_entity.force;
-	force_collision_coeffisient = dynamical_entity.force_collision_coeffisient;
-	force_resistance_air_coefficient = dynamical_entity.force_resistance_air_coefficient;
-	position = dynamical_entity.position;
 	properties = dynamical_entity.properties;
-	radius = dynamical_entity.radius;
 	spawn_tic = dynamical_entity.spawn_tic;
 	type = dynamical_entity.type;
-	velocity = dynamical_entity.velocity;
 }
 
 DynamicParticle::~DynamicParticle()

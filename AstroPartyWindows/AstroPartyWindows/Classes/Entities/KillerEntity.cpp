@@ -158,20 +158,12 @@ void KillerEntity::Set(
 	this->velocity = *velocity;
 }
 
-void KillerEntity::operator=(KillerEntity killer_entity)
+void KillerEntity::operator=(const KillerEntity& killer_entity)
 {
-	angle = killer_entity.angle;
-	angular_velocity = killer_entity.angular_velocity;
-	direction = killer_entity.direction;
-	exist = killer_entity.exist;
-	force = killer_entity.force;
-	force_collision_coeffisient = killer_entity.force_collision_coeffisient;
-	force_resistance_air_coefficient = killer_entity.force_resistance_air_coefficient;
+	DynamicEntity::operator=(killer_entity);
+
 	host_number = killer_entity.host_number;
 	host_team_number = killer_entity.host_team_number;
-	position = killer_entity.position;
-	radius = killer_entity.radius;
-	velocity = killer_entity.velocity;
 }
 
 KillerEntity::~KillerEntity()

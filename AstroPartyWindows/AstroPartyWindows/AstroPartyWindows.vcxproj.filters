@@ -80,6 +80,18 @@
     <Filter Include="Classes\Файлы ресурсов\Debug">
       <UniqueIdentifier>{5fc7c62d-c34b-44f3-873b-4a2be7821720}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Tools">
+      <UniqueIdentifier>{b3166368-c033-4b3d-a4b1-90ad7136d2d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tools\XMLParser">
+      <UniqueIdentifier>{2f945761-6bf5-480c-9979-e499ff4a4bca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DrawIO">
+      <UniqueIdentifier>{0009da9a-af6c-4105-b114-55d4c9d2f519}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DrawIO\Menus">
+      <UniqueIdentifier>{88a8ae5f-daff-4211-b956-ef44c3888c8b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -213,6 +225,12 @@
     </ClCompile>
     <ClCompile Include="DebugClasses\loged_shared_mutex.cpp">
       <Filter>Classes\Файлы ресурсов\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Tools\XMLParser\tinyxml2.cpp">
+      <Filter>Tools\XMLParser</Filter>
+    </ClCompile>
+    <ClCompile Include="Tools\XMLParser\XMLParser.cpp">
+      <Filter>Tools\XMLParser</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -348,6 +366,12 @@
     <None Include="Shaders\Objects\Vertex\AnigAreaGen.glsl">
       <Filter>Shaders\Vertex\Entityes</Filter>
     </None>
+    <None Include="DrawIO\Menus\MainMenu.drawio">
+      <Filter>DrawIO\Menus</Filter>
+    </None>
+    <None Include="DrawIO\Menus\ShipSelectMenu.drawio">
+      <Filter>DrawIO\Menus</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\GameEngine.h">
@@ -439,6 +463,12 @@
     </ClInclude>
     <ClInclude Include="loged_shared_mutex.h">
       <Filter>Classes\Файлы заголовков\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="Tools\XMLParser\tinyxml2.h">
+      <Filter>Tools\XMLParser</Filter>
+    </ClInclude>
+    <ClInclude Include="Tools\XMLParser\XMLParser.h">
+      <Filter>Tools\XMLParser</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -252,11 +252,10 @@ void SupportEntity::UpdateDirection()
 	local_direction = Vec2F(direction.Length(), 0.0f).Rotate(local_angle);
 }
 
-void SupportEntity::operator=(SupportEntity support_entity)
+void SupportEntity::operator=(const SupportEntity& support_entity)
 {
-	angle = support_entity.angle;
-	direction = support_entity.direction;
-	exist = support_entity.exist;
+	StaticEntity::operator=(support_entity);
+
 	host_p = support_entity.host_p;
 	host_matrix_p = support_entity.host_matrix_p;
 	host_number = support_entity.host_number;
@@ -264,8 +263,6 @@ void SupportEntity::operator=(SupportEntity support_entity)
 	local_angle = support_entity.local_angle;
 	local_direction = support_entity.local_direction;
 	local_position = support_entity.local_position;
-	position = support_entity.position;
-	radius = support_entity.radius;
 }
 
 SupportEntity::~SupportEntity()

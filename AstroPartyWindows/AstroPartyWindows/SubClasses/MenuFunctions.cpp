@@ -244,6 +244,11 @@ void MenuFunctions::BonusPullSelectMenuFunction(Vec2F clk_pos, uint8_t clk_statu
 	}
 }
 
+void CreditsMenuFunction(Vec2F clk_pos, uint8_t clk_status)
+{
+
+}
+
 void MenuFunctions::MainMenuFunction(Vec2F clk_pos, uint8_t clk_status)
 {
 	Button* current_button;

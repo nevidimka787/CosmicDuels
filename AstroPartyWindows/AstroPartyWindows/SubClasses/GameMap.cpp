@@ -2125,7 +2125,7 @@ void Game::CreateMap11(std::vector<Vec2F>& ships_positions, std::vector<float>& 
 				Vec2F(MAP_COLLAIDER__CENTER) + point1,
 				Vec2F(MAP_COLLAIDER__CENTER) + point2,
 				true),
-			MAP_PROPERTY_UNBREACABLE);
+			MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
 
 		point1.PerpendicularThis();
 		point2.PerpendicularThis();

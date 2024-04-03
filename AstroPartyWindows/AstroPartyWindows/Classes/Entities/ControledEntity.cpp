@@ -611,21 +611,13 @@ void ControledEntity::UpdateMatrix()
 	model_matrix.ScaleThis(Vec2F(1.0f, 1.0f) * radius);
 }
 
-void ControledEntity::operator=(ControledEntity controled_entity)
+void ControledEntity::operator=(const ControledEntity& controled_entity)
 {
-	angle = controled_entity.angle;
-	angular_velocity = controled_entity.angular_velocity;
+	DynamicEntity::operator=(controled_entity);
+
 	controle_flags_pointer = controled_entity.controle_flags_pointer;
-	direction = controled_entity.direction;
-	exist = controled_entity.exist;
-	force = controled_entity.force;
-	force_collision_coeffisient = controled_entity.force_collision_coeffisient;
-	force_resistance_air_coefficient = controled_entity.force_resistance_air_coefficient;
 	player_number = controled_entity.player_number;
 	player_team_number = controled_entity.player_team_number;
-	position = controled_entity.position;
-	radius = controled_entity.radius;
-	velocity = controled_entity.velocity;
 	heat_box_vertexes_array = controled_entity.heat_box_vertexes_array;
 }
 

@@ -194,18 +194,11 @@ void Bonus::Set(Vec2F* position, Vec2F* velocity, EngineTypes::Bonus::inventory_
 	this->velocity = *velocity;
 }
 
-void Bonus::operator=(Bonus bonus)
+void Bonus::operator=(const Bonus& bonus)
 {
-	angle = bonus.angle;
-	angular_velocity = bonus.angular_velocity;
+	DynamicEntity::operator=(bonus);
+
 	bonus_inventory = bonus.bonus_inventory;
-	direction = bonus.direction;
-	exist = bonus.exist;
-	force_collision_coeffisient = bonus.force_collision_coeffisient;
-	force_resistance_air_coefficient = bonus.force_resistance_air_coefficient;
-	position = bonus.position;
-	radius = bonus.radius;
-	velocity = bonus.velocity;
 }
 
 Bonus::~Bonus()
