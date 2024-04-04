@@ -121,13 +121,15 @@ bool DynamicEntity::Collision(DynamicEntity* entity)
 	Vec2F collision_direction = position - entity->position;
 	Vec2F local_velocity = velocity - entity->velocity;
 
+	const float& sum_r_c = (entity->radius + radius) * 20.0f;
+
 	if (collision_direction * local_velocity < 0.0f)
 	{
 		local_velocity = collision_direction.Project(local_velocity);
 		velocity -= local_velocity / 2.0f;
 		entity->velocity += local_velocity / 2.0f;
-		position -= collision_direction.Normalize() * distance;
-		entity->position += collision_direction.Normalize() * distance;
+		position -= collision_direction.Normalize() * distance * radius / sum_r_c;
+		entity->position += collision_direction.Normalize() * distance * entity->radius / sum_r_c;
 	}
 
 	return true;
