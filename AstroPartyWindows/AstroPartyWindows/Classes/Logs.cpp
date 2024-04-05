@@ -4,160 +4,77 @@
 #pragma warning(disable : 26451)
 
 Logs::Logs() :
-	data(nullptr),
-	cells_count(0)
+	data(std::queue<data_t>())
 {
 }
 
-Logs::Logs(const Logs& log) :
-	cells_count(log.cells_count)
+Logs::Logs(const Logs& log) : data(log.data)
 {
-	if (log.cells_count > 0)
-	{
-		data = new data_t[cells_count];
-		return;
-	}
-	data = nullptr;
 }
 
-Logs::Logs(data_t* data, length_t data_length) :
-	cells_count(data_length)
+Logs::Logs(const std::queue<data_t>& data) : data(data)
 {
-	if (cells_count > 0)
-	{
-		this->data = new data_t[cells_count];
+}
 
-		for (length_t i = 0; i < cells_count; i++)
-		{
-			this->data[i] = data[i];
-		}
-		return;
+Logs::Logs(const std::vector<data_t>& data)
+{
+	this->data = std::queue<data_t>();
+	for (const auto& cell : data)
+	{
+		this->data.push(cell);
 	}
-	this->data = nullptr;
 }
 
 void Logs::Clear()
 {
-	if (cells_count > 0)
-	{
-		delete[] data;
-		data = nullptr;
-		cells_count = 0;
-		return;
-	}
-	data = nullptr;
+	data = std::queue<data_t>();
 }
 
-length_t Logs::GetCellsCount()
+data_t Logs::GenerateLog(const data_t& head, const data_t& ship, const data_t& team, const data_t score_action)
 {
-	return cells_count;
+	return
+		((head & LOG_MASK_BITS) << LOG_HEAD		) |
+		((ship & LOG_MASK_BITS) << LOG_DATA_SHIP) |
+		((team & LOG_MASK_BITS) << LOG_DATA_TEAM) |
+		((score_action & 1)		<< LOG_DATA_SCORE);
 }
 
-bool Logs::HaveData()
+length_t Logs::GetCellsCount() const
 {
-	return cells_count > 0;
+	return data.size();
 }
 
-void Logs::PushToEnd(data_t data)
+bool Logs::HaveData() const
 {
-	if (cells_count > 0)
-	{
-		data_t* new_data = new data_t[cells_count + 1];
-		for (length_t i = 0; i < cells_count; i++)
-		{
-			new_data[i] = this->data[i];
-		}
-		new_data[cells_count] = data;
-		cells_count++;
-		delete[] this->data;
-		this->data = new_data;
-		return;
-	}
-	this->data = new data_t[1];
-	cells_count = 1;
-	this->data[0] = data;
+	return !data.empty();
+}
+
+void Logs::PushToEnd(const data_t& data)
+{
+	this->data.push(data);
 }
 
 data_t Logs::PopFromStart()
 {
-	if (cells_count > 0)
-	{
-		data_t return_data = data[0];
-
-		data_t* new_data = new data_t[--cells_count];
-		for (length_t i = 0; i < cells_count; i++)
-		{
-			new_data[i] = data[i + 1];
-		}
-		delete[] data;
-		data = new_data;
-		return return_data;
-	}
-	return LOG_NULL;
+	if (data.empty()) return LOG_NULL;
+	const auto front = data.front();
+	data.pop();
+	return front;
 }
 
-void Logs::Set(Logs* log)
+void Logs::ParsLog(const data_t& log, data_t& head, data_t& ship, data_t& team, data_t& score_actions)
 {
-	if (cells_count > 0)
-	{
-		delete[] data;
-	}
-	cells_count = log->cells_count;
-	if (cells_count > 0)
-	{
-		data = new data_t[cells_count];
-		for (length_t i = 0; i < cells_count; i++)
-		{
-			data[i] = log->data[i];
-		}
-		return;
-	}
-	data = nullptr;
+	head = (log >> LOG_HEAD) & LOG_MASK_BITS;
+	ship = (log >> LOG_DATA_SHIP) & LOG_MASK_BITS;
+	team = (log >> LOG_DATA_TEAM) & LOG_MASK_BITS;
+	score_actions = (log >> LOG_DATA_SCORE) & 1;
 }
 
-void Logs::Set(data_t* data, length_t data_length)
+void Logs::operator=(const Logs& log)
 {
-	if (this->cells_count > 0)
-	{
-		delete[] this->data;
-	}
-	this->cells_count = data_length;
-	if (data_length > 0)
-	{
-		this->data = new data_t[data_length];
-		for (length_t i = 0; i < data_length; i++)
-		{
-			this->data[i] = data[i];
-		}
-		return;
-	}
-	this->data = nullptr;
-}
-
-void Logs::operator=(Logs log)
-{
-	if (cells_count > 0)
-	{
-		delete[] data;
-	}
-	cells_count = log.cells_count;
-	if (cells_count > 0)
-	{
-		data = new data_t[cells_count];
-		for (length_t i = 0; i < cells_count; i++)
-		{
-			data[i] = log.data[i];
-		}
-		return;
-	}
-	data = nullptr;
+	data = this->data;
 }
 
 Logs::~Logs()
 {
-	if (cells_count > 0)
-	{
-		delete[] data;
-		return;
-	}
 }

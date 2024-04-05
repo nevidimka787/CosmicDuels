@@ -1179,9 +1179,7 @@ void InitMenu_PauseMenu(Menu& pause_menu)
 		Button(BUTTON_ID__GO_TO_MAIN_MENU, Vec2F(-0.0f, 0.5f),   Vec2F(0.4f, 0.1f), area, "Main menu", 6, BUTTON_STATUS_ACTIVE),
 	};
 	pause_menu.Set(Vec2F(0.0f, 0.0f), Vec2F(1.0f, -0.7f), buttons);
-
 }
-
 
 void Game::InitMenus()
 {
@@ -1244,7 +1242,6 @@ void Game::NextLevel()
 		}
 	}
 
-	
 	GameTypes::players_count_t found_players_count = 0;
 
 	if (potential_winner_detected)
@@ -1297,7 +1294,6 @@ void Game::EndMatch()
 
 	MemoryFree();
 
-	flag_update_end_match = false;
 	object_p__menu_functions->OpenMainMenu();
 }
 
@@ -1307,7 +1303,6 @@ void Game::DecrementPlayersCountInTeam(GameTypes::players_count_t team_number)
 	{
 		--players_in_team[team_number - 1];
 	}
-	flag_update_end_match = true;
 }
 
 void Game::IncrementPlayersCountInTeam(GameTypes::players_count_t team_number)
@@ -1316,12 +1311,11 @@ void Game::IncrementPlayersCountInTeam(GameTypes::players_count_t team_number)
 	{
 		++players_in_team[team_number - 1];
 	}
-	flag_update_end_match = true;
 }
 
 void Game::CheckEndMatch()
 {
-	if (end_match_tic)
+	if (end_match_tic) // match will be finised soon
 	{
 		if (global_timer > end_match_tic)
 		{
@@ -1330,14 +1324,11 @@ void Game::CheckEndMatch()
 		return;
 	}
 
-	if (!flag_update_end_match) return;
-
 	GameTypes::players_count_t not_empty_teams_count = 0;
 	for (auto& players_count : players_in_team)
 	{
 		if (players_count > 0) ++not_empty_teams_count;
 	}
-	flag_update_end_match = false;
 	if (not_empty_teams_count > 1) return;
 
 	end_match_tic = global_timer + GAME_END_MATCH_DELLAY;
@@ -1345,10 +1336,10 @@ void Game::CheckEndMatch()
 
 void Game::RoundResultsInit()
 {
-#define ROUND_RESULTS_INIT__MAP_SIZE			3.0f
-#define ROUND_RESULTS_INIT__MAP_SIZE_X05		(ROUND_RESULTS_INIT__MAP_SIZE * 0.5f)
-#define ROUND_RESULTS_INIT__MAP_SIZE_X2			(ROUND_RESULTS_INIT__MAP_SIZE * 2.0f)
-#define ROUND_RESULTS_INIT__MAP_SIZE_X4			(ROUND_RESULTS_INIT__MAP_SIZE * 4.0f)
+#define ROUND_RESULTS_INIT__MAP_SIZE		3.0f
+#define ROUND_RESULTS_INIT__MAP_SIZE_X05	(ROUND_RESULTS_INIT__MAP_SIZE * 0.5f)
+#define ROUND_RESULTS_INIT__MAP_SIZE_X2		(ROUND_RESULTS_INIT__MAP_SIZE * 2.0f)
+#define ROUND_RESULTS_INIT__MAP_SIZE_X4		(ROUND_RESULTS_INIT__MAP_SIZE * 4.0f)
 
 	camera_data_mtx.lock();
 	ships_array_mtx.lock();
@@ -1421,32 +1412,45 @@ bool Game::RoundResults()
 	float size_coeff = (end_match_score == GAME_FULL_MATCH_ROUNDS) ? 1.0f : 1.0f * (float)step / (float)GAME_FULL_MATCH_ROUNDS;
 
 	EngineTypes::Log::data_t data = logs.PopFromStart();
+	data_t head_id = 0;
+	data_t ship_number = 0;
+	data_t team_number = 0;
+	data_t action_type = LOG_DECREMENT;
+	Logs::ParsLog(data, head_id, ship_number, team_number, action_type);
 
-	if (((data >> LOG_HEAD) & LOG_MASK_BITS) == LOG_CHANGE_SCORE)
+
+	if (head_id != LOG_CHANGE_SCORE)
 	{
-		for (GameTypes::players_count_t ship = 0; ship < GAME_PLAYERS_MAX_COUNT; ship++)
+		return logs.HaveData();
+	}
+
+	for (auto& ship : ships)
+	{
+		if (!ship.exist || ship.GetTeamNumber() != team_number)
 		{
-			if (ships[ship].exist && ships[ship].GetTeamNumber() == ((data >> LOG_DATA_TEAM) & LOG_MASK_BITS) + 1)
+			continue;
+		}
+		if (action_type == LOG_INCREMENT)
+		{
+			if (scores[ship.GetTeamNumber() - 1] >= end_match_score)
 			{
-				if (((data >> LOG_DATA_SCORE) & LOG_MASK_BITS) == LOG_INCREMENT)
-				{
-					if (scores[ships[ship].GetTeamNumber() - 1] < end_match_score)
-					{
-						ships[ship].Move(Vec2F(GAME_POUND_RESULTS_MAP_DEFAUL_CELL_SIZE, 0.0f));
-						ships[ship].UpdateMatrix();
-						scores[ships[ship].GetTeamNumber() - 1]++;
-					}
-				}
-				else if (((data >> LOG_DATA_SCORE) & LOG_MASK_BITS) == LOG_DECREMENT)
-				{
-					if (scores[ships[ship].GetTeamNumber() - 1] > -end_match_score)
-					{
-						ships[ship].Move(Vec2F(-GAME_POUND_RESULTS_MAP_DEFAUL_CELL_SIZE, 0.0f));
-						ships[ship].UpdateMatrix();
-						scores[ships[ship].GetTeamNumber() - 1]--;
-					}
-				}
+				continue;
 			}
+			ship.Move(Vec2F(GAME_POUND_RESULTS_MAP_DEFAUL_CELL_SIZE, 0.0f));
+			ship.UpdateMatrix();
+			scores[ship.GetTeamNumber() - 1]++;
+			continue;
+		}
+		if (action_type == LOG_DECREMENT)
+		{
+			if (scores[ship.GetTeamNumber() - 1] <= -end_match_score)
+			{
+				continue;
+			}
+			ship.Move(Vec2F(-GAME_POUND_RESULTS_MAP_DEFAUL_CELL_SIZE, 0.0f));
+			ship.UpdateMatrix();
+			scores[ship.GetTeamNumber() - 1]--;
+			continue;
 		}
 	}
 
@@ -1457,12 +1461,13 @@ bool Game::RoundResults()
 
 void Game::IncrementScore(GameTypes::players_count_t team_number)
 {
-	logs.PushToEnd((LOG_CHANGE_SCORE << LOG_HEAD) | (LOG_INCREMENT << LOG_DATA_SCORE) | (((team_number - 1) & LOG_MASK_BITS) << LOG_DATA_TEAM));
+	logs.PushToEnd(Logs::GenerateLog(LOG_CHANGE_SCORE, 0xF, team_number, LOG_INCREMENT));
+	int i = 0;
 }
 
 void Game::DecrementScore(GameTypes::players_count_t team_number)
 {
-	logs.PushToEnd((LOG_CHANGE_SCORE << LOG_HEAD) | (LOG_DECREMENT << LOG_DATA_SCORE) | (((team_number - 1) & LOG_MASK_BITS) << LOG_DATA_TEAM));
+	logs.PushToEnd(Logs::GenerateLog(LOG_CHANGE_SCORE, 0xF, team_number, LOG_DECREMENT));
 }
 
 

@@ -53,8 +53,6 @@ public:
 	bool buttons_inverse;
 	//This flag will be active after the completion of the MatchInit function and inactive after the end of the match.
 	bool flag_all_entities_initialisate;
-	//Function CheckEndMatch is active.
-	bool flag_update_end_match;
 	//If true match will finish.
 	bool flag_end_match;
 	//If true results of round are drawind.
