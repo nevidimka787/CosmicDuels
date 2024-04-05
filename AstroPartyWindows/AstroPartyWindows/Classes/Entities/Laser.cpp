@@ -115,7 +115,7 @@ bool Laser::Collision(Map::MapData& map, Vec2F& nearest_intersect_position, Vec2
 		Vec2F perpendicular_position;
 		float distance_to_intersection;
 		if (((Map::Polygon*)element_p)->exist &&
-			((Map::Polygon*)element_p)->IsCollision(&beam, &intersect_position, &distance_to_intersection, &perpendicular_position))
+			((Map::Polygon*)element_p)->IsCollision(beam, &intersect_position, &distance_to_intersection, &perpendicular_position))
 		{
 			collision = true;
 			if (distance_to_intersection < min_distance)

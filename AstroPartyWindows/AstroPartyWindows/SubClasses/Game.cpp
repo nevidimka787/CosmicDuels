@@ -446,7 +446,6 @@ EngineTypes::Bonus::inventory_t Game::GenerateRandomInventory(
 		}
 	}
 
-	std::cout << "ita:" << inventory << std::endl;
 	return inventory;
 }
 
@@ -1332,6 +1331,8 @@ void Game::CheckEndMatch()
 	if (not_empty_teams_count > 1) return;
 
 	end_match_tic = global_timer + GAME_END_MATCH_DELLAY;
+
+	std::cout << "Game::CheckEndMatch::End match is detected. End tic: " << end_match_tic << std::endl;
 }
 
 void Game::RoundResultsInit()

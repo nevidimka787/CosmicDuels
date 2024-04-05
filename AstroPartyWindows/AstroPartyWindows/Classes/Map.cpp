@@ -19,18 +19,10 @@ MapElement::MapElement(const MapElement& map_element) :
 {
 }
 
-MapElement::MapElement(Vec2F position, EngineTypes::Map::property_t properties, bool exist) :
+MapElement::MapElement(const Vec2F& position, EngineTypes::Map::property_t properties, bool exist) :
 	position(position),
 	exist(exist),
 	last_position(position),
-	properties(properties)
-{
-}
-
-MapElement::MapElement(const Vec2F* position, EngineTypes::Map::property_t properties, bool exist) :
-	position(*position),
-	exist(exist),
-	last_position(*position),
 	properties(properties)
 {
 }
@@ -90,11 +82,6 @@ void MapElement::Move(const Vec2F& move_vector)
 	position += move_vector;
 }
 
-void MapElement::Move(const Vec2F* move_vector)
-{
-	position += *move_vector;
-}
-
 EngineTypes::Map::property_t MapElement::Prorerties() const
 {
 	return properties;
@@ -120,13 +107,6 @@ void MapElement::Set(const Vec2F& position, EngineTypes::Map::property_t propert
 	this->properties = properties;
 }
 
-void MapElement::Set(const Vec2F* position, EngineTypes::Map::property_t properties, bool exist)
-{
-	this->exist = exist;
-	this->position = *position;
-	this->properties = properties;
-}
-
 void MapElement::RessetVelocity()
 {
 	last_position = position;
@@ -137,17 +117,12 @@ void MapElement::SetPosition(const Vec2F& position)
 	this->position = position;
 }
 
-void MapElement::SetPosition(const Vec2F* position)
-{
-	this->position = *position;
-}
-
 void MapElement::SetProperties(EngineTypes::Map::property_t properties)
 {
 	this->properties = properties;
 }
 
-void MapElement::operator=(MapElement map_element)
+void MapElement::operator=(const MapElement& map_element)
 {
 	exist = map_element.exist;
 	position = map_element.position;
@@ -173,14 +148,14 @@ Rectangle::Rectangle(const Rectangle& rectangle) :
 }
 
 Rectangle::Rectangle(const Segment& diagonal, EngineTypes::Map::property_t properties, bool exist) :
-	MapElement(&diagonal.point, properties, exist),
+	MapElement(diagonal.point, properties, exist),
 	point2(diagonal.point + diagonal.vector)
 {
 	NormaliseThis();
 }
 
 Rectangle::Rectangle(const Segment* diagonal, EngineTypes::Map::property_t properties, bool exist) :
-	MapElement(&diagonal->point, properties, exist),
+	MapElement(diagonal->point, properties, exist),
 	point2(diagonal->point + diagonal->vector)
 {
 	NormaliseThis();
@@ -194,7 +169,7 @@ Rectangle::Rectangle(Vec2F point1, Vec2F point2, EngineTypes::Map::property_t pr
 }
 
 Rectangle::Rectangle(const Vec2F* point1, const Vec2F* point2, EngineTypes::Map::property_t properties, bool exist) :
-	MapElement(point1, properties, exist),
+	MapElement(*point1, properties, exist),
 	point2(*point2)
 {
 	NormaliseThis();
@@ -427,7 +402,7 @@ void Rectangle::Move(Vec2F move_vector)
 
 void Rectangle::Move(const Vec2F* move_vector)
 {
-	MapElement::Move(move_vector);
+	MapElement::Move(*move_vector);
 	point2 += *move_vector;
 }
 
@@ -586,7 +561,7 @@ Cyrcle::Cyrcle(Vec2F position, float radius, EngineTypes::Map::property_t proper
 }
 
 Cyrcle::Cyrcle(const Vec2F* position, float radius, EngineTypes::Map::property_t properties, bool exist) :
-	MapElement(position, properties, exist),
+	MapElement(*position, properties, exist),
 	radius(radius)
 {
 }
@@ -708,11 +683,10 @@ Cyrcle::~Cyrcle()
 Polygon::Polygon() :
 	MapElement(),
 	angle(0.0f),
-	points_array(nullptr),
+	points_array(),
 	last_angle(0.0f),
-	local_points_array(nullptr),
-	need_update(false),
-	points_count(0)
+	local_points_array(),
+	need_update(false)
 {
 }
 
@@ -723,75 +697,29 @@ Polygon::Polygon(const Polygon& polygon) :
 	last_angle(polygon.last_angle),
 	last_position(polygon.last_position),
 	last_size(polygon.size),
-	points_count(polygon.points_count),
-	size(polygon.size)
+	size(polygon.size),
+	local_points_array(polygon.local_points_array),
+	points_array(polygon.points_array)
 {
-	if (points_count > 0)
-	{
-		this->points_array = new Vec2F[points_count];
-		local_points_array = new Vec2F[points_count];
-		for (EngineTypes::Polygon::points_array_length_t i = 0; i < points_count; i++)
-		{
-			local_points_array[i] = points_array[i];
-		}
-	}
-	else
-	{
-		this->points_array = nullptr;
-		local_points_array = nullptr;
-	}
 }
 
-Polygon::Polygon(Vec2F position, float angle, Vec2F size, const Vec2F* points_array, EngineTypes::Polygon::points_array_length_t points_array_length, EngineTypes::Map::property_t properties, bool exist) :
+Polygon::Polygon(
+	const Vec2F& position,
+	float angle,
+	const Vec2F& size,
+	const std::vector<Vec2F>& points_array,
+	EngineTypes::Polygon::points_array_length_t points_array_length,
+	EngineTypes::Map::property_t properties,
+	bool exist) :
 	MapElement(position, properties, exist),
 	angle(angle),
 	last_angle(angle),
 	last_size(size),
 	need_update(true),
-	points_count(points_array_length),
+	local_points_array(points_array),
 	size(size)
 {
-	if (points_array_length > 0)
-	{
-		this->points_array = new Vec2F[points_array_length];
-		local_points_array = new Vec2F[points_array_length];
-		for (EngineTypes::Polygon::points_array_length_t i = 0; i < points_array_length; i++)
-		{
-			local_points_array[i] = points_array[i];
-		}
-	}
-	else
-	{
-		this->points_array = nullptr;
-		local_points_array = nullptr;
-	}
-
 	UpdatePoints();
-}
-
-Polygon::Polygon(const Vec2F* position, float angle, const Vec2F* size, const Vec2F* points_array, EngineTypes::Polygon::points_array_length_t points_array_length, EngineTypes::Map::property_t properties, bool exist) :
-	MapElement(position, properties, exist),
-	angle(angle),
-	last_angle(angle),
-	last_size(*size),
-	need_update(true),
-	points_count(points_array_length),
-	size(*size)
-{
-	if (points_array_length > 0)
-	{
-		this->points_array = new Vec2F[points_array_length];
-		local_points_array = new Vec2F[points_array_length];
-		for (EngineTypes::Polygon::points_array_length_t i = 0; i < points_array_length; i++)
-		{
-			local_points_array[i] = points_array[i];
-		}
-	}
-	else
-	{
-		this->points_array = nullptr;
-		local_points_array = nullptr;
-	}
 }
 
 bool Polygon::IsClosed() const
@@ -799,9 +727,9 @@ bool Polygon::IsClosed() const
 	return properties & MAP_PROPERTY_CLOSED;
 }
 
-bool Polygon::IsCollision(const Beam* beam) const
+bool Polygon::IsCollision(const Beam& beam) const
 {
-	if (points_count <= 1)
+	if (points_array.size() <= 1)
 	{
 		return false;
 	}
@@ -810,16 +738,16 @@ bool Polygon::IsCollision(const Beam* beam) const
 	{
 		return true;
 	}
-	if (points_count > 2 && properties & MAP_PROPERTY_CLOSED)
+	if (points_array.size() > 2 && properties & MAP_PROPERTY_CLOSED)
 	{
-		side.Set(points_array[0], points_array[points_count - 1], true);
+		side.Set(points_array[0], points_array.back(), true);
 		if (side.IsIntersection(beam))
 		{
 			return true;
 		}
 	}
 
-	for (EngineTypes::Map::array_length_t p = 2; p < points_count; p++)
+	for (EngineTypes::Map::array_length_t p = 2; p < points_array.size(); p++)
 	{
 		side.Set(points_array[p - 1], points_array[p], true);
 		if (side.IsIntersection(beam))
@@ -830,9 +758,9 @@ bool Polygon::IsCollision(const Beam* beam) const
 	return false;
 }
 
-bool Polygon::IsCollision(const Beam* beam, Vec2F* out_position, float* distance_to_out_position) const
+bool Polygon::IsCollision(const Beam& beam, Vec2F* out_position, float* distance_to_out_position) const
 {
-	if (points_count <= 1)
+	if (points_array.size() <= 1)
 	{
 		return false;
 	}
@@ -843,14 +771,14 @@ bool Polygon::IsCollision(const Beam* beam, Vec2F* out_position, float* distance
 
 	if (side.Intersection(beam, out_position))
 	{
-		min_distance = beam->point.Distance(out_position);
+		min_distance = beam.point.Distance(out_position);
 	}
-	if (points_count > 2 && properties & MAP_PROPERTY_CLOSED)
+	if (points_array.size() > 2 && properties & MAP_PROPERTY_CLOSED)
 	{
-		side.Set(points_array[0], points_array[points_count - 1], true);
+		side.Set(points_array[0], points_array.back(), true);
 		if (side.Intersection(beam, &output_intersection_point))
 		{
-			float distance = beam->point.Distance(output_intersection_point);
+			float distance = beam.point.Distance(output_intersection_point);
 			if (min_distance > distance)
 			{
 				min_distance = distance;
@@ -859,12 +787,12 @@ bool Polygon::IsCollision(const Beam* beam, Vec2F* out_position, float* distance
 		}
 	}
 
-	for (EngineTypes::Map::array_length_t p = 2; p < points_count; p++)
+	for (EngineTypes::Map::array_length_t p = 2; p < points_array.size(); p++)
 	{
 		side.Set(points_array[p - 1], points_array[p], true);
 		if (side.Intersection(beam, &output_intersection_point))
 		{
-			float distance = beam->point.Distance(output_intersection_point);
+			float distance = beam.point.Distance(output_intersection_point);
 			if (min_distance > distance)
 			{
 				min_distance = distance;
@@ -882,9 +810,9 @@ bool Polygon::IsCollision(const Beam* beam, Vec2F* out_position, float* distance
 	return false;
 }
 
-bool Polygon::IsCollision(const Beam* beam, Vec2F* out_position, float* distance_to_out_position, Vec2F* perpendicular_direction) const
+bool Polygon::IsCollision(const Beam& beam, Vec2F* out_position, float* distance_to_out_position, Vec2F* perpendicular_direction) const
 {
-	if (points_count <= 1)
+	if (points_array.size() <= 1)
 	{
 		return false;
 	}
@@ -895,35 +823,35 @@ bool Polygon::IsCollision(const Beam* beam, Vec2F* out_position, float* distance
 
 	if (side.Intersection(beam, out_position))
 	{
-		min_distance = beam->point.Distance(out_position);
-		*perpendicular_direction = side.vector.VecMul(beam->vector) > 0.0f ? side.vector.Perpendicular() : side.vector.PerpendicularClockwise();
+		min_distance = beam.point.Distance(out_position);
+		*perpendicular_direction = side.vector.VecMul(beam.vector) > 0.0f ? side.vector.Perpendicular() : side.vector.PerpendicularClockwise();
 	}
-	if (points_count > 2 && properties & MAP_PROPERTY_CLOSED)
+	if (points_array.size() > 2 && properties & MAP_PROPERTY_CLOSED)
 	{
-		side.Set(points_array[0], points_array[points_count - 1], true);
+		side.Set(points_array[0], points_array.back(), true);
 		if (side.Intersection(beam, &output_intersection_point))
 		{
-			float distance = beam->point.Distance(output_intersection_point);
+			float distance = beam.point.Distance(output_intersection_point);
 			if (min_distance > distance)
 			{
 				min_distance = distance;
 				*out_position = output_intersection_point;
-				*perpendicular_direction = side.vector.VecMul(beam->vector) > 0.0f ? side.vector.Perpendicular() : side.vector.PerpendicularClockwise();
+				*perpendicular_direction = side.vector.VecMul(beam.vector) > 0.0f ? side.vector.Perpendicular() : side.vector.PerpendicularClockwise();
 			}
 		}
 	}
 
-	for (EngineTypes::Map::array_length_t p = 2; p < points_count; p++)
+	for (EngineTypes::Map::array_length_t p = 2; p < points_array.size(); p++)
 	{
 		side.Set(points_array[p - 1], points_array[p], true);
 		if (side.Intersection(beam, &output_intersection_point))
 		{
-			float distance = beam->point.Distance(output_intersection_point);
+			float distance = beam.point.Distance(output_intersection_point);
 			if (min_distance > distance)
 			{
 				min_distance = distance;
 				*out_position = output_intersection_point;
-				*perpendicular_direction = side.vector.VecMul(beam->vector) > 0.0f ? side.vector.Perpendicular() : side.vector.PerpendicularClockwise();
+				*perpendicular_direction = side.vector.VecMul(beam.vector) > 0.0f ? side.vector.Perpendicular() : side.vector.PerpendicularClockwise();
 			}
 		}
 	}
@@ -937,9 +865,9 @@ bool Polygon::IsCollision(const Beam* beam, Vec2F* out_position, float* distance
 	return false;
 }
 
-bool Polygon::IsCollision(const Line* line) const
+bool Polygon::IsCollision(const Line& line) const
 {
-	if (points_count <= 1)
+	if (points_array.size() <= 1)
 	{
 		return false;
 	}
@@ -948,16 +876,16 @@ bool Polygon::IsCollision(const Line* line) const
 	{
 		return true;
 	}
-	if (points_count > 2 && properties & MAP_PROPERTY_CLOSED)
+	if (points_array.size() > 2 && properties & MAP_PROPERTY_CLOSED)
 	{
-		side.Set(points_array[0], points_array[points_count - 1], true);
+		side.Set(points_array[0], points_array.back(), true);
 		if (side.IsIntersection(line))
 		{
 			return true;
 		}
 	}
 
-	for (EngineTypes::Map::array_length_t p = 2; p < points_count; p++)
+	for (EngineTypes::Map::array_length_t p = 2; p < points_array.size(); p++)
 	{
 		side.Set(points_array[p - 1], points_array[p], true);
 		if (side.IsIntersection(line))
@@ -968,9 +896,9 @@ bool Polygon::IsCollision(const Line* line) const
 	return false;
 }
 
-bool Polygon::IsCollision(const Segment* segment) const
+bool Polygon::IsCollision(const Segment& segment) const
 {
-	if (points_count <= 1)
+	if (points_array.size() <= 1)
 	{
 		return false;
 	}
@@ -979,16 +907,16 @@ bool Polygon::IsCollision(const Segment* segment) const
 	{
 		return true;
 	}
-	if (points_count > 2 && properties & MAP_PROPERTY_CLOSED)
+	if (points_array.size() > 2 && properties & MAP_PROPERTY_CLOSED)
 	{
-		side.Set(points_array[0], points_array[points_count - 1], true);
+		side.Set(points_array[0], points_array.back(), true);
 		if (side.IsIntersection(segment))
 		{
 			return true;
 		}
 	}
 
-	for (EngineTypes::Map::array_length_t p = 2; p < points_count; p++)
+	for (EngineTypes::Map::array_length_t p = 2; p < points_array.size(); p++)
 	{
 		side.Set(points_array[p - 1], points_array[p], true);
 		if (side.IsIntersection(segment))
@@ -1054,7 +982,7 @@ void Polygon::ToDefault()
 	position.Set(0.0f, 0.0f);
 	angle = 0.0f;
 	size.Set(1.0f, 1.0f);
-	for (EngineTypes::Map::array_length_t i = 0; i < points_count - 1; i++)
+	for (EngineTypes::Map::array_length_t i = 0; i < points_array.size() - 1; i++)
 	{
 		points_array[i] = local_points_array[i];
 	}
@@ -1062,101 +990,42 @@ void Polygon::ToDefault()
 
 EngineTypes::Polygon::points_array_length_t Polygon::PointsCount() const
 {
-	return points_count;
+	return points_array.size();
 }
 
 void Polygon::Set(const Polygon* parent)
 {
-	if (points_count > 0)
-	{
-		delete[] points_array;
-		delete[] local_points_array;
-	}
+	MapElement::Set(parent);
 
 	angle = parent->angle;
-	exist = parent->exist;
 	last_angle = parent->last_angle;
 	last_position = parent->last_position;
 	last_size = parent->last_size;
-	points_count = parent->points_count;
-	position = parent->position;
-	properties = parent->properties;
 	size = parent->last_size;
+	points_array = parent->points_array;
+	local_points_array = parent->local_points_array;
 
-	need_update = true;
-
-	if (points_count > 0)
-	{
-		local_points_array = new Vec2F[points_count];
-		points_array = new Vec2F[points_count];
-		for (EngineTypes::Map::array_length_t i = 0; i < points_count; i++)
-		{
-			local_points_array[i] = parent->local_points_array[i];
-		}
-	}
+	need_update = parent->need_update;
 }
 
-void Polygon::Set(Vec2F position, float angle, Vec2F size, const Vec2F* points_array, EngineTypes::Polygon::points_array_length_t points_array_length, EngineTypes::Map::property_t properties, bool exist)
+void Polygon::Set(
+	const Vec2F& position,
+	float angle,
+	const Vec2F& size,
+	const std::vector<Vec2F>& points_array,
+	EngineTypes::Polygon::points_array_length_t points_array_length,
+	EngineTypes::Map::property_t properties,
+	bool exist)
 {
-	if (this->points_count > 0)
-	{
-		delete[] this->points_array;
-		delete[] local_points_array;
-	}
-
+	MapElement::Set(position, properties, exist);
 	this->angle = angle;
-	this->exist = exist;
 	this->last_angle = angle;
-	this->last_position = position;
 	this->last_size = size;
-	this->points_count = points_array_length;
-	this->position = position;
-	this->properties = properties;
+	this->need_update = true;
+	this->local_points_array = points_array;
 	this->size = size;
 
-	if (points_array_length > 0)
-	{
-		need_update = true;
-
-		local_points_array = new Vec2F[points_array_length];
-		this->points_array = new Vec2F[points_array_length];
-
-		for (EngineTypes::Map::array_length_t i = 0; i < points_array_length; i++)
-		{
-			local_points_array[i] = points_array[i];
-		}
-	}
-}
-
-void Polygon::Set(const Vec2F* position, float angle, const Vec2F* size, const Vec2F* points_array, EngineTypes::Polygon::points_array_length_t points_array_length, EngineTypes::Map::property_t properties, bool exist)
-{
-	if (this->points_count > 0)
-	{
-		delete[] this->points_array;
-		delete[] local_points_array;
-	}
-
-	this->angle = angle;
-	this->exist = exist;
-	this->last_angle = angle;
-	this->last_position = *position;
-	this->last_size = *size;
-	this->points_count = points_array_length;
-	this->position = *position;
-	this->properties = properties;
-	this->size = *size;
-
-	need_update = true;
-
-	if (points_array_length > 0)
-	{
-		this->points_array = new Vec2F[points_array_length];
-		this->local_points_array = new Vec2F[points_array_length];
-		for (EngineTypes::Map::array_length_t i = 0; i < points_array_length; i++)
-		{
-			local_points_array[i] = points_array[i];
-		}
-	}
+	UpdatePoints();
 }
 
 void Polygon::SetAngle(float angle)
@@ -1190,20 +1059,22 @@ void Polygon::Update()
 
 void Polygon::UpdatePoints()
 {
-	if (points_count == 0)
+	const size_t& count = local_points_array.size();
+
+	if (count <= 0) return;
+
+	if (local_points_array.size() != points_array.size())
 	{
-		return;
+		points_array = local_points_array;
 	}
 
-	//std::cout << "AngV: " << angle - last_angle << " NorV: " << position - last_position << " ResV: " << size - last_size << std::endl;
-
-	for (EngineTypes::Map::array_length_t p = 0; p < points_count; p++)
+	for (EngineTypes::Map::array_length_t p = 0; p < count; p++)
 	{
 		points_array[p] = local_points_array[p].Scale(size).Rotate(angle) + position;
 	}
 }
 
-Vec2F Polygon::Velocity(Vec2F point) const
+Vec2F Polygon::Velocity(const Vec2F& point) const
 {
 	Vec2F local = (point - position).Rotate(-angle).Scale(Vec2F(1.0f / size.x, 1.0f / size.y));
 	return
@@ -1212,16 +1083,7 @@ Vec2F Polygon::Velocity(Vec2F point) const
 		position - last_position;
 }
 
-Vec2F Polygon::Velocity(const Vec2F* point) const
-{
-	Vec2F local = (*point - position).Rotate(-angle).Scale(Vec2F(1.0f / size.x, 1.0f / size.y));
-	return
-		Vec2F((size.x - last_size.x) * local.x, (size.y - last_size.y) * local.y) +
-		local.Perpendicular() * (angle - last_angle) * local.Length() +
-		position - last_position;
-}
-
-Vec2F Polygon::VelocityLocal(Vec2F point) const
+Vec2F Polygon::VelocityLocal(const Vec2F& point) const
 {
 	return
 		Vec2F((size.x - last_size.x) * point.x, (size.y - last_size.y) * point.y) +
@@ -1229,51 +1091,20 @@ Vec2F Polygon::VelocityLocal(Vec2F point) const
 		position - last_position;
 }
 
-Vec2F Polygon::VelocityLocal(const Vec2F* point) const
+void Polygon::operator=(const Polygon& polygon)
 {
-	return
-		Vec2F((size.x - last_size.x) * point->x, (size.y - last_size.y) * point->y) +
-		point->Perpendicular() * (angle - last_angle) * point->Length() +
-		position - last_position;
-}
-
-void Polygon::operator=(Polygon polygon)
-{
-	if (points_count > 0)
-	{
-		delete[] points_array;
-		delete[] local_points_array;
-	}
+	MapElement::operator=(polygon);
 
 	angle = polygon.angle;
-	exist = polygon.exist;
-	points_count = polygon.points_count;
-	position = polygon.position;
-	properties = polygon.properties;
+	points_array = polygon.points_array;
+	local_points_array = polygon.local_points_array;
 
-	need_update = true;
-
-	if (points_count > 0)
-	{
-		points_array = new Vec2F[points_count];
-		local_points_array = new Vec2F[points_count];
-		for (EngineTypes::Map::array_length_t i = 1; i < points_count; i++)
-		{
-			local_points_array[i] = polygon.local_points_array[i];
-		}
-	}
+	need_update = polygon.need_update;
 }
 
 Polygon::~Polygon()
 {
-	if (points_count > 0)
-	{
-		delete[] points_array;
-		delete[] local_points_array;
-	}
 }
-
-
 
 MapData::MapData(const MapData& map) :
 	cyrcles_array_length(map.cyrcles_array_length),

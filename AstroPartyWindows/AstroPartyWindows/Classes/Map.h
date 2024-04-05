@@ -26,11 +26,7 @@ namespace Map
 		MapElement();
 		MapElement(const MapElement& map_element);
 		MapElement(
-			Vec2F position,
-			EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
-			bool exist = true);
-		MapElement(
-			const Vec2F* position,
+			const Vec2F& position,
 			EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
 			bool exist = true);
 
@@ -45,24 +41,18 @@ namespace Map
 		bool IsCheckCollisionsOutside() const;
 		bool IsUnbreacable() const;
 		void Move(const Vec2F& move_vector);
-		void Move(const Vec2F* move_vector);
 		EngineTypes::Map::property_t Prorerties() const;
 		void RessetVelocity();
 		void SetPosition(const Vec2F& position);
-		void SetPosition(const Vec2F* position);
 		void SetProperties(EngineTypes::Map::property_t properties);
 		void Set(const MapElement* map_element);
 		void Set(
 			const Vec2F& position,
 			EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
 			bool exist = true);
-		void Set(
-			const Vec2F* position,
-			EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
-			bool exist = true);
 		void Update();
 
-		void operator=(MapElement map_element);
+		void operator=(const MapElement& map_element);
 
 		~MapElement();
 	};
@@ -199,39 +189,30 @@ namespace Map
 		Vec2F last_size;
 		float last_angle;
 
-		Vec2F* local_points_array;
-		EngineTypes::Polygon::points_array_length_t points_count;
+		std::vector<Vec2F> local_points_array;
 
 	public:
-		Vec2F* points_array;
+		std::vector<Vec2F> points_array;
 		float angle;
 		Vec2F size;
 
 		Polygon();
 		Polygon(const Polygon& polygon);
 		Polygon(
-			Vec2F position,
+			const Vec2F& position,
 			float angle,
-			Vec2F size,
-			const Vec2F* points_array,
+			const Vec2F& size,
+			const std::vector<Vec2F>& points_array,
 			EngineTypes::Polygon::points_array_length_t points_array_length,
 			EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES | MAP_PROPERTY_CLOSED,
 			bool exist = true);
-		Polygon(
-			const Vec2F* position,
-			float angle,
-			const Vec2F* size,
-			const Vec2F* points_array,
-			EngineTypes::Polygon::points_array_length_t points_array_length,
-			EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
-			bool exist = true);
 
 		bool IsClosed() const;
-		bool IsCollision(const Beam* beam) const;
-		bool IsCollision(const Beam* beam, Vec2F* out_position, float* distance_to_out_position) const;
-		bool IsCollision(const Beam* beam, Vec2F* out_position, float* distance_to_out_position, Vec2F* perpendicular_vector) const;
-		bool IsCollision(const Line* line) const;
-		bool IsCollision(const Segment* segment) const;
+		bool IsCollision(const Beam& beam) const;
+		bool IsCollision(const Beam& beam, Vec2F* out_position, float* distance_to_out_position) const;
+		bool IsCollision(const Beam& beam, Vec2F* out_position, float* distance_to_out_position, Vec2F* perpendicular_vector) const;
+		bool IsCollision(const Line& line) const;
+		bool IsCollision(const Segment& segment) const;
 		//If polygon should update enges then function returns true.
 		bool IsShouldUpdate() const;
 		//The function set flag that indicated that should update edges of the polygon.
@@ -253,20 +234,12 @@ namespace Map
 		EngineTypes::Polygon::points_array_length_t PointsCount() const;
 		void Set(const Polygon* parent);
 		void Set(
-			Vec2F position,
+			const Vec2F& position,
 			float angle,
-			Vec2F size,
-			const Vec2F* points_array,
+			const Vec2F& size,
+			const std::vector<Vec2F>& points_array,
 			EngineTypes::Polygon::points_array_length_t points_array_length,
-			EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
-			bool exist = true);
-		void Set(
-			const Vec2F* position,
-			float angle,
-			const Vec2F* size,
-			const Vec2F* points_array,
-			EngineTypes::Polygon::points_array_length_t points_array_length,
-			EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
+			EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES | MAP_PROPERTY_CLOSED,
 			bool exist = true);
 		void SetAngle(float angle);
 		void SetSize(const Vec2F& size);
@@ -275,15 +248,11 @@ namespace Map
 		void UpdatePoints();
 		void Update();
 		//The function return velocity of point in the polygon.
-		Vec2F Velocity(Vec2F point) const;
+		Vec2F Velocity(const Vec2F& point) const;
 		//The function return velocity of point in the polygon.
-		Vec2F Velocity(const Vec2F* point) const;
-		//The function return velocity of point in the polygon.
-		Vec2F VelocityLocal(Vec2F point) const;
-		//The function return velocity of point in the polygon.
-		Vec2F VelocityLocal(const Vec2F* point) const;
+		Vec2F VelocityLocal(const Vec2F& point) const;
 
-		void operator=(Polygon polygon);
+		void operator=(const Polygon& polygon);
 
 		~Polygon();
 	};

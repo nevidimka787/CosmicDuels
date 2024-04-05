@@ -428,8 +428,11 @@ bool DynamicEntity::CollisionCheckPosition(const Map::Rectangle* rectangle, Vec2
 
 bool DynamicEntity::CollisionCheckIntersections(const Map::Rectangle* rectangle, Vec2F& intersect_point, Vec2F& force_vector)
 {
-
 	const auto& relative_velocity = velocity - rectangle->GetVelocity();
+
+	const bool& treck_too_short = relative_velocity.LengthPow2() < radius * radius / 100.0f;
+	if (treck_too_short) return false;
+
 	const auto& treck = Segment(position, relative_velocity);
 	auto side = rectangle->GetUpSide();
 	side.point.y += radius;

@@ -1690,7 +1690,7 @@ void Game::CreateMap8(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 
 	Map::Rectangle* rectangles = new Map::Rectangle[MAP_BROKEN__RECTANGLES_COUNT];
 	Map::Polygon* polygons = new Map::Polygon[MAP_BROKEN__POLYGONS_COUNT];
-	Vec2F* points = new Vec2F[MAP_BROKEN__STAR_POLYGON__POINTS_COUNT];
+	auto points = std::vector<Vec2F>(MAP_BROKEN__STAR_POLYGON__POINTS_COUNT);
 
 	Segment diagonal = Segment(
 		Vec2F(MAP_BROKEN__CENTER_POSITION + MAP_BROKEN__FRAME_SIZE),
@@ -1712,7 +1712,6 @@ void Game::CreateMap8(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 		0.0f,
 		Vec2F(1.0f),
 		points,
-		MAP_BROKEN__STAR_POLYGON__POINTS_COUNT,
 		MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_CLOSED);
 	
 	polygons[MAP_BROKEN__DOWN_RIGHT_STAR_POLYGON].Set(
@@ -1720,7 +1719,6 @@ void Game::CreateMap8(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 		0.0f,
 		Vec2F(1.0f),
 		points,
-		MAP_BROKEN__STAR_POLYGON__POINTS_COUNT,
 		MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_CLOSED);
 
 	polygons[MAP_BROKEN__DOWN_LEFT_STAR_POLYGON].Set(
@@ -1728,7 +1726,6 @@ void Game::CreateMap8(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 		0.0f,
 		Vec2F(1.0f),
 		points,
-		MAP_BROKEN__STAR_POLYGON__POINTS_COUNT,
 		MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_CLOSED);
 
 	polygons[MAP_BROKEN__UP_LEFT_STAR_POLYGON].Set(
@@ -1736,10 +1733,7 @@ void Game::CreateMap8(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 		0.0f,
 		Vec2F(1.0f),
 		points,
-		MAP_BROKEN__STAR_POLYGON__POINTS_COUNT,
 		MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_CLOSED);
-	
-	delete[] points;
 
 	map.Set(
 		rectangles,
@@ -2032,7 +2026,7 @@ void Game::CreateMap10(std::vector<Vec2F>& ships_positions, std::vector<float>& 
 
 	Map::Polygon* polygons = new Map::Polygon[MAP_NO_CENTER__POLYGONS_COUNT];
 
-	Vec2F* points = new Vec2F[MAP_NO_CENTER__FRAME_POINTS_COUNT];
+	auto points = std::vector<Vec2F>(MAP_NO_CENTER__FRAME_POINTS_COUNT);
 	points[0].Set(0.0f, 0.0f);
 	points[1].Set(MAP_NO_CENTER__FRAME_OUT_SIDE_LENGHT, 0.0f);
 	points[2].Set(MAP_NO_CENTER__FRAME_DISTANCE_TO_IN_SIDE, MAP_NO_CENTER__FRAME_DISTANCE_TO_IN_SIDE - MAP_NO_CENTER__FRAME_OUT_SIDE_LENGHT);
@@ -2054,12 +2048,9 @@ void Game::CreateMap10(std::vector<Vec2F>& ships_positions, std::vector<float>& 
 		0.0f,
 		Vec2F(1.0f),
 		points, 
-		MAP_NO_CENTER__FRAME_POINTS_COUNT, 
 		MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_CLOSED);
 
-	delete[] points;
-
-	points = new Vec2F[MAP_NO_CENTER__DESINTEGRATOR_POINTS_COUNT];
+	points = std::vector<Vec2F>(MAP_NO_CENTER__DESINTEGRATOR_POINTS_COUNT);
 
 	points[0].Set(0.0f, 0.0f);
 	points[1].Set(1.0f, 0.0f);
@@ -2078,11 +2069,8 @@ void Game::CreateMap10(std::vector<Vec2F>& ships_positions, std::vector<float>& 
 			M_PI_4 - M_PI_2 * (desintegrator),
 			Vec2F(MAP_NO_CENTER_DESINTEGRATOR_MAX_SIZE),
 			points,
-			MAP_NO_CENTER__DESINTEGRATOR_POINTS_COUNT,
 			MAP_PROPERTY_CLOSED | MAP_PROPERTY_AGRESSIVE | MAP_PROPERTY_KILLER | MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
 	}
-
-	delete[] points;
 	delete[] desintegrators_positions;
 	
 	map.Set(
@@ -2175,15 +2163,15 @@ void Game::CreateMap12(std::vector<Vec2F>& ships_positions, std::vector<float>& 
 		MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_INSIDE);
 
 	Map::Polygon* polygons = new Map::Polygon[MAP_KALEIDOSCOPE__POLYGONS_COUNT];
-	Vec2F* points = new Vec2F[4];
+	auto points = std::vector<Vec2F>(4);
 	points[0].Set(MAP_KALEIDOSCOPE__SIZE / 2.0f);
 	for (size_t i = 1; i < 4; ++i)
 	{
 		points[i] = points[0];
 		points[0].PerpendicularThis();
 	}
-	polygons[0].Set(Vec2F(MAP_KALEIDOSCOPE__CENTER), M_PI_4, Vec2F(MAP_KALEIDOSCOPE__EXTERNAL_CORNER_COEFFICIENT), points, 4, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_CLOSED);
-	polygons[1].Set(Vec2F(MAP_KALEIDOSCOPE__CENTER), 0.0f, Vec2F(MAP_KALEIDOSCOPE__INTERNAL_CORNER_COEFFICIENT), points, 4, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_CLOSED);
+	polygons[0].Set(Vec2F(MAP_KALEIDOSCOPE__CENTER), M_PI_4, Vec2F(MAP_KALEIDOSCOPE__EXTERNAL_CORNER_COEFFICIENT), points, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_CLOSED);
+	polygons[1].Set(Vec2F(MAP_KALEIDOSCOPE__CENTER), 0.0f, Vec2F(MAP_KALEIDOSCOPE__INTERNAL_CORNER_COEFFICIENT), points, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_CLOSED);
 
 	/* Create entities */
 
@@ -2218,7 +2206,6 @@ void Game::CreateMap12(std::vector<Vec2F>& ships_positions, std::vector<float>& 
 		}
 	}
 
-	delete[] points;
 	delete[] decel_positions;
 
 	map.Set(rectangles, MAP_KALEIDOSCOPE__RECTANGLES_COUNT, nullptr, 0, polygons, MAP_KALEIDOSCOPE__POLYGONS_COUNT);

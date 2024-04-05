@@ -1,5 +1,9 @@
 #include "Mat.h"
 
+#ifdef _DEBUG
+#include <assert.h>
+#endif
+
 #pragma warning(disable : 26451)
 
 Vec2D::Vec2D() :
@@ -1124,7 +1128,11 @@ float Mat2F::Determinant() const
 
 Mat2F Mat2F::Inverse() const
 {
-	return Mat2F(a22, -a12, -a21, a11) / Determinant();
+	const float& det = Determinant();
+#ifdef _DEBUG
+	assert(fabsf(det) > 1e-7);
+#endif
+	return Mat2F(a22, -a12, -a21, a11) / det;
 }
 
 void Mat2F::InverseThis()
