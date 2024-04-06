@@ -14,7 +14,7 @@ StaticEntity::StaticEntity(const StaticEntity& static_entity) :
 }
 
 StaticEntity::StaticEntity(
-	Vec2F position,
+	const Vec2F& position,
 	float radius,
 	float angle,
 	bool exist) 
@@ -28,60 +28,24 @@ StaticEntity::StaticEntity(
 {
 }
 
-StaticEntity::StaticEntity(
-	const Vec2F* position,
-	float radius,
-	float angle,
-	bool exist) 
-	:
-	Entity(
-		position,
-		radius,
-		angle,
-		exist),
-	last_position(*position)
-{
-}
-
 Vec2F StaticEntity::GetVelocity() const
 {
 	return position - last_position;
 }
 
-void StaticEntity::Set(StaticEntity* static_entity)
+void StaticEntity::Set(const StaticEntity* static_entity)
 {
-	angle = static_entity->angle;
-	direction = static_entity->direction;
-	exist = static_entity->exist;
+	Entity::Set(static_entity);
 	last_position = static_entity->last_position;
-	position = static_entity->position;
-	radius = static_entity->radius;
 }
 
 void StaticEntity::Set(
-	Vec2F position,
+	const Vec2F& position,
 	float radius,
 	float angle,
 	bool exist)
 {
-	this->angle = angle;
-	UpdateDirection();
-	this->exist = exist;
-	this->position = position;
-	this->radius = radius;
-}
-
-void StaticEntity::Set(
-	const Vec2F* position,
-	float radius,
-	float angle,
-	bool exist)
-{
-	this->angle = angle;
-	UpdateDirection();
-	this->exist = exist;
-	this->position = *position;
-	this->radius = radius;
+	Entity::Set(position, radius, angle, exist);
 }
 
 void StaticEntity::SetPosition(Vec2F position)
@@ -101,14 +65,10 @@ void StaticEntity::Update()
 	last_position = position;
 }
 
-void StaticEntity::operator=(StaticEntity static_entity)
+void StaticEntity::operator=(const StaticEntity& static_entity)
 {
-	angle = static_entity.angle;
-	direction = static_entity.direction;
-	exist = static_entity.exist;
+	Entity::operator=(static_entity);
 	last_position = static_entity.last_position;
-	position = static_entity.position;
-	radius = static_entity.radius;
 }
 
 StaticEntity::~StaticEntity()

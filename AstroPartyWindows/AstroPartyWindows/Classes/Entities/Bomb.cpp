@@ -23,8 +23,8 @@ Bomb::Bomb(const Bomb& bomb)
 }
 
 Bomb::Bomb(
-	Vec2F position,
-	Vec2F velocity,
+	const Vec2F& position,
+	const Vec2F& velocity,
 	GameTypes::players_count_t master1_team_number,
 	GameTypes::players_count_t master2_team_number,
 	GameTypes::tic_t animation_tic,
@@ -46,40 +46,6 @@ Bomb::Bomb(
 		master2_team_number,
 		angle, angular_velocity, 
 		force_collision_coeffisient, 
-		force_resistance_air_coefficient,
-		exist),
-	activation_period(activation_period),
-	animation_tic(animation_tic),
-	blinking_period(blinking_period),
-	status(status)
-{
-}
-
-Bomb::Bomb(
-	const Vec2F* position,
-	const Vec2F* velocity,
-	GameTypes::players_count_t master1_team_number,
-	GameTypes::players_count_t master2_team_number,
-	GameTypes::tic_t animation_tic,
-	float angle,
-	float angular_velocity,
-	float force_collision_coeffisient,
-	float force_resistance_air_coefficient,
-	float radius, 
-	EngineTypes::Bomb::status_t status,
-	GameTypes::tic_t activation_period,
-	GameTypes::tic_t blinking_period,
-	bool exist) 
-	:
-	KillerEntity(
-		position,
-		velocity, 
-		radius,
-		master1_team_number,
-		master2_team_number,
-		angle,
-		angular_velocity,
-		force_collision_coeffisient,
 		force_resistance_air_coefficient,
 		exist),
 	activation_period(activation_period),
@@ -138,15 +104,17 @@ bool Bomb::CanRemove() const
 
 bool Bomb::Collision(const Map::MapData& map)
 {
-	void* map_element;
 	bool collision = false;
 
 	if (status & BOMB_STATUS_BOOM)
 	{
 		for (EngineTypes::Map::array_length_t i = 0; i < map.cyrcles_array_length; i++)
 		{
-			map_element = (void*)map.CyrclePointer(i);
-			if (((Map::Cyrcle*)map_element)->exist && !(((Map::Cyrcle*)map_element)->Prorerties() & MAP_PROPERTY_UNBREACABLE) && DynamicEntity::IsCollision((Map::Cyrcle*)map_element))
+			const auto map_element = map.CyrclePointer(i);
+			if (
+				map_element->exist &&
+				!(map_element->Prorerties() & MAP_PROPERTY_UNBREACABLE) &&
+				DynamicEntity::IsCollision(*map_element))
 			{
 				((Map::Cyrcle*)map_element)->exist = false;
 				collision = true;
@@ -154,19 +122,25 @@ bool Bomb::Collision(const Map::MapData& map)
 		}
 		for (EngineTypes::Map::array_length_t i = 0; i < map.polygons_array_length; i++)
 		{
-			map_element = (void*)map.PolygonPointer(i);
-			if (((Map::Polygon*)map_element)->exist && !(((Map::Polygon*)map_element)->Prorerties() & MAP_PROPERTY_UNBREACABLE) && DynamicEntity::IsCollision((Map::Polygon*)map_element))
+			const auto map_element = map.PolygonPointer(i);
+			if (
+				map_element->exist &&
+				!(map_element->Prorerties() & MAP_PROPERTY_UNBREACABLE) &&
+				DynamicEntity::IsCollision(*map_element))
 			{
-				((Map::Polygon*)map_element)->exist = false;
+				map_element->exist = false;
 				collision = true;
 			}
 		}
 		for (EngineTypes::Map::array_length_t i = 0; i < map.rectangles_array_length; i++)
 		{
-			map_element = (void*)map.RectanglePointer(i);
-			if (((Map::Rectangle*)map_element)->exist && !(((Map::Rectangle*)map_element)->Prorerties() & MAP_PROPERTY_UNBREACABLE) && DynamicEntity::IsCollision((Map::Rectangle*)map_element))
+			const auto map_element = map.RectanglePointer(i);
+			if (
+				map_element->exist &&
+				!(map_element->Prorerties() & MAP_PROPERTY_UNBREACABLE) &&
+				DynamicEntity::IsCollision(*map_element))
 			{
-				((Map::Rectangle*)map_element)->exist = false;
+				map_element->exist = false;
 				collision = true;
 			}
 		}
@@ -175,15 +149,15 @@ bool Bomb::Collision(const Map::MapData& map)
 
 	for (EngineTypes::Map::array_length_t i = 0; i < map.cyrcles_array_length; i++)
 	{
-		map_element = (void*)map.CyrclePointer(i);
+		const auto map_element = map.CyrclePointer(i);
 		if (((Map::Cyrcle*)map_element)->exist)
 		{
-			bool current_collision = DynamicEntity::Collision((Map::Cyrcle*)map_element);
-			if (current_collision && ((Map::Cyrcle*)map_element)->IsKiller() && ((Map::Cyrcle*)map_element)->IsAggressive())
+			bool current_collision = DynamicEntity::Collision(*map_element);
+			if (current_collision && map_element->IsKiller() && map_element->IsAggressive())
 			{
 				Boom();
 			}
-			else if (current_collision && ((Map::Cyrcle*)map_element)->IsAggressive())
+			else if (current_collision && map_element->IsAggressive())
 			{
 				Activate();
 			}
@@ -193,15 +167,15 @@ bool Bomb::Collision(const Map::MapData& map)
 	}
 	for (EngineTypes::Map::array_length_t i = 0; i < map.polygons_array_length; i++)
 	{
-		map_element = (void*)map.PolygonPointer(i);
-		if (((Map::Polygon*)map_element)->exist)
+		const auto map_element = map.PolygonPointer(i);
+		if (map_element->exist)
 		{
-			bool current_collision = DynamicEntity::Collision((Map::Polygon*)map_element);
-			if (current_collision && ((Map::Polygon*)map_element)->IsKiller() && ((Map::Polygon*)map_element)->IsAggressive())
+			bool current_collision = DynamicEntity::Collision(*map_element);
+			if (current_collision && map_element->IsKiller() && map_element->IsAggressive())
 			{
 				Boom();
 			}
-			else if (current_collision && ((Map::Polygon*)map_element)->IsAggressive())
+			else if (current_collision && map_element->IsAggressive())
 			{
 				Activate();
 			}
@@ -211,15 +185,15 @@ bool Bomb::Collision(const Map::MapData& map)
 	}
 	for (EngineTypes::Map::array_length_t i = 0; i < map.rectangles_array_length; i++)
 	{
-		map_element = (void*)map.RectanglePointer(i);
-		if (((Map::Rectangle*)map_element)->exist)
+		const auto map_element = map.RectanglePointer(i);
+		if (map_element->exist)
 		{
-			bool current_collision = DynamicEntity::Collision((Map::Rectangle*)map_element);
-			if (current_collision && ((Map::Rectangle*)map_element)->IsKiller() && ((Map::Rectangle*)map_element)->IsAggressive())
+			bool current_collision = DynamicEntity::Collision(map_element);
+			if (current_collision && map_element->IsKiller() && map_element->IsAggressive())
 			{
 				Boom();
 			}
-			else if (current_collision && ((Map::Rectangle*)map_element)->IsAggressive())
+			else if (current_collision && map_element->IsAggressive())
 			{
 				Activate();
 			}
@@ -290,26 +264,17 @@ bool Bomb::IsAggressiveFor(const ControledEntity& host) const
 
 void Bomb::Set(const Bomb* bomb)
 {
+	KillerEntity::Set(bomb);
+
 	activation_period = bomb->activation_period;
-	angle = bomb->angle;
-	angular_velocity = bomb->angular_velocity;
 	animation_tic = bomb->animation_tic;
 	blinking_period = bomb->blinking_period;
-	direction = bomb->direction;
-	exist = bomb->exist;
-	force_collision_coeffisient = bomb->force_collision_coeffisient;
-	force_resistance_air_coefficient = bomb->force_resistance_air_coefficient;
-	host_number = bomb->host_number;
-	host_team_number = bomb->host_team_number;
-	position = bomb->position;
-	radius = bomb->radius;
 	status = bomb->status;
-	velocity = bomb->velocity;
 }
 
 void Bomb::Set(
-	Vec2F position, 
-	Vec2F velocity, 
+	const Vec2F& position, 
+	const Vec2F& velocity, 
 	GameTypes::players_count_t payer_master_number,
 	GameTypes::players_count_t player_master_team_number,
 	GameTypes::tic_t animation_tic,
@@ -323,54 +288,22 @@ void Bomb::Set(
 	GameTypes::tic_t blinking_period,
 	bool exist)
 {
-	this->activation_period = activation_period;
-	this->angle = angle;
-	this->angular_velocity = angular_velocity;
-	this->animation_tic = animation_tic;
-	this->blinking_period = blinking_period;
-	UpdateDirection();
-	this->exist = exist;
-	this->force_collision_coeffisient = force_collision_coeffisient;
-	this->force_resistance_air_coefficient = force_resistance_air_coefficient;
-	this->host_number = host_number;
-	this->host_team_number = player_master_team_number;
-	this->position = position;
-	this->radius = radius;
-	this->status = status;
-	this->velocity = velocity;
-}
+	KillerEntity::Set(
+		position,
+		velocity,
+		radius,
+		player_master_team_number,
+		player_master_team_number,
+		angle,
+		angular_velocity,
+		force_collision_coeffisient,
+		force_resistance_air_coefficient,
+		exist);
 
-void Bomb::Set(
-	const Vec2F* position,
-	const Vec2F* velocity, 
-	GameTypes::players_count_t payer_master_number,
-	GameTypes::players_count_t player_master_team_number,
-	GameTypes::tic_t animation_tic,
-	float angle,
-	float angular_velocity,
-	float force_collision_coeffisient, 
-	float force_resistance_air_coefficient,
-	float radius,
-	EngineTypes::Bomb::status_t status,
-	GameTypes::tic_t activation_period,
-	GameTypes::tic_t blinking_period,
-	bool exist)
-{
 	this->activation_period = activation_period;
-	this->angle = angle;
-	this->angular_velocity = angular_velocity;
 	this->animation_tic = animation_tic;
 	this->blinking_period = blinking_period;
-	UpdateDirection();
-	this->exist = exist;
-	this->force_collision_coeffisient = force_collision_coeffisient;
-	this->force_resistance_air_coefficient = force_resistance_air_coefficient;
-	this->host_number = host_number;
-	this->host_team_number = player_master_team_number;
-	this->position = *position;
-	this->radius = radius;
 	this->status = status;
-	this->velocity = *velocity;
 }
 
 void Bomb::Update()
@@ -411,24 +344,14 @@ void Bomb::Update()
 	}
 }
 
-void Bomb::operator=(Bomb bomb)
+void Bomb::operator=(const Bomb& bomb)
 {
+	KillerEntity::operator=(bomb);
+
 	activation_period = bomb.activation_period;
-	angle = bomb.angle;
-	angular_velocity = bomb.angular_velocity;
 	animation_tic = bomb.animation_tic;
 	blinking_period = bomb.blinking_period;
-	direction = bomb.direction;
-	exist = bomb.exist;
-	force = bomb.force;
-	force_collision_coeffisient = bomb.force_collision_coeffisient;
-	force_resistance_air_coefficient = bomb.force_resistance_air_coefficient;
-	host_number = bomb.host_number;
-	host_team_number = bomb.host_team_number;
-	position = bomb.position;
-	radius = bomb.radius;
 	status = bomb.status;
-	velocity = bomb.velocity;
 }
 
 Bomb::~Bomb()

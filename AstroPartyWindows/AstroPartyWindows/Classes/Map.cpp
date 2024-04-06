@@ -197,30 +197,22 @@ Vec2F Rectangle::GetUpLeftPoint() const
 
 Segment Rectangle::GetUpSide() const
 {
-	Vec2F temp;
-	temp.Set(point2.x, position.y);
-	return Segment(&position, &temp, true);
+	return Segment(position, Vec2F(point2.x, position.y), true);
 }
 
 Segment Rectangle::GetDownSide() const
 {
-	Vec2F temp;
-	temp.Set(position.x, point2.y);
-	return Segment(&temp, &point2, true);
+	return Segment(Vec2F(position.x, point2.y), point2, true);
 }
 
 Segment Rectangle::GetRightSide() const
 {
-	Vec2F temp;
-	temp.Set(position.x, point2.y);
-	return Segment(&position, &temp, true);
+	return Segment(position, Vec2F(position.x, point2.y), true);
 }
 
 Segment Rectangle::GetLeftSide() const
 {
-	Vec2F temp;
-	temp.Set(point2.x, position.y);
-	return Segment(&temp, &point2, true);
+	return Segment(Vec2F(position.x, point2.y), point2, true);
 }
 
 Vec2F Rectangle::GetSize() const
@@ -354,19 +346,19 @@ bool Rectangle::IsCollision(const Beam* beam, Vec2F* out_position, float* distan
 
 bool Rectangle::IsCollision(const Line* line)
 {
-	if (GetUpSide().IsIntersection(line))
+	if (GetUpSide().IsIntersection(*line))
 	{
 		return true;
 	}
-	if (GetRightSide().IsIntersection(line))
+	if (GetRightSide().IsIntersection(*line))
 	{
 		return true;
 	}
-	if (GetDownSide().IsIntersection(line))
+	if (GetDownSide().IsIntersection(*line))
 	{
 		return true;
 	}
-	if (GetLeftSide().IsIntersection(line))
+	if (GetLeftSide().IsIntersection(*line))
 	{
 		return true;
 	}
@@ -589,7 +581,7 @@ bool Cyrcle::IsCollision(const Beam* beam, Vec2F* out_position, float* distance_
 		(neares_point_on_line - beam->vector.Normalize() * sub_vector_length) :
 		(neares_point_on_line + beam->vector.Normalize() * sub_vector_length);
 
-	*distance_to_out_position = beam->point.Distance(out_position);
+	*distance_to_out_position = beam->point.Distance(*out_position);
 
 	return true;
 }
@@ -612,7 +604,7 @@ bool Cyrcle::IsCollision(const Beam* beam, Vec2F* out_position, float* distance_
 		(neares_point_on_line - beam->vector.Normalize() * sub_vector_length) :
 		(neares_point_on_line + beam->vector.Normalize() * sub_vector_length);
 
-	*distance_to_out_position = beam->point.Distance(out_position);
+	*distance_to_out_position = beam->point.Distance(*out_position);
 
 	*perpendicular_direction = *out_position - position;
 
@@ -771,7 +763,7 @@ bool Polygon::IsCollision(const Beam& beam, Vec2F* out_position, float* distance
 
 	if (side.Intersection(beam, out_position))
 	{
-		min_distance = beam.point.Distance(out_position);
+		min_distance = beam.point.Distance(*out_position);
 	}
 	if (points_array.size() > 2 && properties & MAP_PROPERTY_CLOSED)
 	{
@@ -823,7 +815,7 @@ bool Polygon::IsCollision(const Beam& beam, Vec2F* out_position, float* distance
 
 	if (side.Intersection(beam, out_position))
 	{
-		min_distance = beam.point.Distance(out_position);
+		min_distance = beam.point.Distance(*out_position);
 		*perpendicular_direction = side.vector.VecMul(beam.vector) > 0.0f ? side.vector.Perpendicular() : side.vector.PerpendicularClockwise();
 	}
 	if (points_array.size() > 2 && properties & MAP_PROPERTY_CLOSED)

@@ -16,7 +16,7 @@ void Game::DynamicEntitiesCollisions(std::vector<EntityType>& entities, GameType
 			{
 				if (entities[second].exist)
 				{
-					entities[first].DynamicEntity::Collision(&entities[second]);
+					entities[first].DynamicEntity::Collision(entities[second]);
 					found_entites_count2++;
 				}
 			}
@@ -42,7 +42,7 @@ void Game::DynamicEntitiesCollisions(std::vector<Entity1Type>& entities1, std::v
 			{
 				if (entities2[second].exist)
 				{
-					entities1[first].DynamicEntity::Collision(&entities2[second]);
+					entities1[first].DynamicEntity::Collision(entities2[second]);
 					found_entites_count2++;
 				}
 			}
@@ -214,7 +214,7 @@ void Game::DynamicEntitiesAddForce(std::vector<GravGen>& grav_gens, GameTypes::m
 					force = entities[i].GetPosition() - grav_gens[grav_gen].GetPosition();
 					len2 = force.x * force.x + force.y * force.y;
 					force /= len2 * sqrt(len2) / grav_gens[grav_gen].gravity;
-					entities[i].AddForce(&force);
+					entities[i].AddForce(force);
 
 					found++;
 				}
@@ -245,7 +245,7 @@ void Game::DynamicEntitiesAddForce(std::vector<GravGen>& grav_gens, GameTypes::m
 						force = entities[i].GetPosition() - grav_gens[grav_gen].GetPosition();
 						len2 = force.x * force.x + force.y * force.y;
 						force /= len2 * sqrt(len2) / grav_gens[grav_gen].gravity;
-						entities[i].AddForce(&force);
+						entities[i].AddForce(force);
 					}
 					found++;
 				}
@@ -267,7 +267,7 @@ void Game::DynamicEntitiesAddForce(std::vector<DecelerationArea>& deceler_areas,
 			{
 				if (entities[i].exist)
 				{
-					if (deceler_areas[deceler_area].IsCollision(&entities[i]))
+					if (deceler_areas[deceler_area].IsCollision(entities[i]))
 					{
 						force = -entities[i].GetVelocity() * deceler_areas[deceler_area].deceleration_parameter;
 						entities[i].AddForce(force);
@@ -720,10 +720,9 @@ void Game::ShipShoot_LaserLoopBombKnife(const Ship& ship)
 
 void Game::ShipShoot_LaserLoopBomb(Ship& ship)
 {
-	Beam local_beam = LASER_DEFAULT_LOCAL_BEAM;
 	ship.AddForceAlongDirection(-SHIP_SHOOT_FORCE * 4.0f);
 	lasers_array_mtx.lock();
-	Game::AddEntity(Laser(&ship, &local_beam, LASER_DEFAULT_WIDTH, LASER_DEFAULT_SHOOT_TIME, LASER_PROPERTY_CAN_MULTIPLICATE));
+	Game::AddEntity(Laser(&ship, LASER_DEFAULT_LOCAL_BEAM, LASER_DEFAULT_WIDTH, LASER_DEFAULT_SHOOT_TIME, LASER_PROPERTY_CAN_MULTIPLICATE));
 	lasers_array_mtx.unlock();
 	ships_can_shoot_flags[ship.GetPlayerNumber()] += GAME_ADD_DELLAY_BONUS_USE + GAME_ADD_DELLAY_COMBO_USE * 2;
 }
@@ -748,10 +747,9 @@ void Game::ShipShoot_LoopBombKnife(Ship& ship)
 
 void Game::ShipShoot_LaserLoop(Ship& ship)
 {
-	Beam local_beam = LASER_DEFAULT_LOCAL_BEAM;
 	ship.AddForceAlongDirection(-SHIP_SHOOT_FORCE * 4.0f);
 	lasers_array_mtx.lock();
-	Game::AddEntity(Laser(&ship, &local_beam, LASER_DEFAULT_WIDTH, LASER_DEFAULT_SHOOT_TIME, LASER_PROPERTY_CAN_REFLECT));
+	Game::AddEntity(Laser(&ship, LASER_DEFAULT_LOCAL_BEAM, LASER_DEFAULT_WIDTH, LASER_DEFAULT_SHOOT_TIME, LASER_PROPERTY_CAN_REFLECT));
 	lasers_array_mtx.unlock();
 	ships_can_shoot_flags[ship.GetPlayerNumber()] += GAME_ADD_DELLAY_BONUS_USE + GAME_ADD_DELLAY_COMBO_USE;
 }
@@ -1223,7 +1221,7 @@ void Game::BombsChainReaction()
 			if (
 				&bomb1 == &bomb2 ||
 				bomb2.IsBoom() ||
-				!bomb2.Entity::IsCollision(&bomb1))
+				!bomb2.Entity::IsCollision(bomb1))
 			{
 				continue;
 			}
@@ -1257,7 +1255,7 @@ void Game::BombsDestroyAsteroids()
 				if (asteroids_found >= asteroids_count) break;
 				if (!asteroid.exist) continue;
 
-				if (!asteroid.IsCollision(&bomb))
+				if (!asteroid.IsCollision(static_cast<DynamicEntity>(bomb)))
 				{
 					++asteroids_found;
 					continue;
@@ -1294,7 +1292,7 @@ void Game::BombsDestroyBonuses()
 		{
 			if (bonuses_found >= bonuses_count) break;
 			if (!bonus.exist) continue;
-			if (bonus.IsCollision(&bomb))
+			if (bonus.IsCollision(static_cast<DynamicEntity>(bomb)))
 			{
 				DestroyEntity(bonus);
 				continue;
@@ -1324,7 +1322,7 @@ void Game::BombsCollisionsWithBullets()
 		{
 			if (bullets_found >= bullets_count) break;
 			if (!bullet.exist) continue;
-			if (!bullet.IsCollision(&bomb))
+			if (!bullet.IsCollision(static_cast<DynamicEntity>(bomb)))
 			{
 				++bullets_found;
 				continue;
@@ -1353,7 +1351,10 @@ void Game::BombsSpawnedByBulletsAnnihilation()
 {
 	bombs_array_mtx.lock();
 	bullets_array_mtx.lock();
-	for (GameTypes::entities_count_t bullet_id1 = 0, bullets_found1 = 0; bullets_found1 < bullets_count && bullet_id1 < GAME_BULLETS_MAX_COUNT; ++bullet_id1)
+	for (
+		GameTypes::entities_count_t bullet_id1 = 0, bullets_found1 = 0; 
+		bullets_found1 < bullets_count && bullet_id1 < GAME_BULLETS_MAX_COUNT;
+		++bullet_id1)
 	{
 		auto& bullet1 = bullets[bullet_id1];
 		if (!bullet1.exist) continue;
@@ -1372,7 +1373,8 @@ void Game::BombsSpawnedByBulletsAnnihilation()
 			auto& bullet2 = bullets[bullet_id2];
 			if (!bullet2.exist) continue;
 			
-			if (!bullet1.IsCollision(&bullet2)) {
+			if (!bullet1.IsCollision(static_cast<DynamicEntity>(bullet2)))
+			{
 				++bullets_found2;
 				continue;
 			}
@@ -1436,7 +1438,7 @@ void Game::BombsDestroyTurrets()
 		{
 			if (turrets_found >= turrets_count) break;
 			if (!bomb.exist) continue;
-			if (bomb.IsCollision(&turret))
+			if (turret.IsCollision(bomb))
 			{
 				DestroyEntity(bomb, turret);
 				continue;
@@ -1463,7 +1465,7 @@ void Game::BulletsDestroyAsteroids()
 		{
 			if (asteroids_found >= asteroids_count) break;
 			if (!asteroid.exist) continue;
-			if (!asteroid.IsCollision(&bullet))
+			if (!asteroid.IsCollision(static_cast<DynamicEntity>(bullet)))
 			{
 				asteroids_found;
 				continue;
@@ -1919,7 +1921,7 @@ void Game::PortalsTPEntityes(std::vector<Entity_T>& entityes, const GameTypes::e
 			if (entityes_found >= exist_entityes_count) break;
 			if (!entity.exist) continue;
 			++entityes_found;
-			if (!portal.IsCollision(&entity)) continue;
+			if (!portal.IsCollision(entity)) continue;
 
 			TeleportEntity(portal, entity);
 		}
@@ -1947,7 +1949,7 @@ void Game::PortalsTPEntityes<Bomb>(std::vector<Bomb>& entityes, const GameTypes:
 			if (entityes_found >= exist_entityes_count) break;
 			if (!entity.exist) continue;
 			++entityes_found;
-			if (entity.IsBoom() || !portal.IsCollision(&entity)) continue;
+			if (entity.IsBoom() || !portal.IsCollision(entity)) continue;
 
 			TeleportEntity(portal, entity);
 		}
@@ -1997,7 +1999,7 @@ void Game::PilotsKilledBy<Bomb>(std::vector<Bomb>& killers, GameTypes::entities_
 			if (!bomb.exist) continue;
 			++bombs_found;
 
-			if (!bomb.IsBoom() || !bomb.IsCollision(pilot)) continue;
+			if (!bomb.IsBoom() || !pilot.IsCollision(static_cast<DynamicEntity>(bomb))) continue;
 
 			dynamic_particles_array_mtx.lock();
 			log_data_mtx.lock();
@@ -2013,7 +2015,7 @@ void Game::PilotsKilledBy<Bomb>(std::vector<Bomb>& killers, GameTypes::entities_
 template void Game::PilotsKilledBy(std::vector<Bomb>& killers, GameTypes::entities_count_t killers_count, std::shared_mutex& killers_array_mtx);
 
 template <>
-void Game::PilotsKilledBy<Bullet>(std::vector<Bullet>& killers, GameTypes::entities_count_t killers_count, std::shared_mutex& killers_array_mtx)
+void Game::PilotsKilledBy<Bullet>(std::vector<Bullet>& bullets, GameTypes::entities_count_t killers_count, std::shared_mutex& killers_array_mtx)
 {
 	pilots_array_mtx.lock();
 	for (auto& pilot : pilots)
@@ -2021,25 +2023,25 @@ void Game::PilotsKilledBy<Bullet>(std::vector<Bullet>& killers, GameTypes::entit
 		if (!pilot.exist) continue;
 		killers_array_mtx.lock();
 		GameTypes::entities_count_t bullets_found = 0;
-		for (auto& killer : killers)
+		for (auto& bullet : bullets)
 		{
 			if (bullets_found >= killers_count) break;
-			if (!killer.exist) continue;
+			if (!bullet.exist) continue;
 
-			if (killer.is_ignore != BULLET_IGNORE_NOTHING || !pilot.IsCollision(&killer))
+			if (bullet.is_ignore != BULLET_IGNORE_NOTHING || !pilot.IsCollision(static_cast<DynamicEntity>(bullet)))
 			{
 				++bullets_found;
 				continue;
 			}
-			if (!(game_rules & GAME_RULE_FRIENDLY_FIRE) && killer.CreatedByTeam(pilot))
+			if (!(game_rules & GAME_RULE_FRIENDLY_FIRE) && bullet.CreatedByTeam(pilot))
 			{
-				RemoveEntity(killer);
+				RemoveEntity(bullet);
 				continue;
 			}
 
 			dynamic_particles_array_mtx.lock();
 			log_data_mtx.lock();
-			DestroyEntity(killer, pilot);
+			DestroyEntity(bullet, pilot);
 			log_data_mtx.unlock();
 			dynamic_particles_array_mtx.unlock();
 			break;
@@ -2126,14 +2128,14 @@ void Game::ShipsInfluenceToBonuses()
 			if (bonuses_found >= bonuses_count) break;
 			if (!bonus.exist) continue;
 			
-			if (bonus.GetDistance(&ship) > ship.radius * GAME_SHIP_INFLUENCE_RADIUS_COEFFISIENT)
+			if (bonus.GetDistance(ship) > ship.radius * GAME_SHIP_INFLUENCE_RADIUS_COEFFISIENT)
 			{
 				++bonuses_found;
 				continue;
 			}
 			bonus.AddGravityForce(GAME_SHIP_GRAVITATION_FORCE, ship.GetPosition());
 
-			if (!bonus.IsCollision(&ship))
+			if (!bonus.IsCollision(static_cast<DynamicEntity>(ship)))
 			{
 				++bonuses_found;
 				continue;
@@ -2208,7 +2210,7 @@ void Game::ShipsRespawnOrDestroyPilots()
 			if (!pilot.exist) continue;
 			
 			const bool& same_team = pilot.IsSameTeams(ship);
-			const bool& collision = pilot.IsCollision(&ship);
+			const bool& collision = pilot.IsCollision(static_cast<DynamicEntity>(ship));
 			if (game_rules & GAME_RULE_FRIEDNLY_SHEEP_CAN_RESTORE && same_team && collision)
 			{
 				SpawnEntity(ship, pilot);
@@ -2245,7 +2247,7 @@ void Game::ShipsDestroedByBombsOrActivateBombs()
 			if (!bomb.exist) continue;
 			++bombs_found;
 
-			if (bomb.IsBoom() && ship.IsCollision(&bomb))
+			if (bomb.IsBoom() && ship.IsCollision(static_cast<DynamicEntity>(bomb)))
 			{
 				bonuses_array_mtx.lock();
 				dynamic_particles_array_mtx.lock();
@@ -2259,7 +2261,7 @@ void Game::ShipsDestroedByBombsOrActivateBombs()
 			if (
 				!bomb.IsActive() &&
 				!bomb.IsCreatedByTeam(&ship) &&
-				ship.GetDistance(&bomb) < bomb.radius * BOMB_ACTIVATION_RADIUS_COEF)
+				ship.GetDistance(bomb) < bomb.radius * BOMB_ACTIVATION_RADIUS_COEF)
 			{
 				bomb.Activate();
 			}
@@ -2289,13 +2291,16 @@ void Game::ShipsDestroedByBullets()
 			
 			if ((bullet.is_ignore & BULLET_IGNORE_MUSTER) &&
 				bullet.CreatedBy(ship) &&
-				!ship.IsColectEntity(&bullet))
+				!ship.IsColectEntity(bullet))
 			{
+				bool collect = ship.IsColectEntity(bullet);
+				collect = false;
+
 				bullet.is_ignore = BULLET_IGNORE_NOTHING;
 			}
 			if (ship.IsUnbrakable() ||
 				bullet.is_ignore != BULLET_IGNORE_NOTHING ||
-				!ship.IsCollision(&bullet))
+				!ship.IsCollision(static_cast<DynamicEntity>(bullet)))
 			{
 				++bullets_found;
 				continue;

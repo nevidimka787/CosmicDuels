@@ -135,7 +135,7 @@ void Game::Event1()
 		{
 			if (ships[id].exist)
 			{
-				float cur_dist = turrets[0].GetDistance(&ships[id]);
+				float cur_dist = turrets[0].GetDistance(ships[id]);
 				if (cur_dist < min_dist)
 				{
 					cur_dist = min_dist;
@@ -158,7 +158,7 @@ void Game::Event1()
 		{
 			if (asteroids[id].exist)
 			{
-				float cur_dist = turrets[0].GetDistance(&asteroids[id]);
+				float cur_dist = turrets[0].GetDistance(asteroids[id]);
 				if (cur_dist < min_dist)
 				{
 					cur_dist = min_dist;
@@ -1111,7 +1111,7 @@ void Game::CreateMap1(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 	delete[] rectangles;
 
 	new_position.Set(MAP_TURRET_ON_CENTER__CENTER);
-	AddEntity(Turret(&new_position, 0.0f, 200u));
+	AddEntity(Turret(new_position, 0.0f, 200u));
 
 	/* Spawn entities */
 
@@ -1261,25 +1261,25 @@ void Game::CreateMap3(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 
 	new_position.Set(MAP_DECELERATION_AREA__DECELERATION_AREA_POS, MAP_DECELERATION_AREA__DECELERATION_AREA_POS);
 	AddEntity(DecelerationArea(
-		&new_position,
+		new_position,
 		DECELERATION_AREA_DEFAULT_DECELERATION_COEFFICIENT,
 		MAP_DECELERATION_AREA__DECELERATION_AREA_RADIUS));
 
 	new_position.Set(MAP_DECELERATION_AREA__DECELERATION_AREA_POS, -MAP_DECELERATION_AREA__DECELERATION_AREA_POS);
 	AddEntity(DecelerationArea(
-		&new_position,
+		new_position,
 		DECELERATION_AREA_DEFAULT_DECELERATION_COEFFICIENT,
 		MAP_DECELERATION_AREA__DECELERATION_AREA_RADIUS));
 
 	new_position.Set(-MAP_DECELERATION_AREA__DECELERATION_AREA_POS, MAP_DECELERATION_AREA__DECELERATION_AREA_POS);
 	AddEntity(DecelerationArea(
-		&new_position,
+		new_position,
 		DECELERATION_AREA_DEFAULT_DECELERATION_COEFFICIENT,
 		MAP_DECELERATION_AREA__DECELERATION_AREA_RADIUS));
 
 	new_position.Set(-MAP_DECELERATION_AREA__DECELERATION_AREA_POS, -MAP_DECELERATION_AREA__DECELERATION_AREA_POS);
 	AddEntity(DecelerationArea(
-		&new_position,
+		new_position,
 		DECELERATION_AREA_DEFAULT_DECELERATION_COEFFICIENT,
 		MAP_DECELERATION_AREA__DECELERATION_AREA_RADIUS));
 

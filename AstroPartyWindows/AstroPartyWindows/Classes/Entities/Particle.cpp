@@ -18,7 +18,7 @@ Particle::Particle(
 	GameTypes::tic_t current_tic,
 	const Entity* pointer_to_host,
 	EngineTypes::Particle::type_t type,
-	Color3F color,
+	const Color3F& color,
 	GameTypes::tic_t animation_period,
 	GameTypes::tic_t animation_postpone,
 	GameTypes::tic_t finish_tic,
@@ -52,47 +52,11 @@ Particle::Particle(
 
 Particle::Particle(
 	GameTypes::tic_t current_tic,
-	const Entity* pointer_to_host,
-	EngineTypes::Particle::type_t type,
-	const Color3F* color,
-	GameTypes::tic_t animation_period, 
-	GameTypes::tic_t animation_postpone, 
-	GameTypes::tic_t finish_tic,
-	bool exist) :
-	Entity(*pointer_to_host),
-	color(*color),
-	finish_tic(finish_tic),
-	linked(true),
-	pointer_to_entity(pointer_to_host),
-	spawn_tic(current_tic),
-	type(type)
-{
-	if (animation_period == PARTICLE_PROPERTY_AUTO)
-	{
-		SetAutoPeriod(type);
-	}
-	else
-	{
-		this->animation_period = animation_period;
-	}
-
-	if (animation_postpone == PARTICLE_PROPERTY_AUTO)
-	{
-		SetAutoPostpone(type);
-	}
-	else
-	{
-		this->animation_postpone = animation_postpone;
-	}
-}
-
-Particle::Particle(
-	GameTypes::tic_t current_tic,
-	Vec2F position,
+	const Vec2F& position,
 	float angle,
 	float radius,
 	EngineTypes::Particle::type_t type,
-	Color3F color,
+	const Color3F& color,
 	GameTypes::tic_t animation_period,
 	GameTypes::tic_t animation_postpone,
 	GameTypes::tic_t finish_tic,
@@ -107,34 +71,6 @@ Particle::Particle(
 	animation_period(animation_period),
 	animation_postpone(animation_postpone),
 	color(color),
-	finish_tic(finish_tic),
-	linked(false),
-	pointer_to_entity(nullptr),
-	spawn_tic(current_tic)
-{
-}
-
-Particle::Particle(
-	GameTypes::tic_t current_tic, 
-	const Vec2F* position,
-	float angle,
-	float radius,
-	EngineTypes::Particle::type_t type,
-	const Color3F* color,
-	GameTypes::tic_t animation_period,
-	GameTypes::tic_t animation_postpone, 
-	GameTypes::tic_t finish_tic, 
-	bool exist) 
-	:
-	Entity(
-		position, 
-		radius, 
-		angle, 
-		exist),
-	type(type),
-	animation_period(animation_period),
-	animation_postpone(animation_postpone),
-	color(*color),
 	finish_tic(finish_tic),
 	linked(false),
 	pointer_to_entity(nullptr),
@@ -290,20 +226,18 @@ void Particle::Update(GameTypes::tic_t current_tic)
 	}
 }
 
-void Particle::operator=(Particle particle)
+void Particle::operator=(const Particle& particle)
 {
+	Entity::operator=(particle);
+
 	active = particle.active;
-	angle = particle.angle;
 	animation = particle.animation;
 	animation_period = particle.animation_period;
 	animation_postpone = particle.animation_postpone;
 	color = particle.color;
-	exist = particle.exist;
 	finish_tic = particle.finish_tic;
 	linked = particle.linked;
 	pointer_to_entity = particle.pointer_to_entity;
-	position = particle.position;
-	radius = particle.radius;
 	spawn_tic = particle.spawn_tic;
 	type = particle.type;
 }

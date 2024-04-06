@@ -78,52 +78,6 @@ Ship::Ship(
 {
 }
 
-Ship::Ship(
-	const Vec2F* position,
-	const Vec2F* velocity,
-	GameTypes::players_count_t player_number,
-	GameTypes::players_count_t player_team,
-	const GameTypes::control_flags_t* controle_flags,
-	const std::vector<Vec2F>& heat_box_vertexes_array,
-	float angle,
-	EngineTypes::Bonus::inventory_t bonus_inventory,
-	EngineTypes::Ship::inventory_t buff_inventory,
-	GameTypes::tic_t unbrakable,
-	GameTypes::tic_t burnout,
-	GameTypes::tic_t burnout_coldown,
-	float angular_velocity,
-	float radius,
-	float force_collision_coeffisient,
-	float force_resistance_air_coefficient,
-	GameTypes::entities_count_t max_bullets_count,
-	GameTypes::entities_count_t start_bullets_count,
-	bool exist)
-	:
-	ControledEntity(
-		position,
-		velocity,
-		radius,
-		player_number,
-		player_team,
-		controle_flags,
-		heat_box_vertexes_array,
-		angle,
-		angular_velocity,
-		force_collision_coeffisient,
-		force_resistance_air_coefficient,
-		exist),
-	bonus_inventory(bonus_inventory),
-	buff_inventory(buff_inventory),
-	bullets_in_magazine(start_bullets_count),
-	burnout(burnout),
-	burnout_coldown(burnout_coldown),
-	magazine_size(max_bullets_count),
-	unbrakable(unbrakable),
-	objects_in_creating_proccess(0),
-	element_type(GAME_OBJECT_TYPE_NULL)
-{
-}
-
 bool Ship::ActivateAvailableBuffs()
 {
 	bool update = false;
@@ -384,7 +338,7 @@ Laser Ship::CreateLaser()
 {
 	Beam laser_beam = LASER_DEFAULT_LOCAL_BEAM;
 	AddForceAlongDirection(-SHIP_SHOOT_FORCE * 4.0f);
-	return Laser(this, &laser_beam);
+	return Laser(this, laser_beam);
 }
 
 Knife Ship::CreateKnife(uint8_t knife_number)
@@ -483,7 +437,7 @@ Bonus Ship::LoseBonus()
 	bonus_inventory &= BONUS_BONUS;
 	if (bonus_inventory)
 	{
-		return Bonus(&position, &velocity, bonus_inventory);
+		return Bonus(position, velocity, bonus_inventory);
 	}
 	return Bonus();
 }
@@ -496,8 +450,8 @@ void Ship::Set(const Ship* ship)
 	buff_inventory = ship->buff_inventory;
 	burnout = ship->burnout;
 	burnout_coldown = ship->burnout_coldown;
-	unbrakable = ship->unbrakable;
 	magazine_size = ship->magazine_size;
+	unbrakable = ship->unbrakable;
 }
 
 void Ship::Set(
@@ -538,50 +492,8 @@ void Ship::Set(
 	this->buff_inventory = buff_inventory;
 	this->burnout = burnout;
 	this->burnout_coldown = burnout_coldown;
-	this->unbrakable = unbrakable;
 	this->magazine_size = max_bullets_count;
-}
-
-void Ship::Set(
-	const Vec2F* position,
-	const Vec2F* velocity,
-	GameTypes::players_count_t player_number,
-	GameTypes::players_count_t player_team,
-	const GameTypes::control_flags_t* controle_flags,
-	const std::vector<Vec2F>& heat_box_vertexes_array,
-	float angle,
-	EngineTypes::Bonus::inventory_t bonus_inventory,
-	EngineTypes::Ship::inventory_t buff_inventory,
-	GameTypes::tic_t unbrakable,
-	GameTypes::tic_t burnout,
-	GameTypes::tic_t burnout_coldown,
-	float angular_velocity,
-	float radius,
-	float force_collision_coeffisient,
-	float force_resistance_air_coefficient,
-	GameTypes::entities_count_t max_bullets_count,
-	GameTypes::entities_count_t current_bullets_count,
-	bool exist)
-{
-	ControledEntity::Set(
-		position,
-		velocity,
-		radius,
-		player_number,
-		player_team,
-		controle_flags,
-		heat_box_vertexes_array,
-		angle,
-		angular_velocity,
-		force_collision_coeffisient,
-		force_resistance_air_coefficient);
-
-	this->bonus_inventory = bonus_inventory;
-	this->buff_inventory = buff_inventory;
-	this->burnout = burnout;
-	this->burnout_coldown = burnout_coldown;
 	this->unbrakable = unbrakable;
-	this->magazine_size = max_bullets_count;
 }
 
 void Ship::SetSizeOfMagazine(GameTypes::entities_count_t bullets_count)
@@ -718,8 +630,8 @@ void Ship::operator=(const Ship& ship)
 	this->buff_inventory = ship.buff_inventory;
 	this->burnout = ship.burnout;
 	this->burnout_coldown = ship.burnout_coldown;
-	this->unbrakable = ship.unbrakable;
 	this->magazine_size = ship.magazine_size;
+	this->unbrakable = ship.unbrakable;
 }
 
 Ship::~Ship()

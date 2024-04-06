@@ -23,8 +23,8 @@ Portal::Portal(const Portal& portal)
 }
 
 Portal::Portal(
-	Vec2F position,
-	Vec2F tp_position,
+	const Vec2F& position,
+	const Vec2F& tp_position,
 	float radius,
 	float angle,
 	bool exist)
@@ -41,21 +41,7 @@ Portal::Portal(
 }
 
 Portal::Portal(
-	const Vec2F* position,
-	Vec2F tp_position,
-	float radius,
-	float angle,
-	bool exist)
-	:
-	StaticEntity(position, radius, angle, exist),
-	tp_mode(PORTAL_MODE_POSITION),
-	tp_position(tp_position),
-	tp_position_pointer(nullptr)
-{
-}
-
-Portal::Portal(
-	Vec2F position,
+	const Vec2F& position,
 	const Vec2F* tp_position_pointer,
 	float radius,
 	float angle,
@@ -69,35 +55,7 @@ Portal::Portal(
 }
 
 Portal::Portal(
-	const Vec2F* position,
-	const Vec2F* tp_position_pointer,
-	float radius,
-	float angle,
-	bool exist)
-	:
-	StaticEntity(position, radius, angle, exist),
-	tp_mode(PORTAL_MODE_POINTER),
-	tp_position(Vec2F()),
-	tp_position_pointer(tp_position_pointer)
-{
-}
-
-Portal::Portal(
-	Vec2F position,
-	const Entity* entity,
-	float radius,
-	float angle,
-	bool exist)
-	:
-	StaticEntity(position, radius, angle, exist),
-	tp_mode((EngineTypes::Portal::mode_t)PORTAL_MODE_POINTER),
-	tp_position(Vec2F()),
-	tp_position_pointer(entity->GetPositionPointer())
-{
-}
-
-Portal::Portal(
-	const Vec2F* position,
+	const Vec2F& position,
 	const Entity* entity,
 	float radius,
 	float angle,
@@ -184,29 +142,8 @@ void Portal::Set(
 	float angle,
 	bool exist)
 {
-	this->angle = angle;
-	UpdateDirection();
-	this->exist = exist;
-	this->last_position = last_position;
-	this->position = position;
-	this->radius = radius;
-	this->tp_position_pointer = tp_position_pointer;
-}
+	StaticEntity::Set(position, radius, angle, exist);
 
-void Portal::Set(
-	const Vec2F* position,
-	const Vec2F* tp_position_pointer,
-	float radius,
-	float angle,
-	bool exist)
-{
-	this->angle = angle;
-	UpdateDirection();
-	this->exist = exist;
-	this->last_position = last_position;
-	this->position = *position;
-	this->radius = radius;
-	this->tp_mode = PORTAL_MODE_POINTER;
 	this->tp_position_pointer = tp_position_pointer;
 }
 
@@ -240,7 +177,7 @@ void Portal::Teleport(EntityType& entity) const
 {
 	if (tp_mode == PORTAL_MODE_POINTER)
 	{
-		entity.SetPosition(tp_position_pointer);
+		entity.SetPosition(*tp_position_pointer);
 	}
 	else if (tp_mode == PORTAL_MODE_POSITION)
 	{
@@ -264,14 +201,9 @@ template void Portal::Teleport<DynamicParticle>(DynamicParticle& asteroid) const
 template void Portal::Teleport<Pilot>(Pilot& asteroid) const;
 template void Portal::Teleport<Ship>(Ship& asteroid) const;
 
-void Portal::operator=(Portal portal)
+void Portal::operator=(const Portal& portal)
 {
-	angle = portal.angle;
-	direction = portal.direction;
-	exist = portal.exist;
-	last_position = portal.last_position;
-	position = portal.position;
-	radius = portal.radius;
+	StaticEntity::operator=(portal);
 	tp_mode = portal.tp_mode;
 	tp_position = portal.tp_position;
 	tp_position_pointer = portal.tp_position_pointer;

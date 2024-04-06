@@ -54,31 +54,23 @@ public:
 	operator Vec2F();
 
 	double GetAngle() const;
-	double GetAngle(Vec2D to_vector) const;
+	double GetAngle(const Vec2D& to_vector) const;
 	double Distance(const Vec2D& target) const;
-	double Distance(const Vec2D* target) const;
 	double Length() const;
 	Vec2D Normalize() const;
 	void NormalizeThis();
 	Vec2D Project(const Vec2D& projecting_vector) const;
-	Vec2D Project(const Vec2D* projecting_vector) const;
 	Vec2D Perpendicular() const;
 	void PerpendicularThis();
 	Vec2D Rotate(double angle) const;
 	void RotateThis(double angle);
 	Vec2D Scale(const Vec2D& scale) const;
-	Vec2D Scale(const Vec2D* scale) const;
 	void ScaleThis(const Vec2D& scale);
-	void ScaleThis(const Vec2D* scale);
 
-	void Set(const Vec2F& vector);
-	void Set(const Vec2F* vector);
-	void Set(const Vec2D& vector);
 	void Set(const Vec2D* vector);
 	void Set(float x, float y);
 	void Set(double x, double y);
 
-	void operator=(const Vec2F& vector);
 	void operator=(const Vec2D& vector);
 
 	~Vec2D();
@@ -127,11 +119,9 @@ public:
 	operator Vec2D();
 
 	float Distance(const Vec2F& target) const;
-	float Distance(const Vec2F* target) const;
 	float DistancePow2(const Vec2F& target) const;
-	float DistancePow2(const Vec2F* target) const;
 	float GetAngle() const;
-	float GetAngle(Vec2F to_vector) const;
+	float GetAngle(const Vec2F& to_vector) const;
 	float GetAngleClockwise() const;
 	float Length() const;
 	Vec2F Length(float length) const;
@@ -144,15 +134,10 @@ public:
 	void NormalizeThis();
 	void NormalizeThisPow2();
 	//Return project of "projection_vector" to this vector.
-	Vec2F Project(Vec2F projection_vector) const;
-	//Return project of "projection_vector" to this vector.
-	Vec2F Project(const Vec2F* projection_vector) const;
+	Vec2F Project(const Vec2F& projection_vector) const;
 	//Return project of "projection_vector" to this vector.
 	//If angle between "projection_vector" and this vector more then 90 degrees the function return zero vector.
-	Vec2F ProjectSign(Vec2F projection_vector) const;
-	//Return project of "projection_vector" to this vector.
-	//If angle between "projection_vector" and this vector more then 90 degrees the function return zero vector.
-	Vec2F ProjectSign(const Vec2F* projection_vector) const;
+	Vec2F ProjectSign(const Vec2F& projection_vector) const;
 	//The function return perpendiculat to posetive rotation.
 	Vec2F Perpendicular() const;
 	//The function rotate vector on 90 degrees.
@@ -167,14 +152,9 @@ public:
 	Vec2F Rotate(float angle) const;
 	void RotateThis(float angle);
 	Vec2F Scale(const Vec2F& scale) const;
-	Vec2F Scale(const Vec2F* scale) const;
 	void ScaleThis(const Vec2F& scale);
-	void ScaleThis(const Vec2F* scale);
 
-	void Set(const Vec2F& vector);
 	void Set(const Vec2F* vector);
-	void Set(const Vec2D& vector);
-	void Set(const Vec2D* vector);
 	void Set(float v);
 	void Set(float x, float y);
 	void Set(double v);
@@ -183,13 +163,9 @@ public:
 	float VecMul(const Vec2F& vector) const;
 
 	void operator=(const Vec2F& vector);
-	void operator=(const Vec2D& vector);
 
 	~Vec2F();
 };
-
-std::ostream& operator<<(std::ostream& stream, const Vec2D& vector);
-std::ostream& operator<<(std::ostream& stream, const Vec2F& vector);
 
 class Mat2D
 {
@@ -201,7 +177,6 @@ public:
 	Mat2D();
 	Mat2D(double value);
 	Mat2D(const Vec2D& abscissa,  const Vec2D& ordinate);
-	Mat2D(const Vec2D* abscissa, const Vec2D* ordinate);
 	Mat2D(double a11, double a12, double a21, double a22);
 
 	Mat2D operator+(const Mat2D& matrix) const;
@@ -228,7 +203,7 @@ public:
 	void Set(double value);
 	void Set(double a11, double a12, double a21, double a22);
 	void Set(const Vec2D& abscisse,  const Vec2D& ardinate);
-	void Set(const Vec2D* abscisse, const Vec2D* ardinate);
+	void Set(const Mat2D* matrix);
 
 	void operator=(const Mat2D& matrix);
 
@@ -245,7 +220,6 @@ public:
 	Mat2F();
 	Mat2F(float value);
 	Mat2F(const Vec2F& abscissa,  const Vec2F& ordinate);
-	Mat2F(const Vec2F* abscissa, const Vec2F* ordinate);
 	Mat2F(float a11, float a12, float a21, float a22);
 
 	Mat2F operator+(const Mat2F& matrix) const;
@@ -272,15 +246,12 @@ public:
 	void Set(float value);
 	void Set(float a11, float a12, float a21, float a22);
 	void Set(const Vec2F& abscisse,  const Vec2F& ardinate);
-	void Set(const Vec2F* abscisse, const Vec2F* ardinate);
+	void Set(const Mat2F* matrix);
 
 	void operator=(const Mat2F& matrix);
 
 	~Mat2F();
 };
-
-std::ostream& operator<<(std::ostream& stream, Mat2D vector);
-std::ostream& operator<<(std::ostream& stream, Mat2F vector);
 
 class Mat3x2D
 {
@@ -316,25 +287,19 @@ public:
 	Mat3x2D Rotate(double angle) const;
 	void RotateThis(double angle);
 	Mat3x2D Scale(const Vec2D& vector) const;
-	Mat3x2D Scale(const Vec2D* vector) const;
 	void ScaleThis(const Vec2D& vector);
-	void ScaleThis(const Vec2D* vector);
 	Mat3x2D Transport(const Vec2D& vector) const;
-	Mat3x2D Transport(const Vec2D* vector) const;
 	void TransportThis(const Vec2D& vector);
-	void TransportThis(const Vec2D* vector);
 
 	void Set(double value);
 	void Set(
 		double a11, double a12, double a13,
 		double a21, double a22, double a23);
+	void Set(const Mat3x2D* matrix);
 	void SetByAngle(double angle);
 	void SetByDirection(const Vec2D& direction);
-	void SetByDirection(const Vec2D* direction);
 	void SetByPosition(const Vec2D& position);
-	void SetByPosition(const Vec2D* position);
 	void SetByScale(const Vec2D& scale);
-	void SetByScale(const Vec2D* scale);
 
 	void operator=(const Mat3x2D& matrix);
 
@@ -375,30 +340,33 @@ public:
 	Mat3x2F Rotate(float angle) const;
 	void RotateThis(float angle);
 	Mat3x2F Scale(const Vec2F& vector) const;
-	Mat3x2F Scale(const Vec2F* vector) const;
 	void ScaleThis(const Vec2F& vector);
-	void ScaleThis(const Vec2F* vector);
 	Mat3x2F Transport(const Vec2F& vector) const;
-	Mat3x2F Transport(const Vec2F* vector) const;
 	void TransportThis(const Vec2F& vector);
-	void TransportThis(const Vec2F* vector);
 
 	void Set(float value);
 	void Set(
 		float a11, float a12, float a13,
 		float a21, float a22, float a23);
+	void Set(const Mat3x2F* matrix);
 	void SetByAngle(float angle);
 	void SetByDirection(const Vec2F& direction);
-	void SetByDirection(const Vec2F* direction);
 	void SetByPosition(const Vec2F& position);
-	void SetByPosition(const Vec2F* position);
 	void SetByScale(const Vec2F& scale);
-	void SetByScale(const Vec2F* scale);
 
 	void operator=(const Mat3x2F& matrix);
 
 	~Mat3x2F();
 };
 
-std::ostream& operator<<(std::ostream& stream, Mat3x2D vector);
-std::ostream& operator<<(std::ostream& stream, Mat3x2F vector);
+std::ostream& operator<<(std::ostream& stream, const Vec2F& vector);
+
+std::ostream& operator<<(std::ostream& stream, const Vec2D& vector);
+
+std::ostream& operator<<(std::ostream& stream, const Mat2F& vector);
+
+std::ostream& operator<<(std::ostream& stream, const Mat2D& vector);
+
+std::ostream& operator<<(std::ostream& stream, const Mat3x2F& vector);
+
+std::ostream& operator<<(std::ostream& stream, const Mat3x2D& vector);

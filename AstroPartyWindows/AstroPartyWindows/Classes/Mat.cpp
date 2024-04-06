@@ -112,6 +112,8 @@ void Vec2D::operator/=(double value)
 
 bool Vec2D::operator||(const Vec2D& vector) const
 {
+	return abs(Mat2D(*this, vector).Determinant()) < 1e-7;
+
 	return x == 0.0 && vector.x == 0.0 ||
 		y == 0.0 && vector.y == 0.0 ||
 		x / y == vector.x / vector.y ||
@@ -188,20 +190,15 @@ double Vec2D::Distance(const Vec2D& vector) const
 	return (*this - vector).Length();
 }
 
-double Vec2D::Distance(const Vec2D* vector) const
-{
-	return (*this - *vector).Length();
-}
-
 double Vec2D::GetAngle() const
 {
 	return (atan2(-y, x));
 }
 
-double Vec2D::GetAngle(Vec2D to_vector) const
+double Vec2D::GetAngle(const Vec2D& to_vector) const
 {
-	to_vector.RotateThis(-GetAngle());
-	return to_vector.GetAngle();
+	const auto& new_vector = to_vector.Rotate(-GetAngle());
+	return new_vector.GetAngle();
 }
 
 double Vec2D::Length() const
@@ -221,30 +218,19 @@ void Vec2D::NormalizeThis()
 
 Vec2D Vec2D::Project(const Vec2D& projecting_vector) const
 {
-	double dot = *this * projecting_vector;
+	const double& l = Length();
+#ifdef _DEBUG
+	assert(l > 1e-7);
+#endif
+
+	const double& dot = operator*(projecting_vector);
 	if (dot > 0.0)
 	{
-		return *this * sqrt(dot / Length());
+		return operator*(sqrt(dot / l));
 	}
 	if (dot < 0.0)
 	{
-
-		return *this * -sqrt(-dot / Length());
-	}
-	return Vec2D();
-}
-
-Vec2D Vec2D::Project(const Vec2D* projecting_vector) const
-{
-	double dot = *this * *projecting_vector;
-	if (dot > 0.0)
-	{
-		return *this * sqrt(dot / Length());
-	}
-	if (dot < 0.0)
-	{
-
-		return *this * -sqrt(-dot / Length());
+		return operator*(-sqrt(-dot / l));
 	}
 	return Vec2D();
 }
@@ -263,14 +249,18 @@ void Vec2D::PerpendicularThis()
 
 Vec2D Vec2D::Rotate(double angle) const
 {
-	return Vec2D(x * cos(angle) + y * sin(angle), y * cos(angle) - x * sin(angle));
+	const double& sin_a = sin(angle);
+	const double& cos_a = cos(angle);
+	return Vec2D(x * cos_a + y * sin_a, y * cos_a - x * sin_a);
 }
 
 void Vec2D::RotateThis(double angle)
 {
-	double temp = x * cos(angle) + y * sin(angle);
-	y = y * cos(angle) - x * sin(angle);
-	x = temp;
+	const double& sin_a = sin(angle);
+	const double& cos_a = cos(angle);
+	const double& new_x = x * cos_a + y * sin_a;
+	y = y * cos_a - x * sin_a;
+	x = new_x;
 }
 
 Vec2D Vec2D::Scale(const Vec2D& scale) const
@@ -278,27 +268,10 @@ Vec2D Vec2D::Scale(const Vec2D& scale) const
 	return Vec2D(x * scale.x, y * scale.y);
 }
 
-Vec2D Vec2D::Scale(const Vec2D* scale) const
-{
-	return Vec2D(x * scale->x, y * scale->y);
-}
-
 void Vec2D::ScaleThis(const Vec2D& scale)
 {
 	x *= scale.x;
 	y *= scale.y;
-}
-
-void Vec2D::ScaleThis(const Vec2D* scale)
-{
-	x *= scale->x;
-	y *= scale->y;
-}
-
-void Vec2D::Set(const Vec2F* vector)
-{
-	x = vector->x;
-	y = vector->y;
 }
 
 void Vec2D::Set(const Vec2D* vector)
@@ -317,12 +290,6 @@ void Vec2D::Set(double x, double y)
 {
 	this->x = x;
 	this->y = y;
-}
-
-void Vec2D::operator=(const Vec2F& vector)
-{
-	x = vector.x;
-	y = vector.y;
 }
 
 void Vec2D::operator=(const Vec2D& vector)
@@ -430,16 +397,16 @@ void Vec2F::operator*=(float value)
 
 void Vec2F::operator*=(const Mat2F& matrix)
 {
-	float temp = x * matrix.a11 + y * matrix.a12;
+	const float& new_x = x * matrix.a11 + y * matrix.a12;
 	y = x * matrix.a21 + y * matrix.a22;
-	x = temp;
+	x = new_x;
 }
 
 void Vec2F::operator*=(const Mat3x2F& matrix)
 {
-	float temp = x * matrix.a11 + y * matrix.a12 + matrix.a13;
+	const float& new_x = x * matrix.a11 + y * matrix.a12 + matrix.a13;
 	y = x * matrix.a21 + y * matrix.a22 + matrix.a23;
-	x = temp;
+	x = new_x;
 }
 
 void Vec2F::operator/=(float value)
@@ -450,7 +417,10 @@ void Vec2F::operator/=(float value)
 
 bool Vec2F::operator||(const Vec2F& vector) const
 {
-	return x == 0.0 && vector.x == 0.0 ||
+	return fabs(Mat2F(*this, vector).Determinant()) < 1e-7f;
+
+	return 
+		x == 0.0 && vector.x == 0.0 ||
 		y == 0.0 && vector.y == 0.0 ||
 		x / y == vector.x / vector.y ||
 		y / x == vector.y / vector.x;
@@ -526,19 +496,9 @@ float Vec2F::Distance(const Vec2F& target_vector) const
 	return (*this - target_vector).Length();
 }
 
-float Vec2F::Distance(const Vec2F* target_vector) const
-{
-	return (*this - *target_vector).Length();
-}
-
 float Vec2F::DistancePow2(const Vec2F& target_vector) const
 {
 	return (*this - target_vector).LengthPow2();
-}
-
-float Vec2F::DistancePow2(const Vec2F* target_vector) const
-{
-	return (*this - *target_vector).LengthPow2();
 }
 
 float Vec2F::GetAngle() const
@@ -546,10 +506,9 @@ float Vec2F::GetAngle() const
 	return (atan2f(-y, x));
 }
 
-float Vec2F::GetAngle(Vec2F to_vector) const
+float Vec2F::GetAngle(const Vec2F& to_vector) const
 {
-	to_vector.RotateThis(-GetAngle());
-	return to_vector.GetAngle();
+	return to_vector.Rotate(-GetAngle()).GetAngle();
 }
 
 float Vec2F::GetAngleClockwise() const
@@ -607,19 +566,13 @@ void Vec2F::NormalizeThisPow2()
 	*this /= LengthPow2();
 }
 
-Vec2F Vec2F::Project(Vec2F projecting_vector) const
+Vec2F Vec2F::Project(const Vec2F& projecting_vector) const
 {
 	Vec2F direction = Normalize();
 	return direction * projecting_vector.Length() * (direction * projecting_vector.Normalize());
 }
 
-Vec2F Vec2F::Project(const Vec2F* projecting_vector)  const
-{
-	Vec2F direction = Normalize();
-	return direction * projecting_vector->Length() * (direction * projecting_vector->Normalize());
-}
-
-Vec2F Vec2F::ProjectSign(Vec2F projecting_vector) const
+Vec2F Vec2F::ProjectSign(const Vec2F& projecting_vector) const
 {
 	if (*this * projecting_vector <= 0.0f)
 	{
@@ -629,17 +582,6 @@ Vec2F Vec2F::ProjectSign(Vec2F projecting_vector) const
 	return direction * projecting_vector.Length() * (direction * projecting_vector.Normalize());
 }
 
-Vec2F Vec2F::ProjectSign(const Vec2F* projecting_vector) const
-{
-	Vec2F direction;
-	if (*this * *projecting_vector <= 0.0f)
-	{
-		return direction;
-	}
-	direction = Normalize();
-	return direction * projecting_vector->Length() * (direction * projecting_vector->Normalize());
-}
-
 Vec2F Vec2F::Perpendicular() const
 {
 	return Vec2F(-y, x);
@@ -647,7 +589,7 @@ Vec2F Vec2F::Perpendicular() const
 
 void Vec2F::PerpendicularThis()
 {
-	float temp = x;
+	const float temp = x;
 	x = -y;
 	y = temp;
 }
@@ -659,41 +601,41 @@ Vec2F Vec2F::PerpendicularClockwise() const
 
 void Vec2F::PerpendicularClockwiseThis()
 {
-	float temp = -x;
+	const float temp = -x;
 	x = y;
 	y = temp;
 }
 
 Vec2F Vec2F::RotateClockwise(float angle) const
 {
-	float temp_cos = cosf(angle);
-	float temp_sin = sinf(angle);
+	const float& temp_cos = cosf(angle);
+	const float& temp_sin = sinf(angle);
 	return Vec2F(x * temp_cos + y * temp_sin, y * temp_cos - x * temp_sin);
 }
 
 void Vec2F::RotateClockwiseThis(float angle)
 {
-	float temp_cos = cosf(angle);
-	float temp_sin = sinf(angle);
+	const float& temp_cos = cosf(angle);
+	const float& temp_sin = sinf(angle);
 
-	float temp = x * temp_cos + y * temp_sin;
+	const float& temp = x * temp_cos + y * temp_sin;
 	y = x * temp_sin - y * temp_cos;
 	x = temp;
 }
 
 Vec2F Vec2F::Rotate(float angle) const
 {
-	float temp_cos = cosf(angle);
-	float temp_sin = sinf(angle);
+	const float& temp_cos = cosf(angle);
+	const float& temp_sin = sinf(angle);
 	return Vec2F(x * temp_cos + y * temp_sin, x * temp_sin - y * temp_cos);
 }
 
 void Vec2F::RotateThis(float angle)
 {
-	float temp_cos = cosf(angle);
-	float temp_sin = sinf(angle);
+	const float& temp_cos = cosf(angle);
+	const float& temp_sin = sinf(angle);
 
-	float temp = x * temp_cos + y * temp_sin;
+	const float& temp = x * temp_cos + y * temp_sin;
 	y = y * temp_cos - x * temp_sin;
 	x = temp;
 }
@@ -703,45 +645,16 @@ Vec2F Vec2F::Scale(const Vec2F& scale) const
 	return Vec2F(x * scale.x, y * scale.y);
 }
 
-Vec2F Vec2F::Scale(const Vec2F* scale) const
-{
-	return Vec2F(x * scale->x, y * scale->y);
-}
-
 void Vec2F::ScaleThis(const Vec2F& scale)
 {
 	x *= scale.x;
 	y *= scale.y;
 }
 
-void Vec2F::ScaleThis(const Vec2F* scale)
-{
-	x *= scale->x;
-	y *= scale->y;
-}
-
-void Vec2F::Set(const Vec2F& vector)
-{
-	x = vector.x;
-	y = vector.y;
-}
-
 void Vec2F::Set(const Vec2F* vector)
 {
 	x = vector->x;
 	y = vector->y;
-}
-
-void Vec2F::Set(const Vec2D& vector)
-{
-	x = (float)vector.x;
-	y = (float)vector.y;
-}
-
-void Vec2F::Set(const Vec2D* vector)
-{
-	x = (float)vector->x;
-	y = (float)vector->y;
 }
 
 void Vec2F::Set(float v)
@@ -779,26 +692,8 @@ void Vec2F::operator=(const Vec2F& vector)
 	y = vector.y;
 }
 
-void Vec2F::operator=(const Vec2D& vector)
-{
-	x = (float)vector.x;
-	y = (float)vector.y;
-}
-
 Vec2F::~Vec2F()
 {
-}
-
-std::ostream& operator<<(std::ostream& stream, const Vec2F& vector)
-{
-	stream << "X: " << vector.x << " Y: " << vector.y;
-	return stream;
-}
-
-std::ostream& operator<<(std::ostream& stream, const Vec2D& vector)
-{
-	stream << "X: " << vector.x << " Y: " << vector.y;
-	return stream;
 }
 
 Mat2D::Mat2D() : a11(0.0), a12(0.0), a21(0.0), a22(0.0)
@@ -814,14 +709,6 @@ Mat2D::Mat2D(const Vec2D& abscissa, const Vec2D& ordinate) :
 	a21(abscissa.y),
 	a12(ordinate.x),
 	a22(ordinate.y)
-{
-}
-
-Mat2D::Mat2D(const Vec2D* abscissa, const Vec2D* ordinate) :
-	a11(abscissa->x),
-	a21(abscissa->y),
-	a12(ordinate->x),
-	a22(ordinate->y)
 {
 }
 
@@ -975,12 +862,12 @@ void Mat2D::Set(const Vec2D& abscissa, const Vec2D& ordinata)
 	a22 = ordinata.y;
 }
 
-void Mat2D::Set(const Vec2D* abscissa, const Vec2D* ordinata)
+void Mat2D::Set(const Mat2D* matrix)
 {
-	a11 = abscissa->x;
-	a12 = abscissa->y;
-	a21 = ordinata->x;
-	a22 = ordinata->y;
+	a11 = matrix->a11;
+	a12 = matrix->a12;
+	a21 = matrix->a21;
+	a22 = matrix->a22;
 }
 
 void Mat2D::operator=(const Mat2D& matrix)
@@ -1018,14 +905,6 @@ Mat2F::Mat2F(const Vec2F& abscissa, const Vec2F& ordinate) :
 	a21(abscissa.y),
 	a12(ordinate.x),
 	a22(ordinate.y)
-{
-}
-
-Mat2F::Mat2F(const Vec2F* abscissa, const Vec2F* ordinate) :
-	a11(abscissa->x),
-	a21(abscissa->y),
-	a12(ordinate->x),
-	a22(ordinate->y)
 {
 }
 
@@ -1137,8 +1016,12 @@ Mat2F Mat2F::Inverse() const
 
 void Mat2F::InverseThis()
 {
-	float temp = a11;
-	float det = Determinant();
+	const float& det = Determinant();
+#ifdef _DEBUG
+	assert(fabsf(det) > 1e-7f);
+#endif
+
+	const float temp = a11;
 	a11 = a22 / det;
 	a22 = temp / det;
 	a12 = -a12 / det;
@@ -1183,12 +1066,12 @@ void Mat2F::Set(const Vec2F& abscissa, const Vec2F& ordinata)
 	a22 = ordinata.y;
 }
 
-void Mat2F::Set(const Vec2F* abscissa, const Vec2F* ordinata)
+void Mat2F::Set(const Mat2F* matrix)
 {
-	a11 = abscissa->x;
-	a21 = abscissa->y;
-	a12 = ordinata->x;
-	a22 = ordinata->y;
+	a11 = matrix->a11;
+	a12 = matrix->a12;
+	a21 = matrix->a21;
+	a22 = matrix->a22;
 }
 
 void Mat2F::operator=(const Mat2F& matrix)
@@ -1201,16 +1084,6 @@ void Mat2F::operator=(const Mat2F& matrix)
 
 Mat2F::~Mat2F()
 {
-}
-
-std::ostream& operator<<(std::ostream& stream, const Mat2D& matrix)
-{
-	return stream << "a11: " << matrix.a11 << " a12: " << matrix.a12 << " a21: " << matrix.a21 << " a22: " << matrix.a22;
-}
-
-std::ostream& operator<<(std::ostream& stream, const Mat2F& matrix)
-{
-	return stream << "a11: " << matrix.a11 << " a12: " << matrix.a12 << " a21: " << matrix.a21 << " a22: " << matrix.a22;
 }
 
 Mat3x2D::Mat3x2D() :
@@ -1310,18 +1183,19 @@ void Mat3x2D::operator*=(double value)
 
 void Mat3x2D::operator*=(const Mat3x2D& matrix)
 {
-	double
+	const double&
 		temp1 = a11 * matrix.a11 + a12 * matrix.a21,
 		temp2 = a11 * matrix.a12 + a12 * matrix.a22;
 	a13 = a11 * matrix.a13 + a12 * matrix.a23 + a13;
 	a11 = temp1;
 	a12 = temp2;
 
-	temp1 = a21 * matrix.a11 + a22 * matrix.a21;
-	temp2 = a21 * matrix.a12 + a22 * matrix.a22;
+	const double&
+		temp3 = a21 * matrix.a11 + a22 * matrix.a21,
+		temp4 = a21 * matrix.a12 + a22 * matrix.a22;
 	a23 = a21 * matrix.a13 + a22 * matrix.a23 + a23;
-	a21 = temp1;
-	a22 = temp2;
+	a21 = temp3;
+	a22 = temp4;
 }
 
 Mat3x2D Mat3x2D::operator/(double value) const
@@ -1375,25 +1249,11 @@ Mat3x2D Mat3x2D::Scale(const Vec2D& vector) const
 		0.0f, vector.y, 0.0f);
 }
 
-Mat3x2D Mat3x2D::Scale(const Vec2D* vector) const
-{
-	return *this * Mat3x2D(
-		vector->x, 0.0f, 0.0f,
-		0.0f, vector->y, 0.0f);
-}
-
 void Mat3x2D::ScaleThis(const Vec2D& vector)
 {
 	*this *= Mat3x2D(
 		vector.x, 0.0f, 0.0f,
 		0.0f, vector.y, 0.0f);
-}
-
-void Mat3x2D::ScaleThis(const Vec2D* vector)
-{
-	*this *= Mat3x2D(
-		vector->x, 0.0f, 0.0f,
-		0.0f, vector->y, 0.0f);
 }
 
 Mat3x2D Mat3x2D::Transport(const Vec2D& vector) const
@@ -1403,25 +1263,11 @@ Mat3x2D Mat3x2D::Transport(const Vec2D& vector) const
 		0.0f, 1.0f, vector.y);
 }
 
-Mat3x2D Mat3x2D::Transport(const Vec2D* vector) const
-{
-	return *this * Mat3x2D(
-		1.0f, 0.0f, vector->x,
-		0.0f, 1.0f, vector->y);
-}
-
 void Mat3x2D::TransportThis(const Vec2D& vector)
 {
 	*this *= Mat3x2D(
 		1.0f, 0.0f, vector.x,
 		0.0f, 1.0f, vector.y);
-}
-
-void Mat3x2D::TransportThis(const Vec2D* vector)
-{
-	*this *= Mat3x2D(
-		1.0f, 0.0f, vector->x,
-		0.0f, 1.0f, vector->y);
 }
 
 Mat3x2D::operator Mat3x2F() const
@@ -1469,13 +1315,26 @@ void Mat3x2D::Set(
 	this->a23 = a23;
 }
 
+void Mat3x2D::Set(const Mat3x2D* matrix)
+{
+	a11 = matrix->a11;
+	a12 = matrix->a12;
+	a13 = matrix->a13;
+	a21 = matrix->a21;
+	a22 = matrix->a22;
+	a23 = matrix->a23;
+}
+
 void Mat3x2D::SetByAngle(double angle)
 {
-	a11 = cos(angle);
-	a12 = -sin(angle);
+	const double cos_a = cos(angle);
+	const double sin_a = sin(angle);
+
+	a11 = cos_a;
+	a12 = -sin_a;
 	a13 = 0.0f;
-	a21 = sin(angle);
-	a22 = cos(angle);
+	a21 = sin_a;
+	a22 = cos_a;
 	a23 = 0.0f;
 }
 
@@ -1489,16 +1348,6 @@ void Mat3x2D::SetByDirection(const Vec2D& direction)
 	a23 = 0.0f;
 }
 
-void Mat3x2D::SetByDirection(const Vec2D* direction)
-{
-	a11 = direction->x;
-	a12 = direction->y;
-	a13 = 0.0f;
-	a21 = -direction->y;
-	a22 = direction->x;
-	a23 = 0.0f;
-}
-
 void Mat3x2D::SetByPosition(const Vec2D& position)
 {
 	a11 = 1.0f;
@@ -1509,16 +1358,6 @@ void Mat3x2D::SetByPosition(const Vec2D& position)
 	a23 = position.y;
 }
 
-void Mat3x2D::SetByPosition(const Vec2D* position)
-{
-	a11 = 1.0f;
-	a12 = 0.0f;
-	a13 = position->x;
-	a21 = 0.0f;
-	a22 = 1.0f;
-	a23 = position->y;
-}
-
 void Mat3x2D::SetByScale(const Vec2D& scale)
 {
 	a11 = scale.x;
@@ -1526,16 +1365,6 @@ void Mat3x2D::SetByScale(const Vec2D& scale)
 	a13 = 0.0f;
 	a21 = 0.0f;
 	a22 = scale.y;
-	a23 = 0.0f;
-}
-
-void Mat3x2D::SetByScale(const Vec2D* scale)
-{
-	a11 = scale->x;
-	a12 = 0.0f;
-	a13 = 0.0f;
-	a21 = 0.0f;
-	a22 = scale->y;
 	a23 = 0.0f;
 }
 
@@ -1698,16 +1527,21 @@ float Mat3x2F::Determinant() const
 
 Mat3x2F Mat3x2F::Rotate(float angle) const
 {
-	return *this * Mat3x2F(
-		cosf(angle), -sinf(angle), 0.0f,
-		sinf(angle), cosf(angle), 0.0f);
+	const float sin_a = sinf(angle);
+	const float cos_a = cosf(angle);
+	return operator*(Mat3x2F(
+		cos_a, -sin_a, 0.0f,
+		sin_a, cos_a, 0.0f));
 }
 
 void Mat3x2F::RotateThis(float angle)
 {
-	*this *= Mat3x2F(
-		cosf(angle), -sinf(angle), 0.0f,
-		sinf(angle), cosf(angle), 0.0f);
+	const float sin_a = sinf(angle);
+	const float cos_a = cosf(angle);
+
+	operator*=(Mat3x2F(
+		cos_a, -sin_a, 0.0f,
+		sin_a, cos_a, 0.0f));
 }
 
 Mat3x2F Mat3x2F::Scale(const Vec2F& vector) const
@@ -1717,25 +1551,11 @@ Mat3x2F Mat3x2F::Scale(const Vec2F& vector) const
 		0.0f, vector.y, 0.0f);
 }
 
-Mat3x2F Mat3x2F::Scale(const Vec2F* vector) const
-{
-	return *this * Mat3x2F(
-		vector->x, 0.0f, 0.0f,
-		0.0f, vector->y, 0.0f);
-}
-
 void Mat3x2F::ScaleThis(const Vec2F& vector)
 {
 	*this *= Mat3x2F(
 		vector.x, 0.0f, 0.0f,
 		0.0f, vector.y, 0.0f);
-}
-
-void Mat3x2F::ScaleThis(const Vec2F* vector)
-{
-	*this *= Mat3x2F(
-		vector->x, 0.0f, 0.0f,
-		0.0f, vector->y, 0.0f);
 }
 
 Mat3x2F Mat3x2F::Transport(const Vec2F& vector) const
@@ -1745,25 +1565,11 @@ Mat3x2F Mat3x2F::Transport(const Vec2F& vector) const
 		0.0f, 1.0f, vector.y);
 }
 
-Mat3x2F Mat3x2F::Transport(const Vec2F* vector) const
-{
-	return *this * Mat3x2F(
-		1.0f, 0.0f, vector->x,
-		0.0f, 1.0f, vector->y);
-}
-
 void Mat3x2F::TransportThis(const Vec2F& vector)
 {
 	*this *= Mat3x2F(
 		1.0f, 0.0f, vector.x,
 		0.0f, 1.0f, vector.y);
-}
-
-void Mat3x2F::TransportThis(const Vec2F* vector)
-{
-	*this *= Mat3x2F(
-		1.0f, 0.0f, vector->x,
-		0.0f, 1.0f, vector->y);
 }
 
 Mat3x2F::operator Mat3x2D() const
@@ -1811,6 +1617,16 @@ void Mat3x2F::Set(
 	this->a23 = a23;
 }
 
+void Mat3x2F::Set(const Mat3x2F* matrix)
+{
+	a11 = matrix->a11;
+	a12 = matrix->a12;
+	a13 = matrix->a13;
+	a21 = matrix->a21;
+	a22 = matrix->a22;
+	a23 = matrix->a23;
+}
+
 void Mat3x2F::SetByAngle(float angle)
 {
 	a11 = cosf(angle);
@@ -1831,16 +1647,6 @@ void Mat3x2F::SetByDirection(const Vec2F& direction)
 	a23 = 0.0f;
 }
 
-void Mat3x2F::SetByDirection(const Vec2F* direction)
-{
-	a11 = direction->x;
-	a12 = direction->y;
-	a13 = 0.0f;
-	a21 = -direction->y;
-	a22 = direction->x;
-	a23 = 0.0f;
-}
-
 void Mat3x2F::SetByPosition(const Vec2F& position)
 {
 	a11 = 1.0f;
@@ -1851,16 +1657,6 @@ void Mat3x2F::SetByPosition(const Vec2F& position)
 	a23 = position.y;
 }
 
-void Mat3x2F::SetByPosition(const Vec2F* position)
-{
-	a11 = 1.0f;
-	a12 = 0.0f;
-	a13 = position->x;
-	a21 = 0.0f;
-	a22 = 1.0f;
-	a23 = position->y;
-}
-
 void Mat3x2F::SetByScale(const Vec2F& scale)
 {
 	a11 = scale.x;
@@ -1868,16 +1664,6 @@ void Mat3x2F::SetByScale(const Vec2F& scale)
 	a13 = 0.0f;
 	a21 = 0.0f;
 	a22 = scale.y;
-	a23 = 0.0f;
-}
-
-void Mat3x2F::SetByScale(const Vec2F* scale)
-{
-	a11 = scale->x;
-	a12 = 0.0f;
-	a13 = 0.0f;
-	a21 = 0.0f;
-	a22 = scale->y;
 	a23 = 0.0f;
 }
 
@@ -1894,6 +1680,30 @@ void Mat3x2F::operator=(const Mat3x2F& matrix)
 
 Mat3x2F::~Mat3x2F()
 {
+}
+
+
+
+std::ostream& operator<<(std::ostream& stream, const Vec2D& vector)
+{
+	stream << "X: " << vector.x << " Y: " << vector.y;
+	return stream;
+}
+
+std::ostream& operator<<(std::ostream& stream, const Vec2F& vector)
+{
+	stream << "X: " << vector.x << " Y: " << vector.y;
+	return stream;
+}
+
+std::ostream& operator<<(std::ostream& stream, const Mat2D& matrix)
+{
+	return stream << "a11: " << matrix.a11 << " a12: " << matrix.a12 << " a21: " << matrix.a21 << " a22: " << matrix.a22;
+}
+
+std::ostream& operator<<(std::ostream& stream, const Mat2F& matrix)
+{
+	return stream << "a11: " << matrix.a11 << " a12: " << matrix.a12 << " a21: " << matrix.a21 << " a22: " << matrix.a22;
 }
 
 std::ostream& operator<<(std::ostream& stream, const Mat3x2D& matrix)

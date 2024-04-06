@@ -46,38 +46,6 @@ Pilot::Pilot(
 {
 }
 
-Pilot::Pilot(
-	const Vec2F* position,
-	const Vec2F* velocity,
-	GameTypes::players_count_t player_number,
-	GameTypes::players_count_t player_team_number,
-	const GameTypes::control_flags_t* controle_flags,
-	GameTypes::tic_t respawn_timer,
-	const std::vector<Vec2F>& heat_box_vertexes_array,
-	float angle, EngineTypes::Bonus::inventory_t buffs_bonuses,
-	EngineTypes::Bonus::inventory_t active_baffs,
-	float angular_velocity,
-	float radius,
-	float force_collision_coeffisient,
-	float force_resistance_air_coefficient,
-	bool exist)
-	:
-	ControledEntity(
-		position,
-		velocity,
-		radius,
-		player_number,
-		player_team_number,
-		controle_flags,
-		heat_box_vertexes_array,
-		angle, angular_velocity,
-		force_collision_coeffisient,
-		force_resistance_air_coefficient,
-		exist),
-	respawn_timer(respawn_timer)
-{
-}
-
 bool Pilot::CanRespawn() const
 {
 	return respawn_timer == 0;
@@ -128,39 +96,6 @@ void Pilot::Set(const Pilot* pilot)
 void Pilot::Set(
 	const Vec2F& position,
 	const Vec2F& velocity,
-	GameTypes::players_count_t player_number,
-	GameTypes::players_count_t player_team_number,
-	const GameTypes::control_flags_t* controle_flags,
-	GameTypes::tic_t respawn_timer,
-	const std::vector<Vec2F>& heat_box_vertexes_array,
-	float angle,
-	EngineTypes::Bonus::inventory_t buffs_bonuses,
-	EngineTypes::Bonus::inventory_t active_baffs,
-	float angular_velocity,
-	float radius,
-	float force_collision_coeffisient,
-	float force_resistance_air_coefficient,
-	bool exist)
-{
-	ControledEntity::Set(
-		position,
-		velocity,
-		radius,
-		player_number,
-		player_team_number,
-		controle_flags,
-		heat_box_vertexes_array,
-		angle,
-		angular_velocity,
-		force_collision_coeffisient,
-		force_resistance_air_coefficient);
-
-	this->respawn_timer = respawn_timer;
-}
-
-void Pilot::Set(
-	const Vec2F* position,
-	const Vec2F* velocity,
 	GameTypes::players_count_t player_number,
 	GameTypes::players_count_t player_team_number,
 	const GameTypes::control_flags_t* controle_flags,

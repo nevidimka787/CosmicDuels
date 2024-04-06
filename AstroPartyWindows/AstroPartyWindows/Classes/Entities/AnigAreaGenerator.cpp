@@ -30,20 +30,6 @@ AnnihAreaGen::AnnihAreaGen(
 	Update();
 }
 
-AnnihAreaGen::AnnihAreaGen(
-	const ControledEntity* host,
-	const Vec2F* position,
-	EngineTypes::Ship::inventory_t buff_inventory,
-	float radius,
-	float angle,
-	bool exist)
-	:
-	SupportEntity(host, position, radius, angle, exist),
-	buff_inventory(buff_inventory)
-{
-	Update();
-}
-
 bool AnnihAreaGen::IsHaveShield() const
 {
 	return buff_inventory & SHIP_BUFF_SHIELD;
@@ -67,22 +53,11 @@ const Bomb& AnnihAreaGen::Shoot() const
 		SHIP_SUPER_BONUS__ANNIHILATION_AREA_EXIST_PERIOD);
 }
 
-void AnnihAreaGen::operator=(AnnihAreaGen annih_area_gen)
+void AnnihAreaGen::operator=(const AnnihAreaGen& annih_area_gen)
 {
-	angle = annih_area_gen.angle;
+	SupportEntity::operator=(annih_area_gen);
+
 	buff_inventory = annih_area_gen.buff_inventory;
-	direction = annih_area_gen.direction;
-	exist = annih_area_gen.exist;
-	host_matrix_p = annih_area_gen.host_matrix_p;
-	host_number = annih_area_gen.host_number;
-	host_p = annih_area_gen.host_p;
-	host_team = annih_area_gen.host_team;
-	last_position = annih_area_gen.last_position;
-	local_angle = annih_area_gen.local_angle;
-	local_direction = annih_area_gen.local_direction;
-	local_position = annih_area_gen.local_position;
-	position = annih_area_gen.position;
-	radius = annih_area_gen.radius;
 }
 
 AnnihAreaGen::~AnnihAreaGen()

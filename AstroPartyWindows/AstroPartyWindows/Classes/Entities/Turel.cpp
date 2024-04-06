@@ -14,32 +14,11 @@ Turret::Turret(const Turret& turret)
 }
 
 Turret::Turret(
-	Vec2F position,
+	const Vec2F& position,
 	float angle,
 	GameTypes::tic_t attack_dellay,
 	GameTypes::tic_t attack_period,
 	GameTypes::tic_t inactive_period,
-	EngineTypes::AgressiveEntity::shoots_count_t shoots_count,
-	float radius,
-	bool exist) :
-	AggressiveEntity(
-		position,
-		radius,
-		angle,
-		attack_dellay,
-		attack_period,
-		inactive_period,
-		shoots_count,
-		exist)
-{
-}
-
-Turret::Turret(
-	const Vec2F* position,
-	float angle,
-	GameTypes::tic_t attack_dellay,
-	GameTypes::tic_t attack_period, 
-	GameTypes::tic_t inactive_period, 
 	EngineTypes::AgressiveEntity::shoots_count_t shoots_count,
 	float radius,
 	bool exist) :
@@ -77,27 +56,18 @@ DynamicParticle Turret::CreateShards(GameTypes::tic_t current_tic)
 
 Bullet Turret::Shoot()
 {
-	Vec2F new_bullet_velocity = direction * BULLET_DEFAULT_VELOCITY;
-	Vec2F new_bullet_position = position + direction * radius * 2.0f;
-	return Bullet(&new_bullet_position, &new_bullet_velocity, AGGRESIVE_ENTITY_HOST_ID, AGGRESIVE_ENTITY_HOST_ID, false);
+	const auto& new_bullet_velocity = direction * BULLET_DEFAULT_VELOCITY;
+	const auto& new_bullet_position = position + direction * radius * 2.0f;
+	return Bullet(new_bullet_position, new_bullet_velocity, AGGRESIVE_ENTITY_HOST_ID, AGGRESIVE_ENTITY_HOST_ID, false);
 }
 
 void Turret::Set(const Turret* turret)
 {
-	angle = turret->angle;
-	attack_dellay = turret->attack_dellay;
-	attack_period = turret->attack_period;
-	direction = turret->direction;
-	exist = turret->exist;
-	inactive_period = turret->inactive_period;
-	last_position = turret->last_position;
-	position = turret->position;
-	radius = turret->radius;
-	shoots_count = turret->shoots_count;
+	AggressiveEntity::Set(turret);
 }
 
 void Turret::Set(
-	Vec2F position,
+	const Vec2F& position,
 	float angle,
 	GameTypes::tic_t attack_dellay,
 	GameTypes::tic_t attack_period,
@@ -106,52 +76,12 @@ void Turret::Set(
 	float radius, 
 	bool exist)
 {
-	this->angle = angle;
-	this->attack_dellay = attack_dellay;
-	this->attack_period = attack_period;
-	UpdateDirection();
-	this->exist = exist;
-	this->inactive_period = inactive_period;
-	this->last_position = last_position;
-	this->position = position;
-	this->radius = radius;
-	this->shoots_count = shoots_count;
+	AggressiveEntity::Set(position, radius, angle, attack_dellay, attack_period, inactive_period, shoots_count, exist);
 }
 
-void Turret::Set(
-	const Vec2F* position,
-	float angle,
-	GameTypes::tic_t attack_dellay,
-	GameTypes::tic_t attack_period,
-	GameTypes::tic_t inactive_period,
-	EngineTypes::AgressiveEntity::shoots_count_t shoots_count,
-	float radius,
-	bool exist)
+void Turret::operator=(const Turret& turret)
 {
-	this->angle = angle;
-	this->attack_dellay = attack_dellay;
-	this->attack_period = attack_period;
-	UpdateDirection();
-	this->exist = exist;
-	this->inactive_period = inactive_period;
-	this->last_position = last_position;
-	this->position = *position;
-	this->radius = radius;
-	this->shoots_count = shoots_count;
-}
-
-void Turret::operator=(Turret turret)
-{
-	angle = turret.angle;
-	attack_dellay = turret.attack_dellay;
-	attack_period = turret.attack_period;
-	direction = turret.direction;
-	exist = turret.exist;
-	inactive_period = turret.inactive_period;
-	last_position = turret.last_position;
-	position = turret.position;
-	radius = turret.radius;
-	shoots_count = turret.shoots_count;
+	AggressiveEntity::operator=(turret);
 }
 
 Turret::~Turret()

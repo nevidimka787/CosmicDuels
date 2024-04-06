@@ -17,8 +17,8 @@ Asteroid::Asteroid(const Asteroid& asteroid)
 }
 
 Asteroid::Asteroid(
-	Vec2F position,
-	Vec2F velocity,
+	const Vec2F& position,
+	const Vec2F& velocity,
 	EngineTypes::Bonus::inventory_t bonus_inventory,
 	EngineTypes::Asteroid::size_t size,
 	float angle,
@@ -32,34 +32,6 @@ Asteroid::Asteroid(
 		velocity,
 		bonus_inventory,
 		0.0f,
-		angle,
-		angular_velocity,
-		force_collision_coeffisient,
-		force_resistance_air_coefficient,
-		exist),
-	size(size)
-{
-	UpdateRadius();
-	this->bonus_inventory = bonus_inventory;
-	exist = true;
-}
-
-Asteroid::Asteroid(
-	const Vec2F* position,
-	const Vec2F* velocity,
-	EngineTypes::Bonus::inventory_t bonus_inventory,
-	EngineTypes::Asteroid::size_t size,
-	float angle,
-	float angular_velocity,
-	float force_collision_coeffisient,
-	float force_resistance_air_coefficient, 
-	bool exist) 
-	:
-	Bonus(
-		position,
-		velocity, 
-		bonus_inventory,
-		0.0f, 
 		angle,
 		angular_velocity,
 		force_collision_coeffisient,
@@ -130,13 +102,12 @@ DynamicParticle Asteroid::CreateShards(GameTypes::tic_t current_tic) const
 bool Asteroid::Collision(const Map::MapData& map)
 {
 	bool collision = false;
-	void* element_p;
 	for (uint8_t i = 0; i < map.rectangles_array_length; i++)
 	{
-		element_p = (void*)map.RectanglePointer(i);
-		if (((Map::Rectangle*)element_p)->exist && DynamicEntity::Collision(((Map::Rectangle*)element_p)))
+		const auto element_p = map.RectanglePointer(i);
+		if (element_p->exist && DynamicEntity::Collision(*element_p))
 		{
-			if (((Map::Rectangle*)element_p)->IsAggressive())
+			if (element_p->IsAggressive())
 			{
 				exist = false;
 				return true;
@@ -146,10 +117,10 @@ bool Asteroid::Collision(const Map::MapData& map)
 	}
 	for (uint8_t i = 0; i < map.cyrcles_array_length; i++)
 	{
-		element_p = (void*)map.CyrclePointer(i);
-		if (((Map::Cyrcle*)element_p)->exist && DynamicEntity::Collision(((Map::Cyrcle*)element_p)))
+		const auto element_p = map.CyrclePointer(i);
+		if (element_p->exist && DynamicEntity::Collision(*element_p))
 		{
-			if (((Map::Cyrcle*)element_p)->IsAggressive())
+			if (element_p->IsAggressive())
 			{
 				exist = false;
 				return true;
@@ -159,10 +130,10 @@ bool Asteroid::Collision(const Map::MapData& map)
 	}
 	for (uint8_t i = 0; i < map.polygons_array_length; i++)
 	{
-		element_p = (void*)map.PolygonPointer(i);
-		if (((Map::Polygon*)element_p)->exist && DynamicEntity::Collision(((Map::Polygon*)element_p)))
+		const auto element_p = map.PolygonPointer(i);
+		if (element_p->exist && DynamicEntity::Collision(*element_p))
 		{
-			if (((Map::Rectangle*)element_p)->IsAggressive())
+			if (element_p->IsAggressive())
 			{
 				exist = false;
 				return true;
@@ -275,8 +246,8 @@ void Asteroid::Set(const Asteroid* asteroid)
 }
 
 void Asteroid::Set(
-	Vec2F position,
-	Vec2F velocity,
+	const Vec2F& position,
+	const Vec2F& velocity,
 	EngineTypes::Bonus::inventory_t bonus_inventory,
 	EngineTypes::Asteroid::size_t size,
 	float angle,
@@ -285,43 +256,18 @@ void Asteroid::Set(
 	float force_resistance_air_coefficient,
 	bool exist)
 {
-	this->angle = angle;
-	this->angular_velocity = angular_velocity;
-	this->bonus_inventory = bonus_inventory;
-	UpdateDirection();
-	this->exist = exist;
-	this->force = force;
-	this->force_collision_coeffisient = force_collision_coeffisient;
-	this->force_resistance_air_coefficient = force_resistance_air_coefficient;
-	this->position = position;
-	this->size = size;
-	UpdateRadius();
-	this->velocity = velocity;
-}
+	Bonus::Set(
+		position, 
+		velocity,
+		bonus_inventory,
+		angle, angular_velocity,
+		0.0f,
+		force_collision_coeffisient, 
+		force_resistance_air_coefficient, 
+		exist);
 
-void Asteroid::Set(
-	const Vec2F* position,
-	const Vec2F* velocity,
-	EngineTypes::Bonus::inventory_t bonus_inventory,
-	EngineTypes::Asteroid::size_t size,
-	float angle,
-	float angular_velocity,
-	float force_collision_coeffisient, 
-	float force_resistance_air_coefficient, 
-	bool exist)
-{
-	this->angle = angle;
-	this->angular_velocity = angular_velocity;
-	this->bonus_inventory = bonus_inventory;
-	UpdateDirection();
-	this->exist = exist;
-	this->force = force;
-	this->force_collision_coeffisient = force_collision_coeffisient;
-	this->force_resistance_air_coefficient = force_resistance_air_coefficient;
-	this->position = *position;
 	this->size = size;
 	UpdateRadius();
-	this->velocity = *velocity;
 }
 
 void Asteroid::UpdateRadius()

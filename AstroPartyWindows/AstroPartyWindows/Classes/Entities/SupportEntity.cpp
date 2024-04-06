@@ -1,6 +1,6 @@
 #include "../Entity.h"
 
-
+#include <assert.h>
 
 SupportEntity::SupportEntity() :
 	StaticEntity(),
@@ -44,29 +44,6 @@ SupportEntity::SupportEntity(
 	local_angle(angle),
 	local_direction(Vec2F(1.0f, 0.0f).Rotate(angle)),
 	local_position(position)
-{
-	this->position *= *host_matrix_p;
-}
-
-SupportEntity::SupportEntity(
-	const ControledEntity* host,
-	const Vec2F* position,
-	float radius, 
-	float angle,
-	bool exist) 
-	:
-	StaticEntity(
-		position,
-		radius,
-		angle + host->GetAngle(),
-		exist),
-	host_p(host),
-	host_matrix_p(host->GetModelMatrixPointerConst()),
-	host_number(host->GetPlayerNumber()),
-	host_team(host->GetTeamNumber()),
-	local_angle(angle),
-	local_direction(Vec2F(1.0f, 0.0f).Rotate(angle)),
-	local_position(*position)
 {
 	this->position *= *host_matrix_p;
 }
@@ -128,31 +105,33 @@ const Vec2F& SupportEntity::GetPosition() const
 
 void SupportEntity::Set(const SupportEntity* support_entity)
 {
-	angle = support_entity->angle;
-	direction = support_entity->direction;
-	exist = support_entity->exist;
 	host_p = support_entity->host_p;
+#ifdef _DEBUG
+	assert(host_p != nullptr);
+#endif // _DEBUG
+
+	StaticEntity::Set(support_entity);
+
 	host_matrix_p = support_entity->host_matrix_p;
 	host_number = support_entity->host_number;
 	host_team = support_entity->host_team;
 	local_angle = support_entity->local_angle;
 	local_direction = support_entity->local_direction;
 	local_position = support_entity->local_position;
-	position = support_entity->position;
-	radius = support_entity->radius;
 }
 
 void SupportEntity::Set(
 	const ControledEntity* host,
-	Vec2F position, 
+	const Vec2F& position, 
 	float radius, 
 	float angle, 
 	bool exist)
 {
-	if (host == nullptr)
-	{
-		return;
-	}
+	this->host_p = host;
+#ifdef _DEBUG
+	assert(host_p != nullptr);
+#endif // _DEBUG
+
 	this->angle = host->GetAngle();
 	this->direction = host->GetDirectionNotNormalize();
 	this->exist = exist;
@@ -164,33 +143,6 @@ void SupportEntity::Set(
 	this->position = host->GetPosition();
 	this->radius = radius;
 
-	this->host_p = host;
-	this->host_matrix_p = host->GetModelMatrixPointerConst();
-}
-
-void SupportEntity::Set(
-	const ControledEntity* host,
-	const Vec2F* position,
-	float radius,
-	float angle,
-	bool exist)
-{
-	if (host == nullptr)
-	{
-		return;
-	}
-	this->angle = host->GetAngle();
-	this->direction = host->GetDirectionNotNormalize();
-	this->exist = exist;
-	this->host_number = host->GetPlayerNumber();
-	this->host_team = host->GetTeamNumber();
-	this->local_angle = angle;
-	this->local_direction = Vec2F(1.0f, 0.0f).Rotate(angle);
-	this->local_position = *position;
-	this->position = host->GetPosition();
-	this->radius = radius;
-
-	this->host_p = host;
 	this->host_matrix_p = host->GetModelMatrixPointerConst();
 }
 
@@ -254,9 +206,13 @@ void SupportEntity::UpdateDirection()
 
 void SupportEntity::operator=(const SupportEntity& support_entity)
 {
+	host_p = support_entity.host_p;
+#ifdef _DEBUG
+	assert(host_p != nullptr);
+#endif // _DEBUG
+
 	StaticEntity::operator=(support_entity);
 
-	host_p = support_entity.host_p;
 	host_matrix_p = support_entity.host_matrix_p;
 	host_number = support_entity.host_number;
 	host_team = support_entity.host_team;

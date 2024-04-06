@@ -17,8 +17,8 @@ DynamicParticle::DynamicParticle() :
 
 DynamicParticle::DynamicParticle(
 	GameTypes::tic_t current_tic,
-	Vec2F position,
-	Vec2F velocisy,
+	const Vec2F& position,
+	const Vec2F& velocisy,
 	float radius,
 	float angle,
 	float angular_velocity,
@@ -26,7 +26,7 @@ DynamicParticle::DynamicParticle(
 	float force_resistance_air_coefficient,
 	EngineTypes::Particle::type_t type,
 	EngineTypes::DynamicParticle::property_t properties,
-	Color3F color,
+	const Color3F& color,
 	GameTypes::tic_t animation_period,
 	GameTypes::tic_t animation_postpone,
 	GameTypes::tic_t finish_tic,
@@ -46,44 +46,6 @@ DynamicParticle::DynamicParticle(
 	animation_period(animation_period),
 	animation_postpone(animation_postpone),
 	color(color),
-	finish_tic(finish_tic),
-	properties(properties),
-	spawn_tic(current_tic),
-	type(type)
-{
-}
-
-DynamicParticle::DynamicParticle(
-	GameTypes::tic_t current_tic,
-	const Vec2F* position, 
-	const Vec2F* velocisy, 
-	float radius, 
-	float angle,
-	float angular_velocity,
-	float force_collision_coeffisient,
-	float force_resistance_air_coefficient,
-	EngineTypes::Particle::type_t type,
-	EngineTypes::DynamicParticle::property_t properties,
-	const Color3F* color,
-	GameTypes::tic_t animation_period,
-	GameTypes::tic_t animation_postpone,
-	GameTypes::tic_t finish_tic,
-	bool exist) 
-	:
-	DynamicEntity(
-		position,
-		velocisy, 
-		radius,
-		angle,
-		angular_velocity,
-		force_collision_coeffisient,
-		force_resistance_air_coefficient,
-		exist),
-	active(false),
-	animation(0.0f),
-	animation_period(animation_period),
-	animation_postpone(animation_postpone),
-	color(*color),
 	finish_tic(finish_tic),
 	properties(properties),
 	spawn_tic(current_tic),
@@ -131,7 +93,7 @@ void DynamicParticle::Update(GameTypes::tic_t current_tic)
 		velocity *= 1.0f - force_resistance_air_coefficient;
 	}
 	force.Set(0.0f, 0.0f);
-	Move(&velocity);
+	Move(velocity);
 	if (active)
 	{
 		animation = (float)((current_tic - spawn_tic - animation_postpone) % animation_period) / (float)animation_period;
