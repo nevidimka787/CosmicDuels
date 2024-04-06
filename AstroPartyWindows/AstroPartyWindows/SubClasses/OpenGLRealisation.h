@@ -188,6 +188,9 @@ public:
 	//The function is main draw function and called every draw cycle.
 	void DrawFrame();
 
+	// Debug function draw a segment
+	void DrawObject(const Segment& segment, bool update_shader = false);
+
 	//The function draw annihilation area generator..
 	void DrawObject(const AnnihAreaGen& annih_area_gen, bool update_shader = false);
 	//The function draw asteroid.

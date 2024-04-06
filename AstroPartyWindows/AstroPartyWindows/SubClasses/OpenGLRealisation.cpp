@@ -625,6 +625,25 @@ void OpenGL::DrawFrame()
     //draw_lock0_mtx.unlock();
 }
 
+
+// Debug function draw a segment
+void OpenGL::DrawObject(const Segment& segment, bool update_shader)
+{
+  if (update_shader)
+  {
+    laser_buffer.Use();
+    laser_shader.Use();
+    laser_shader.SetUniform("scale", window_scale);
+    laser_shader.SetUniform("camera_position", temp__game__camera_position);
+    laser_shader.SetUniform("camera_size", temp__game__camera_size);
+  }
+  laser_shader.SetUniform("segment", segment);
+  laser_shader.SetUniform("life", 1.0f);
+  laser_shader.SetUniform("width", segment.vector.Length() / 10.0f);
+  laser_shader.SetUniform("properties", LASER_PROPERTY_NOTHING);
+  laser_buffer.Draw();
+}
+
 void OpenGL::DrawObject(const AnnihAreaGen& annih_area_gen, bool update_shader)
 {
     if(update_shader)
@@ -952,6 +971,32 @@ void OpenGL::DrawObject(const Ship& ship, bool update_shader)
     ship_shader.SetUniform("position", ship.GetPosition());
     ship_shader.SetUniform("type", (int)1);//1 - is bullets
     ship_bullet_buffer.Draw();
+
+
+#if _DEBUG && false
+    laser_buffer.Use();
+    laser_shader.Use();
+    laser_shader.SetUniform("scale", window_scale);
+    laser_shader.SetUniform("camera_position", temp__game__camera_position);
+    laser_shader.SetUniform("camera_size", temp__game__camera_size);
+
+    for (const auto& ship : *game_p__ships)
+    {
+      if (!ship.exist) continue;
+
+      const auto& hb = ship.GetGlobalHeatBox();
+      for (const auto& seg : hb)
+      {
+        DrawObject(seg, false);
+      }
+    }
+
+    //ship_buffer.Use();//Every draw buffer is resseted.
+    ship_shader.Use();
+    ship_shader.SetUniform("scale", window_scale);
+    ship_shader.SetUniform("camera_position", temp__game__camera_position);
+    ship_shader.SetUniform("camera_size", temp__game__camera_size);
+#endif
 }
 
 void OpenGL::DrawObject(const Turret& turret, bool update_shader)
@@ -1289,6 +1334,7 @@ void OpenGL::DrawShips()
     ship_shader.SetUniform("scale", window_scale);
     ship_shader.SetUniform("camera_position", temp__game__camera_position);
     ship_shader.SetUniform("camera_size", temp__game__camera_size);
+    
 
     DrawObjects(game_p__ships, game_p__ships_count);
 }
