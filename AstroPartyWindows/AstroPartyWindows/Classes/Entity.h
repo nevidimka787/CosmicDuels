@@ -521,6 +521,8 @@ public:
 
 	//If map can destroy entity, the functuion return true.
 	bool Collision(const Map::MapData& map);
+	template<typename MapElementT>
+	bool CollisionWithElement(MapElementT& element);
 	Color3F GetColor() const;
 	const GameTypes::control_flags_t* GetControleFlagsP() const;
 	std::vector<Segment> GetGlobalHeatBox() const;
@@ -1071,7 +1073,11 @@ public:
 	void Activate();
 	void Boom(GameTypes::tic_t period = BOMB_BOOM_TIME);
 	bool CanRemove() const;
-	bool Collision(const Map::MapData& map);
+	template <typename MapElementT>
+	bool CollisionWithElementStatusAnother(const MapElementT& element);
+	template <typename MapElementT>
+	bool CollisionWithElementStatusBoom(MapElementT& element);
+	bool Collision(Map::MapData& map);
 	GameTypes::tic_t GetAnimationTic() const;
 	bool IsActive() const;
 	bool IsBoom() const;
@@ -1130,6 +1136,8 @@ public:
 		bool exist = true);
 
 	bool Collision(Map::MapData& map);
+	template<typename MapElementT>
+	bool CollisionWithElement(MapElementT& element);
 	void Set(const Bullet* bullet);
 	void Set(
 		const Vec2F& position,
@@ -1168,6 +1176,8 @@ public:
 	//If map element is destructable, this element completes existing.
 	//If after collision health of the knife is zero, the function set its parameter "exist" to false.
 	bool Collision(Map::MapData& map);
+	template <typename ElemetT>
+	bool CollissionWithElement(ElemetT& element, const Segment& segment);
 	Segment GetSegment() const;
 	bool IsCollision(const Line& line) const;
 	bool IsCollision(const Beam& beam) const;
@@ -1220,9 +1230,9 @@ public:
 	GameTypes::players_count_t GetPlayerMasterTeamNumber() const;
 	bool GetProperty(EngineTypes::Laser::property_t property) const;
 	GameTypes::tic_t GetShootTime() const;
-	bool IsCollision(const Beam* beam) const;
-	bool IsCollision(const Line* line) const;
-	bool IsCollision(const Segment* segment) const;
+	bool IsCollision(const Beam& beam) const;
+	bool IsCollision(const Line& line) const;
+	bool IsCollision(const Segment& segment) const;
 	void Set(const Laser* laser);
 	void Set(
 		const ControledEntity* host_p,

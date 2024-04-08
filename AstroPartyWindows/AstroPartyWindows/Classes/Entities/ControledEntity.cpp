@@ -62,45 +62,35 @@ ControledEntity::ControledEntity(
 bool ControledEntity::Collision(const Map::MapData& map)
 {
 	bool collision = false;
-	for (uint8_t i = 0; i < map.rectangles_array_length; i++)
+	for (auto& element : map.cyrcles_array)
 	{
-		const auto element_p = map.RectanglePointer(i);
-		if (element_p->exist && DynamicEntity::Collision(*element_p))
-		{
-			if (element_p->IsKiller())
-			{
-				exist = false;
-				return true;
-			}
-			collision = true;
-		}
+		collision |= CollisionWithElement(element);
 	}
-	for (uint8_t i = 0; i < map.cyrcles_array_length; i++)
+	for (auto& element : map.polygons_array)
 	{
-		const auto element_p = map.CyrclePointer(i);
-		if (element_p->exist && DynamicEntity::Collision(*element_p))
-		{
-			if (element_p->IsKiller())
-			{
-				exist = false;
-				return true;
-			}
-			collision = true;
-		}
+		collision |= CollisionWithElement(element);
 	}
-	for (uint8_t i = 0; i < map.polygons_array_length; i++)
+	for (auto& element : map.rectangles_array)
 	{
-		const auto element_p = map.PolygonPointer(i);
-		if (element_p->exist && DynamicEntity::Collision(*element_p))
-		{
-			if (element_p->IsKiller())
-			{
-				exist = false;
-				return true;
-			}
-			collision = true;
-		}
+		collision |= CollisionWithElement(element);
 	}
+	return collision;
+}
+
+template<typename MapElementT>
+bool ControledEntity::CollisionWithElement(MapElementT& element)
+{
+	auto collision = false;
+	if (element.exist && DynamicEntity::Collision(element))
+	{
+		if (element.IsKiller())
+		{
+			exist = false;
+			return true;
+		}
+		collision = true;
+	}
+
 	return collision;
 }
 
@@ -304,7 +294,7 @@ bool ControledEntity::IsColectEntity(const DynamicEntity& stored_entity) const
 		const auto point2 = point1;
 		point1 = vertex * 2.0f * model_matrix;
 		const auto& ce_side = Segment(point1, point2, true);
-		if (ce_side.IsIntersection(&test_beam))
+		if (ce_side.IsIntersection(test_beam))
 		{
 			intersections_count++;
 		}

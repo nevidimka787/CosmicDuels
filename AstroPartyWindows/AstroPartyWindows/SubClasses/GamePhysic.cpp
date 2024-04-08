@@ -382,7 +382,7 @@ void Game::ShipShoot(Ship& ship)
 			r_vec = Vec2F(1.0f, 0.0f).RotateClockwise(ship.GetAngle() + angle);
 			AddEntity(
 				Bullet(
-					ship.GetPosition() + r_vec * (ship.radius + SHIP_BONUS__LOOP_BULLETS_RADIUS * 2.0f),
+					ship.GetPosition() + r_vec * ship.radius,
 					ship.GetVelocity() + r_vec * SHIP_BONUS__LOOP_BULLET_VELOCITY,
 					ship.GetPlayerNumber(),
 					ship.GetTeamNumber(),
@@ -402,7 +402,7 @@ void Game::ShipShoot(Ship& ship)
 			r_vec = Vec2F(1.0f, 0.0f).RotateClockwise(ship.GetAngle() - angle);
 			AddEntity(
 				Bullet(
-					ship.GetPosition() + r_vec * (ship.radius + SHIP_BONUS__LOOP_BULLETS_RADIUS * 2.0f),
+					ship.GetPosition() + r_vec * ship.radius,
 					ship.GetVelocity() + r_vec * SHIP_BONUS__LOOP_BULLET_VELOCITY,
 					ship.GetPlayerNumber(),
 					ship.GetTeamNumber(),
@@ -1154,29 +1154,17 @@ void Game::UpdateMapPhase2()
 {
 	void* element_pointer;
 	map_data_mtx.lock();
-	for (EngineTypes::Map::array_length_t element = 0; element < map.rectangles_array_length; element++)
+	for (auto& element : map.cyrcles_array)
 	{
-		element_pointer = (void*)map.RectanglePointer(element);
-		if (((Map::Rectangle*)element_pointer)->exist)
-		{
-			((Map::Rectangle*)element_pointer)->Update();
-		}
+		if (element.exist) element.Update();
 	}
-	for (EngineTypes::Map::array_length_t element = 0; element < map.cyrcles_array_length; element++)
+	for (auto& element : map.polygons_array)
 	{
-		element_pointer = (void*)map.CyrclePointer(element);
-		if (((Map::Cyrcle*)element_pointer)->exist)
-		{
-			((Map::Cyrcle*)element_pointer)->Update();
-		}
+		if (element.exist) element.Update();
 	}
-	for (EngineTypes::Map::array_length_t element = 0; element < map.polygons_array_length; element++)
+	for (auto& element : map.rectangles_array)
 	{
-		element_pointer = (void*)map.PolygonPointer(element);
-		if (((Map::Polygon*)element_pointer)->exist)
-		{
-			((Map::Polygon*)element_pointer)->Update();
-		}
+		if (element.exist) element.Update();
 	}
 	map_data_mtx.unlock();
 }

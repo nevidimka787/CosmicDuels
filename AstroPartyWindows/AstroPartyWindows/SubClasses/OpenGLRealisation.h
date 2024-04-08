@@ -275,9 +275,9 @@ public:
 	//The function draw current menu.
 	void DrawCurrentMenu();
 	//The function draww indicated map.
-	void DrawIndicatedMap(const Map::MapData* map);
+	void DrawIndicatedMap(const Map::MapData& map);
 	//The function draw indicated menu.
-	void DrawIndicatedMenu(const Menu* menu);
+	void DrawIndicatedMenu(const Menu& menu);
 
 	//Multydraw functions
 

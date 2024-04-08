@@ -102,12 +102,11 @@ DynamicParticle Asteroid::CreateShards(GameTypes::tic_t current_tic) const
 bool Asteroid::Collision(const Map::MapData& map)
 {
 	bool collision = false;
-	for (uint8_t i = 0; i < map.rectangles_array_length; i++)
+	for (auto& element : map.polygons_array)
 	{
-		const auto element_p = map.RectanglePointer(i);
-		if (element_p->exist && DynamicEntity::Collision(*element_p))
+		if (element.exist && DynamicEntity::Collision(element))
 		{
-			if (element_p->IsAggressive())
+			if (element.IsAggressive())
 			{
 				exist = false;
 				return true;
@@ -115,12 +114,11 @@ bool Asteroid::Collision(const Map::MapData& map)
 			collision = true;
 		}
 	}
-	for (uint8_t i = 0; i < map.cyrcles_array_length; i++)
+	for (auto& element : map.cyrcles_array)
 	{
-		const auto element_p = map.CyrclePointer(i);
-		if (element_p->exist && DynamicEntity::Collision(*element_p))
+		if (element.exist && DynamicEntity::Collision(element))
 		{
-			if (element_p->IsAggressive())
+			if (element.IsAggressive())
 			{
 				exist = false;
 				return true;
@@ -128,12 +126,11 @@ bool Asteroid::Collision(const Map::MapData& map)
 			collision = true;
 		}
 	}
-	for (uint8_t i = 0; i < map.polygons_array_length; i++)
+	for (auto& element : map.rectangles_array)
 	{
-		const auto element_p = map.PolygonPointer(i);
-		if (element_p->exist && DynamicEntity::Collision(*element_p))
+		if (element.exist && DynamicEntity::Collision(element))
 		{
-			if (element_p->IsAggressive())
+			if (element.IsAggressive())
 			{
 				exist = false;
 				return true;

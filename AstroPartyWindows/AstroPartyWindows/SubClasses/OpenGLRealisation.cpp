@@ -1381,7 +1381,7 @@ template void OpenGL::DrawObjects(const std::vector<Turret>* objects, const Game
 
 void OpenGL::DrawCurrentMap()
 {
-    DrawIndicatedMap(game_p__map);
+    DrawIndicatedMap(*game_p__map);
 }
 
 void OpenGL::DrawCurrentMenu()
@@ -1392,65 +1392,56 @@ void OpenGL::DrawCurrentMenu()
         DrawIndicatedMenu(game_p__ships_control_menu);
     }
 #endif
-    DrawIndicatedMenu(*game_p__current_active_menu);
+    DrawIndicatedMenu(**game_p__current_active_menu);
 }
 
-void OpenGL::DrawIndicatedMap(const Map::MapData* map)
+void OpenGL::DrawIndicatedMap(const Map::MapData& map)
 {
     void* map_element_p;
-    if (map->rectangles_array_length > 0)
+    if (map.rectangles_array.size() > 0)
     {
         rectangle_buffer.Use();
         rectangle_shader.Use();
         rectangle_shader.SetUniform("scale", window_scale);
         rectangle_shader.SetUniform("camera_position", temp__game__camera_position);
         rectangle_shader.SetUniform("camera_size", temp__game__camera_size);
-        for (EngineTypes::Map::array_length_t rectangle = 0; rectangle < map->rectangles_array_length; rectangle++)
+        
+        for (const auto& element : map.rectangles_array)
         {
-            map_element_p = (void*)map->RectanglePointer(rectangle);
-            if (((Map::Rectangle*)map_element_p)->exist)
-            {
-                DrawObject((Map::Rectangle*)map_element_p);
-            }
+            if (element.exist) DrawObject(&element);
         }
     }
 
-    if (map->cyrcles_array_length > 0)
+    if (map.cyrcles_array.size() > 0)
     {
         cyrcle_buffer.Use();
         cyrcle_shader.Use();
         cyrcle_shader.SetUniform("scale", window_scale);
         cyrcle_shader.SetUniform("camera_position", temp__game__camera_position);
         cyrcle_shader.SetUniform("camera_size", temp__game__camera_size);
-        for (EngineTypes::Map::array_length_t cyrcle = 0; cyrcle < map->cyrcles_array_length; cyrcle++)
+
+        for (const auto& element : map.cyrcles_array)
         {
-            map_element_p = (void*)map->CyrclePointer(cyrcle);
-            if (((Map::Cyrcle*)map_element_p)->exist)
-            {
-                DrawObject((Map::Cyrcle*)map_element_p);
-            }
+          if (element.exist) DrawObject(&element);
         }
     }
     
-    if (map->polygons_array_length > 0)
+    if (map.polygons_array.size() > 0)
     {
         polygon_buffer.Use();
         polygon_shader.Use();
         polygon_shader.SetUniform("scale", window_scale);
         polygon_shader.SetUniform("camera_position", temp__game__camera_position);
         polygon_shader.SetUniform("camera_size", temp__game__camera_size);
-        for (EngineTypes::Map::array_length_t polygon = 0; polygon < map->polygons_array_length; polygon++)
+
+        for (const auto& element : map.polygons_array)
         {
-            map_element_p = (void*)map->PolygonPointer(polygon);
-            if (((Map::Polygon*)map_element_p)->exist)
-            {
-                DrawObject((Map::Polygon*)map_element_p);
-            }
+          if (element.exist) DrawObject(&element);
         }
     }
 }
 
-void OpenGL::DrawIndicatedMenu(const Menu* menu)
+void OpenGL::DrawIndicatedMenu(const Menu& menu)
 {
 #if OPEN_GL_REALISATION__SHIPS_CONTROLED_BY_SCREEN_BUTTONS == true
     if (menu == game_p__ships_control_menu)
@@ -1469,9 +1460,9 @@ void OpenGL::DrawIndicatedMenu(const Menu* menu)
         button_shader.Use();
         symbols_texture.Use();
         button_shader.SetUniform("scale", window_scale);
-        for (EngineTypes::Menu::buttons_count_t button = 0; button < menu->GetButtonsCount(); button++)
+        for (EngineTypes::Menu::buttons_count_t button = 0; button < menu.GetButtonsCount(); button++)
         {
-            DrawObject(menu->current_buttons[button]);
+            DrawObject(menu.current_buttons[button]);
         }
 #if OPEN_GL_REALISATION__SHIPS_CONTROLED_BY_SCREEN_BUTTONS == true
     }

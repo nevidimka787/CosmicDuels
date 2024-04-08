@@ -27,30 +27,6 @@ Line::Line(const Vec2F&point, const Vec2F&point_vector, bool second_argument_is_
 	}
 }
 
-Line::Line(const Beam& beam) :
-	point(beam.point),
-	vector(beam.vector)
-{
-}
-
-Line::Line(const Beam* beam) :
-	point(beam->point),
-	vector(beam->vector)
-{
-}
-
-Line::Line(const Segment& segment) :
-	point(segment.point),
-	vector(segment.vector)
-{
-}
-
-Line::Line(const Segment* segment) :
-	point(segment->point),
-	vector(segment->vector)
-{
-}
-
 void Line::Intersection(const Line& intersection_line, Vec2F* output_intersection_point) const
 {
 	Vec2F temp_vector1 = point - intersection_line.point;
@@ -243,16 +219,6 @@ void Line::operator=(const Segment& segment)
 {
 	this->point = segment.point;
 	this->vector = segment.vector;
-}
-
-Line::operator Beam()
-{
-	return Beam(point, vector);
-}
-
-Line::operator Segment()
-{
-	return Segment(point, vector);
 }
 
 Line::~Line()
@@ -777,16 +743,6 @@ void Beam::operator=(const Segment& segment)
 {
 	this->point = segment.point;
 	this->vector = segment.vector;
-}
-
-Beam::operator Line()
-{
-	return Line(point, vector);
-}
-
-Beam::operator Segment()
-{
-	return Segment(point, vector);
 }
 
 Beam::~Beam()
@@ -1668,16 +1624,6 @@ void Segment::operator=(const Segment& segment)
 {
 	this->point = segment.point;
 	this->vector = segment.vector;
-}
-
-Segment::operator Line()
-{
-	return Line(point, vector);
-}
-
-Segment::operator Beam()
-{
-	return Beam(point, vector);
 }
 
 Segment::~Segment()

@@ -186,7 +186,7 @@ bool DynamicEntity::Collision(const Map::Polygon& polygon)
 	if (p_count > 2 && polygon.IsClosed())
 	{
 		distance = side.Distance(position, &collision_direction);
-		if (distance < radius || side.IsIntersection(&treck))
+		if (distance < radius || side.IsIntersection(treck))
 		{
 			d_pos = (position - collision_direction).Normalize() * (radius - position.Distance(collision_direction) + force_collision_coeffisient);
 			force -= force.ProjectSign(d_pos);
@@ -204,7 +204,7 @@ bool DynamicEntity::Collision(const Map::Polygon& polygon)
 		side.Set(polygon.points_array[p - 1], polygon.points_array[p], true);
 
 		distance = side.Distance(position, &collision_direction);
-		if (distance < radius || side.IsIntersection(&treck))
+		if (distance < radius || side.IsIntersection(treck))
 		{
 			d_pos = (position - collision_direction).Normalize() * (radius - position.Distance(collision_direction) + force_collision_coeffisient);
 			force -= force.ProjectSign(d_pos);
@@ -222,28 +222,25 @@ bool DynamicEntity::Collision(const Map::Polygon& polygon)
 bool DynamicEntity::Collision(const Map::MapData& map)
 {
 	bool collision = false;
-	for (EngineTypes::Map::array_length_t i = 0; i < map.cyrcles_array_length; i++)
+	for (auto& element : map.cyrcles_array)
 	{
-		const auto map_element = map.CyrclePointer(i);
-		if (map_element->exist)
+		if (element.exist)
 		{
-			collision |= Collision(*map_element);
+			collision |= Collision(element);
 		}
 	}
-	for (EngineTypes::Map::array_length_t i = 0; i < map.polygons_array_length; i++)
+	for (auto& element : map.polygons_array)
 	{
-		const auto map_element = map.PolygonPointer(i);
-		if (map_element->exist)
+		if (element.exist)
 		{
-			collision |= Collision(*map_element);
+			collision |= Collision(element);
 		}
 	}
-	for (EngineTypes::Map::array_length_t i = 0; i < map.rectangles_array_length; i++)
+	for (auto& element : map.rectangles_array)
 	{
-		const auto map_element = map.RectanglePointer(i);
-		if (map_element->exist)
+		if (element.exist)
 		{
-			collision |= Collision(*map_element);
+			collision |= Collision(element);
 		}
 	}
 	return collision;
@@ -675,23 +672,20 @@ bool DynamicEntity::IsCollision<Map::Polygon>(const Map::Polygon& polygon) const
 template<>
 bool DynamicEntity::IsCollision<Map::MapData>(const Map::MapData& map) const
 {
-	for (EngineTypes::Map::array_length_t i = 0; i < map.cyrcles_array_length; i++)
+	for (auto& element : map.cyrcles_array)
 	{
-		const auto map_element = map.CyrclePointer(i);
-		if (!map_element->exist) continue;
-		if (IsCollision(*map_element)) return true;
+		if (!element.exist) continue;
+		if (IsCollision(element)) return true;
 	}
-	for (EngineTypes::Map::array_length_t i = 0; i < map.polygons_array_length; i++)
+	for (auto& element : map.polygons_array)
 	{
-		const auto map_element = map.PolygonPointer(i);
-		if (!map_element->exist) continue;
-		if (IsCollision(*map_element)) return true;
+		if (!element.exist) continue;
+		if (IsCollision(element)) return true;
 	}
-	for (EngineTypes::Map::array_length_t i = 0; i < map.rectangles_array_length; i++)
+	for (auto& element : map.rectangles_array)
 	{
-		const auto map_element = map.RectanglePointer(i);
-		if (!map_element->exist) continue;
-		if (IsCollision(*map_element)) return true;
+		if (!element.exist) continue;
+		if (IsCollision(element)) return true;
 	}
 	return false;
 }

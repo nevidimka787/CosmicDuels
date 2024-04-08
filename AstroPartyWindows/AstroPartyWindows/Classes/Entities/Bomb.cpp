@@ -102,104 +102,76 @@ bool Bomb::CanRemove() const
 	return status & BOMB_STATUS_CAN_REMOVE;
 }
 
-bool Bomb::Collision(const Map::MapData& map)
+template<typename MapElementT>
+bool Bomb::CollisionWithElementStatusAnother(const MapElementT& element)
+{
+	bool collision = false;
+	if (element.exist)
+	{
+		bool current_collision = DynamicEntity::Collision(element);
+		if (current_collision && element.IsKiller() && element.IsAggressive())
+		{
+			Boom();
+		}
+		else if (current_collision && element.IsAggressive())
+		{
+			Activate();
+		}
+
+		collision |= current_collision;
+	}
+
+	return collision;
+}
+
+template<typename MapElementT>
+bool Bomb::CollisionWithElementStatusBoom(MapElementT& element)
+{
+	bool collision = false;
+	if (
+		element.exist &&
+		!(element.Prorerties() & MAP_PROPERTY_UNBREACABLE) &&
+		DynamicEntity::IsCollision(element))
+	{
+		element.exist = false;
+		collision = true;
+	}
+
+	return collision;
+}
+
+bool Bomb::Collision(Map::MapData& map)
 {
 	bool collision = false;
 
 	if (status & BOMB_STATUS_BOOM)
 	{
-		for (EngineTypes::Map::array_length_t i = 0; i < map.cyrcles_array_length; i++)
+		for (auto& element : map.cyrcles_array)
 		{
-			const auto map_element = map.CyrclePointer(i);
-			if (
-				map_element->exist &&
-				!(map_element->Prorerties() & MAP_PROPERTY_UNBREACABLE) &&
-				DynamicEntity::IsCollision(*map_element))
-			{
-				((Map::Cyrcle*)map_element)->exist = false;
-				collision = true;
-			}
+			collision |= CollisionWithElementStatusBoom(element);
 		}
-		for (EngineTypes::Map::array_length_t i = 0; i < map.polygons_array_length; i++)
+		for (auto& element : map.polygons_array)
 		{
-			const auto map_element = map.PolygonPointer(i);
-			if (
-				map_element->exist &&
-				!(map_element->Prorerties() & MAP_PROPERTY_UNBREACABLE) &&
-				DynamicEntity::IsCollision(*map_element))
-			{
-				map_element->exist = false;
-				collision = true;
-			}
+			collision |= CollisionWithElementStatusBoom(element);
 		}
-		for (EngineTypes::Map::array_length_t i = 0; i < map.rectangles_array_length; i++)
+		for (auto& element : map.rectangles_array)
 		{
-			const auto map_element = map.RectanglePointer(i);
-			if (
-				map_element->exist &&
-				!(map_element->Prorerties() & MAP_PROPERTY_UNBREACABLE) &&
-				DynamicEntity::IsCollision(*map_element))
-			{
-				map_element->exist = false;
-				collision = true;
-			}
+			collision |= CollisionWithElementStatusBoom(element);
 		}
 		return collision;
 	}
 
-	for (EngineTypes::Map::array_length_t i = 0; i < map.cyrcles_array_length; i++)
+	for (auto& element : map.cyrcles_array)
 	{
-		const auto map_element = map.CyrclePointer(i);
-		if (((Map::Cyrcle*)map_element)->exist)
-		{
-			bool current_collision = DynamicEntity::Collision(*map_element);
-			if (current_collision && map_element->IsKiller() && map_element->IsAggressive())
-			{
-				Boom();
-			}
-			else if (current_collision && map_element->IsAggressive())
-			{
-				Activate();
-			}
-
-			collision |= current_collision;
-		}
+		collision |= CollisionWithElementStatusAnother(element);
 	}
-	for (EngineTypes::Map::array_length_t i = 0; i < map.polygons_array_length; i++)
+	for (auto& element : map.polygons_array)
 	{
-		const auto map_element = map.PolygonPointer(i);
-		if (map_element->exist)
-		{
-			bool current_collision = DynamicEntity::Collision(*map_element);
-			if (current_collision && map_element->IsKiller() && map_element->IsAggressive())
-			{
-				Boom();
-			}
-			else if (current_collision && map_element->IsAggressive())
-			{
-				Activate();
-			}
-
-			collision |= current_collision;
-		}
+		collision |= CollisionWithElementStatusAnother(element);
 	}
-	for (EngineTypes::Map::array_length_t i = 0; i < map.rectangles_array_length; i++)
+	for (auto& element : map.rectangles_array)
 	{
-		const auto map_element = map.RectanglePointer(i);
-		if (map_element->exist)
-		{
-			bool current_collision = DynamicEntity::Collision(map_element);
-			if (current_collision && map_element->IsKiller() && map_element->IsAggressive())
-			{
-				Boom();
-			}
-			else if (current_collision && map_element->IsAggressive())
-			{
-				Activate();
-			}
-
-			collision |= current_collision;
-		}
+		collision |= CollisionWithElementStatusAnother(element);
 	}
 	return collision;
 }

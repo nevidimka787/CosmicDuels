@@ -154,23 +154,9 @@ Rectangle::Rectangle(const Segment& diagonal, EngineTypes::Map::property_t prope
 	NormaliseThis();
 }
 
-Rectangle::Rectangle(const Segment* diagonal, EngineTypes::Map::property_t properties, bool exist) :
-	MapElement(diagonal->point, properties, exist),
-	point2(diagonal->point + diagonal->vector)
-{
-	NormaliseThis();
-}
-
 Rectangle::Rectangle(Vec2F point1, Vec2F point2, EngineTypes::Map::property_t properties, bool exist) :
 	MapElement(point1, properties, exist),
 	point2(point2)
-{
-	NormaliseThis();
-}
-
-Rectangle::Rectangle(const Vec2F* point1, const Vec2F* point2, EngineTypes::Map::property_t properties, bool exist) :
-	MapElement(*point1, properties, exist),
-	point2(*point2)
 {
 	NormaliseThis();
 }
@@ -225,7 +211,7 @@ Vec2F Rectangle::GetPosition() const
 	return (point2 + position) / 2.0f;
 }
 
-bool Rectangle::IsCollision(const Beam* beam)
+bool Rectangle::IsCollision(const Beam& beam)
 {
 	if (GetUpSide().IsIntersection(beam))
 	{
@@ -246,17 +232,17 @@ bool Rectangle::IsCollision(const Beam* beam)
 	return false;
 }
 
-bool Rectangle::IsCollision(const Beam* beam, Vec2F* out_position, float* distance_to_out_position) const
+bool Rectangle::IsCollision(const Beam& beam, Vec2F* out_position, float* distance_to_out_position) const
 {
 	Vec2F output_intersection_point;
 	float min_distance = INFINITY;
 	if (GetUpSide().Intersection(beam, out_position))
 	{
-		min_distance = (*out_position - beam->point).Length();
+		min_distance = (*out_position - beam.point).Length();
 	}
 	if (GetRightSide().Intersection(beam, &output_intersection_point))
 	{
-		float distance = (output_intersection_point - beam->point).Length();
+		float distance = (output_intersection_point - beam.point).Length();
 		if (min_distance > distance)
 		{
 			min_distance = distance;
@@ -265,7 +251,7 @@ bool Rectangle::IsCollision(const Beam* beam, Vec2F* out_position, float* distan
 	}
 	if (GetDownSide().Intersection(beam, &output_intersection_point))
 	{
-		float distance = (output_intersection_point - beam->point).Length();
+		float distance = (output_intersection_point - beam.point).Length();
 		if (min_distance > distance)
 		{
 			min_distance = distance;
@@ -274,7 +260,7 @@ bool Rectangle::IsCollision(const Beam* beam, Vec2F* out_position, float* distan
 	}
 	if (GetLeftSide().Intersection(beam, &output_intersection_point))
 	{
-		float distance = (output_intersection_point - beam->point).Length();
+		float distance = (output_intersection_point - beam.point).Length();
 		if (min_distance > distance)
 		{
 			min_distance = distance;
@@ -291,47 +277,47 @@ bool Rectangle::IsCollision(const Beam* beam, Vec2F* out_position, float* distan
 	return false;
 }
 
-bool Rectangle::IsCollision(const Beam* beam, Vec2F* out_position, float* distance_to_out_position, Vec2F* perpendicular_position) const
+bool Rectangle::IsCollision(const Beam& beam, Vec2F* out_position, float* distance_to_out_position, Vec2F* perpendicular_position) const
 {
 	Vec2F output_intersection_point;
 	float min_distance = INFINITY;
 	if (GetUpSide().Intersection(beam, out_position))
 	{
-		min_distance = (*out_position - beam->point).Length();
+		min_distance = (*out_position - beam.point).Length();
 		const Vec2F& side_vec = GetUpSide().vector;
-		*perpendicular_position = side_vec.VecMul(beam->vector) > 0.0f ? side_vec.Perpendicular() : side_vec.PerpendicularClockwise();
+		*perpendicular_position = side_vec.VecMul(beam.vector) > 0.0f ? side_vec.Perpendicular() : side_vec.PerpendicularClockwise();
 	}
 	if (GetRightSide().Intersection(beam, &output_intersection_point))
 	{
-		float distance = (output_intersection_point - beam->point).Length();
+		float distance = (output_intersection_point - beam.point).Length();
 		if (min_distance > distance)
 		{
 			min_distance = distance;
 			*out_position = output_intersection_point;
 			const Vec2F& side_vec = GetRightSide().vector;
-			*perpendicular_position = side_vec.VecMul(beam->vector) > 0.0f ? side_vec.Perpendicular() : side_vec.PerpendicularClockwise();
+			*perpendicular_position = side_vec.VecMul(beam.vector) > 0.0f ? side_vec.Perpendicular() : side_vec.PerpendicularClockwise();
 		}
 	}
 	if (GetDownSide().Intersection(beam, &output_intersection_point))
 	{
-		float distance = (output_intersection_point - beam->point).Length();
+		float distance = (output_intersection_point - beam.point).Length();
 		if (min_distance > distance)
 		{
 			min_distance = distance;
 			*out_position = output_intersection_point;
 			const Vec2F& side_vec = GetDownSide().vector;
-			*perpendicular_position = side_vec.VecMul(beam->vector) > 0.0f ? side_vec.Perpendicular() : side_vec.PerpendicularClockwise();
+			*perpendicular_position = side_vec.VecMul(beam.vector) > 0.0f ? side_vec.Perpendicular() : side_vec.PerpendicularClockwise();
 		}
 	}
 	if (GetLeftSide().Intersection(beam, &output_intersection_point))
 	{
-		float distance = (output_intersection_point - beam->point).Length();
+		float distance = (output_intersection_point - beam.point).Length();
 		if (min_distance > distance)
 		{
 			min_distance = distance;
 			*out_position = output_intersection_point;
 			const Vec2F& side_vec = GetLeftSide().vector;
-			*perpendicular_position = side_vec.VecMul(beam->vector) > 0.0f ? side_vec.Perpendicular() : side_vec.PerpendicularClockwise();
+			*perpendicular_position = side_vec.VecMul(beam.vector) > 0.0f ? side_vec.Perpendicular() : side_vec.PerpendicularClockwise();
 		}
 	}
 
@@ -344,28 +330,28 @@ bool Rectangle::IsCollision(const Beam* beam, Vec2F* out_position, float* distan
 	return false;
 }
 
-bool Rectangle::IsCollision(const Line* line)
+bool Rectangle::IsCollision(const Line& line)
 {
-	if (GetUpSide().IsIntersection(*line))
+	if (GetUpSide().IsIntersection(line))
 	{
 		return true;
 	}
-	if (GetRightSide().IsIntersection(*line))
+	if (GetRightSide().IsIntersection(line))
 	{
 		return true;
 	}
-	if (GetDownSide().IsIntersection(*line))
+	if (GetDownSide().IsIntersection(line))
 	{
 		return true;
 	}
-	if (GetLeftSide().IsIntersection(*line))
+	if (GetLeftSide().IsIntersection(line))
 	{
 		return true;
 	}
 	return false;
 }
 
-bool Rectangle::IsCollision(const Segment* segment)
+bool Rectangle::IsCollision(const Segment& segment)
 {
 	if (GetUpSide().IsIntersection(segment))
 	{
@@ -386,16 +372,10 @@ bool Rectangle::IsCollision(const Segment* segment)
 	return false;
 }
 
-void Rectangle::Move(Vec2F move_vector)
+void Rectangle::Move(const Vec2F& move_vector)
 {
 	MapElement::Move(move_vector);
 	point2 += move_vector;
-}
-
-void Rectangle::Move(const Vec2F* move_vector)
-{
-	MapElement::Move(*move_vector);
-	point2 += *move_vector;
 }
 
 Rectangle Rectangle::Normalise() const
@@ -482,42 +462,18 @@ void Rectangle::Set(const Segment& diagonal, EngineTypes::Map::property_t proper
 	NormaliseThis();
 }
 
-void Rectangle::Set(const Segment* diagonal, EngineTypes::Map::property_t properties, bool exist)
-{
-	this->exist = exist;
-	this->point2 = diagonal->point + diagonal->vector;
-	this->position = diagonal->point;
-	this->properties = properties;
-
-	NormaliseThis();
-}
-
-void Rectangle::SetPosition(Vec2F position)
+void Rectangle::SetPosition(const Vec2F& position)
 {
 	Vec2F point_to_position = (this->position - point2) / 2.0f;
 	this->position = position + point_to_position;
 	point2 = position - point_to_position;
 }
 
-void Rectangle::SetPosition(const Vec2F* position)
-{
-	Vec2F point_to_position = (this->position - point2) / 2.0f;
-	this->position = *position + point_to_position;
-	point2 = *position - point_to_position;
-}
-
-void Rectangle::SetSize(Vec2F size)
+void Rectangle::SetSize(const Vec2F& size)
 {
 	Vec2F center = (this->position + point2) / 2.0f;
 	position = center - size;
 	point2 = center + size;
-}
-
-void Rectangle::SetSize(const Vec2F* size)
-{
-	Vec2F center = (this->position + point2) / 2.0f;
-	position = center - *size;
-	point2 = center + *size;
 }
 
 void Rectangle::operator=(const Rectangle& rectangle)
@@ -546,28 +502,22 @@ Cyrcle::Cyrcle(const Cyrcle& cyrcle) :
 {
 }
 
-Cyrcle::Cyrcle(Vec2F position, float radius, EngineTypes::Map::property_t properties, bool exist) :
+Cyrcle::Cyrcle(const Vec2F& position, float radius, EngineTypes::Map::property_t properties, bool exist) :
 	MapElement(position, properties, exist),
 	radius(radius)
 {
 }
 
-Cyrcle::Cyrcle(const Vec2F* position, float radius, EngineTypes::Map::property_t properties, bool exist) :
-	MapElement(*position, properties, exist),
-	radius(radius)
+bool Cyrcle::IsCollision(const Beam& beam) const
 {
+	return beam.Distance(position) < radius;
 }
 
-bool Cyrcle::IsCollision(const Beam* beam) const
-{
-	return beam->Distance(position) < radius;
-}
-
-bool Cyrcle::IsCollision(const Beam* beam, Vec2F* out_position, float* distance_to_out_position) const
+bool Cyrcle::IsCollision(const Beam& beam, Vec2F* out_position, float* distance_to_out_position) const
 {
 	Vec2F neares_point_on_line;
 
-	float distance = Line(beam).Distance(position, &neares_point_on_line);
+	float distance = Line(beam.point, beam.vector).Distance(position, &neares_point_on_line);
 
 	if (distance > radius)
 	{
@@ -577,20 +527,20 @@ bool Cyrcle::IsCollision(const Beam* beam, Vec2F* out_position, float* distance_
 	float sub_vector_length = sqrtf(radius * radius - (neares_point_on_line - position).LengthPow2());
 
 	*out_position =
-		(beam->point.Distance(position) > radius) ?
-		(neares_point_on_line - beam->vector.Normalize() * sub_vector_length) :
-		(neares_point_on_line + beam->vector.Normalize() * sub_vector_length);
+		(beam.point.Distance(position) > radius) ?
+		(neares_point_on_line - beam.vector.Normalize() * sub_vector_length) :
+		(neares_point_on_line + beam.vector.Normalize() * sub_vector_length);
 
-	*distance_to_out_position = beam->point.Distance(*out_position);
+	*distance_to_out_position = beam.point.Distance(*out_position);
 
 	return true;
 }
 
-bool Cyrcle::IsCollision(const Beam* beam, Vec2F* out_position, float* distance_to_out_position, Vec2F* perpendicular_direction) const
+bool Cyrcle::IsCollision(const Beam& beam, Vec2F* out_position, float* distance_to_out_position, Vec2F* perpendicular_direction) const
 {
 	Vec2F neares_point_on_line;
 
-	float distance = Line(beam).Distance(position, &neares_point_on_line);
+	float distance = Line(beam.point, beam.vector).Distance(position, &neares_point_on_line);
 
 	if (distance > radius)
 	{
@@ -600,25 +550,25 @@ bool Cyrcle::IsCollision(const Beam* beam, Vec2F* out_position, float* distance_
 	float sub_vector_length = sqrtf(radius * radius - (neares_point_on_line - position).LengthPow2());
 
 	*out_position =
-		(beam->point.Distance(position) > radius) ?
-		(neares_point_on_line - beam->vector.Normalize() * sub_vector_length) :
-		(neares_point_on_line + beam->vector.Normalize() * sub_vector_length);
+		(beam.point.Distance(position) > radius) ?
+		(neares_point_on_line - beam.vector.Normalize() * sub_vector_length) :
+		(neares_point_on_line + beam.vector.Normalize() * sub_vector_length);
 
-	*distance_to_out_position = beam->point.Distance(*out_position);
+	*distance_to_out_position = beam.point.Distance(*out_position);
 
 	*perpendicular_direction = *out_position - position;
 
 	return true;
 }
 
-bool Cyrcle::IsCollision(const Line* line) const
+bool Cyrcle::IsCollision(const Line& line) const
 {
-	return line->Distance(position) < radius;
+	return line.Distance(position) < radius;
 }
 
-bool Cyrcle::IsCollision(const Segment* segment) const
+bool Cyrcle::IsCollision(const Segment& segment) const
 {
-	return segment->Distance(position) < radius;
+	return segment.Distance(position) < radius;
 }
 
 float Cyrcle::GetRadius() const
@@ -640,7 +590,7 @@ void Cyrcle::Set(const Cyrcle* cyrcle)
 	properties = cyrcle->properties;
 }
 
-void Cyrcle::Set(Vec2F position, float radius, EngineTypes::Map::property_t properties, bool exist)
+void Cyrcle::Set(const Vec2F& position, float radius, EngineTypes::Map::property_t properties, bool exist)
 {
 	this->exist = exist;
 	this->position = position;
@@ -648,15 +598,7 @@ void Cyrcle::Set(Vec2F position, float radius, EngineTypes::Map::property_t prop
 	this->properties = properties;
 }
 
-void Cyrcle::Set(const Vec2F* position, float radius, EngineTypes::Map::property_t properties, bool exist)
-{
-	this->exist = exist;
-	this->position = *position;
-	this->radius = radius;
-	this->properties = properties;
-}
-
-void Cyrcle::operator=(Cyrcle cyrcle)
+void Cyrcle::operator=(const Cyrcle& cyrcle)
 {
 	exist = cyrcle.exist;
 	last_position = cyrcle.last_position;
@@ -667,7 +609,6 @@ void Cyrcle::operator=(Cyrcle cyrcle)
 
 Cyrcle::~Cyrcle()
 {
-
 }
 
 
@@ -1099,256 +1040,98 @@ Polygon::~Polygon()
 }
 
 MapData::MapData(const MapData& map) :
-	cyrcles_array_length(map.cyrcles_array_length),
-	polygons_array_length(map.polygons_array_length),
-	rectangles_array_length(map.rectangles_array_length)
+	cyrcles_array(map.cyrcles_array),
+	polygons_array(map.polygons_array),
+	rectangles_array(map.rectangles_array)
 {
-	if (cyrcles_array_length > 0)
-	{
-		cyrcles_array = new Cyrcle[cyrcles_array_length];
-		for (EngineTypes::Map::array_length_t i = 0; i < cyrcles_array_length; i++)
-		{
-			cyrcles_array[i] = map.cyrcles_array[i];
-		}
-	}
-	else
-	{
-		cyrcles_array = nullptr;
-	}
-
-	if (polygons_array_length > 0)
-	{
-		polygons_array = new Polygon[polygons_array_length];
-		for (EngineTypes::Map::array_length_t i = 0; i < polygons_array_length; i++)
-		{
-			polygons_array[i] = map.polygons_array[i];
-		}
-	}
-	else
-	{
-		polygons_array = nullptr;
-	}
-
-	if (rectangles_array_length > 0)
-	{
-		rectangles_array = new Rectangle[rectangles_array_length];
-		for (EngineTypes::Map::array_length_t i = 0; i < rectangles_array_length; i++)
-		{
-			rectangles_array[i] = map.rectangles_array[i];
-		}
-	}
-	else
-	{
-		rectangles_array = nullptr;
-	}
-
 }
 
-MapData::MapData(const Rectangle* rectangles_array, EngineTypes::Map::array_length_t rectangles_array_length, const Cyrcle* cyrcles_array, EngineTypes::Map::array_length_t cyrcles_array_length, const Polygon* polygons_array, EngineTypes::Map::array_length_t polygons_array_length) :
-	cyrcles_array_length(cyrcles_array_length),
-	polygons_array_length(polygons_array_length),
-	rectangles_array_length(rectangles_array_length)
+MapData::MapData(
+	const std::vector<Rectangle>& rectangles_array,
+	const std::vector<Cyrcle>& cyrcles_array,
+	const std::vector<Polygon>& polygons_array) :
+	cyrcles_array(cyrcles_array),
+	polygons_array(polygons_array),
+	rectangles_array(rectangles_array)
 {
-	if (cyrcles_array_length > 0)
-	{
-		this->cyrcles_array = new Cyrcle[cyrcles_array_length];
-		for (EngineTypes::Map::array_length_t i = 0; i < cyrcles_array_length; i++)
-		{
-			this->cyrcles_array[i].Set(&cyrcles_array[i]);
-		}
-	}
-	else
-	{
-		this->cyrcles_array = nullptr;
-	}
-
-	if (polygons_array_length > 0)
-	{
-		this->polygons_array = new Polygon[polygons_array_length];
-		for (EngineTypes::Map::array_length_t i = 0; i < polygons_array_length; i++)
-		{
-			this->polygons_array[i].Set(&polygons_array[i]);
-		}
-	}
-	else
-	{
-		this->polygons_array = nullptr;
-	}	
-	
-	if (rectangles_array_length > 0)
-	{
-		this->rectangles_array = new Rectangle[rectangles_array_length];
-		for (EngineTypes::Map::array_length_t i = 0; i < rectangles_array_length; i++)
-		{
-			this->rectangles_array[i].Set(&rectangles_array[i]);
-		}
-	}
-	else
-	{
-		this->rectangles_array = nullptr;
-	}
 }
 
-Rectangle MapData::GetRectangle(EngineTypes::Map::array_length_t number) const
+MapData::MapData(
+	const std::vector<Cyrcle>& cyrcles_array,
+	const std::vector<Polygon>& polygons_array) :
+	cyrcles_array(cyrcles_array),
+	polygons_array(polygons_array),
+	rectangles_array()
 {
-	if (number >= rectangles_array_length)
-	{
-		return Rectangle();
-	}
-	return rectangles_array[number];
 }
 
-Cyrcle MapData::GetCyrcle(EngineTypes::Map::array_length_t number) const
+MapData::MapData(
+	const std::vector<Rectangle>& rectangles_array,
+	const std::vector<Polygon>& polygons_array) :
+	cyrcles_array(),
+	polygons_array(polygons_array),
+	rectangles_array(rectangles_array)
 {
-	if (number >= cyrcles_array_length)
-	{
-		return Cyrcle();
-	}
-	return cyrcles_array[number];
 }
 
-Polygon MapData::GetPolygon(EngineTypes::Map::array_length_t number) const
+MapData::MapData(
+	const std::vector<Polygon>& polygons_array) :
+	cyrcles_array(),
+	polygons_array(polygons_array),
+	rectangles_array()
 {
-	if (number >= polygons_array_length)
-	{
-		return Polygon();
-	}
-	return polygons_array[number];
-}
-
-Rectangle* MapData::RectanglePointer(EngineTypes::Map::array_length_t number) const
-{
-	if (number >= rectangles_array_length)
-	{
-		return nullptr;
-	}
-	return &rectangles_array[number];
-}
-
-Cyrcle* MapData::CyrclePointer(EngineTypes::Map::array_length_t number) const
-{
-	if (number >= cyrcles_array_length)
-	{
-		return nullptr;
-	}
-	return &cyrcles_array[number];
-}
-
-Polygon* MapData::PolygonPointer(EngineTypes::Map::array_length_t number) const
-{
-	if (number >= polygons_array_length)
-	{
-		return nullptr;
-	}
-	return &polygons_array[number];
 }
 
 void MapData::Set(const MapData* map)
 {
-	if (cyrcles_array_length > 0)
-	{
-		delete[] cyrcles_array;
-	}
-	if (polygons_array_length > 0)
-	{
-		delete[] polygons_array;
-	}
-	if (rectangles_array_length > 0)
-	{
-		delete[] rectangles_array;
-	}
-
-	cyrcles_array_length = map->cyrcles_array_length;
-	polygons_array_length = map->polygons_array_length;
-	rectangles_array_length = map->rectangles_array_length;
-
-	if (cyrcles_array_length > 0)
-	{
-		this->cyrcles_array = new Cyrcle[cyrcles_array_length];
-		for (EngineTypes::Map::array_length_t i = 0; i < cyrcles_array_length; i++)
-		{
-			cyrcles_array[i].Set(&map->cyrcles_array[i]);
-		}
-	}
-
-	if (polygons_array_length > 0)
-	{
-		this->polygons_array = new Polygon[polygons_array_length];
-		for (EngineTypes::Map::array_length_t i = 0; i < polygons_array_length; i++)
-		{
-			polygons_array[i].Set(&map->polygons_array[i]);
-		}
-	}
-
-	if (rectangles_array_length > 0)
-	{
-		rectangles_array = new Rectangle[rectangles_array_length];
-		for (EngineTypes::Map::array_length_t i = 0; i < rectangles_array_length; i++)
-		{
-			rectangles_array[i].Set(&map->rectangles_array[i]);
-		}
-	}
+	cyrcles_array = map->cyrcles_array;
+	polygons_array = map->polygons_array;
+	rectangles_array = map->rectangles_array;
 }
 
-void MapData::Set(const Rectangle* rectangles_array, EngineTypes::Map::array_length_t rectangles_array_length, const Cyrcle* cyrcles_array, EngineTypes::Map::array_length_t cyrcles_array_length, const Polygon* polygons_array, EngineTypes::Map::array_length_t polygons_array_length)
+void MapData::Set(
+	const std::vector<Rectangle>& rectangles_array,
+	const std::vector<Cyrcle>& cyrcles_array,
+	const std::vector<Polygon>& polygons_array)
 {
-	if (this->cyrcles_array_length > 0)
-	{
-		delete[] this->cyrcles_array;
-	}
-	if (this->polygons_array_length > 0)
-	{
-		delete[] this->polygons_array;
-	}
-	if (this->rectangles_array_length > 0)
-	{
-		delete[] this->rectangles_array;
-	}
+	this->rectangles_array = rectangles_array;
+	this->cyrcles_array = cyrcles_array;
+	this->polygons_array = polygons_array;
+}
 
-	this->cyrcles_array_length = cyrcles_array_length;
-	this->polygons_array_length = polygons_array_length;
-	this->rectangles_array_length = rectangles_array_length;
+void MapData::Set(
+	const std::vector<Rectangle>& rectangles_array,
+	const std::vector<Polygon>& polygons_array)
+{
+	this->rectangles_array = rectangles_array;
+	this->cyrcles_array.clear();
+	this->polygons_array = polygons_array;
+}
 
-	if (cyrcles_array_length > 0)
-	{
-		this->cyrcles_array = new Cyrcle[cyrcles_array_length];
-		for (EngineTypes::Map::array_length_t i = 0; i < cyrcles_array_length; i++)
-		{
-			this->cyrcles_array[i].Set(&cyrcles_array[i]);
-		}
-	}
+void MapData::Set(
+	const std::vector<Cyrcle>& cyrcles_array,
+	const std::vector<Polygon>& polygons_array)
+{
+	this->rectangles_array.clear();
+	this->cyrcles_array = cyrcles_array;
+	this->polygons_array = polygons_array;
+}
 
-	if (polygons_array_length > 0)
-	{
-		this->polygons_array = new Polygon[polygons_array_length];
-		for (EngineTypes::Map::array_length_t i = 0; i < polygons_array_length; i++)
-		{
-			this->polygons_array[i].Set(&polygons_array[i]);
-		}
-	}
+void MapData::Set(
+	const std::vector<Polygon>& polygons_array)
+{
+	this->rectangles_array.clear();
+	this->cyrcles_array.clear();
+	this->polygons_array = polygons_array;
+}
 
-	if (rectangles_array_length > 0)
-	{
-		this->rectangles_array = new Rectangle[rectangles_array_length];
-		for (EngineTypes::Map::array_length_t i = 0; i < rectangles_array_length; i++)
-		{
-			this->rectangles_array[i].Set(&rectangles_array[i]);
-		}
-	}
+void MapData::operator=(const MapData& map)
+{
+	cyrcles_array = map.cyrcles_array;
+	polygons_array = map.polygons_array;
+	rectangles_array = map.rectangles_array;
 }
 
 MapData::~MapData()
 {
-	if (cyrcles_array_length > 0)
-	{
-		delete[] cyrcles_array;
-	}
-	if (polygons_array_length > 0)
-	{
-		delete[] polygons_array;
-	}
-	if (rectangles_array_length > 0)
-	{
-		delete[] rectangles_array;
-	}
 }

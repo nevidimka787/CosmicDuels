@@ -27,12 +27,6 @@ public:
 		const Vec2F& point_vector,
 		bool second_argument_is_point = false);
 
-	Line(const Beam& beam);
-	Line(const Beam* beam);
-
-	Line(const Segment& beam);
-	Line(const Segment* beam);
-
 	void Intersection(const Line& intersection_line, Vec2F* output_intersection_point) const;
 
 	bool Intersection(const Beam& intersection_beam, Vec2F* output_intersection_point) const;
@@ -69,10 +63,6 @@ public:
 	void operator=(const Beam& line);
 
 	void operator=(const Segment& line);
-
-	operator Beam();
-
-	operator Segment();
 
 	~Line();
 };
@@ -139,10 +129,6 @@ public:
 
 	void operator=(const Segment& line);
 
-	operator Line();
-
-	operator Segment();
-
 	~Beam();
 };
 
@@ -205,10 +191,6 @@ public:
 	void operator=(const Beam& line);
 
 	void operator=(const Segment& line);
-
-	operator Line();
-
-	operator Beam();
 
 	~Segment();
 };

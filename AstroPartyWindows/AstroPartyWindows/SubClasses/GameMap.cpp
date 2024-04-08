@@ -60,19 +60,19 @@ void Game::Event0()
 
 	map_data_mtx.lock();
 
-	map.CyrclePointer(2)->SetPosition(pos_2_3);
-	map.CyrclePointer(3)->SetPosition(pos_2_3);
-	map.CyrclePointer(4)->SetPosition(pos_4_5);
-	map.CyrclePointer(5)->SetPosition(pos_4_5);
-	map.CyrclePointer(6)->SetPosition(pos_6_7);
-	map.CyrclePointer(7)->SetPosition(pos_6_7);
-	map.CyrclePointer(8)->SetPosition(pos_8_9);
-	map.CyrclePointer(9)->SetPosition(pos_8_9);
+	map.cyrcles_array[2].SetPosition(pos_2_3);
+	map.cyrcles_array[3].SetPosition(pos_2_3);
+	map.cyrcles_array[4].SetPosition(pos_4_5);
+	map.cyrcles_array[5].SetPosition(pos_4_5);
+	map.cyrcles_array[6].SetPosition(pos_6_7);
+	map.cyrcles_array[7].SetPosition(pos_6_7);
+	map.cyrcles_array[8].SetPosition(pos_8_9);
+	map.cyrcles_array[9].SetPosition(pos_8_9);
 
-	map.CyrclePointer(2)->SetRadius(in_radius);
-	map.CyrclePointer(4)->SetRadius(in_radius);
-	map.CyrclePointer(6)->SetRadius(ex_radius);
-	map.CyrclePointer(8)->SetRadius(ex_radius);
+	map.cyrcles_array[2].SetRadius(in_radius);
+	map.cyrcles_array[4].SetRadius(in_radius);
+	map.cyrcles_array[6].SetRadius(ex_radius);
+	map.cyrcles_array[8].SetRadius(ex_radius);
 
 	map_data_mtx.unlock();
 
@@ -387,10 +387,10 @@ void Game::Event4()
 		MAP_MEGA_LASERS__LASER_POINT_2_POSITION.y - animation_y * MAP_MEGA_LASERS__LASER_POINTS_Y_DELTA / 3.0f);
 	for (size_t i = MAP_MEGA_LASERS__LASER_RECTANGLE; i < MAP_MEGA_LASERS__LASER_RECTANGLE + MAP_MEGA_LASERS__LASER_RECTANGLES_COUNT; ++i)
 	{
-		Map::Rectangle* rectangle_p = map.RectanglePointer(i);
-		rectangle_p->Set(
+		Map::Rectangle& rectangle = map.rectangles_array[i];
+		rectangle.Set(
 			Segment(position1 + Vec2F(MAP_MEGA_LASERS__CENTER_POSITION), position2 + Vec2F(MAP_MEGA_LASERS__CENTER_POSITION), true),
-			rectangle_p->Prorerties());
+			rectangle.Prorerties());
 
 		position1.PerpendicularThis();
 		position2.PerpendicularThis();
@@ -413,59 +413,59 @@ void Game::Event5()
 
 	map_data_mtx.lock();
 
-	Map::Rectangle* rectangle_p = map.RectanglePointer(EVENT5__UP_RECTANGLE);
+	Map::Rectangle& rectangle = map.rectangles_array[EVENT5__UP_RECTANGLE];
 
 	if (rotation_inverse)
 	{
-		if (rectangle_p->Position().x > EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE)
+		if (rectangle.Position().x > EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE)
 		{
 			//up rctangle
-			rectangle_p->SetPosition(Vec2F(EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE, EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE));
-			rectangle_p->RessetVelocity();
-			rectangle_p = map.RectanglePointer(EVENT5__RIGHT_RECTANGLE);
-			rectangle_p->SetPosition(Vec2F(EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE, EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE));
-			rectangle_p->RessetVelocity();
-			rectangle_p = map.RectanglePointer(EVENT5__DONW_RECTANGLE);
-			rectangle_p->SetPosition(Vec2F(EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE, EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE));
-			rectangle_p->RessetVelocity();
-			rectangle_p = map.RectanglePointer(EVENT5__LEFT_RECTANGLE);
-			rectangle_p->SetPosition(Vec2F(EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE, EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE));
-			rectangle_p->RessetVelocity();
+			rectangle.SetPosition(Vec2F(EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE, EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE));
+			rectangle.RessetVelocity();
+			rectangle = map.rectangles_array[EVENT5__RIGHT_RECTANGLE];
+			rectangle.SetPosition(Vec2F(EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE, EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE));
+			rectangle.RessetVelocity();
+			rectangle = map.rectangles_array[EVENT5__DONW_RECTANGLE];
+			rectangle.SetPosition(Vec2F(EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE, EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE));
+			rectangle.RessetVelocity();
+			rectangle = map.rectangles_array[EVENT5__LEFT_RECTANGLE];
+			rectangle.SetPosition(Vec2F(EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE, EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE));
+			rectangle.RessetVelocity();
 		}
 
-		rectangle_p->Move(Vec2F(EVENT5__RECTANGLE_SPEED, 0.0f));
-		rectangle_p = map.RectanglePointer(EVENT5__RIGHT_RECTANGLE);
-		rectangle_p->Move(Vec2F(0.0f, -EVENT5__RECTANGLE_SPEED));
-		rectangle_p = map.RectanglePointer(EVENT5__DONW_RECTANGLE);
-		rectangle_p->Move(Vec2F(-EVENT5__RECTANGLE_SPEED, 0.0f));
-		rectangle_p = map.RectanglePointer(EVENT5__LEFT_RECTANGLE);
-		rectangle_p->Move(Vec2F(0.0f, EVENT5__RECTANGLE_SPEED));
+		rectangle.Move(Vec2F(EVENT5__RECTANGLE_SPEED, 0.0f));
+		rectangle = map.rectangles_array[EVENT5__RIGHT_RECTANGLE];
+		rectangle.Move(Vec2F(0.0f, -EVENT5__RECTANGLE_SPEED));
+		rectangle = map.rectangles_array[EVENT5__DONW_RECTANGLE];
+		rectangle.Move(Vec2F(-EVENT5__RECTANGLE_SPEED, 0.0f));
+		rectangle = map.rectangles_array[EVENT5__LEFT_RECTANGLE];
+		rectangle.Move(Vec2F(0.0f, EVENT5__RECTANGLE_SPEED));
 	}
 	else
 	{
-		if (rectangle_p->Position().x < EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE)
+		if (rectangle.Position().x < EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE)
 		{
 			//up rctangle
-			rectangle_p->SetPosition(Vec2F(EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE, EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE));
-			rectangle_p->RessetVelocity();
-			rectangle_p = map.RectanglePointer(EVENT5__RIGHT_RECTANGLE);
-			rectangle_p->SetPosition(Vec2F(EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE, EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE));
-			rectangle_p->RessetVelocity();
-			rectangle_p = map.RectanglePointer(EVENT5__DONW_RECTANGLE);
-			rectangle_p->SetPosition(Vec2F(EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE, EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE));
-			rectangle_p->RessetVelocity();
-			rectangle_p = map.RectanglePointer(EVENT5__LEFT_RECTANGLE);
-			rectangle_p->SetPosition(Vec2F(EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE, EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE));
-			rectangle_p->RessetVelocity();
+			rectangle.SetPosition(Vec2F(EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE, EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE));
+			rectangle.RessetVelocity();
+			rectangle = map.rectangles_array[EVENT5__RIGHT_RECTANGLE];
+			rectangle.SetPosition(Vec2F(EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE, EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE));
+			rectangle.RessetVelocity();
+			rectangle = map.rectangles_array[EVENT5__DONW_RECTANGLE];
+			rectangle.SetPosition(Vec2F(EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE, EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE));
+			rectangle.RessetVelocity();
+			rectangle = map.rectangles_array[EVENT5__LEFT_RECTANGLE];
+			rectangle.SetPosition(Vec2F(EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE, EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE));
+			rectangle.RessetVelocity();
 		}
 
-		rectangle_p->Move(Vec2F(-EVENT5__RECTANGLE_SPEED, 0.0f));
-		rectangle_p = map.RectanglePointer(EVENT5__RIGHT_RECTANGLE);
-		rectangle_p->Move(Vec2F(0.0f, EVENT5__RECTANGLE_SPEED));
-		rectangle_p = map.RectanglePointer(EVENT5__DONW_RECTANGLE);
-		rectangle_p->Move(Vec2F(EVENT5__RECTANGLE_SPEED, 0.0f));
-		rectangle_p = map.RectanglePointer(EVENT5__LEFT_RECTANGLE);
-		rectangle_p->Move(Vec2F(0.0f, -EVENT5__RECTANGLE_SPEED));
+		rectangle.Move(Vec2F(-EVENT5__RECTANGLE_SPEED, 0.0f));
+		rectangle = map.rectangles_array[EVENT5__RIGHT_RECTANGLE];
+		rectangle.Move(Vec2F(0.0f, EVENT5__RECTANGLE_SPEED));
+		rectangle = map.rectangles_array[EVENT5__DONW_RECTANGLE];
+		rectangle.Move(Vec2F(EVENT5__RECTANGLE_SPEED, 0.0f));
+		rectangle = map.rectangles_array[EVENT5__LEFT_RECTANGLE];
+		rectangle.Move(Vec2F(0.0f, -EVENT5__RECTANGLE_SPEED));
 	}
 
 	map_data_mtx.unlock();
@@ -581,18 +581,18 @@ void Game::Event8()
 #define EVENT8__MAX_SIZE		1.5f
 #define EVENT8__MIN_SIZE		0.5f
 
-	Map::Polygon* temp__polygon_p;
+	
 	float temp__angle = (float)(global_timer % EVENT8__PERIOD) / (float)EVENT8__PERIOD * (float)M_PI * 2.0f;
 	float temp__size = (sinf(temp__angle * 4.0f) / 2.0f + 0.5f) * (EVENT8__MAX_SIZE - EVENT8__MIN_SIZE);
 
 	for (EngineTypes::Map::array_length_t polygon = 0; polygon < EVENT8__POLYGONS_COUNT; polygon++)
 	{
-		temp__polygon_p = map.PolygonPointer(polygon);
-		if (temp__polygon_p->exist)
+		Map::Polygon& temp__polygon_p = map.polygons_array[polygon];
+		if (temp__polygon_p.exist)
 		{
-			temp__polygon_p->angle = temp__angle;
-			temp__polygon_p->size.Set(EVENT8__MIN_SIZE + temp__size, EVENT8__MAX_SIZE - temp__size);
-			temp__polygon_p->ShouldUpdate();
+			temp__polygon_p.angle = temp__angle;
+			temp__polygon_p.size.Set(EVENT8__MIN_SIZE + temp__size, EVENT8__MAX_SIZE - temp__size);
+			temp__polygon_p.ShouldUpdate();
 			temp__angle -= (float)M_PI / (float)EVENT8__POLYGONS_COUNT;
 		}
 	}
@@ -759,12 +759,10 @@ void Game::Event10()
 	float polygon_size = fmaxf(sinf((float)global_timer / (float)EVENT_10__PERIOD * 2.0f * M_PI) + EVENT_10__WORK_PART, 0.0f) / (1.0f + EVENT_10__WORK_PART);
 	polygon_size = (EVENT_10__MIN_SIZE_COEF + polygon_size *	(EVENT_10__MAX_SIZE_COEF - EVENT_10__MIN_SIZE_COEF)) * EVENT_10__FRAME_SIZE;
 
-	Map::Polygon* temp_polygon_p;
 	for (size_t polygon = EVENT_10__FIRST_POLYGON_ID; polygon <= EVENT_10__LAST_POYGON_ID; polygon++)
 	{
-		temp_polygon_p = map.PolygonPointer(polygon);
-		temp_polygon_p->size.Set(polygon_size, polygon_size);
-		temp_polygon_p->ShouldUpdate();
+		map.polygons_array[polygon].size.Set(polygon_size, polygon_size);
+		map.polygons_array[polygon].ShouldUpdate();
 	}
 
 	if (global_timer % EVENT_10__PERIOD == 0 && object_pull_array[GAME_OBJECT_ASTEROID])
@@ -941,8 +939,8 @@ void Game::Event12()
 	float angle = static_cast<float>(global_timer % EVENT_12__ROTATION_PERIOD) / static_cast<float>(EVENT_12__ROTATION_PERIOD) * static_cast<float>(M_PI) * 2.0f;
 
 	map_data_mtx.lock();
-	map.PolygonPointer(0)->SetAngle(M_PI_4 + angle);
-	map.PolygonPointer(1)->SetAngle(-angle);
+	map.polygons_array[0].SetAngle(M_PI_4 + angle);
+	map.polygons_array[1].SetAngle(-angle);
 	map_data_mtx.unlock();
 
 	portals_array_mtx.lock();
@@ -981,7 +979,7 @@ void Game::Event12()
 	}
 }
 
-void CreateMap0_PlaceTwoCyrclesAndGravGen(Game* game_object, Map::Cyrcle* cyrcles, size_t id, const Vec2F& position, float gravity) {
+void CreateMap0_PlaceTwoCyrclesAndGravGen(Game* game_object, std::vector<Map::Cyrcle>& cyrcles, size_t id, const Vec2F& position, float gravity) {
 	cyrcles[id].Set(
 		position,
 		MAP_ORBIT_MAP__GRAVGEN_KILL_BARIER_RADIUS,
@@ -1013,7 +1011,7 @@ void CreateMap0_PlaceShips(std::vector<Vec2F>& ships_positions, std::vector<floa
 void Game::CreateMap0(std::vector<Vec2F>& ships_positions, std::vector<float>& ships_angles)
 {
 
-	Map::Cyrcle* cyrcles = new Map::Cyrcle[MAP_ORBIT_MAP__CYRCLES_COUNT];
+	auto cyrcles = std::vector<Map::Cyrcle>(MAP_ORBIT_MAP__CYRCLES_COUNT);
 	Vec2F position(MAP_ORBIT_MAP__CENTER_POSITION);
 
 	cyrcles[0].Set(
@@ -1038,7 +1036,7 @@ void Game::CreateMap0(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 	position -= Vec2F(2.0f * MAP_ORBIT_MAP__EXTERNAL_ORBIT_RADIUS, 0.0f);
 	CreateMap0_PlaceTwoCyrclesAndGravGen(this, cyrcles, 8, position, MAP_ORBIT_MAP__GRAVGEN_FORCE);
 
-	map.Set(nullptr, 0, cyrcles, MAP_ORBIT_MAP__CYRCLES_COUNT, nullptr, 0);
+	map.Set(cyrcles);
 
 	/* Spawn entities */
 	
@@ -1053,8 +1051,6 @@ void Game::CreateMap0(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 		MAP_ORBIT_MAP__CENTER_POSITION + CAMERA_DEFAULT_HIGH_LIMITS);
 	camera.SetPosition(Vec2F(MAP_ORBIT_MAP__CENTER_POSITION));
 	camera.SetSize(MAP_ORBIT_MAP__CAMERA_SIZE);
-
-	delete[] cyrcles;
 }
 
 void Game::CreateMap1(std::vector<Vec2F>& ships_positions, std::vector<float>& ships_angles)
@@ -1068,47 +1064,45 @@ void Game::CreateMap1(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 
 	/* Create map */
 
-	Map::Rectangle* rectangles = new Map::Rectangle[MAP_TURRET_ON_CENTER__RECTANGLE_COUNT];
+	auto rectangles = std::vector<Map::Rectangle>(MAP_TURRET_ON_CENTER__RECTANGLE_COUNT);
 
 	new_segment.Set(
 		Vec2F(-MAP_TURRET_ON_CENTER__FRAME_SIZE + MAP_TURRET_ON_CENTER__CENTER_POSITION),
 		Vec2F(MAP_TURRET_ON_CENTER__FRAME_SIZE + MAP_TURRET_ON_CENTER__CENTER_POSITION),
 		true);
-	rectangles[MAP_TURRET_ON_CENTER__FRAME_RECTANGLE].Set(&new_segment, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_INSIDE);
+	rectangles[MAP_TURRET_ON_CENTER__FRAME_RECTANGLE].Set(new_segment, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_INSIDE);
 
 	new_segment.Set(
 		Vec2F(-MAP_TURRET_ON_CENTER__CENTER_SQUARE_SIZE + MAP_TURRET_ON_CENTER__CENTER_POSITION),
 		Vec2F(MAP_TURRET_ON_CENTER__CENTER_SQUARE_SIZE + MAP_TURRET_ON_CENTER__CENTER_POSITION),
 		true);
-	rectangles[MAP_TURRET_ON_CENTER__CENTER_RECTANGLE].Set(&new_segment, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
+	rectangles[MAP_TURRET_ON_CENTER__CENTER_RECTANGLE].Set(new_segment, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
 
 	new_segment.Set(
 		Vec2F(-MAP_TURRET_ON_CENTER__RECTANGLE_IN_POSITION + MAP_TURRET_ON_CENTER__CENTER_POSITION),
 		Vec2F(-MAP_TURRET_ON_CENTER__RECTANGLE_OUT_POSITION + MAP_TURRET_ON_CENTER__CENTER_POSITION),
 		true);
-	rectangles[MAP_TURRET_ON_CENTER__DOWN_LEFT_RECTANGLE].Set(&new_segment, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
+	rectangles[MAP_TURRET_ON_CENTER__DOWN_LEFT_RECTANGLE].Set(new_segment, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
 
 	new_segment.Set(
 		Vec2F(MAP_TURRET_ON_CENTER__RECTANGLE_IN_POSITION + MAP_TURRET_ON_CENTER__CENTER_POSITION),
 		Vec2F(MAP_TURRET_ON_CENTER__RECTANGLE_OUT_POSITION + MAP_TURRET_ON_CENTER__CENTER_POSITION),
 		true);
-	rectangles[MAP_TURRET_ON_CENTER__UP_RIGHT_RECTANGLE].Set(&new_segment, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
+	rectangles[MAP_TURRET_ON_CENTER__UP_RIGHT_RECTANGLE].Set(new_segment, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
 
 	new_segment.Set(
 		Vec2F(-MAP_TURRET_ON_CENTER__RECTANGLE_IN_POSITION + MAP_TURRET_ON_CENTER__CENTER_POSITION, MAP_TURRET_ON_CENTER__RECTANGLE_IN_POSITION + MAP_TURRET_ON_CENTER__CENTER_POSITION),
 		Vec2F(-MAP_TURRET_ON_CENTER__RECTANGLE_OUT_POSITION + MAP_TURRET_ON_CENTER__CENTER_POSITION, MAP_TURRET_ON_CENTER__RECTANGLE_OUT_POSITION + MAP_TURRET_ON_CENTER__CENTER_POSITION),
 		true);
-	rectangles[MAP_TURRET_ON_CENTER__UP_LEFT_RECTANGLE].Set(&new_segment, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
+	rectangles[MAP_TURRET_ON_CENTER__UP_LEFT_RECTANGLE].Set(new_segment, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
 
 	new_segment.Set(
 		Vec2F(MAP_TURRET_ON_CENTER__RECTANGLE_IN_POSITION + MAP_TURRET_ON_CENTER__CENTER_POSITION, -MAP_TURRET_ON_CENTER__RECTANGLE_IN_POSITION + MAP_TURRET_ON_CENTER__CENTER_POSITION),
 		Vec2F(MAP_TURRET_ON_CENTER__RECTANGLE_OUT_POSITION + MAP_TURRET_ON_CENTER__CENTER_POSITION, -MAP_TURRET_ON_CENTER__RECTANGLE_OUT_POSITION + MAP_TURRET_ON_CENTER__CENTER_POSITION),
 		true);
-	rectangles[MAP_TURRET_ON_CENTER__DOWN_RIGHT_RECTANGLE].Set(&new_segment, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
+	rectangles[MAP_TURRET_ON_CENTER__DOWN_RIGHT_RECTANGLE].Set(new_segment, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
 
-	map.Set(rectangles, MAP_TURRET_ON_CENTER__RECTANGLE_COUNT);
-
-	delete[] rectangles;
+	map.Set(rectangles);
 
 	new_position.Set(MAP_TURRET_ON_CENTER__CENTER);
 	AddEntity(Turret(new_position, 0.0f, 200u));
@@ -1146,34 +1140,34 @@ void Game::CreateMap2(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 
 	/* Create map */
 
-	Map::Rectangle* rectangles = new Map::Rectangle[MAP_GRAV_GEN__RECTANGLES_COUNT];
-	Map::Cyrcle* cyrcles = new Map::Cyrcle[MAP_GRAV_GEN__CYRCLES_COUNT];
+	auto rectangles = std::vector<Map::Rectangle>(MAP_GRAV_GEN__RECTANGLES_COUNT);
+  auto cyrcles = std::vector<Map::Cyrcle>(MAP_GRAV_GEN__CYRCLES_COUNT);
 
 	diagonal.Set(
 		Vec2F(-MAP_GRAV_GEN__FRAME_SIZE + MAP_GRAV_GEN__CENTER_POSITION, -MAP_GRAV_GEN__FRAME_SIZE + MAP_GRAV_GEN__CENTER_POSITION),
 		Vec2F(MAP_GRAV_GEN__FRAME_SIZE + MAP_GRAV_GEN__CENTER_POSITION, MAP_GRAV_GEN__FRAME_SIZE + MAP_GRAV_GEN__CENTER_POSITION),
 		true);
-	rectangles[0].Set(&diagonal, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_INSIDE);
+	rectangles[0].Set(diagonal, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_INSIDE);
 
 	diagonal.Set(
 		Vec2F(-MAP_GRAV_GEN__SQUARE_POSITION + MAP_GRAV_GEN__CENTER_POSITION, -MAP_GRAV_GEN__SQUARE_POSITION + MAP_GRAV_GEN__CENTER_POSITION),
 		Vec2F(MAP_GRAV_GEN__SQUARE_SIZE + MAP_GRAV_GEN__CENTER_POSITION, MAP_GRAV_GEN__SQUARE_SIZE + MAP_GRAV_GEN__CENTER_POSITION));
-	rectangles[1].Set(&diagonal, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
+	rectangles[1].Set(diagonal, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
 
 	diagonal.Set(
 		Vec2F(MAP_GRAV_GEN__SQUARE_POSITION + MAP_GRAV_GEN__CENTER_POSITION, MAP_GRAV_GEN__SQUARE_POSITION + MAP_GRAV_GEN__CENTER_POSITION),
 		Vec2F(-MAP_GRAV_GEN__SQUARE_SIZE + MAP_GRAV_GEN__CENTER_POSITION, -MAP_GRAV_GEN__SQUARE_SIZE + MAP_GRAV_GEN__CENTER_POSITION));
-	rectangles[2].Set(&diagonal, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
+	rectangles[2].Set(diagonal, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
 
 	diagonal.Set(
 		Vec2F(-MAP_GRAV_GEN__SQUARE_POSITION + MAP_GRAV_GEN__CENTER_POSITION, MAP_GRAV_GEN__SQUARE_POSITION + MAP_GRAV_GEN__CENTER_POSITION),
 		Vec2F(MAP_GRAV_GEN__SQUARE_SIZE + MAP_GRAV_GEN__CENTER_POSITION, -MAP_GRAV_GEN__SQUARE_SIZE + MAP_GRAV_GEN__CENTER_POSITION));
-	rectangles[3].Set(&diagonal, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
+	rectangles[3].Set(diagonal, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
 
 	diagonal.Set(
 		Vec2F(MAP_GRAV_GEN__SQUARE_POSITION + MAP_GRAV_GEN__CENTER_POSITION, -MAP_GRAV_GEN__SQUARE_POSITION + MAP_GRAV_GEN__CENTER_POSITION),
 		Vec2F(-MAP_GRAV_GEN__SQUARE_SIZE + MAP_GRAV_GEN__CENTER_POSITION, MAP_GRAV_GEN__SQUARE_SIZE + MAP_GRAV_GEN__CENTER_POSITION));
-	rectangles[4].Set(&diagonal, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
+	rectangles[4].Set(diagonal, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
 
 
 	cyrcles[0].Set(
@@ -1181,10 +1175,7 @@ void Game::CreateMap2(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 		MAP_GRAV_GEN__CYRCLE_SIZE,
 		MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_KILLER | MAP_PROPERTY_AGRESSIVE);
 
-	map.Set(rectangles, MAP_GRAV_GEN__RECTANGLES_COUNT, cyrcles, MAP_GRAV_GEN__CYRCLES_COUNT);
-
-	delete[] rectangles;
-	delete[] cyrcles;
+	map.Set(rectangles, cyrcles);
 
 	AddEntity(GravGen(Vec2F(MAP_GRAV_GEN__CENTER + MAP_GRAV_GEN__CENTER_POSITION, MAP_GRAV_GEN__CENTER + MAP_GRAV_GEN__CENTER_POSITION),
 		-GRAVITY_GENERATOR_DEFAULT_GRAVITY));
@@ -1221,41 +1212,39 @@ void Game::CreateMap3(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 #define MAP_DECELERATION_AREA__LEFT_RECTANGEL_ID	4
 #define MAP_DECELERATION_AREA__RECTANGLES_COUNT		5
 
-	Map::Rectangle* rectangles = new Map::Rectangle[MAP_DECELERATION_AREA__RECTANGLES_COUNT];
+	auto rectangles = std::vector<Map::Rectangle>(MAP_DECELERATION_AREA__RECTANGLES_COUNT);
 
 	new_segment.Set(
 		Vec2F(-MAP_DECELERATION_AREA__FRAME_SIZE, -MAP_DECELERATION_AREA__FRAME_SIZE),
 		Vec2F(MAP_DECELERATION_AREA__FRAME_SIZE, MAP_DECELERATION_AREA__FRAME_SIZE),
 		true);
-	rectangles[MAP_DECELERATION_AREA__FRAME_RECTANGEL_ID].Set(&new_segment, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_INSIDE);
+	rectangles[MAP_DECELERATION_AREA__FRAME_RECTANGEL_ID].Set(new_segment, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_INSIDE);
 
 	new_segment.Set(
 		Vec2F(-MAP_DECELERATION_AREA__SIDE_SEGMENT_WIDTH, -MAP_DECELERATION_AREA__OUT_SEGMENT_HIGH),
 		Vec2F(MAP_DECELERATION_AREA__SIDE_SEGMENT_WIDTH, -MAP_DECELERATION_AREA__IN_SEGMENT_HIGH),
 		true);
-	rectangles[MAP_DECELERATION_AREA__DOWN_RECTANGEL_ID].Set(&new_segment, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
+	rectangles[MAP_DECELERATION_AREA__DOWN_RECTANGEL_ID].Set(new_segment, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
 
 	new_segment.Set(
 		Vec2F(MAP_DECELERATION_AREA__OUT_SEGMENT_HIGH, -MAP_DECELERATION_AREA__SIDE_SEGMENT_WIDTH),
 		Vec2F(MAP_DECELERATION_AREA__IN_SEGMENT_HIGH, MAP_DECELERATION_AREA__SIDE_SEGMENT_WIDTH),
 		true);
-	rectangles[MAP_DECELERATION_AREA__RIGHT_RECTANGEL_ID].Set(&new_segment, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
+	rectangles[MAP_DECELERATION_AREA__RIGHT_RECTANGEL_ID].Set(new_segment, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
 
 	new_segment.Set(
 		Vec2F(MAP_DECELERATION_AREA__SIDE_SEGMENT_WIDTH, MAP_DECELERATION_AREA__OUT_SEGMENT_HIGH),
 		Vec2F(-MAP_DECELERATION_AREA__SIDE_SEGMENT_WIDTH, MAP_DECELERATION_AREA__IN_SEGMENT_HIGH),
 		true);
-	rectangles[MAP_DECELERATION_AREA__UP_RECTANGEL_ID].Set(&new_segment, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
+	rectangles[MAP_DECELERATION_AREA__UP_RECTANGEL_ID].Set(new_segment, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
 
 	new_segment.Set(
 		Vec2F(-MAP_DECELERATION_AREA__OUT_SEGMENT_HIGH, MAP_DECELERATION_AREA__SIDE_SEGMENT_WIDTH),
 		Vec2F(-MAP_DECELERATION_AREA__IN_SEGMENT_HIGH, -MAP_DECELERATION_AREA__SIDE_SEGMENT_WIDTH),
 		true);
-	rectangles[MAP_DECELERATION_AREA__LEFT_RECTANGEL_ID].Set(&new_segment, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
+	rectangles[MAP_DECELERATION_AREA__LEFT_RECTANGEL_ID].Set(new_segment, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
 
-	map.Set(rectangles, MAP_DECELERATION_AREA__RECTANGLES_COUNT);
-
-	delete[] rectangles;
+	map.Set(rectangles);
 
 	/* Spawning entities */
 
@@ -1298,13 +1287,13 @@ void Game::CreateMap4(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 {
 	/* Create map */
 
-	Map::Rectangle* rectangles = new Map::Rectangle[MAP_MEGA_LASERS__RECTANGLES_COUNT];
+	auto rectangles = std::vector<Map::Rectangle>(MAP_MEGA_LASERS__RECTANGLES_COUNT);
 
 	Segment diagonal = Segment(
 		Vec2F(MAP_MEGA_LASERS__CENTER_POSITION + MAP_MEGA_LASERS__FRAME_SIZE, MAP_MEGA_LASERS__CENTER_POSITION + MAP_MEGA_LASERS__FRAME_SIZE),
 		Vec2F(MAP_MEGA_LASERS__CENTER_POSITION - MAP_MEGA_LASERS__FRAME_SIZE, MAP_MEGA_LASERS__CENTER_POSITION - MAP_MEGA_LASERS__FRAME_SIZE),
 		true);
-	rectangles[MAP_MEGA_LASERS__FRAME_RECTANGLE].Set(&diagonal, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_INSIDE);
+	rectangles[MAP_MEGA_LASERS__FRAME_RECTANGLE].Set(diagonal, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_INSIDE);
 
 	Vec2F position1(MAP_MEGA_LASERS__RECTANGLE_POINT_1_POSITION);
 	Vec2F position2(MAP_MEGA_LASERS__RECTANGLE_POINT_2_POSITION);
@@ -1314,7 +1303,7 @@ void Game::CreateMap4(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 			Vec2F(MAP_MEGA_LASERS__CENTER_POSITION) + position1,
 			Vec2F(MAP_MEGA_LASERS__CENTER_POSITION) + position2,
 			true);
-		rectangles[i].Set(&diagonal, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
+		rectangles[i].Set(diagonal, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
 		position1.PerpendicularThis();
 		position2.PerpendicularThis();
 	}
@@ -1327,14 +1316,12 @@ void Game::CreateMap4(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 			Vec2F(MAP_MEGA_LASERS__CENTER_POSITION) + position1,
 			Vec2F(MAP_MEGA_LASERS__CENTER_POSITION) + position2,
 			true);
-		rectangles[i].Set(&diagonal, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_AGRESSIVE | MAP_PROPERTY_KILLER | MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
+		rectangles[i].Set(diagonal, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_AGRESSIVE | MAP_PROPERTY_KILLER | MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
 		position1.PerpendicularThis();
 		position2.PerpendicularThis();
 	}
 
-	map.Set(rectangles, MAP_MEGA_LASERS__RECTANGLES_COUNT);
-
-	delete[] rectangles;
+	map.Set(rectangles);
 
 	/* Spawn entities */
 
@@ -1376,7 +1363,7 @@ void Game::CreateMap5(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 
 	/* Create map */
 
-	Map::Rectangle* rectangles = new Map::Rectangle[MAP_DYNAMICAL__RECTANGLES_COUNT];
+	auto rectangles = std::vector<Map::Rectangle>(MAP_DYNAMICAL__RECTANGLES_COUNT);
 
 	Segment diagonal = Segment(
 		Vec2F(
@@ -1386,7 +1373,7 @@ void Game::CreateMap5(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 			MAP_DYNAMICAL__CENTER_POSITION - MAP_DYNAMICAL__FRAME_SIZE,
 			MAP_DYNAMICAL__CENTER_POSITION - MAP_DYNAMICAL__FRAME_SIZE),
 		true);
-	rectangles[MAP_DYNAMICAL__FRAME_RECTANGLE].Set(&diagonal, MAP_PROPERTY_COLLIDE_INSIDE | MAP_PROPERTY_UNBREACABLE);
+	rectangles[MAP_DYNAMICAL__FRAME_RECTANGLE].Set(diagonal, MAP_PROPERTY_COLLIDE_INSIDE | MAP_PROPERTY_UNBREACABLE);
 
 	diagonal.Set(
 		Vec2F(
@@ -1396,7 +1383,7 @@ void Game::CreateMap5(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 			MAP_DYNAMICAL_RECTANGLE_SIZE + MAP_DYNAMICAL__CENTER_POSITION,
 			MAP_DYNAMICAL_RECTANGLE_POSITION + MAP_DYNAMICAL_RECTANGLE_SIZE + MAP_DYNAMICAL__CENTER_POSITION),
 		true);
-	rectangles[MAP_DYNAMICAL__UP_RECTANGLE].Set(&diagonal, MAP_PROPERTY_COLLIDE_OUTSIDE | MAP_PROPERTY_UNBREACABLE);
+	rectangles[MAP_DYNAMICAL__UP_RECTANGLE].Set(diagonal, MAP_PROPERTY_COLLIDE_OUTSIDE | MAP_PROPERTY_UNBREACABLE);
 
 	diagonal.Set(
 		Vec2F(
@@ -1406,7 +1393,7 @@ void Game::CreateMap5(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 			MAP_DYNAMICAL_RECTANGLE_POSITION + MAP_DYNAMICAL_RECTANGLE_SIZE + MAP_DYNAMICAL__CENTER_POSITION,
 			MAP_DYNAMICAL_RECTANGLE_SIZE + MAP_DYNAMICAL__CENTER_POSITION),
 		true);
-	rectangles[MAP_DYNAMICAL__RIGHT_RECTANGLE].Set(&diagonal, MAP_PROPERTY_COLLIDE_OUTSIDE | MAP_PROPERTY_UNBREACABLE);
+	rectangles[MAP_DYNAMICAL__RIGHT_RECTANGLE].Set(diagonal, MAP_PROPERTY_COLLIDE_OUTSIDE | MAP_PROPERTY_UNBREACABLE);
 
 	diagonal.Set(
 		Vec2F(
@@ -1416,7 +1403,7 @@ void Game::CreateMap5(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 			MAP_DYNAMICAL_RECTANGLE_SIZE + MAP_DYNAMICAL__CENTER_POSITION,
 			-MAP_DYNAMICAL_RECTANGLE_POSITION + MAP_DYNAMICAL_RECTANGLE_SIZE + MAP_DYNAMICAL__CENTER_POSITION),
 		true);
-	rectangles[MAP_DYNAMICAL__DOWN_RECTANGLE].Set(&diagonal, MAP_PROPERTY_COLLIDE_OUTSIDE | MAP_PROPERTY_UNBREACABLE);
+	rectangles[MAP_DYNAMICAL__DOWN_RECTANGLE].Set(diagonal, MAP_PROPERTY_COLLIDE_OUTSIDE | MAP_PROPERTY_UNBREACABLE);
 
 	diagonal.Set(
 		Vec2F(
@@ -1426,11 +1413,9 @@ void Game::CreateMap5(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 			-MAP_DYNAMICAL_RECTANGLE_POSITION + MAP_DYNAMICAL_RECTANGLE_SIZE + MAP_DYNAMICAL__CENTER_POSITION,
 			MAP_DYNAMICAL_RECTANGLE_SIZE + MAP_DYNAMICAL__CENTER_POSITION),
 		true);
-	rectangles[MAP_DYNAMICAL__LEFT_RECTANGLE].Set(&diagonal, MAP_PROPERTY_COLLIDE_OUTSIDE | MAP_PROPERTY_UNBREACABLE);
+	rectangles[MAP_DYNAMICAL__LEFT_RECTANGLE].Set(diagonal, MAP_PROPERTY_COLLIDE_OUTSIDE | MAP_PROPERTY_UNBREACABLE);
 
-	map.Set(rectangles, MAP_DYNAMICAL__RECTANGLES_COUNT);
-
-	delete[] rectangles;
+	map.Set(rectangles);
 
 	/* Spawn entities */
 
@@ -1457,16 +1442,16 @@ void Game::CreateMap6(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 {
 	/* Create map */
 
-	Map::Rectangle* rectangles = new Map::Rectangle[MAP_DESTRUCTIBLE__RECTANGLES_COUNT];
+	auto rectangles = std::vector<Map::Rectangle>(MAP_DESTRUCTIBLE__RECTANGLES_COUNT);
 
 	Segment diagonal(Vec2F(MAP_DESTRUCTIBLE__CENTER_POSTION - MAP_DESTRUCTIBLE__FRAME_SIZE / 2.0f), Vec2F(MAP_DESTRUCTIBLE__FRAME_SIZE));
-	rectangles[MAP_DESTRUCTABLE__FRAME_RECTANGLE_ID].Set(&diagonal, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_INSIDE);
+	rectangles[MAP_DESTRUCTABLE__FRAME_RECTANGLE_ID].Set(diagonal, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_INSIDE);
 
 	Vec2F rectangle_position(MAP_DESTRUCTIBLE__FRAME_SIZE / 10.0f * 2.0f);
 	for (size_t i = MAP_DESTRUCTABLE__UNBREACABLE_RECTANGLE_ID; i < MAP_DESTRUCTABLE__DESTROYABLE_RECTANGLE_ID; ++i)
 	{
 		diagonal.Set(rectangle_position - Vec2F(MAP_DESTRUCTIBLE__RECTANGLES_SIZE / 2.0f) + Vec2F(MAP_DESTRUCTIBLE__CENTER_POSTION), Vec2F(MAP_DESTRUCTIBLE__RECTANGLES_SIZE));
-		rectangles[i].Set(&diagonal, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
+		rectangles[i].Set(diagonal, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
 		rectangle_position.PerpendicularThis();
 	}
 
@@ -1492,7 +1477,7 @@ void Game::CreateMap6(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 					Vec2F(MAP_DESTRUCTIBLE__DESTROYABLE_RECTANGLES_SIZE));
 
 				rectangles[MAP_DESTRUCTABLE__DESTROYABLE_RECTANGLE_ID + group * 9 * 3 + position * 9 + rec].Set(
-					&diagonal,
+					diagonal,
 					rec == 4 ? MAP_PROPERTY_KILLER | MAP_PROPERTY_COLLIDE_OUTSIDE :
 					rec % 2 ? MAP_PROPERTY_AGRESSIVE | MAP_PROPERTY_COLLIDE_OUTSIDE :
 					MAP_PROPERTY_COLLIDE_OUTSIDE);
@@ -1501,9 +1486,7 @@ void Game::CreateMap6(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 		}
 	}
 
-	map.Set(rectangles, MAP_DESTRUCTIBLE__RECTANGLES_COUNT);
-
-	delete[] rectangles;
+	map.Set(rectangles);
 
 	/* Spawn entities */
 
@@ -1547,12 +1530,12 @@ void Game::CreateMap7(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 
 	/* Create map */
 
-	Map::Rectangle* rectangles = new Map::Rectangle[MAP_AGGRESSIVE__RECTANGLES_COUNT];
+	auto rectangles = std::vector<Map::Rectangle>(MAP_AGGRESSIVE__RECTANGLES_COUNT);
 	Segment diagonal = Segment(
 		Vec2F(MAP_AGGRESSIVE__CENTER_POSITION - MAP_AGGRESSIVE__FRAME_SIZE),
 		Vec2F(MAP_AGGRESSIVE__CENTER_POSITION + MAP_AGGRESSIVE__FRAME_SIZE),
 		true);
-	rectangles[MAP_AGGRESSIVE__FRAME_RECTANGLE].Set(&diagonal, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_INSIDE);
+	rectangles[MAP_AGGRESSIVE__FRAME_RECTANGLE].Set(diagonal, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_INSIDE);
 
 	diagonal = Segment(
 		Vec2F(
@@ -1562,7 +1545,7 @@ void Game::CreateMap7(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 			MAP_AGGRESSIVE__ELEMENT_DIAGONAL + MAP_AGGRESSIVE__ELEMENT_POSITION_X + MAP_AGGRESSIVE__CENTER_POSITION,
 			MAP_AGGRESSIVE__ELEMENT_DIAGONAL + MAP_AGGRESSIVE__ELEMENT_POSITION_Y + MAP_AGGRESSIVE__CENTER_POSITION),
 		true);
-	rectangles[MAP_AGGRESSIVE__UP_RIGHT_RECTANGLE].Set(&diagonal, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_KILLER | MAP_PROPERTY_COLLIDE_OUTSIDE);
+	rectangles[MAP_AGGRESSIVE__UP_RIGHT_RECTANGLE].Set(diagonal, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_KILLER | MAP_PROPERTY_COLLIDE_OUTSIDE);
 
 	diagonal = Segment(
 		Vec2F(
@@ -1572,7 +1555,7 @@ void Game::CreateMap7(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 			MAP_AGGRESSIVE__ELEMENT_DIAGONAL + MAP_AGGRESSIVE__ELEMENT_POSITION_Y + MAP_AGGRESSIVE__CENTER_POSITION,
 			MAP_AGGRESSIVE__ELEMENT_DIAGONAL + MAP_AGGRESSIVE__ELEMENT_POSITION_X + MAP_AGGRESSIVE__CENTER_POSITION),
 		true);
-	rectangles[MAP_AGGRESSIVE__RIGHT_UP_RECTANGLE].Set(&diagonal, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_KILLER | MAP_PROPERTY_COLLIDE_OUTSIDE);
+	rectangles[MAP_AGGRESSIVE__RIGHT_UP_RECTANGLE].Set(diagonal, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_KILLER | MAP_PROPERTY_COLLIDE_OUTSIDE);
 
 	diagonal = Segment(
 		Vec2F(
@@ -1582,7 +1565,7 @@ void Game::CreateMap7(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 			MAP_AGGRESSIVE__ELEMENT_DIAGONAL + MAP_AGGRESSIVE__ELEMENT_POSITION_X + MAP_AGGRESSIVE__CENTER_POSITION,
 			MAP_AGGRESSIVE__ELEMENT_DIAGONAL - MAP_AGGRESSIVE__ELEMENT_POSITION_Y + MAP_AGGRESSIVE__CENTER_POSITION),
 		true);
-	rectangles[MAP_AGGRESSIVE__RIGHT_DOWN_RECTANGLE].Set(&diagonal, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_KILLER | MAP_PROPERTY_COLLIDE_OUTSIDE);
+	rectangles[MAP_AGGRESSIVE__RIGHT_DOWN_RECTANGLE].Set(diagonal, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_KILLER | MAP_PROPERTY_COLLIDE_OUTSIDE);
 
 	diagonal = Segment(
 		Vec2F(
@@ -1592,7 +1575,7 @@ void Game::CreateMap7(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 			MAP_AGGRESSIVE__ELEMENT_DIAGONAL + MAP_AGGRESSIVE__ELEMENT_POSITION_Y + MAP_AGGRESSIVE__CENTER_POSITION,
 			MAP_AGGRESSIVE__ELEMENT_DIAGONAL - MAP_AGGRESSIVE__ELEMENT_POSITION_X + MAP_AGGRESSIVE__CENTER_POSITION),
 		true);
-	rectangles[MAP_AGGRESSIVE__DOWN_RIGHT_RECTANGLE].Set(&diagonal, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_KILLER | MAP_PROPERTY_COLLIDE_OUTSIDE);
+	rectangles[MAP_AGGRESSIVE__DOWN_RIGHT_RECTANGLE].Set(diagonal, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_KILLER | MAP_PROPERTY_COLLIDE_OUTSIDE);
 
 	diagonal = Segment(
 		Vec2F(
@@ -1602,7 +1585,7 @@ void Game::CreateMap7(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 			MAP_AGGRESSIVE__ELEMENT_DIAGONAL - MAP_AGGRESSIVE__ELEMENT_POSITION_X + MAP_AGGRESSIVE__CENTER_POSITION,
 			MAP_AGGRESSIVE__ELEMENT_DIAGONAL - MAP_AGGRESSIVE__ELEMENT_POSITION_Y + MAP_AGGRESSIVE__CENTER_POSITION),
 		true);
-	rectangles[MAP_AGGRESSIVE__DOWN_LEFT_RECTANGLE].Set(&diagonal, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_KILLER | MAP_PROPERTY_COLLIDE_OUTSIDE);
+	rectangles[MAP_AGGRESSIVE__DOWN_LEFT_RECTANGLE].Set(diagonal, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_KILLER | MAP_PROPERTY_COLLIDE_OUTSIDE);
 
 	diagonal = Segment(
 		Vec2F(
@@ -1612,7 +1595,7 @@ void Game::CreateMap7(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 			MAP_AGGRESSIVE__ELEMENT_DIAGONAL - MAP_AGGRESSIVE__ELEMENT_POSITION_Y + MAP_AGGRESSIVE__CENTER_POSITION,
 			MAP_AGGRESSIVE__ELEMENT_DIAGONAL - MAP_AGGRESSIVE__ELEMENT_POSITION_X + MAP_AGGRESSIVE__CENTER_POSITION),
 		true);
-	rectangles[MAP_AGGRESSIVE__LEFT_DOWN_RECTANGLE].Set(&diagonal, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_KILLER | MAP_PROPERTY_COLLIDE_OUTSIDE);
+	rectangles[MAP_AGGRESSIVE__LEFT_DOWN_RECTANGLE].Set(diagonal, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_KILLER | MAP_PROPERTY_COLLIDE_OUTSIDE);
 
 	diagonal = Segment(
 		Vec2F(
@@ -1622,7 +1605,7 @@ void Game::CreateMap7(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 			MAP_AGGRESSIVE__ELEMENT_DIAGONAL - MAP_AGGRESSIVE__ELEMENT_POSITION_X + MAP_AGGRESSIVE__CENTER_POSITION,
 			MAP_AGGRESSIVE__ELEMENT_DIAGONAL + MAP_AGGRESSIVE__ELEMENT_POSITION_Y + MAP_AGGRESSIVE__CENTER_POSITION),
 		true);
-	rectangles[MAP_AGGRESSIVE__LEFT_UP_RECTANGLE].Set(&diagonal, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_KILLER | MAP_PROPERTY_COLLIDE_OUTSIDE);
+	rectangles[MAP_AGGRESSIVE__LEFT_UP_RECTANGLE].Set(diagonal, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_KILLER | MAP_PROPERTY_COLLIDE_OUTSIDE);
 
 	diagonal = Segment(
 		Vec2F(
@@ -1632,11 +1615,9 @@ void Game::CreateMap7(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 			MAP_AGGRESSIVE__ELEMENT_DIAGONAL - MAP_AGGRESSIVE__ELEMENT_POSITION_Y + MAP_AGGRESSIVE__CENTER_POSITION,
 			MAP_AGGRESSIVE__ELEMENT_DIAGONAL + MAP_AGGRESSIVE__ELEMENT_POSITION_X + MAP_AGGRESSIVE__CENTER_POSITION),
 		true);
-	rectangles[MAP_AGGRESSIVE__UP_LEFT_RECTANGLE].Set(&diagonal, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_KILLER | MAP_PROPERTY_COLLIDE_OUTSIDE);
+	rectangles[MAP_AGGRESSIVE__UP_LEFT_RECTANGLE].Set(diagonal, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_KILLER | MAP_PROPERTY_COLLIDE_OUTSIDE);
 
-	map.Set(rectangles, MAP_AGGRESSIVE__RECTANGLES_COUNT);
-
-	delete[] rectangles;
+	map.Set(rectangles);
 
 	/* Spawn entities */
 
@@ -1688,15 +1669,15 @@ void Game::CreateMap8(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 
 	/* Create map */
 
-	Map::Rectangle* rectangles = new Map::Rectangle[MAP_BROKEN__RECTANGLES_COUNT];
-	Map::Polygon* polygons = new Map::Polygon[MAP_BROKEN__POLYGONS_COUNT];
+	auto rectangles = std::vector<Map::Rectangle>(MAP_BROKEN__RECTANGLES_COUNT);
+	auto polygons = std::vector<Map::Polygon>(MAP_BROKEN__POLYGONS_COUNT);
 	auto points = std::vector<Vec2F>(MAP_BROKEN__STAR_POLYGON__POINTS_COUNT);
 
 	Segment diagonal = Segment(
 		Vec2F(MAP_BROKEN__CENTER_POSITION + MAP_BROKEN__FRAME_SIZE),
 		Vec2F(MAP_BROKEN__CENTER_POSITION - MAP_BROKEN__FRAME_SIZE),
 		true);
-	rectangles[MAP_BROKEN__FRAME_RECTANGLE].Set(&diagonal, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_INSIDE);
+	rectangles[MAP_BROKEN__FRAME_RECTANGLE].Set(diagonal, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_INSIDE);
 
 	points[MAP_BROKEN__STAR_POLYGON__UP_POINT].Set(0.0f, MAP_BROKEN__STAR_RAY_SIZE);
 	points[MAP_BROKEN__STAR_POLYGON__RIGHT_POINT].Set(MAP_BROKEN__STAR_RAY_SIZE, 0.0f);
@@ -1735,15 +1716,7 @@ void Game::CreateMap8(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 		points,
 		MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_CLOSED);
 
-	map.Set(
-		rectangles,
-		MAP_BROKEN__RECTANGLES_COUNT,
-		nullptr, 0,
-		polygons,
-		MAP_BROKEN__POLYGONS_COUNT);
-
-	delete[] rectangles;
-	delete[] polygons;
+	map.Set(rectangles,	polygons);
 
 	/* Spawn entities */
 
@@ -1800,31 +1773,31 @@ void Game::CreateMap9(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 
 	/* Create map */
 
-	Map::Rectangle* rectangles = new Map::Rectangle[MAP_PORTAL__RECTANGLES_COUNT];
+	auto rectangles = std::vector<Map::Rectangle>(MAP_PORTAL__RECTANGLES_COUNT);
 
 	Segment segment = Segment(
 		Vec2F(MAP_PORTAL__CENTER_POSITION + MAP_PORTAL__FRAME_SIZE),
 		Vec2F(MAP_PORTAL__CENTER_POSITION + MAP_PORTAL__FRAME_SIZE - MAP_PORTAL__LOW_FRAME_SIZE),
 		true);
-	rectangles[MAP_PORTAL__UP_RIGTH_BIG_RECTANGLE].Set(&segment, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_INSIDE);
+	rectangles[MAP_PORTAL__UP_RIGTH_BIG_RECTANGLE].Set(segment, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_INSIDE);
 
 	segment.Set(
 		Vec2F(MAP_PORTAL__CENTER_POSITION + MAP_PORTAL__FRAME_SIZE, MAP_PORTAL__CENTER_POSITION - MAP_PORTAL__FRAME_SIZE),
 		Vec2F(MAP_PORTAL__CENTER_POSITION + MAP_PORTAL__FRAME_SIZE - MAP_PORTAL__LOW_FRAME_SIZE, MAP_PORTAL__CENTER_POSITION - MAP_PORTAL__FRAME_SIZE + MAP_PORTAL__LOW_FRAME_SIZE),
 		true);
-	rectangles[MAP_PORTAL__DOWN_RIGTH_BIG_RECTANGLE].Set(&segment, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_INSIDE);
+	rectangles[MAP_PORTAL__DOWN_RIGTH_BIG_RECTANGLE].Set(segment, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_INSIDE);
 
 	segment.Set(
 		Vec2F(MAP_PORTAL__CENTER_POSITION - MAP_PORTAL__FRAME_SIZE),
 		Vec2F(MAP_PORTAL__CENTER_POSITION - MAP_PORTAL__FRAME_SIZE + MAP_PORTAL__LOW_FRAME_SIZE),
 		true);
-	rectangles[MAP_PORTAL__DOWN_LEFT_BIG_RECTANGLE].Set(&segment, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_INSIDE);
+	rectangles[MAP_PORTAL__DOWN_LEFT_BIG_RECTANGLE].Set(segment, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_INSIDE);
 
 	segment.Set(
 		Vec2F(MAP_PORTAL__CENTER_POSITION - MAP_PORTAL__FRAME_SIZE, MAP_PORTAL__CENTER_POSITION + MAP_PORTAL__FRAME_SIZE),
 		Vec2F(MAP_PORTAL__CENTER_POSITION - MAP_PORTAL__FRAME_SIZE + MAP_PORTAL__LOW_FRAME_SIZE, MAP_PORTAL__CENTER_POSITION + MAP_PORTAL__FRAME_SIZE - MAP_PORTAL__LOW_FRAME_SIZE),
 		true);
-	rectangles[MAP_PORTAL__UP_LEFT_BIG_RECTANGLE].Set(&segment, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_INSIDE);
+	rectangles[MAP_PORTAL__UP_LEFT_BIG_RECTANGLE].Set(segment, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_INSIDE);
 
 	segment.Set(
 		Vec2F(
@@ -1834,7 +1807,7 @@ void Game::CreateMap9(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 			MAP_PORTAL__CENTER_POSITION + MAP_PORTAL__SHORT_BARIER_POSITION_X + MAP_PORTAL__SHORT_BARIER_WIDTH_2,
 			MAP_PORTAL__CENTER_POSITION + MAP_PORTAL__FRAME_SIZE - MAP_PORTAL__SHORT_BARIER_LENGTH),
 		true);
-	rectangles[MAP_PORTAL__UP_RIGHT_SHORT_RECTANGLE].Set(&segment, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
+	rectangles[MAP_PORTAL__UP_RIGHT_SHORT_RECTANGLE].Set(segment, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
 
 	segment.Set(
 		Vec2F(
@@ -1844,7 +1817,7 @@ void Game::CreateMap9(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 			MAP_PORTAL__CENTER_POSITION + MAP_PORTAL__FRAME_SIZE - MAP_PORTAL__SHORT_BARIER_LENGTH,
 			MAP_PORTAL__CENTER_POSITION + MAP_PORTAL__SHORT_BARIER_POSITION_X + MAP_PORTAL__SHORT_BARIER_WIDTH_2),
 		true);
-	rectangles[MAP_PORTAL__RIGHT_UP_SHORT_RECTANGLE].Set(&segment, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
+	rectangles[MAP_PORTAL__RIGHT_UP_SHORT_RECTANGLE].Set(segment, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
 
 	segment.Set(
 		Vec2F(
@@ -1854,7 +1827,7 @@ void Game::CreateMap9(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 			MAP_PORTAL__CENTER_POSITION + MAP_PORTAL__FRAME_SIZE - MAP_PORTAL__SHORT_BARIER_LENGTH,
 			MAP_PORTAL__CENTER_POSITION - MAP_PORTAL__SHORT_BARIER_POSITION_X - MAP_PORTAL__SHORT_BARIER_WIDTH_2),
 		true);
-	rectangles[MAP_PORTAL__RIGHT_DOWN_SHORT_RECTANGLE].Set(&segment, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
+	rectangles[MAP_PORTAL__RIGHT_DOWN_SHORT_RECTANGLE].Set(segment, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
 
 	segment.Set(
 		Vec2F(
@@ -1864,7 +1837,7 @@ void Game::CreateMap9(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 			MAP_PORTAL__CENTER_POSITION + MAP_PORTAL__SHORT_BARIER_POSITION_X + MAP_PORTAL__SHORT_BARIER_WIDTH_2,
 			MAP_PORTAL__CENTER_POSITION - MAP_PORTAL__FRAME_SIZE + MAP_PORTAL__SHORT_BARIER_LENGTH),
 		true);
-	rectangles[MAP_PORTAL__DOWN_RIGHT_SHORT_RECTANGLE].Set(&segment, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
+	rectangles[MAP_PORTAL__DOWN_RIGHT_SHORT_RECTANGLE].Set(segment, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
 
 	segment.Set(
 		Vec2F(
@@ -1874,7 +1847,7 @@ void Game::CreateMap9(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 			MAP_PORTAL__CENTER_POSITION - MAP_PORTAL__SHORT_BARIER_POSITION_X - MAP_PORTAL__SHORT_BARIER_WIDTH_2,
 			MAP_PORTAL__CENTER_POSITION - MAP_PORTAL__FRAME_SIZE + MAP_PORTAL__SHORT_BARIER_LENGTH),
 		true);
-	rectangles[MAP_PORTAL__DOWN_LEFT_SHORT_RECTANGLE].Set(&segment, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
+	rectangles[MAP_PORTAL__DOWN_LEFT_SHORT_RECTANGLE].Set(segment, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
 
 	segment.Set(
 		Vec2F(
@@ -1884,7 +1857,7 @@ void Game::CreateMap9(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 			MAP_PORTAL__CENTER_POSITION - MAP_PORTAL__FRAME_SIZE + MAP_PORTAL__SHORT_BARIER_LENGTH,
 			MAP_PORTAL__CENTER_POSITION - MAP_PORTAL__SHORT_BARIER_POSITION_X - MAP_PORTAL__SHORT_BARIER_WIDTH_2),
 		true);
-	rectangles[MAP_PORTAL__LEFT_DOWN_SHORT_RECTANGLE].Set(&segment, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
+	rectangles[MAP_PORTAL__LEFT_DOWN_SHORT_RECTANGLE].Set(segment, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
 
 	segment.Set(
 		Vec2F(
@@ -1894,7 +1867,7 @@ void Game::CreateMap9(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 			MAP_PORTAL__CENTER_POSITION - MAP_PORTAL__FRAME_SIZE + MAP_PORTAL__SHORT_BARIER_LENGTH,
 			MAP_PORTAL__CENTER_POSITION + MAP_PORTAL__SHORT_BARIER_POSITION_X + MAP_PORTAL__SHORT_BARIER_WIDTH_2),
 		true);
-	rectangles[MAP_PORTAL__LEFT_UP_SHORT_RECTANGLE].Set(&segment, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
+	rectangles[MAP_PORTAL__LEFT_UP_SHORT_RECTANGLE].Set(segment, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
 
 	segment.Set(
 		Vec2F(
@@ -1904,11 +1877,9 @@ void Game::CreateMap9(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 			MAP_PORTAL__CENTER_POSITION - MAP_PORTAL__SHORT_BARIER_POSITION_X - MAP_PORTAL__SHORT_BARIER_WIDTH_2,
 			MAP_PORTAL__CENTER_POSITION + MAP_PORTAL__FRAME_SIZE - MAP_PORTAL__SHORT_BARIER_LENGTH),
 		true);
-	rectangles[MAP_PORTAL__UP_LEFT_SHORT_RECTANGLE].Set(&segment, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
+	rectangles[MAP_PORTAL__UP_LEFT_SHORT_RECTANGLE].Set(segment, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
 
-	map.Set(rectangles, MAP_PORTAL__RECTANGLES_COUNT);
-
-	delete[] rectangles;
+	map.Set(rectangles);
 
 	/* Spawn entities */
 
@@ -2024,9 +1995,9 @@ void Game::CreateMap10(std::vector<Vec2F>& ships_positions, std::vector<float>& 
 #define MAP_NO_CENTER_DESINTEGRATOR_MIN_SIZE	(EVENT_10__MIN_SIZE_COEF * MAP_NO_CENTER__FRAME_SIZE)
 #define MAP_NO_CENTER_DESINTEGRATOR_MAX_SIZE	(EVENT_10__MAX_SIZE_COEF * MAP_NO_CENTER__FRAME_SIZE)
 
-	Map::Polygon* polygons = new Map::Polygon[MAP_NO_CENTER__POLYGONS_COUNT];
-
+	auto polygons = std::vector<Map::Polygon>(MAP_NO_CENTER__POLYGONS_COUNT);
 	auto points = std::vector<Vec2F>(MAP_NO_CENTER__FRAME_POINTS_COUNT);
+
 	points[0].Set(0.0f, 0.0f);
 	points[1].Set(MAP_NO_CENTER__FRAME_OUT_SIDE_LENGHT, 0.0f);
 	points[2].Set(MAP_NO_CENTER__FRAME_DISTANCE_TO_IN_SIDE, MAP_NO_CENTER__FRAME_DISTANCE_TO_IN_SIDE - MAP_NO_CENTER__FRAME_OUT_SIDE_LENGHT);
@@ -2056,11 +2027,13 @@ void Game::CreateMap10(std::vector<Vec2F>& ships_positions, std::vector<float>& 
 	points[1].Set(1.0f, 0.0f);
 	points[2].Set(0.0f, 1.0f);
 
-	Vec2F* desintegrators_positions = new Vec2F[MAP_NO_CENTER__DESINTEGRATORS_COUNT];
-	desintegrators_positions[MAP_NO_CENTER__DESINTEGRATOR_UP - MAP_NO_CENTER__DESINTEGRATOR_UP].Set(0.0f, MAP_NO_CENTER__DESINTEGRATOR_SHIFT);
-	desintegrators_positions[MAP_NO_CENTER__DESINTEGRATOR_RIGHT - MAP_NO_CENTER__DESINTEGRATOR_UP].Set(MAP_NO_CENTER__DESINTEGRATOR_SHIFT, 0.0f);
-	desintegrators_positions[MAP_NO_CENTER__DESINTEGRATOR_DOWN - MAP_NO_CENTER__DESINTEGRATOR_UP].Set(0.0f, -MAP_NO_CENTER__DESINTEGRATOR_SHIFT);
-	desintegrators_positions[MAP_NO_CENTER__DESINTEGRATOR_LEFT - MAP_NO_CENTER__DESINTEGRATOR_UP].Set(-MAP_NO_CENTER__DESINTEGRATOR_SHIFT, 0.0f);
+	const auto& desintegrators_positions = std::vector<Vec2F>(
+		{
+			Vec2F(0.0f, MAP_NO_CENTER__DESINTEGRATOR_SHIFT),
+			Vec2F(MAP_NO_CENTER__DESINTEGRATOR_SHIFT, 0.0f),
+			Vec2F(0.0f, -MAP_NO_CENTER__DESINTEGRATOR_SHIFT),
+			Vec2F(-MAP_NO_CENTER__DESINTEGRATOR_SHIFT, 0.0f)
+		});
 
 	for (size_t desintegrator = MAP_NO_CENTER__DESINTEGRATOR_UP; desintegrator <= MAP_NO_CENTER__DESINTEGRATOR_LEFT; desintegrator++)
 	{
@@ -2071,17 +2044,8 @@ void Game::CreateMap10(std::vector<Vec2F>& ships_positions, std::vector<float>& 
 			points,
 			MAP_PROPERTY_CLOSED | MAP_PROPERTY_AGRESSIVE | MAP_PROPERTY_KILLER | MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
 	}
-	delete[] desintegrators_positions;
 	
-	map.Set(
-		nullptr, 
-		0, 
-		nullptr,
-		0, 
-		polygons, 
-		MAP_NO_CENTER__POLYGONS_COUNT);
-
-	delete[] polygons;
+	map.Set(polygons);
 
 	ships_positions[0].Set(MAP_NO_CENTER__FRAME_POS - 1.25f, MAP_NO_CENTER__FRAME_POS + 1.3f);
 	ships_positions[1].Set(MAP_NO_CENTER__FRAME_POS + 1.3f, MAP_NO_CENTER__FRAME_POS + 1.25f);
@@ -2098,7 +2062,7 @@ void Game::CreateMap10(std::vector<Vec2F>& ships_positions, std::vector<float>& 
 
 void Game::CreateMap11(std::vector<Vec2F>& ships_positions, std::vector<float>& ships_angles)
 {
-	Map::Rectangle* rectangles = new Map::Rectangle[MAP_COLLAIDER__RECTANGLES_COUNT];
+	auto rectangles = std::vector<Map::Rectangle>(MAP_COLLAIDER__RECTANGLES_COUNT);
 	rectangles[0].Set(
 		Segment(Vec2F(MAP_COLLAIDER__CENTER - MAP_COLLAIDER__FRAME_SIZE / 2.0f), Vec2F(MAP_COLLAIDER__FRAME_SIZE)),
 		MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_INSIDE);
@@ -2119,16 +2083,11 @@ void Game::CreateMap11(std::vector<Vec2F>& ships_positions, std::vector<float>& 
 		point2.PerpendicularThis();
 	}
 
-	Map::Cyrcle* cyrcles = new Map::Cyrcle[MAP_COLLAIDER__CYRCLES_COUNT];
+	auto cyrcles = std::vector<Map::Cyrcle>(MAP_COLLAIDER__CYRCLES_COUNT);
 	cyrcles[0].Set(Vec2F(MAP_COLLAIDER__CENTER), MAP_COLLAIDER__EXTERNAL_CYRCLE_RADIUS, MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_AGRESSIVE);
 	cyrcles[1].Set(Vec2F(MAP_COLLAIDER__CENTER), MAP_COLLAIDER__INTERNAL_CYRCLE_RADIUS, MAP_PROPERTY_UNBREACABLE, false);
 
-	map.Set(
-		rectangles, MAP_COLLAIDER__RECTANGLES_COUNT,
-		cyrcles, MAP_COLLAIDER__CYRCLES_COUNT);
-
-	delete[] rectangles;
-	delete[] cyrcles;
+	map.Set(rectangles, cyrcles);
 
 	AddEntity(DecelerationArea(Vec2F(MAP_COLLAIDER__CENTER), -DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT * 1.05f, MAP_COLLAIDER__EXTERNAL_CYRCLE_RADIUS * 0.95f));
 	AddEntity(GravGen(Vec2F(MAP_COLLAIDER__CENTER), -GRAVITY_GENERATOR_DEFAULT_GRAVITY, MAP_COLLAIDER__INTERNAL_CYRCLE_RADIUS * 0.9f));
@@ -2157,12 +2116,12 @@ void Game::CreateMap12(std::vector<Vec2F>& ships_positions, std::vector<float>& 
 {
 	/* Generate map */
 	
-	Map::Rectangle* rectangles = new Map::Rectangle[MAP_KALEIDOSCOPE__RECTANGLES_COUNT];
+	auto rectangles = std::vector<Map::Rectangle>(MAP_KALEIDOSCOPE__RECTANGLES_COUNT);
 	rectangles[0].Set(
 		Segment(Vec2F(MAP_KALEIDOSCOPE__CENTER - MAP_KALEIDOSCOPE__SIZE / 2.0f), Vec2F(MAP_KALEIDOSCOPE__SIZE)),
 		MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_INSIDE);
 
-	Map::Polygon* polygons = new Map::Polygon[MAP_KALEIDOSCOPE__POLYGONS_COUNT];
+	auto polygons = std::vector<Map::Polygon>(MAP_KALEIDOSCOPE__POLYGONS_COUNT);
 	auto points = std::vector<Vec2F>(4);
 	points[0].Set(MAP_KALEIDOSCOPE__SIZE / 2.0f);
 	for (size_t i = 1; i < 4; ++i)
@@ -2208,12 +2167,9 @@ void Game::CreateMap12(std::vector<Vec2F>& ships_positions, std::vector<float>& 
 
 	delete[] decel_positions;
 
-	map.Set(rectangles, MAP_KALEIDOSCOPE__RECTANGLES_COUNT, nullptr, 0, polygons, MAP_KALEIDOSCOPE__POLYGONS_COUNT);
+	map.Set(rectangles, polygons);
 
 	/* Configure players */
-
-	delete[] rectangles;
-	delete[] polygons;
 
 	ships_positions[0].Set(MAP_KALEIDOSCOPE__CENTER - MAP_KALEIDOSCOPE__SPAWN_SHIFT, MAP_KALEIDOSCOPE__CENTER + MAP_KALEIDOSCOPE__SPAWN_SHIFT);
 	ships_positions[1].Set(MAP_KALEIDOSCOPE__CENTER + MAP_KALEIDOSCOPE__SPAWN_SHIFT, MAP_KALEIDOSCOPE__CENTER + MAP_KALEIDOSCOPE__SPAWN_SHIFT);
@@ -2240,7 +2196,7 @@ void Game::CreateMapRoundResults(GameTypes::players_count_t players_count, GameT
 	GameTypes::score_t score_amplitude = max_score * 2 + 1;
 	GameTypes::map_elements_count_t rectangles_count = players_count + score_amplitude;
 
-	Map::Rectangle* rectangles = new Map::Rectangle[rectangles_count];
+	auto rectangles = std::vector<Map::Rectangle>(rectangles_count);
 
 	//Create rows
 
@@ -2253,7 +2209,7 @@ void Game::CreateMapRoundResults(GameTypes::players_count_t players_count, GameT
 		Segment diagonal = Segment(
 			Vec2F(column_left_position, row_position),
 			Vec2F(cell_size * (float)score_amplitude, cell_size));
-		rectangles[row].Set(&diagonal);
+		rectangles[row].Set(diagonal);
 	}
 
 	for (GameTypes::map_elements_count_t column = 0; column < score_amplitude; column++)
@@ -2262,12 +2218,10 @@ void Game::CreateMapRoundResults(GameTypes::players_count_t players_count, GameT
 		Segment diagonal = Segment(
 			Vec2F(column_position, row_down_position),
 			Vec2F(cell_size, cell_size * (float)players_count));
-		rectangles[players_count + column].Set(&diagonal);
+		rectangles[players_count + column].Set(diagonal);
 	}
 
-	map.Set(rectangles, rectangles_count);
-
-	delete[] rectangles;
+	map.Set(rectangles);
 
 	camera.SetPosition(Vec2F());
 	camera.SetSize(5.0f);

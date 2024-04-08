@@ -233,26 +233,17 @@ bool Entity::IsCollision(const Laser& laser) const
 
 bool Entity::IsCollision(const Map::MapData& map) const
 {
-	for (uint8_t i = 0; i < map.rectangles_array_length; i++)
+	for (auto& element : map.cyrcles_array)
 	{
-		if (IsCollision(map.RectanglePointer(i)))
-		{
-			return true;
-		}
+		if (IsCollision(element)) return true;
 	}
-	for (uint8_t i = 0; i < map.cyrcles_array_length; i++)
+	for (auto& element : map.polygons_array)
 	{
-		if (IsCollision(*map.CyrclePointer(i)))
-		{
-			return true;
-		}
+		if (IsCollision(element)) return true;
 	}
-	for (uint8_t i = 0; i < map.polygons_array_length; i++)
+	for (auto& element : map.rectangles_array)
 	{
-		if (IsCollision(*map.PolygonPointer(i)))
-		{
-			return true;
-		}
+		if (IsCollision(element)) return true;
 	}
 	return false;
 }

@@ -336,9 +336,8 @@ Bomb Ship::CreateBomb()
 
 Laser Ship::CreateLaser()
 {
-	Beam laser_beam = LASER_DEFAULT_LOCAL_BEAM;
 	AddForceAlongDirection(-SHIP_SHOOT_FORCE * 4.0f);
-	return Laser(this, laser_beam);
+	return Laser(this, LASER_DEFAULT_LOCAL_BEAM);
 }
 
 Knife Ship::CreateKnife(uint8_t knife_number)

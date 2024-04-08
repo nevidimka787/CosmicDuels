@@ -65,22 +65,15 @@ namespace Map
 			Vec2F point2,
 			EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
 			bool exist = true);
-		Rectangle(
-			const Vec2F* point1,
-			const Vec2F* point2,
-			EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
-			bool exist = true);
+
 	protected:
 		Vec2F point2;//down left point
+
 	public:
 		Rectangle();
 		Rectangle(const Rectangle& rectangle);
 		Rectangle(
 			const Segment& diagonal,
-			EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
-			bool exist = true);
-		Rectangle(
-			const Segment* diagonal,
 			EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
 			bool exist = true);
 
@@ -94,13 +87,12 @@ namespace Map
 		Segment GetLeftSide() const;
 		Vec2F GetSize() const;
 		Vec2F GetPosition() const; // position of the rectangle's center
-		bool IsCollision(const Beam* beam);
-		bool IsCollision(const Beam* beam, Vec2F* out_position, float* distance_to_out_position) const;
-		bool IsCollision(const Beam* beam, Vec2F* out_position, float* distance_to_out_position, Vec2F* perpendicular_vector) const;
-		bool IsCollision(const Line* line);
-		bool IsCollision(const Segment* segment);
-		void Move(Vec2F move_vector);
-		void Move(const Vec2F* move_vector);
+		bool IsCollision(const Beam& beam);
+		bool IsCollision(const Beam& beam, Vec2F* out_position, float* distance_to_out_position) const;
+		bool IsCollision(const Beam& beam, Vec2F* out_position, float* distance_to_out_position, Vec2F* perpendicular_vector) const;
+		bool IsCollision(const Line& line);
+		bool IsCollision(const Segment& segment);
+		void Move(const Vec2F& move_vector);
 		//set point2 as down left point and point1 as up right point
 		Rectangle Normalise() const;
 		//set point2 as down left point and point1 as up right point
@@ -112,14 +104,9 @@ namespace Map
 			const Segment& diagonal,
 			EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
 			bool exist = true);
-		void Set(
-			const Segment* diagonal,
-			EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
-			bool exist = true);
-		void SetPosition(Vec2F position);
-		void SetPosition(const Vec2F* position);
-		void SetSize(Vec2F size);
-		void SetSize(const Vec2F* size);
+
+		void SetPosition(const Vec2F& position);
+		void SetSize(const Vec2F& size);
 
 		void operator=(const Rectangle& rectangle);
 
@@ -134,45 +121,35 @@ namespace Map
 		Cyrcle();
 		Cyrcle(const Cyrcle& cyrcle);
 		Cyrcle(
-			Vec2F position,
-			float radius = CYRCLE_DEFAULT_RADIUS,
-			EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
-			bool exist = true);
-		Cyrcle(
-			const Vec2F* position,
+			const Vec2F& position,
 			float radius = CYRCLE_DEFAULT_RADIUS,
 			EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
 			bool exist = true);
 
-		bool IsCollision(const Beam* beam) const;
+		bool IsCollision(const Beam& beam) const;
 		bool IsCollision(
-			const Beam* beam,
+			const Beam& beam,
 			Vec2F* out_position,
 			float* distance_to_out_position // distance from beam point to the nearest intersection position
 		) const;
 		bool IsCollision(
-			const Beam* beam,
+			const Beam& beam,
 			Vec2F* out_position,
 			float* distance_to_out_position, // distance from beam point to the nearest intersection position
 			Vec2F* perpendicular_position
 		) const;
-		bool IsCollision(const Line* line) const;
-		bool IsCollision(const Segment* segment) const;
+		bool IsCollision(const Line& line) const;
+		bool IsCollision(const Segment& segment) const;
 		float GetRadius() const;
 		void SetRadius(float radius);
 		void Set(const Cyrcle* cyrcle);
 		void Set(
-			Vec2F position,
-			float radius = CYRCLE_DEFAULT_RADIUS,
-			EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
-			bool exist = true);
-		void Set(
-			const Vec2F* position,
+			const Vec2F& position,
 			float radius = CYRCLE_DEFAULT_RADIUS,
 			EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
 			bool exist = true);
 
-		void operator=(Cyrcle cyrcle);
+		void operator=(const Cyrcle& cyrcle);
 
 		~Cyrcle();
 	};
@@ -259,39 +236,40 @@ namespace Map
 
 	class MapData
 	{
-	protected:
-		Rectangle* rectangles_array;
-		Cyrcle* cyrcles_array;
-		Polygon* polygons_array;
-
 	public:
-		EngineTypes::Map::array_length_t rectangles_array_length;
-		EngineTypes::Map::array_length_t cyrcles_array_length;
-		EngineTypes::Map::array_length_t polygons_array_length;
+		std::vector<Rectangle> rectangles_array;
+		std::vector<Cyrcle> cyrcles_array;
+		std::vector<Polygon> polygons_array;
 
 		MapData(const MapData& map);
 		MapData(
-			const Rectangle* rectangles_array = nullptr,
-			EngineTypes::Map::array_length_t rectangles_array_length = 0,
-			const Cyrcle* cyrcles_array = nullptr,
-			EngineTypes::Map::array_length_t cyrcles_array_length = 0,
-			const Polygon* polygons_array = nullptr,
-			EngineTypes::Map::array_length_t polygons_array_length = 0);
+			const std::vector<Rectangle>& rectangles_array,
+			const std::vector<Cyrcle>& cyrcles_array,
+			const std::vector<Polygon>& polygons_array = std::vector<Polygon>());
+		MapData(
+			const std::vector<Cyrcle>& cyrcles_array,
+			const std::vector<Polygon>& polygons_array = std::vector<Polygon>());
+		MapData(
+			const std::vector<Rectangle>& rectangles_array,
+			const std::vector<Polygon>& polygons_array = std::vector<Polygon>());
+		MapData(
+			const std::vector<Polygon>& polygons_array = std::vector<Polygon>());
 
-		Rectangle GetRectangle(EngineTypes::Map::array_length_t number) const;
-		Cyrcle GetCyrcle(EngineTypes::Map::array_length_t number) const;
-		Polygon GetPolygon(EngineTypes::Map::array_length_t number) const;
-		Rectangle* RectanglePointer(EngineTypes::Map::array_length_t number) const;
-		Cyrcle* CyrclePointer(EngineTypes::Map::array_length_t number) const;
-		Polygon* PolygonPointer(EngineTypes::Map::array_length_t number) const;
 		void Set(const MapData* map);
 		void Set(
-			const Rectangle* rectangles_array = nullptr,
-			EngineTypes::Map::array_length_t rectangles_array_length = 0,
-			const Cyrcle* cyrcles_array = nullptr,
-			EngineTypes::Map::array_length_t cyrcles_array_length = 0,
-			const Polygon* polygons_array = nullptr,
-			EngineTypes::Map::array_length_t polygons_array_length = 0);
+			const std::vector<Rectangle>& rectangles_array,
+			const std::vector<Cyrcle>& cyrcles_array,
+			const std::vector<Polygon>& polygons_array = std::vector<Polygon>());
+		void Set(
+			const std::vector<Cyrcle>& cyrcles_array,
+			const std::vector<Polygon>& polygons_array = std::vector<Polygon>());
+		void Set(
+			const std::vector<Rectangle>& rectangles_array,
+			const std::vector<Polygon>& polygons_array = std::vector<Polygon>());
+		void Set(
+			const std::vector<Polygon>& polygons_array = std::vector<Polygon>());
+
+		void operator=(const MapData& map);
 
 		~MapData();
 	};

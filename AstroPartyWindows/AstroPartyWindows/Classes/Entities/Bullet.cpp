@@ -47,44 +47,31 @@ Bullet::Bullet(
 
 bool Bullet::Collision(Map::MapData& map)
 {
-	EngineTypes::Map::array_length_t element;
-	for (element = 0; element < map.cyrcles_array_length; element++)
+	for (auto element : map.cyrcles_array)
 	{
-		const auto element_p = map.CyrclePointer(element);
-		if (element_p->exist && DynamicEntity::IsCollision(*element_p))
-		{
-			if (!element_p->IsUnbreacable())
-			{
-				element_p->exist = false;
-			}
-			return true;
-		}
+		if (CollisionWithElement(element)) return true;
 	}
-	for (element = 0; element < map.polygons_array_length; element++)
+	for (auto element : map.polygons_array)
 	{
-		const auto element_p =map.PolygonPointer(element);
-		if (element_p->exist && DynamicEntity::IsCollision(*element_p))
-		{
-			if (!element_p->IsUnbreacable())
-			{
-				element_p->exist = false;
-			}
-			return true;
-		}
+		if (CollisionWithElement(element)) return true;
 	}
-	for (element = 0; element < map.rectangles_array_length; element++)
+	for (auto element : map.rectangles_array)
 	{
-		const auto element_p = map.RectanglePointer(element);
-		if (element_p->exist && DynamicEntity::IsCollision(*element_p))
-		{
-			if (!element_p->IsUnbreacable())
-			{
-				element_p->exist = false;
-			}
-			return true;
-		}
+		if (CollisionWithElement(element)) return true;
 	}
 	return false;
+}
+
+template<typename MapElementT>
+bool Bullet::CollisionWithElement(MapElementT& element)
+{
+	if (
+		!element.exist ||
+		!DynamicEntity::IsCollision(element)) return false;
+		
+	if (!element.IsUnbreacable())	element.exist = false;
+	
+	return true;
 }
 
 void Bullet::Set(const Bullet* bullet)

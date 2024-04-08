@@ -40,64 +40,52 @@ bool Knife::Collision(Map::MapData& map)
 		exist = false;
 		return false;
 	}
-	Segment segment = GetSegment();
+	const Segment& segment = GetSegment();
 	bool collision = false;
-	EngineTypes::Map::array_length_t element;
 
-	for (element = 0; element < map.cyrcles_array_length; element++)
+	for (auto& element : map.cyrcles_array)
 	{
-		const auto element_p = map.CyrclePointer(element);
-		if (element_p->exist &&
-			!element_p->IsUnbreacable() &&
-			element_p->IsCollision(&segment))
+		collision |= CollissionWithElement(element, segment);
+		if (health <= 0)
 		{
-			element_p->exist = false;
-			health--;
-			if (health == 0)
-			{
-				exist = false;
-				return true;
-			}
-			collision = true;
+			exist = false;
+			return true;
 		}
 	}
-
-	for (EngineTypes::Map::array_length_t element = 0; element < map.polygons_array_length; element++)
+	for (auto& element : map.polygons_array)
 	{
-		const auto element_p = map.PolygonPointer(element);
-		if (element_p->exist &&
-			!element_p->IsUnbreacable() &&
-			element_p->IsCollision(&segment))
+		collision |= CollissionWithElement(element, segment);
+		if (health <= 0)
 		{
-			element_p->exist = false;
-			health--;
-			if (health == 0)
-			{
-				exist = false;
-				return true;
-			}
-			collision = true;
+			exist = false;
+			return true;
 		}
 	}
-
-	for (EngineTypes::Map::array_length_t element = 0; element < map.rectangles_array_length; element++)
+	for (auto& element : map.rectangles_array)
 	{
-		const auto element_p = map.RectanglePointer(element);
-		if (element_p->exist &&
-			!element_p->IsUnbreacable() &&
-			element_p->IsCollision(&segment))
+		collision |= CollissionWithElement(element, segment);
+		if (health <= 0)
 		{
-			element_p->exist = false;
-			health--;
-			if (health == 0)
-			{
-				exist = false;
-				return true;
-			}
-			collision = true;
+			exist = false;
+			return true;
 		}
 	}
 	return collision;
+}
+
+template <typename ElemetT>
+bool Knife::CollissionWithElement(ElemetT& element, const Segment& segment)
+{
+	if (element.exist &&
+		!element.IsUnbreacable() &&
+		element.IsCollision(segment))
+	{
+		element.exist = false;
+		health--;
+		return true;
+	}
+
+	return false;
 }
 
 Segment Knife::GetSegment() const
