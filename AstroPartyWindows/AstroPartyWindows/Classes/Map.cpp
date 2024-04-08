@@ -7,6 +7,8 @@ using namespace Map;
 
 MapElement::MapElement() :
 	exist(true),
+	position(),
+	last_position(),
 	properties(MAP_DEFAULT_PROPERTIES)
 {
 }
@@ -445,19 +447,14 @@ Vec2F Rectangle::Position() const
 
 void Rectangle::Set(const Rectangle* rectangle)
 {
-	exist = rectangle->exist;
-	last_position = rectangle->last_position;
+	MapElement::Set(rectangle);
 	point2 = rectangle->point2;
-	position = rectangle->position;
-	properties = rectangle->properties;
 }
 
 void Rectangle::Set(const Segment& diagonal, EngineTypes::Map::property_t properties, bool exist)
 {
-	this->exist = exist;
-	this->point2 = diagonal.point + diagonal.vector;
-	this->position = diagonal.point;
-	this->properties = properties;
+	MapElement::Set(diagonal.point, properties, exist);
+	this->point2 = diagonal.SecondPoint();
 
 	NormaliseThis();
 }
@@ -478,11 +475,8 @@ void Rectangle::SetSize(const Vec2F& size)
 
 void Rectangle::operator=(const Rectangle& rectangle)
 {
-	exist = rectangle.exist;
-	last_position = rectangle.last_position;
+	MapElement::operator=(rectangle);
 	point2 = rectangle.point2;
-	position = rectangle.position;
-	properties = rectangle.properties;
 }
 
 Rectangle::~Rectangle()
@@ -583,19 +577,14 @@ void Cyrcle::SetRadius(float radius)
 
 void Cyrcle::Set(const Cyrcle* cyrcle)
 {
-	exist = cyrcle->exist;
-	last_position = cyrcle->last_position;
-	position = cyrcle->position;
+	MapElement::Set(cyrcle);
 	radius = cyrcle->radius;
-	properties = cyrcle->properties;
 }
 
 void Cyrcle::Set(const Vec2F& position, float radius, EngineTypes::Map::property_t properties, bool exist)
 {
-	this->exist = exist;
-	this->position = position;
+	MapElement::Set(position, properties, exist);
 	this->radius = radius;
-	this->properties = properties;
 }
 
 void Cyrcle::operator=(const Cyrcle& cyrcle)
@@ -628,7 +617,6 @@ Polygon::Polygon(const Polygon& polygon) :
 	angle(polygon.angle),
 	need_update(true),
 	last_angle(polygon.last_angle),
-	last_position(polygon.last_position),
 	last_size(polygon.size),
 	size(polygon.size),
 	local_points_array(polygon.local_points_array),
@@ -641,7 +629,6 @@ Polygon::Polygon(
 	float angle,
 	const Vec2F& size,
 	const std::vector<Vec2F>& points_array,
-	EngineTypes::Polygon::points_array_length_t points_array_length,
 	EngineTypes::Map::property_t properties,
 	bool exist) :
 	MapElement(position, properties, exist),
@@ -649,7 +636,7 @@ Polygon::Polygon(
 	last_angle(angle),
 	last_size(size),
 	need_update(true),
-	local_points_array(points_array),
+	points_array(points_array),
 	size(size)
 {
 	UpdatePoints();
@@ -932,7 +919,6 @@ void Polygon::Set(const Polygon* parent)
 
 	angle = parent->angle;
 	last_angle = parent->last_angle;
-	last_position = parent->last_position;
 	last_size = parent->last_size;
 	size = parent->last_size;
 	points_array = parent->points_array;
@@ -946,7 +932,6 @@ void Polygon::Set(
 	float angle,
 	const Vec2F& size,
 	const std::vector<Vec2F>& points_array,
-	EngineTypes::Polygon::points_array_length_t points_array_length,
 	EngineTypes::Map::property_t properties,
 	bool exist)
 {
@@ -1029,10 +1014,12 @@ void Polygon::operator=(const Polygon& polygon)
 	MapElement::operator=(polygon);
 
 	angle = polygon.angle;
-	points_array = polygon.points_array;
+	last_angle = polygon.last_angle;
+	last_size = polygon.last_size;
 	local_points_array = polygon.local_points_array;
-
 	need_update = polygon.need_update;
+	points_array = polygon.points_array;
+	size = polygon.size;
 }
 
 Polygon::~Polygon()

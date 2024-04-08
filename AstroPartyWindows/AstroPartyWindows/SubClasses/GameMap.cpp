@@ -413,59 +413,23 @@ void Game::Event5()
 
 	map_data_mtx.lock();
 
-	Map::Rectangle& rectangle = map.rectangles_array[EVENT5__UP_RECTANGLE];
+	Vec2F position(rotation_inverse ? EVENT5__SQUARE_SIZE : -EVENT5__SQUARE_SIZE, EVENT5__SQUARE_SIZE);
 
-	if (rotation_inverse)
+	if (map.rectangles_array[EVENT5__UP_RECTANGLE].Position().x > EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE)
 	{
-		if (rectangle.Position().x > EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE)
+		for (size_t i = EVENT5__UP_RECTANGLE; i <= EVENT5__LEFT_RECTANGLE; ++i)
 		{
-			//up rctangle
-			rectangle.SetPosition(Vec2F(EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE, EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE));
-			rectangle.RessetVelocity();
-			rectangle = map.rectangles_array[EVENT5__RIGHT_RECTANGLE];
-			rectangle.SetPosition(Vec2F(EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE, EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE));
-			rectangle.RessetVelocity();
-			rectangle = map.rectangles_array[EVENT5__DONW_RECTANGLE];
-			rectangle.SetPosition(Vec2F(EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE, EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE));
-			rectangle.RessetVelocity();
-			rectangle = map.rectangles_array[EVENT5__LEFT_RECTANGLE];
-			rectangle.SetPosition(Vec2F(EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE, EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE));
-			rectangle.RessetVelocity();
+			map.rectangles_array[i].SetPosition(position + EVENT5__CENTER_POSITION);
+			map.rectangles_array[i].RessetVelocity();
+			position.PerpendicularClockwiseThis();
 		}
-
-		rectangle.Move(Vec2F(EVENT5__RECTANGLE_SPEED, 0.0f));
-		rectangle = map.rectangles_array[EVENT5__RIGHT_RECTANGLE];
-		rectangle.Move(Vec2F(0.0f, -EVENT5__RECTANGLE_SPEED));
-		rectangle = map.rectangles_array[EVENT5__DONW_RECTANGLE];
-		rectangle.Move(Vec2F(-EVENT5__RECTANGLE_SPEED, 0.0f));
-		rectangle = map.rectangles_array[EVENT5__LEFT_RECTANGLE];
-		rectangle.Move(Vec2F(0.0f, EVENT5__RECTANGLE_SPEED));
 	}
-	else
-	{
-		if (rectangle.Position().x < EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE)
-		{
-			//up rctangle
-			rectangle.SetPosition(Vec2F(EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE, EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE));
-			rectangle.RessetVelocity();
-			rectangle = map.rectangles_array[EVENT5__RIGHT_RECTANGLE];
-			rectangle.SetPosition(Vec2F(EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE, EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE));
-			rectangle.RessetVelocity();
-			rectangle = map.rectangles_array[EVENT5__DONW_RECTANGLE];
-			rectangle.SetPosition(Vec2F(EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE, EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE));
-			rectangle.RessetVelocity();
-			rectangle = map.rectangles_array[EVENT5__LEFT_RECTANGLE];
-			rectangle.SetPosition(Vec2F(EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE, EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE));
-			rectangle.RessetVelocity();
-		}
 
-		rectangle.Move(Vec2F(-EVENT5__RECTANGLE_SPEED, 0.0f));
-		rectangle = map.rectangles_array[EVENT5__RIGHT_RECTANGLE];
-		rectangle.Move(Vec2F(0.0f, EVENT5__RECTANGLE_SPEED));
-		rectangle = map.rectangles_array[EVENT5__DONW_RECTANGLE];
-		rectangle.Move(Vec2F(EVENT5__RECTANGLE_SPEED, 0.0f));
-		rectangle = map.rectangles_array[EVENT5__LEFT_RECTANGLE];
-		rectangle.Move(Vec2F(0.0f, -EVENT5__RECTANGLE_SPEED));
+	Vec2F move_vector(rotation_inverse ? -EVENT5__RECTANGLE_SPEED : EVENT5__RECTANGLE_SPEED, 0.0f);
+	for (size_t i = EVENT5__UP_RECTANGLE; i <= EVENT5__LEFT_RECTANGLE; ++i)
+	{
+		map.rectangles_array[i].Move(move_vector);
+		move_vector.PerpendicularClockwiseThis();
 	}
 
 	map_data_mtx.unlock();
@@ -1365,7 +1329,7 @@ void Game::CreateMap5(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 
 	auto rectangles = std::vector<Map::Rectangle>(MAP_DYNAMICAL__RECTANGLES_COUNT);
 
-	Segment diagonal = Segment(
+	const Segment& frame_diagonal = Segment(
 		Vec2F(
 			MAP_DYNAMICAL__CENTER_POSITION + MAP_DYNAMICAL__FRAME_SIZE,
 			MAP_DYNAMICAL__CENTER_POSITION + MAP_DYNAMICAL__FRAME_SIZE),
@@ -1373,47 +1337,24 @@ void Game::CreateMap5(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 			MAP_DYNAMICAL__CENTER_POSITION - MAP_DYNAMICAL__FRAME_SIZE,
 			MAP_DYNAMICAL__CENTER_POSITION - MAP_DYNAMICAL__FRAME_SIZE),
 		true);
-	rectangles[MAP_DYNAMICAL__FRAME_RECTANGLE].Set(diagonal, MAP_PROPERTY_COLLIDE_INSIDE | MAP_PROPERTY_UNBREACABLE);
+	rectangles[MAP_DYNAMICAL__FRAME_RECTANGLE].Set(frame_diagonal, MAP_PROPERTY_COLLIDE_INSIDE | MAP_PROPERTY_UNBREACABLE);
 
-	diagonal.Set(
-		Vec2F(
-			-MAP_DYNAMICAL_RECTANGLE_SIZE + MAP_DYNAMICAL__CENTER_POSITION,
-			MAP_DYNAMICAL_RECTANGLE_POSITION - MAP_DYNAMICAL_RECTANGLE_SIZE + MAP_DYNAMICAL__CENTER_POSITION),
-		Vec2F(
-			MAP_DYNAMICAL_RECTANGLE_SIZE + MAP_DYNAMICAL__CENTER_POSITION,
-			MAP_DYNAMICAL_RECTANGLE_POSITION + MAP_DYNAMICAL_RECTANGLE_SIZE + MAP_DYNAMICAL__CENTER_POSITION),
-		true);
-	rectangles[MAP_DYNAMICAL__UP_RECTANGLE].Set(diagonal, MAP_PROPERTY_COLLIDE_OUTSIDE | MAP_PROPERTY_UNBREACABLE);
+	Vec2F diagonal_point1(
+		-MAP_DYNAMICAL_RECTANGLE_SIZE,
+		MAP_DYNAMICAL_RECTANGLE_POSITION - MAP_DYNAMICAL_RECTANGLE_SIZE);
+	Vec2F diagonal_point2(
+		MAP_DYNAMICAL_RECTANGLE_SIZE,
+		MAP_DYNAMICAL_RECTANGLE_POSITION + MAP_DYNAMICAL_RECTANGLE_SIZE
+	);
 
-	diagonal.Set(
-		Vec2F(
-			MAP_DYNAMICAL_RECTANGLE_POSITION - MAP_DYNAMICAL_RECTANGLE_SIZE + MAP_DYNAMICAL__CENTER_POSITION,
-			-MAP_DYNAMICAL_RECTANGLE_SIZE + MAP_DYNAMICAL__CENTER_POSITION),
-		Vec2F(
-			MAP_DYNAMICAL_RECTANGLE_POSITION + MAP_DYNAMICAL_RECTANGLE_SIZE + MAP_DYNAMICAL__CENTER_POSITION,
-			MAP_DYNAMICAL_RECTANGLE_SIZE + MAP_DYNAMICAL__CENTER_POSITION),
-		true);
-	rectangles[MAP_DYNAMICAL__RIGHT_RECTANGLE].Set(diagonal, MAP_PROPERTY_COLLIDE_OUTSIDE | MAP_PROPERTY_UNBREACABLE);
-
-	diagonal.Set(
-		Vec2F(
-			-MAP_DYNAMICAL_RECTANGLE_SIZE + MAP_DYNAMICAL__CENTER_POSITION,
-			-MAP_DYNAMICAL_RECTANGLE_POSITION - MAP_DYNAMICAL_RECTANGLE_SIZE + MAP_DYNAMICAL__CENTER_POSITION),
-		Vec2F(
-			MAP_DYNAMICAL_RECTANGLE_SIZE + MAP_DYNAMICAL__CENTER_POSITION,
-			-MAP_DYNAMICAL_RECTANGLE_POSITION + MAP_DYNAMICAL_RECTANGLE_SIZE + MAP_DYNAMICAL__CENTER_POSITION),
-		true);
-	rectangles[MAP_DYNAMICAL__DOWN_RECTANGLE].Set(diagonal, MAP_PROPERTY_COLLIDE_OUTSIDE | MAP_PROPERTY_UNBREACABLE);
-
-	diagonal.Set(
-		Vec2F(
-			-MAP_DYNAMICAL_RECTANGLE_POSITION - MAP_DYNAMICAL_RECTANGLE_SIZE + MAP_DYNAMICAL__CENTER_POSITION,
-			-MAP_DYNAMICAL_RECTANGLE_SIZE + MAP_DYNAMICAL__CENTER_POSITION),
-		Vec2F(
-			-MAP_DYNAMICAL_RECTANGLE_POSITION + MAP_DYNAMICAL_RECTANGLE_SIZE + MAP_DYNAMICAL__CENTER_POSITION,
-			MAP_DYNAMICAL_RECTANGLE_SIZE + MAP_DYNAMICAL__CENTER_POSITION),
-		true);
-	rectangles[MAP_DYNAMICAL__LEFT_RECTANGLE].Set(diagonal, MAP_PROPERTY_COLLIDE_OUTSIDE | MAP_PROPERTY_UNBREACABLE);
+	for (size_t i = MAP_DYNAMICAL__UP_RECTANGLE; i <= MAP_DYNAMICAL__LEFT_RECTANGLE; ++i)
+	{
+		rectangles[i].Set(
+			Segment(diagonal_point1 + MAP_DYNAMICAL__CENTER_POSITION, diagonal_point2 + MAP_DYNAMICAL__CENTER_POSITION, true),
+			MAP_PROPERTY_COLLIDE_OUTSIDE | MAP_PROPERTY_UNBREACABLE);
+		diagonal_point1.PerpendicularThis();
+		diagonal_point2.PerpendicularThis();
+	}
 
 	map.Set(rectangles);
 

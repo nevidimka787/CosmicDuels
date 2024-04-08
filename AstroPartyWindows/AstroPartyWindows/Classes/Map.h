@@ -162,7 +162,6 @@ namespace Map
 	protected:
 		bool need_update;
 
-		Vec2F last_position;
 		Vec2F last_size;
 		float last_angle;
 
@@ -180,7 +179,6 @@ namespace Map
 			float angle,
 			const Vec2F& size,
 			const std::vector<Vec2F>& points_array,
-			EngineTypes::Polygon::points_array_length_t points_array_length,
 			EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES | MAP_PROPERTY_CLOSED,
 			bool exist = true);
 
@@ -215,7 +213,6 @@ namespace Map
 			float angle,
 			const Vec2F& size,
 			const std::vector<Vec2F>& points_array,
-			EngineTypes::Polygon::points_array_length_t points_array_length,
 			EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES | MAP_PROPERTY_CLOSED,
 			bool exist = true);
 		void SetAngle(float angle);

@@ -175,8 +175,8 @@ bool DynamicEntity::Collision(const Map::Polygon& polygon)
 	{
 		return false;
 	}
-	Segment treck = GetLastTreck();
-	Segment side = Segment(polygon.points_array[p_count - 1], polygon.points_array[0], true);
+	const Segment& treck = GetLastTreck();
+	Segment side = Segment(polygon.points_array.back(), polygon.points_array[0], true);
 	bool collision = false;
 	Vec2F collision_direction;//direction from position to collision point
 	float distance;
@@ -605,19 +605,27 @@ template<>
 bool DynamicEntity::IsCollision<Map::Rectangle>(const Map::Rectangle& rectangle) const
 {
 	const auto& relative_velocity = velocity - rectangle.GetVelocity();
+
+	if (IsTooSlow(relative_velocity))
+	{
+		return
+			rectangle.GetUpSide().Distance(position) < radius ||
+			rectangle.GetDownSide().Distance(position) < radius ||
+			rectangle.GetRightSide().Distance(position) < radius ||
+			rectangle.GetLeftSide().Distance(position) < radius;
+	}
+
 	const auto& track = Segment(position, relative_velocity);
 
-	if (rectangle.GetUpSide().Distance(track) < radius) return true;
-	if (rectangle.GetDownSide().Distance(track) < radius) return true;
-	if (rectangle.GetRightSide().Distance(track) < radius) return true;
-	if (rectangle.GetLeftSide().Distance(track) < radius) return true;
-
-	if (track.Distance(rectangle.GetUpRightPoint()) < radius) return true;
-	if (track.Distance(rectangle.GetDownRightPoint()) < radius) return true;
-	if (track.Distance(rectangle.GetUpLeftPoint()) < radius) return true;
-	if (track.Distance(rectangle.GetDownLeftPoint()) < radius) return true;
-
-	return false;
+	return
+		rectangle.GetUpSide().Distance(track) < radius ||
+		rectangle.GetDownSide().Distance(track) < radius ||
+		rectangle.GetRightSide().Distance(track) < radius ||
+		rectangle.GetLeftSide().Distance(track) < radius ||
+		track.Distance(rectangle.GetUpRightPoint()) < radius ||
+		track.Distance(rectangle.GetDownRightPoint()) < radius ||
+		track.Distance(rectangle.GetUpLeftPoint()) < radius ||
+		track.Distance(rectangle.GetDownLeftPoint()) < radius;
 }
 
 template<>
@@ -695,6 +703,12 @@ bool DynamicEntity::IsCollision<Map::MapData>(const Map::MapData& map) const
 bool DynamicEntity::IsTooSlow() const
 {
 	return velocity.LengthPow2() < radius * radius / 16.0f;
+}
+
+bool DynamicEntity::IsTooSlow(const Vec2F& relative_velocity, const float& other_radius) const
+{
+	const float& sum_r = radius + other_radius;
+	return relative_velocity.LengthPow2() < sum_r * sum_r / 16.0f;
 }
 
 //The function updates position and velocity of entity and clears forces' data.

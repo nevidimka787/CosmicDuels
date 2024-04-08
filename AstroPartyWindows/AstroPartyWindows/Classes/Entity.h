@@ -192,6 +192,7 @@ public:
 	Vec2F GetVelocity() const;
 
 	bool IsTooSlow() const;
+	bool IsTooSlow(const Vec2F& relative_velocity, const float& other_radius = 0.0f) const;
 
 	template <typename ThingT>
 	bool IsCollision(const ThingT& point) const;
