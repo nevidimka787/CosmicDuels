@@ -615,7 +615,9 @@ bool DynamicEntity::IsCollision<Map::Rectangle>(const Map::Rectangle& rectangle)
 	if (track.Distance(rectangle.GetUpRightPoint()) < radius) return true;
 	if (track.Distance(rectangle.GetDownRightPoint()) < radius) return true;
 	if (track.Distance(rectangle.GetUpLeftPoint()) < radius) return true;
-	return track.Distance(rectangle.GetDownLeftPoint()) < radius;
+	if (track.Distance(rectangle.GetDownLeftPoint()) < radius) return true;
+
+	return false;
 }
 
 template<>

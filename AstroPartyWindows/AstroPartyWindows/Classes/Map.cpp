@@ -15,7 +15,7 @@ MapElement::MapElement(const MapElement& map_element) :
 	exist(map_element.exist),
 	position(map_element.position),
 	last_position(map_element.last_position),
-	properties(MAP_DEFAULT_PROPERTIES)
+	properties(map_element.properties)
 {
 }
 
@@ -198,7 +198,7 @@ Segment Rectangle::GetRightSide() const
 
 Segment Rectangle::GetLeftSide() const
 {
-	return Segment(Vec2F(position.x, point2.y), point2, true);
+	return Segment(Vec2F(point2.x, position.y), point2, true);
 }
 
 Vec2F Rectangle::GetSize() const
