@@ -22,7 +22,9 @@
                 "-lGLEW",
                 "-lglfw",
                 "-lpthread",
-                "-ldl"
+                "-ldl",
+
+                "-g"
             ],
             "options": {
                 "cwd": ""

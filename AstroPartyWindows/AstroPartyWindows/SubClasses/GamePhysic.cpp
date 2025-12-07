@@ -121,7 +121,7 @@ void Game::DynamicEntitiesCollisions(Map::MapData& map, std::vector<Asteroid>& a
 			++found;
 		}
 	}
-	
+
 	found = 0;
 	for (auto& entity : asteroids)
 	{
@@ -594,7 +594,7 @@ void Game::ShipShoot(Ship& ship)
 
 				ship.GetElemntFromList();
 			}
-		
+
 #else
 			angle = (float)(((entity_number - 1u) / 2u) + 0.5f) / (float)SHIP_SUPER_BONUS__LONG_KNIFES_IN_LOOP * (float)M_PI * 2.0f;
 
@@ -1340,7 +1340,7 @@ void Game::BombsSpawnedByBulletsAnnihilation()
 	bombs_array_mtx.lock();
 	bullets_array_mtx.lock();
 	for (
-		GameTypes::entities_count_t bullet_id1 = 0, bullets_found1 = 0; 
+		GameTypes::entities_count_t bullet_id1 = 0, bullets_found1 = 0;
 		bullets_found1 < bullets_count && bullet_id1 < GAME_BULLETS_MAX_COUNT;
 		++bullet_id1)
 	{
@@ -1360,7 +1360,7 @@ void Game::BombsSpawnedByBulletsAnnihilation()
 		{
 			auto& bullet2 = bullets[bullet_id2];
 			if (!bullet2.exist) continue;
-			
+
 			if (!bullet1.IsCollision(static_cast<DynamicEntity>(bullet2)))
 			{
 				++bullets_found2;
@@ -1391,7 +1391,7 @@ void Game::BombsDestroyKnifes()
 		if (!bomb.exist) continue;
 		++bombs_found;
 		if (!bomb.IsBoom()) continue;
-		
+
 		GameTypes::entities_count_t knifes_found = 0;
 		knifes_array_mtx.lock();
 		for (auto& knife : knifes)
@@ -1664,7 +1664,7 @@ void Game::LasersDestroyAsteroids()
 				++asteroids_found;
 				continue;
 			}
-			
+
 			if (laser.GetProperty(LASER_PROPERTY_CAN_MULTIPLICATE))
 			{
 				for (int angle = -3; angle <= 3; ++angle)
@@ -2030,6 +2030,9 @@ void Game::PilotsKilledBy<Bullet>(std::vector<Bullet>& bullets, GameTypes::entit
 			dynamic_particles_array_mtx.lock();
 			log_data_mtx.lock();
 			DestroyEntity(bullet, pilot);
+			if (game_rules & GAME_RULE_NEED_KILL_PILOT) {
+				RemoveEntity(bullet);
+			}
 			log_data_mtx.unlock();
 			dynamic_particles_array_mtx.unlock();
 			break;
@@ -2115,7 +2118,7 @@ void Game::ShipsInfluenceToBonuses()
 		{
 			if (bonuses_found >= bonuses_count) break;
 			if (!bonus.exist) continue;
-			
+
 			if (bonus.GetDistance(ship) > ship.radius * GAME_SHIP_INFLUENCE_RADIUS_COEFFISIENT)
 			{
 				++bonuses_found;
@@ -2154,11 +2157,11 @@ void Game::ShipsCheckInput()
 	{
 		if (!ship.exist) continue;
 		input_values_mtx.lock();
-		
+
 		const GameTypes::players_count_t& ship_number = ship.GetPlayerNumber();
-		
+
 		ship.SetAngularVelocity(!control_flags.rotate_flags[ship_number] ? 0.0f : rotation_inverse ? -GAME_SHIP_ANGULAR_VELOCITY : GAME_SHIP_ANGULAR_VELOCITY);
-		
+
 		if (ships_can_shoot_flags[ship_number] > 0) --ships_can_shoot_flags[ship_number];
 		if (control_flags.burnout_flags[ship_number])
 		{
@@ -2196,7 +2199,7 @@ void Game::ShipsRespawnOrDestroyPilots()
 		for (auto& pilot : pilots)
 		{
 			if (!pilot.exist) continue;
-			
+
 			const bool& same_team = pilot.IsSameTeams(ship);
 			const bool& collision = pilot.IsCollision(static_cast<DynamicEntity>(ship));
 			if (game_rules & GAME_RULE_FRIEDNLY_SHEEP_CAN_RESTORE && same_team && collision)
@@ -2204,9 +2207,9 @@ void Game::ShipsRespawnOrDestroyPilots()
 				SpawnEntity(ship, pilot);
 				continue;
 			}
-			
+
 			if (!(game_rules & GAME_RULE_FRIENDLY_FIRE) && same_team || !collision) continue;
-			
+
 			dynamic_particles_array_mtx.lock();
 			log_data_mtx.lock();
 			DestroyEntity(ship, pilot);
@@ -2267,7 +2270,7 @@ void Game::ShipsDestroedByBullets()
 	for (auto& ship : ships)
 	{
 		if (!ship.exist) continue;
-		
+
 		pilots_array_mtx.lock();
 		annih_area_gens_array_mtx.lock();
 		bullets_array_mtx.lock();
@@ -2276,7 +2279,7 @@ void Game::ShipsDestroedByBullets()
 		{
 			if (bullets_found >= bullets_count) break;
 			if (!bullet.exist) continue;
-			
+
 			if ((bullet.is_ignore & BULLET_IGNORE_MUSTER) &&
 				bullet.CreatedBy(ship) &&
 				!ship.IsColectEntity(bullet))

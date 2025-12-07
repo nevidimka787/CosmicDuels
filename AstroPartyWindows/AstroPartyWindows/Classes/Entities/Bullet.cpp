@@ -2,7 +2,7 @@
 
 
 
-Bullet::Bullet() 
+Bullet::Bullet()
 	:
 	KillerEntity(),
 	is_ignore(BULLET_IGNORE_MUSTER | BULLET_IGNORE_KNIFES_OF_MASTER),
@@ -20,7 +20,7 @@ Bullet::Bullet(const Bullet& bullet)
 
 Bullet::Bullet(
 	const Vec2F& position,
-	const Vec2F& velocity, 
+	const Vec2F& velocity,
 	GameTypes::players_count_t player_master_number,
 	GameTypes::players_count_t player_master_team_number,
 	bool is_collision_master,
@@ -28,7 +28,7 @@ Bullet::Bullet(
 	float angular_velocity,
 	float force_collision_coeffisient,
 	float force_resistance_air_coefficient,
-	float radius, float min_velocity, bool exist) 
+	float radius, float min_velocity, bool exist)
 	:
 	KillerEntity(
 		position,
@@ -47,15 +47,15 @@ Bullet::Bullet(
 
 bool Bullet::Collision(Map::MapData& map)
 {
-	for (auto element : map.cyrcles_array)
+	for (auto& element : map.cyrcles_array)
 	{
 		if (CollisionWithElement(element)) return true;
 	}
-	for (auto element : map.polygons_array)
+	for (auto& element : map.polygons_array)
 	{
 		if (CollisionWithElement(element)) return true;
 	}
-	for (auto element : map.rectangles_array)
+	for (auto& element : map.rectangles_array)
 	{
 		if (CollisionWithElement(element)) return true;
 	}
@@ -67,10 +67,15 @@ bool Bullet::CollisionWithElement(MapElementT& element)
 {
 	if (
 		!element.exist ||
-		!DynamicEntity::IsCollision(element)) return false;
-		
-	if (!element.IsUnbreacable())	element.exist = false;
-	
+		!DynamicEntity::IsCollision(element))
+	{
+		return false;
+	}
+
+	if (!element.IsUnbreacable()) {
+		element.exist = false;
+	}
+
 	return true;
 }
 
