@@ -1354,8 +1354,8 @@ void Game::CreateMap5(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 		rectangles[i].Set(
 			Segment(diagonal_point1 + MAP_DYNAMICAL__CENTER_POSITION, diagonal_point2 + MAP_DYNAMICAL__CENTER_POSITION, true),
 			MAP_PROPERTY_COLLIDE_OUTSIDE | MAP_PROPERTY_UNBREACABLE);
-		diagonal_point1.PerpendicularThis();
-		diagonal_point2.PerpendicularThis();
+		diagonal_point1.PerpendicularClockwiseThis();
+		diagonal_point2.PerpendicularClockwiseThis();
 	}
 
 	map.Set(rectangles);
