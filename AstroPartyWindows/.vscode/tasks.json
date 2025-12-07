@@ -6,16 +6,19 @@
             "command": "/usr/bin/g++",
             "args": [
                 "-std=c++17",
-                
+
                 "${workspaceFolder}/AstroPartyWindows/*.cpp",
                 "${workspaceFolder}/AstroPartyWindows/*.c",
                 "${workspaceFolder}/AstroPartyWindows/Classes/*cpp",
                 "${workspaceFolder}/AstroPartyWindows/Classes/Entities/*cpp",
                 "${workspaceFolder}/AstroPartyWindows/SubClasses/*cpp",
-                
-                "-o",
-                "${workspaceFolder}/AstroParty.elf",
 
+                "-o",
+                "${workspaceFolder}/AstroPartyWindows/CosmicDules.elf",
+
+                "-IALLIncludes",
+
+                // sudo apt install libglew-dev libglfw3-dev
                 "-lGLEW",
                 "-lglfw",
                 "-lpthread",
