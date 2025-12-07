@@ -2,9 +2,11 @@
 
 #include <vector>
 
+#ifndef M_PI
 #define M_PI	3.14159265358979323846	// pi
 #define M_PI_2	1.5707796326794897		// pi/2
 #define M_PI_4  0.785398163397448309616	// pi/4
+#endif // M_PI
 
 #define ALL_MAPS__SPAWN_DELTA_ANGLE	0.05f
 
@@ -46,8 +48,8 @@ void Game::Event0()
 	Vec2F pos_8_9(center_position + ex_direction.RotateClockwise(
 		static_cast<float>(global_timer % EVENT0__EXTERNAL_PERIOD) / static_cast<float>(EVENT0__EXTERNAL_PERIOD) * static_cast<float>(M_PI) * 2.0f - static_cast<float>(M_PI)));
 
-	float in_radius = 
-		MAP_ORBIT_MAP__GRAVGEN_SAVE_BARIER_RADIUS + 
+	float in_radius =
+		MAP_ORBIT_MAP__GRAVGEN_SAVE_BARIER_RADIUS +
 		sinf(
 			(float)(global_timer % EVENT0__EXTERNAL_PERIOD) / (float)EVENT0__EXTERNAL_PERIOD * M_PI * 2.0f
 		) * (MAP_ORBIT_MAP__GRAVGEN_SAVE_BARIER_RADIUS - MAP_ORBIT_MAP__GRAVGEN_KILL_BARIER_RADIUS);
@@ -152,7 +154,7 @@ void Game::Event1()
 			direction = ships[min_id].GetPosition() - turrets[0].GetPosition();
 			goto CALCULATE_ANGLE;
 		}
-		
+
 		asteroids_array_mtx.lock();
 		for (size_t id = 0, count = 0; count < asteroids_count; ++id)
 		{
@@ -493,7 +495,7 @@ void Game::Event6()
 		asteroids_array_mtx.unlock();
 	SKIP_CENTER_SPAWN:
 		asteroids_array_mtx.lock();
-			
+
 		for (size_t asteroid = 0; asteroid < 4; ++asteroid)
 		{
 			for (size_t id = 0, count = 0; count < asteroids_count; ++id)
@@ -513,7 +515,7 @@ void Game::Event6()
 				Vec2F(),
 				GenerateRandomInventory(BONUS_BONUS | BONUS_RULE_REVERSE, 1, 2, 1, 2),
 				ASTEROID_SIZE_MEDIUM));
-			
+
 		SKIP_EDGE_SPAWN:
 			asteroid_position.PerpendicularThis();
 		}
@@ -545,7 +547,7 @@ void Game::Event8()
 #define EVENT8__MAX_SIZE		1.5f
 #define EVENT8__MIN_SIZE		0.5f
 
-	
+
 	float temp__angle = (float)(global_timer % EVENT8__PERIOD) / (float)EVENT8__PERIOD * (float)M_PI * 2.0f;
 	float temp__size = (sinf(temp__angle * 4.0f) / 2.0f + 0.5f) * (EVENT8__MAX_SIZE - EVENT8__MIN_SIZE);
 
@@ -583,7 +585,7 @@ void Game::Event9()
 #define EVENT9__CENTER_POSITION 6.0f
 #define EVENT9__ANGLE_PORTAL_TP_POSITION	0.30f
 	if (
-		!object_pull_array[GAME_OBJECT_ASTEROID] || 
+		!object_pull_array[GAME_OBJECT_ASTEROID] ||
 		(global_timer % 500) || asteroids_count >= 10)
 	{
 		return;
@@ -760,9 +762,9 @@ void Game::Event10()
 	{
 		EngineTypes::Bonus::inventory_t inventory = GenerateRandomInventory(
 			BONUS_BONUS | BONUS_RULE_REVERSE,
-			1, 
-			1, 
-			1, 
+			1,
+			1,
+			1,
 			1);
 
 		AddEntity(Asteroid(
@@ -987,7 +989,7 @@ void Game::CreateMap0(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 		position,
 		MAP_ORBIT_MAP__GRAVGEN_KILL_BARIER_RADIUS,
 		MAP_PROPERTY_AGRESSIVE | MAP_PROPERTY_KILLER | MAP_PROPERTY_UNBREACABLE);
-	
+
 	position += Vec2F(0.0f, MAP_ORBIT_MAP__INTERNAL_ORBIT_RADIUS);
 	CreateMap0_PlaceTwoCyrclesAndGravGen(this, cyrcles, 2, position, -MAP_ORBIT_MAP__GRAVGEN_FORCE);
 
@@ -1003,7 +1005,7 @@ void Game::CreateMap0(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 	map.Set(cyrcles);
 
 	/* Spawn entities */
-	
+
 	AddEntity(GravGen(Vec2F(MAP_ORBIT_MAP__CENTER_POSITION), -MAP_ORBIT_MAP__GRAVGEN_FORCE, MAP_ORBIT_MAP__GRAVGEN_RADIUS));
 
 	CreateMap0_PlaceShips(ships_positions, ships_angles);
@@ -1635,7 +1637,7 @@ void Game::CreateMap8(std::vector<Vec2F>& ships_positions, std::vector<float>& s
 		Vec2F(1.0f),
 		points,
 		MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_CLOSED);
-	
+
 	polygons[MAP_BROKEN__DOWN_RIGHT_STAR_POLYGON].Set(
 		Vec2F(MAP_BROKEN__CENTER_POSITION + MAP_BROKEN__STAR_POSITION, MAP_BROKEN__CENTER_POSITION - MAP_BROKEN__STAR_POSITION),
 		0.0f,
@@ -1930,7 +1932,7 @@ void Game::CreateMap10(std::vector<Vec2F>& ships_positions, std::vector<float>& 
 #define MAP_NO_CENTER__DESINTEGRATOR_RIGHT	2
 #define MAP_NO_CENTER__DESINTEGRATOR_DOWN	3
 #define MAP_NO_CENTER__DESINTEGRATOR_LEFT	4
-#define MAP_NO_CENTER__DESINTEGRATORS_COUNT	(MAP_NO_CENTER__DESINTEGRATOR_LEFT - MAP_NO_CENTER__DESINTEGRATOR_UP + 1)	
+#define MAP_NO_CENTER__DESINTEGRATORS_COUNT	(MAP_NO_CENTER__DESINTEGRATOR_LEFT - MAP_NO_CENTER__DESINTEGRATOR_UP + 1)
 #define MAP_NO_CENTER__DESINTEGRATOR_POINTS_COUNT	3
 #define MAP_NO_CENTER__DESINTEGRATOR_SHIFT	(MAP_NO_CENTER__FRAME_OUT_SIDE_LENGHT * 0.95f)
 #define MAP_NO_CENTER_DESINTEGRATOR_MIN_SIZE	(EVENT_10__MIN_SIZE_COEF * MAP_NO_CENTER__FRAME_SIZE)
@@ -1959,7 +1961,7 @@ void Game::CreateMap10(std::vector<Vec2F>& ships_positions, std::vector<float>& 
 		Vec2F(MAP_NO_CENTER__FRAME_POS - MAP_NO_CENTER__FRAME_SIZE / 2.0f, MAP_NO_CENTER__FRAME_POS + MAP_NO_CENTER__FRAME_SIZE / 2.0f),
 		0.0f,
 		Vec2F(1.0f),
-		points, 
+		points,
 		MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_CLOSED);
 
 	points = std::vector<Vec2F>(MAP_NO_CENTER__DESINTEGRATOR_POINTS_COUNT);
@@ -1985,7 +1987,7 @@ void Game::CreateMap10(std::vector<Vec2F>& ships_positions, std::vector<float>& 
 			points,
 			MAP_PROPERTY_CLOSED | MAP_PROPERTY_AGRESSIVE | MAP_PROPERTY_KILLER | MAP_PROPERTY_UNBREACABLE | MAP_PROPERTY_COLLIDE_OUTSIDE);
 	}
-	
+
 	map.Set(polygons);
 
 	ships_positions[0].Set(MAP_NO_CENTER__FRAME_POS - 1.25f, MAP_NO_CENTER__FRAME_POS + 1.3f);
@@ -2056,7 +2058,7 @@ void Game::CreateMap11(std::vector<Vec2F>& ships_positions, std::vector<float>& 
 void Game::CreateMap12(std::vector<Vec2F>& ships_positions, std::vector<float>& ships_angles)
 {
 	/* Generate map */
-	
+
 	auto rectangles = std::vector<Map::Rectangle>(MAP_KALEIDOSCOPE__RECTANGLES_COUNT);
 	rectangles[0].Set(
 		Segment(Vec2F(MAP_KALEIDOSCOPE__CENTER - MAP_KALEIDOSCOPE__SIZE / 2.0f), Vec2F(MAP_KALEIDOSCOPE__SIZE)),

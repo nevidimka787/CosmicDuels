@@ -35,7 +35,7 @@ bool AnnihAreaGen::IsHaveShield() const
 	return buff_inventory & SHIP_BUFF_SHIELD;
 }
 
-const Bomb& AnnihAreaGen::Shoot() const
+Bomb AnnihAreaGen::Shoot() const
 {
 	return Bomb(
 		position + direction * (radius + BOMB_DEFAULT_RADIUS) + host_p->GetVelocity() * 2.0f,

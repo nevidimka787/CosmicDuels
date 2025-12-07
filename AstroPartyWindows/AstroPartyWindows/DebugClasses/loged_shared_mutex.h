@@ -39,6 +39,7 @@ public:
 	const loged_shared_mutex& operator=(const loged_shared_mutex& mtx)
 	{
 		name = mtx.name;
+		return *this;
 	}
 	void printLogs()
 	{

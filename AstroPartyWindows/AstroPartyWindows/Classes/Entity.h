@@ -497,7 +497,7 @@ private:
 	GameTypes::players_count_t player_number;
 	GameTypes::players_count_t player_team_number;
 	const GameTypes::control_flags_t* controle_flags_pointer;
-	
+
 	void SetDefaultMatrix();
 
 protected:
@@ -891,8 +891,8 @@ public:
 		bool exist = true);
 
 	bool IsHaveShield() const;
-	const Bomb& Shoot() const;
-	
+	Bomb Shoot() const;
+
 	void operator=(const AnnihAreaGen& annih_area_gen);
 
 	~AnnihAreaGen();
@@ -1000,7 +1000,7 @@ public:
 	void SetPosition(const Vec2F& position);
 	void SetTPPosition(const Vec2F& position);
 	void SetMode(EngineTypes::Portal::mode_t mode);
-	
+
 	template <typename EntityType>
 	void Teleport(EntityType& entity) const;
 

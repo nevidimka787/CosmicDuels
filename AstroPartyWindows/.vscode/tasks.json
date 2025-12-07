@@ -2,7 +2,7 @@
     "tasks": [
         {
             "type": "shell",
-            "label": "g++ build active file",
+            "label": "g++ Debug",
             "command": "/usr/bin/g++",
             "args": [
                 "-std=c++17",
@@ -23,6 +23,36 @@
                 "-lglfw",
                 "-lpthread",
                 "-ldl"
+            ],
+            "options": {
+                "cwd": ""
+            }
+        },
+        {
+            "type": "shell",
+            "label": "g++ Release",
+            "command": "/usr/bin/g++",
+            "args": [
+                "-std=c++17",
+
+                "${workspaceFolder}/AstroPartyWindows/*.cpp",
+                "${workspaceFolder}/AstroPartyWindows/*.c",
+                "${workspaceFolder}/AstroPartyWindows/Classes/*cpp",
+                "${workspaceFolder}/AstroPartyWindows/Classes/Entities/*cpp",
+                "${workspaceFolder}/AstroPartyWindows/SubClasses/*cpp",
+
+                "-o",
+                "${workspaceFolder}/AstroPartyWindows/CosmicDules.elf",
+
+                "-IALLIncludes",
+
+                // sudo apt install libglew-dev libglfw3-dev
+                "-lGLEW",
+                "-lglfw",
+                "-lpthread",
+                "-ldl",
+
+                "-O3"
             ],
             "options": {
                 "cwd": ""

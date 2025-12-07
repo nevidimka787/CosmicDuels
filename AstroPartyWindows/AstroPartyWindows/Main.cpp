@@ -119,7 +119,7 @@ int main()
     }
 
     main_draw_functions->Free();
-    glfwTerminate(); //clear memory locating for OpenGL 
+    glfwTerminate(); //clear memory locating for OpenGL
     return 0;
 }
 
@@ -140,7 +140,7 @@ std::string getOsName()
     #else
     return "Other";
     #endif
-} 
+}
 
 #pragma warning(disable : 6269)
 

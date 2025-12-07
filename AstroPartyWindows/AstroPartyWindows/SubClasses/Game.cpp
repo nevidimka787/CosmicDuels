@@ -14,9 +14,11 @@
 #pragma warning(disable : 26451)//All integer operations can be overflow. It is absolutly useless warnintg.
 #pragma warning(disable : 26495)
 
+#ifndef M_PI
 #define M_PI	3.14159265358979323846	// pi
 #define M_PI_2	1.5707796326794897		// pi/2
 #define M_PI_4  0.785398163397448309616	// pi/4
+#endif // M_PI
 
 void Game::PhysicThread0()
 {
@@ -34,7 +36,7 @@ void Game::PhysicThread0()
 		ShipsDestroedByKnifes();
 		ShipsDestroedByLasers();
 	}
-	
+
 	if (pilots_count > 0)
 	{
 		PilotsKilledBy(bombs, bombs_count, bombs_array_mtx);
@@ -44,7 +46,7 @@ void Game::PhysicThread0()
 		PilotsCheckInput();
 		PilotsRespawnAuto();
 	}
-	
+
 	if (lasers_count > 0)
 	{
 		LasersDestroyBonuses();
@@ -65,7 +67,7 @@ void Game::PhysicThread0()
 		KnifesDestroyMap();
 		KnifesDestroyTurrets();
 	}
-	
+
 	if (bullets_count > 0)
 	{
 		BombsSpawnedByBulletsAnnihilation();
@@ -82,7 +84,7 @@ void Game::PhysicThread0()
 		BombsDestroyKnifes();
 		BombsDestroyTurrets();
 	}
-	
+
 	if (turrets_count > 0)
 	{
 		TurretsShoot();
@@ -187,7 +189,7 @@ void Game::PhysicThread0()
 		DynamicEntitiesAddForce(grav_gens, grav_gens_count, bullets, bullets_count);
 		bullets_array_mtx.unlock();
 		grav_gens_array_mtx.unlock();
-	}	
+	}
 
 	if (ships_count > 0)
 	{
@@ -225,7 +227,7 @@ void Game::PhysicThread0()
 		map_data_mtx.unlock();
 		asteroids_array_mtx.unlock();
 	}
-	
+
 	if (bombs_count > 0)
 	{
 		bombs_array_mtx.lock();
@@ -240,7 +242,7 @@ void Game::PhysicThread0()
 	DynamicEntitiesCollisions(map, dynamic_particles, dynamic_particles_count);
 	map_data_mtx.unlock();
 	dynamic_particles_array_mtx.unlock();
-	
+
 	UpdateDecelerAreasPhase2();
 	UpdateAnnihAreaGensPhase2();
 	UpdateShipsPhase2();
@@ -417,7 +419,7 @@ EngineTypes::Bonus::inventory_t Game::GenerateRandomInventory(
 		max_objects_count = 3;
 	}
 
-	
+
 	//Inventory generation
 
 	GameTypes::objects_types_count_t objects_types_count = min_objects_types_count + rand() % (max_objects_types_count - min_objects_types_count + 1);
@@ -522,7 +524,7 @@ skip_bonus_pull_set:
 	//Set bonus pull
 
 	MemoryLock();
-	
+
 	for (GameTypes::players_count_t team = 1; team <= GAME_PLAYERS_MAX_COUNT; team++)
 	{
 		scores[team - 1] = -2;
@@ -611,11 +613,11 @@ void Game::InitLevel()
 	std::vector<float> ships_angles = std::vector<float>(GAME_PLAYERS_MAX_COUNT, 0.0f);
 
 	const GameTypes::score_t max_score = GetMaxScore();
-	
+
 	current_event = current_map_id;
 
 	/* Create maps */
-	
+
 	switch (current_map_id)
 	{
 	case MAP_KALEIDOSCOPE:		CreateMap12(ships_positions, ships_angles);	break;
@@ -630,7 +632,7 @@ void Game::InitLevel()
 	case MAP_DECELERATION_AREA:	CreateMap3(ships_positions, ships_angles);	break;
 	case MAP_CYRCLE_ON_CENTER:	CreateMap2(ships_positions, ships_angles);	break;
 	case MAP_TURRET_ON_CENTER:	CreateMap1(ships_positions, ships_angles);	break;
-	default:					
+	default:
 		std::cout << "WARNING::Game::InitLevel: Map value is undeclarated. Defaul map is created." << std::endl;
 	case MAP_ORBIT_MAP:			CreateMap0(ships_positions, ships_angles);	break;
 	}
@@ -763,7 +765,7 @@ void Game::InitLevel()
 
 #if OPEN_GL_REALISATION__SHIPS_CONTROLED_BY_SCREEN_BUTTONS == true
 
-			Vec2F 
+			Vec2F
 				horisontal_points[3] = { Vec2F(0.0f, 0.0f), Vec2F(1.0f, 0.0f), Vec2F(1.0f / 2.0f) },
 				vertical_points[3] = { Vec2F(0.0f, 0.0f), Vec2F(0.0f, 1.0f), Vec2F(1.0f / 2.0f) };
 			Area
@@ -1158,7 +1160,7 @@ void InitMenu_ObjectsPullSelectMenu(Menu& objects_pull_select_menu)
 		Vec2F(1.0f),
 		Vec2F(1.0f, -1.0f)
 	});
-	const auto& buttons = { 
+	const auto& buttons = {
 		Button(BUTTON_ID__SELECT_OBJECT_ASTEROID, Vec2F(-0.3f, 0.85f), Vec2F(0.325f, 0.125f), area, "Asteroid", 6, BUTTON_STATUS_ACTIVE | BUTTON_STATUS_TRUE)
 	};
 	objects_pull_select_menu.Set(Vec2F(0.0f, 0.0f), Vec2F(1.0f, -0.5f), buttons);
@@ -1191,13 +1193,13 @@ void Game::InitMenus()
 	InitMenu_PauseMenu(pause_menu);
 
 	InitMenu_ShipsSelectMenu(ships_select_menu);
-	
+
 	InitMenu_MapPullSelectMenu(map_pull_select_menu);
 
 	InitMenu_ObjectsPullSelectMenu(objects_pull_menu);
 
 	InitMenu_BonusPullSelectMenu(bonus_pull_select_menu);
-	
+
 
 #if OPEN_GL_REALISATION__SHIPS_CONTROLED_BY_SCREEN_BUTTONS == true
 	//ship control menu

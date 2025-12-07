@@ -1,5 +1,8 @@
 {
     "files.associations": {
         "shared_mutex": "cpp"
-    }
+    },
+    "cSpell.words": [
+        "khrplatform"
+    ]
 }
