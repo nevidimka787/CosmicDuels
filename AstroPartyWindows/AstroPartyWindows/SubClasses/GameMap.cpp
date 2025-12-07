@@ -417,7 +417,8 @@ void Game::Event5()
 
 	Vec2F position(rotation_inverse ? EVENT5__SQUARE_SIZE : -EVENT5__SQUARE_SIZE, EVENT5__SQUARE_SIZE);
 
-	if (map.rectangles_array[EVENT5__UP_RECTANGLE].Position().x > EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE)
+	const auto x_pos = map.rectangles_array[EVENT5__UP_RECTANGLE].Position().x;
+	if (x_pos > EVENT5__CENTER_POSITION + EVENT5__SQUARE_SIZE || x_pos < EVENT5__CENTER_POSITION - EVENT5__SQUARE_SIZE)
 	{
 		for (size_t i = EVENT5__UP_RECTANGLE; i <= EVENT5__LEFT_RECTANGLE; ++i)
 		{
