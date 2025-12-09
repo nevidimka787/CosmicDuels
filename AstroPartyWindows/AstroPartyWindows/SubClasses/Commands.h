@@ -20,7 +20,7 @@
 // 	COMMAND__START_ROUND = ((uint8_t)0x07),
 // 	COMMAND__UPDATE = ((uint8_t)0x08),
 // 	COMMAND__UPDATE_PLAYER_FLAGS = ((uint8_t)0x09),
-// 	COMMNAD__UPDATE_GLOBAL_TIMER = ((uint8_t)0x0A),
+// 	COMMAND__UPDATE_GLOBAL_TIMER = ((uint8_t)0x0A),
 
 // 	// Client commands.
 
@@ -48,16 +48,16 @@
 // 	Command();
 // 	// SetHistoryList; EndRound; StartMatch; NeedUpdate;
 // 	Command(command_id_t command_id, size_t command_data_length = 0, void* command_data = nullptr);
-	
+
 // 	// Spawn; EndMatch; UpdatePlayerFlagsOnServer; SetTeam;
 // 	Command(command_id_t command_id, uint8_t first_argument, size_t command_data_length = 0, void* command_data = nullptr);
-	
+
 // 	// Delete; Update; UpdatePlayerFlags;
 // 	Command(command_id_t command_id, uint8_t first_argument, uint32_t second_argument, size_t command_data_length = 0, void* command_data = nullptr);
-	
+
 // 	// UpdateGlobalTimer;
 // 	Command(command_id_t command_id, uint32_t first_argument);
-	
+
 // 	Command(size_t command_length, void* command_full_data);
 
 // 	void Execute();
@@ -83,7 +83,7 @@
 // 	std::string ParsShip(size_t shift);
 // 	std::string ParsTurret(size_t shift);
 
-// 	std::string ParsSpaw();
+// 	std::string ParsSpawn();
 // 	std::string ParsDelete();
 // 	std::string ParsSetHistoryList();
 // 	std::string ParsEndMatch();
