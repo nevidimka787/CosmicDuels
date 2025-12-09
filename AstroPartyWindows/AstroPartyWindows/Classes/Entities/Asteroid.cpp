@@ -114,7 +114,7 @@ bool Asteroid::Collision(const Map::MapData& map)
 			collision = true;
 		}
 	}
-	for (auto& element : map.cyrcles_array)
+	for (auto& element : map.circles_array)
 	{
 		if (element.exist && DynamicEntity::Collision(element))
 		{

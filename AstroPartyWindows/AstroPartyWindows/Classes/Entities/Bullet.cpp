@@ -47,7 +47,7 @@ Bullet::Bullet(
 
 bool Bullet::Collision(Map::MapData& map)
 {
-	for (auto& element : map.cyrcles_array)
+	for (auto& element : map.circles_array)
 	{
 		if (CollisionWithElement(element)) return true;
 	}

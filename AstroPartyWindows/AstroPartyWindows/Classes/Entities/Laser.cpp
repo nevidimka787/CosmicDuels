@@ -62,7 +62,7 @@ bool Laser::Collision(Map::MapData& map, Vec2F& nearest_intersect_position, Vec2
 	void* collision_element_p = nullptr;
 	uint8_t element_type = MAP_ELEMENT_TYPE__NONE_TYPE;
 
-	for (auto& element : map.cyrcles_array)
+	for (auto& element : map.circles_array)
 	{
 		Vec2F intersect_position;
 		float distance_to_intersection;
@@ -127,9 +127,9 @@ bool Laser::Collision(Map::MapData& map, Vec2F& nearest_intersect_position, Vec2
 	switch (element_type)
 	{
 	case MAP_ELEMENT_TYPE__CYRCLE:
-		if (!((Map::Cyrcle*)collision_element_p)->IsUnbreacable())
+		if (!((Map::Circle*)collision_element_p)->IsUnbreacable())
 		{
-			((Map::Cyrcle*)collision_element_p)->exist = false;
+			((Map::Circle*)collision_element_p)->exist = false;
 		}
 		break;
 	case MAP_ELEMENT_TYPE__POLYGON:

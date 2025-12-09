@@ -1,14 +1,14 @@
 #pragma once
 
-//Count of tiks between pre last ship was killed and match will be completed.
+// Count of tics between pre last ship was killed and match will be completed.
 #define GAME_END_MATCH_DELAY 100
 
-//Maximum count of tiks between two clicks needed for activated double click event.
+// Maximum count of tics between two clicks needed for activated double click event.
 #define GAME_DOUBLE_CLK_TIME	10
-//Count of tiks between to times of activating burnout.
-#define GAME_BURNOUT_COULDOWN	50
-//Count of tiks during whitch the camera will be having bluring effect.
-#define GAME_BOMB_STUNING_TIME	1000
+// Count of tics between to times of activating burnout.
+#define GAME_BURNOUT_COOLDOWN	50
+// Count of tics of the blurring effect for the camera.
+#define GAME_BOMB_STUNNING_TIME	1000
 
 /*
 asteroids, bombs, bonuses, bullets,
@@ -37,175 +37,175 @@ turrets, mega lasers
 #define GAME_OBJECT_TYPE_LOOP_LASER_KNIFE	11u
 
 
-//tics to next shoot
-#define GAME_DELLAY_BETWEEN_SHOOTS		30
-#define GAME_ADD_DELLAY_BETWEEN_TRIPLES	10 //dellay added to GAME_DELLAY_BETWEEN_SHOOTS
-#define GAME_ADD_DELLAY_BONUS_USE		20 //dellay added to GAME_DELLAY_BETWEEN_SHOOTS
-#define GAME_ADD_DELLAY_COMBO_USE		5  //dellay added to GAME_ADD_DELLAY_BETWEEN_BONUSES_USE
+// tics to next shoot
+#define GAME_DELAY_BETWEEN_SHOOTS		30
+#define GAME_ADD_DELAY_BETWEEN_TRIPLES	10 // delay added to GAME_DELAY_BETWEEN_SHOOTS
+#define GAME_ADD_DELAY_BONUS_USE		20 // delay added to GAME_DELAY_BETWEEN_SHOOTS
+#define GAME_ADD_DELAY_COMBO_USE		5  // delay added to GAME_ADD_DELAY_BETWEEN_BONUSES_USE
 
-//The maximum count of deceleration areas on the map.
+// The maximum count of deceleration areas on the map.
 #define GAME_DECEL_AREAS_MAX_COUNT	32
-//The maximum count of gravity generators on the map.
+// The maximum count of gravity generators on the map.
 #define GAME_GRAV_GENS_MAX_COUNT	32
-//The maximum possible count of players on the map.
+// The maximum possible count of players on the map.
 #define GAME_PLAYERS_MAX_COUNT		4
-//The maximum possible count of knives on the map.
+// The maximum possible count of knives on the map.
 #define GAME_KNIVES_MAX_COUNT		(UINT8_MAX - 1)
-//The maximum possible count of lasers on the map.
+// The maximum possible count of lasers on the map.
 #define GAME_LASERS_MAX_COUNT		(UINT8_MAX - 1)
-//The maximum possible count of bombs on the map.
+// The maximum possible count of bombs on the map.
 #define GAME_BOMBS_MAX_COUNT		(UINT8_MAX - 1)
-//The maximum possible count of turrets on the map.
+// The maximum possible count of turrets on the map.
 #define GAME_TURRETS_MAX_COUNT		32
-//The maximum possible count of lasers on the map.
+// The maximum possible count of lasers on the map.
 #define GAME_MEGA_LASERS_MAX_COUNT	4
-//The maximum possible count of asteroids on the map.
+// The maximum possible count of asteroids on the map.
 #define GAME_ASTEROIDS_MAX_COUNT	(UINT8_MAX - 1)
-//The maximum possible count of annihilation area generators on the map.
+// The maximum possible count of annihilation area generators on the map.
 #define GAME_ANNIH_AREAS_GENS_MAX_COUNT	32
-//The maximum possible count of bonuses on the map.
+// The maximum possible count of bonuses on the map.
 #define GAME_BONUSES_MAX_COUNT		(UINT8_MAX - 1)
-//The maximum possible count of bullets on the map.
+// The maximum possible count of bullets on the map.
 #define GAME_BULLETS_MAX_COUNT		(UINT16_MAX - 1)
-//The maximum possible count of particles on the map.
+// The maximum possible count of particles on the map.
 #define GAME_DYNAMIC_PARTICLES_MAX_COUNT	(UINT16_MAX - 1)
-//The maximum possible count of particles on the map.
+// The maximum possible count of particles on the map.
 #define GAME_PARTICLES_MAX_COUNT	(UINT16_MAX - 1)
-//The maximum possible count of portals on the map.
+// The maximum possible count of portals on the map.
 #define GAME_PORTALS_MAX_COUNT		(UINT8_MAX - 1)
-//The maximum possible count of map's rectangles on the map.
+// The maximum possible count of map's rectangles on the map.
 #define GAME_RECTANGLES_MAX_COUNT	128
 
-//KnockBack force of the pilot.
+// KnockBack force of the pilot.
 #define GAME_KNOCKBACK_FORCE_OF_THE_PILOT	0.00005f
-//KnockBack force of the ship.
+// KnockBack force of the ship.
 #define GAME_KNOCKBACK_FORCE_OF_THE_SHIP	0.0001f
-//Ship's gravitation force.
+// Ship's gravitation force.
 #define GAME_SHIP_GRAVITATION_FORCE			0.0001f
-//Sheep's radius of influence.
-#define GAME_SHIP_INFLUENCE_RADIUS_COEFFISIENT	5.0f
-//Default anguar velocity of ships.
+// Sheep's radius of influence.
+#define GAME_SHIP_INFLUENCE_RADIUS_COEF	5.0f
+// Default angular velocity of ships.
 #define GAME_SHIP_ANGULAR_VELOCITY				0.03f
-//Default angular velocity of pilots.
+// Default angular velocity of pilots.
 #define GAME_PILOT_ANGULAR_VELOCITY				GAME_SHIP_ANGULAR_VELOCITY
 
-	//game engine rules
+	// game engine rules
 
-	//bonus pull
+	// bonus pull
 
-//bonus id
+// bonus id
 #define GAME_BONUS_ID_LOOP		0u
-//bonus id
+// bonus id
 #define GAME_BONUS_ID_LASER		1u
-//bonus id
+// bonus id
 #define GAME_BONUS_ID_BOMB		2u
-//bonus id
+// bonus id
 #define GAME_BONUS_ID_KNIFE		3u
-//buff id
+// buff id
 #define GAME_BONUS_ID_TRIPLE	4u
-//buff id
+// buff id
 #define GAME_BONUS_ID_SHIELD	5u
-//buff id
+// buff id
 #define GAME_BONUS_ID_STREAM	6u
-//rule id
+// rule id
 #define GAME_BONUS_ID_REVERS	7u
 
 
-	//bonus pull
+	// bonus pull
 
-	//map pull
+	// map pull
 
-//map id.
+// map id.
 #define MAP_ORBIT_MAP			0u
-//map id.
+// map id.
 #define MAP_TURRET_ON_CENTER	1u
-//map id.
+// map id.
 #define MAP_CIRCLE_ON_CENTER	2u
-//map id.
+// map id.
 #define MAP_DECELERATION_AREA	3u
-//map id.
+// map id.
 #define MAP_MEGA_LASERS			4u
-//map id.
+// map id.
 #define MAP_DYNAMICAL			5u
-//map id.
+// map id.
 #define MAP_DESTROYABLE			6u
-//map id.
+// map id.
 #define MAP_AGGRESSIVE			7u
-//map id.
+// map id.
 #define MAP_BROKEN				8u
-//map id.
+// map id.
 #define MAP_PORTAL				9u
-//map id
+// map id
 #define MAP_NO_CENTER			10u
-//map id
+// map id
 #define MAP_COLLIDER				11u
-//map id
+// map id
 #define MAP_KALEIDOSCOPE		12u
 
-	//map pull
+	// map pull
 
-	//object pull
+	// object pull
 
-//object id
+// object id
 #define GAME_OBJECT_ASTEROID	0u
 
-	//object pull
+	// object pull
 
-	//game rules
+	// game rules
 
-//If the rule applys then players will spawn in random spawns
-//else players will appear in places corresponding to the positions of the buttons on the screen.
+// If the rule applys then players will spawn in random spawns
+// else players will appear in places corresponding to the positions of the buttons on the screen.
 #define GAME_RULE_PLAYERS_SPAWN_POSITION_RANDOMIZE		(1u << 0u)
-//If the rule applys then spawning players will have random directions
-//else players will hahe default direction.
+// If the rule applys then spawning players will have random directions
+// else players will have default direction.
 #define GAME_RULE_PLAYERS_SPAWN_DIRECTION_RANDOMIZE		(1u << 1u)
-//If the rule applys then players will spawn with bonuses
-//else players will spawn with out bonuses.
+// If the rule applys then players will spawn with bonuses
+// else players will spawn with out bonuses.
 #define GAME_RULE_PLAYERS_SPAWN_THIS_BONUS				(1u << 2u)
-//If the rule applys then spawning players will have different bonuses
-//else players will have same bonuses.
+// If the rule applys then spawning players will have different bonuses
+// else players will have same bonuses.
 #define GAME_RULE_PLAYERS_SPAWN_THIS_DIFFERENT_BONUS	(1u << 3u)
-//If the rule applys then every collecting by ship bonus will multiple free times.
+// If the rule applys then every collecting by ship bonus will multiple free times.
 #define GAME_RULE_TRIPLE_BONUSES						(1u << 4u)
-//Spawning players will have shields.
+// Spawning players will have shields.
 #define GAME_RULE_PLAYERS_SPAWN_THIS_SHIELD				(1u << 5u)
-//Spawning players will have powered gun shooting free bullets.
+// Spawning players will have powered gun shooting free bullets.
 #define GAME_RULE_PLAYERS_SPAWN_THIS_TRIPLE				(1u << 6u)
-//NOT USE
+// NOT USE
 #define GAME_RULE_TEAM_PLAY								(1u << 7u)
-//Palyer can kill player from same team.
+// Player can kill player from the same team.
 #define GAME_RULE_FRIENDLY_FIRE							(1u << 8u)
-//Player can restor player frome same team.
+// Player can restore player from the same team.
 #define GAME_RULE_FRIENDLY_SHEEP_CAN_RESTORE			(1u << 9u)
-//If the rule apply then pilots can autorestore and for completing math need kill pilots
-//else pilots can not autorestore and for completing math need kill ships only.
+// If the rule apply then pilots can autorestore and for completing math need kill pilots
+// else pilots can not autorestore and for completing math need kill ships only.
 #define GAME_RULE_NEED_KILL_PILOT						(1u << 10u)
-//NOT USE
+// NOT USE
 #define GAME_RULE_RANDOMLY_MAP							(1u << 11u)
-//NOT USE
+// NOT USE
 #define GAME_RULE_BONUSES_IS_SPAWNING					(1u << 12u)
-//NOT REALISATED
+// NOT REALIZED YET
 #define GAME_RULE_BALANCE_ACTIVE						(1u << 13u)
-//If the rule applys then bullets will be destroed then collision with knives and knives will be lossing health
-//else bullets will not collision with knives.
+// If the rule applys then bullets will be destroyed then collision with knives and knives will be lossing health
+// else bullets will not collision with knives.
 #define GAME_RULE_KNIVES_CAN_DESTROY_BULLETS			(1u << 14u)
 
-//game rules activing after start of the game
+// game rules activating after start of the game
 #define GAME_RULE_DEFAULT_GAME_RULES (GAME_RULE_PLAYERS_SPAWN_THIS_BONUS | GAME_RULE_NEED_KILL_PILOT | GAME_RULE_BONUSES_IS_SPAWNING)
 
-	//game rules
+	// game rules
 
-	//match rules
+	// match rules
 
-//how many times elements will be swaping
+// how many times elements will be swapping
 #define GAME_RANDOM_ITERATIONS_COUNT			8u
-//count of maps
+// count of maps
 #define GAME_MAPS_COUNT							13u
-//count of objects types
+// count of objects types
 #define GAME_OBJECTS_COUNT						1u
-//count og bonuses types
+// count og bonuses types
 #define GAME_BONUS_INVENTORY_SIZE				8u
-//How mutch differenc in score need to activating autobalance.
+// How much difference in score need to activating autobalance.
 #define GAME_BALANCE_ACTIVATE_DIFFERENCE_SCORES	3u
 #define GAME_SCORE_START	0
 
@@ -213,196 +213,196 @@ turrets, mega lasers
 #define GAME_WINNERS_MATCH_ROUNDS	1
 #define GAME_POUND_RESULTS_MAP_DEFAULT_CELL_SIZE	0.8f
 
-	//matc rules
+	// match rules
 
-	//buttons
+	// buttons
 
 // nothing
 #define BUTTON_ID__NOTHING				0u
 
-	//main menu
+	// main menu
 
-//button id
+// button id
 #define BUTTON_ID__START_MATCH			1u
-//button id
+// button id
 #define BUTTON_ID__START_GAME			2u
-//button id
+// button id
 #define BUTTON_ID__GO_TO_OPTINS_MENU	3u
-//button id
+// button id
 #define BUTTON_ID__GO_TO_CREDITS_MENU	4u
-//button id
+// button id
 #define BUTTON_ID__EXIT					5u
 
-	//main menu
+	// main menu
 
-	//options menu
+	// options menu
 
-//set gamerule
+// set gamerule
 #define BUTTON_ID__SET_RANDOM_SPAWN					10u
-//set gamerule
+// set gamerule
 #define BUTTON_ID__SET_RANDOM_SPAWN_DIRECTION		11u
-//set gamerule
+// set gamerule
 #define BUTTON_ID__SET_SPAWN_THIS_BONUS				12u
-//set gamerule
+// set gamerule
 #define BUTTON_ID__SET_SPAWN_THIS_DIFFERENT_BONUSES	13u
-//set gamerule
+// set gamerule
 #define BUTTON_ID__SET_TRIPLE_BONUSES				14u
-//set gamerule
+// set gamerule
 #define BUTTON_ID__SET_SPAWN_THIS_TRIPLE_BUFF		15u
-//set gamerule
+// set gamerule
 #define BUTTON_ID__SET_SPAWN_THIS_SHIELD_BUFF		16u
-//set gamerule
+// set gamerule
 #define BUTTON_ID__SET_ACTIVE_BALANCE				17u
-//set gamerule
+// set gamerule
 #define BUTTON_ID__SET_FRIENDLY_SHEEP_CAN_RESTORE	18u
-//set gamerule
+// set gamerule
 #define BUTTON_ID__SET_ACTIVE_FRIENDLY_FIRE			19u
-//set gamerule
+// set gamerule
 #define BUTTON_ID__SET_PILOT_CAN_RESPAWN			20u
-//set gamerule
+// set gamerule
 #define BUTTON_ID__SET_NEED_KILL_PILOT				21u
-//set gamerule
+// set gamerule
 #define BUTTON_ID__SET_KNIVES_CAN_DESTROY_BULLETS	22u
 
-//menu navigation
+// menu navigation
 #define BUTTON_ID__GO_TO_SELECT_MAP_MENU			30u
-//menu navigation
+// menu navigation
 #define BUTTON_ID__GO_TO_SELECT_BONUSES_MENU		31u
-//menu navigation
+// menu navigation
 #define BUTTON_ID__GO_TO_SELECT_START_BONUSES_MENU	32u
-//menu navigation
+// menu navigation
 #define BUTTON_ID__GO_TO_SELECT_OBJECTS_MENU		33u
 
-	//options menu
+	// options menu
 
-	//pause menu
+	// pause menu
 
-//menu navigation
+// menu navigation
 #define BUTTON_ID__RESUME_MATCH		50u
-//menu navigation
+// menu navigation
 #define BUTTON_ID__GO_TO_MAIN_MENU	51u
 
-	//pause menu
+	// pause menu
 
-//controles (NOT REALISATED)
+// controls (NOT REALIZED)
 #define BUTTON_ID__SHIP1_SHOOT		60u
-//controles (NOT REALISATED)
+// controls (NOT REALIZED)
 #define BUTTON_ID__SHIP1_ROTATE		61u
-//controles (NOT REALISATED)
+// controls (NOT REALIZED)
 #define BUTTON_ID__SHIP2_SHOOT		62u
-//controles (NOT REALISATED)
+// controls (NOT REALIZED)
 #define BUTTON_ID__SHIP2_ROTATE		63u
-//controles (NOT REALISATED)
+// controls (NOT REALIZED)
 #define BUTTON_ID__SHIP3_SHOOT		64u
-//controles (NOT REALISATED)
+// controls (NOT REALIZED)
 #define BUTTON_ID__SHIP3_ROTATE		65u
-//controles (NOT REALISATED)
+// controls (NOT REALIZED)
 #define BUTTON_ID__SHIP4_SHOOT		66u
-//controles (NOT REALISATED)
+// contr (NOT REALIZED)
 #define BUTTON_ID__SHIP4_ROTATE		67u
 
-	//select sheeps menu
+	// select ships menu
 
-//selected teams
+// selected teams
 #define BUTTON_ID__SELECT_SHIP_1	80u
-//selected teams
+// selected teams
 #define BUTTON_ID__SELECT_SHIP_2	81u
-//selected teams
+// selected teams
 #define BUTTON_ID__SELECT_SHIP_3	82u
-//selected teams
+// selected teams
 #define BUTTON_ID__SELECT_SHIP_4	83u
 
-	//select sheeps menu
+	// select ships menu
 
-	//select bonuses menu
+	// select bonuses menu
 
-//select bonus
+// select bonus
 #define BUTTON_ID__SELECT_BONUS				100u
-//select bonus
+// select bonus
 #define BUTTON_ID__SELECT_BONUS_LOOP		(BUTTON_ID__SELECT_BONUS + 0u)
-//select bonus
+// select bonus
 #define BUTTON_ID__SELECT_BONUS_LASER		(BUTTON_ID__SELECT_BONUS + 1u)
-//select bonus
+// select bonus
 #define BUTTON_ID__SELECT_BONUS_BOMB		(BUTTON_ID__SELECT_BONUS + 2u)
-//select bonus
+// select bonus
 #define BUTTON_ID__SELECT_BONUS_KNIFE		(BUTTON_ID__SELECT_BONUS + 3u)
 
-	//select bonuses menu
+	// select bonuses menu
 
-	//select objects menu
+	// select objects menu
 
-//select object
+// select object
 #define BUTTON_ID__SELECT_OBJECT			200u
-//select object
+// select object
 #define BUTTON_ID__SELECT_OBJECT_ASTEROID	(BUTTON_ID__SELECT_OBJECT + 0u)
 
-	//select objects menu
+	// select objects menu
 
-	//select map pull menu
+	// select map pull menu
 
-//select map
+// select map
 #define BUTTON_ID__SELECT_MAP	300u
-//select map
+// select map
 #define BUTTON_ID__SELECT_MAP_0	(BUTTON_ID__SELECT_MAP + MAP_ORBIT_MAP)
-//select map
+// select map
 #define BUTTON_ID__SELECT_MAP_1	(BUTTON_ID__SELECT_MAP + MAP_TURRET_ON_CENTER)
-//select map
+// select map
 #define BUTTON_ID__SELECT_MAP_2	(BUTTON_ID__SELECT_MAP + MAP_CIRCLE_ON_CENTER)
-//select map
+// select map
 #define BUTTON_ID__SELECT_MAP_3	(BUTTON_ID__SELECT_MAP + MAP_DECELERATION_AREA)
-//select map
+// select map
 #define BUTTON_ID__SELECT_MAP_4	(BUTTON_ID__SELECT_MAP + MAP_MEGA_LASERS)
-//select map
+// select map
 #define BUTTON_ID__SELECT_MAP_5	(BUTTON_ID__SELECT_MAP + MAP_DYNAMICAL)
-//select map
+// select map
 #define BUTTON_ID__SELECT_MAP_6	(BUTTON_ID__SELECT_MAP + MAP_DESTROYABLE)
-//select map
+// select map
 #define BUTTON_ID__SELECT_MAP_7	(BUTTON_ID__SELECT_MAP + MAP_AGGRESSIVE)
-//select map
+// select map
 #define BUTTON_ID__SELECT_MAP_8	(BUTTON_ID__SELECT_MAP + MAP_BROKEN)
 
-	//select map pull menu
+	// select map pull menu
 
-	//ships bonuses
+	// ships bonuses
 
 #define SHIP_BONUS__LOOP_BULLETS_IN_LOOP	SHIP_BULLETS_IN_LOOP
 #define SHIP_BONUS__LOOP_BULLETS_RADIUS		(BULLET_DEFAULT_RADIUS / 2.0f)
 #define SHIP_BONUS__LOOP_BULLET_VELOCITY	BULLET_DEFAULT_VELOCITY
 
-	//ships bonuses
+	// ships bonuses
 
-	//ships super bonuses
+	// ships super bonuses
 
-//count of bombs in "loop of bombs" ability
+// count of bombs in "loop of bombs" ability
 #define SHIP_SUPER_BONUS__BOMBS_IN_LOOP			8u
-//velocity of each bomb in loop in "loop of bombs" ability
+// velocity of each bomb in loop in "loop of bombs" ability
 #define SHIP_SUPER_BONUS__BOMBS_LOOP_VELOCITY	BULLET_DEFAULT_VELOCITY
-//count of bombs in one shoot in "line of bombs" ability
+// count of bombs in one shoot in "line of bombs" ability
 #define SHIP_SUPER_BONUS__BOMBS_IN_LASER		14u
-//velocity of fastest bomb in one shooted line in "line of bombs" ability
+// velocity of fastest bomb in one shot line in "line of bombs" ability
 #define SHIP_SUPER_BONUS__BOMBS_LASER_VELOCITY	(BULLET_DEFAULT_VELOCITY * 2.0f)
-//radius of each bomb in one shooted line in "line of bombs" ability
+// radius of each bomb in one shot line in "line of bombs" ability
 #define SHIP_SUPER_BONUS__BOMBS_LASER_RADIUS	(BOMB_DEFAULT_RADIUS / 2.0f)
-//count of knives in loop in "cyrcle knife" ability
-#define SHIP_SUPER_BONUS__KNIFES_IN_LOOP		16u
+// count of knives in loop in "circle knife" ability
+#define SHIP_SUPER_BONUS__KNIVES_IN_LOOP		16u
 
-//count of bullets in loop created by small asteroid and "powered laser" ability
+// count of bullets in loop created by small asteroid and "powered laser" ability
 #define SHIP_SUPER_BONUS__BULLETS_IN_LOOP_BY_ASTEROID_SMALL		10
-//radius of bullets in loop created by small asteroid and "powered laser" ability
+// radius of bullets in loop created by small asteroid and "powered laser" ability
 #define SHIP_SUPER_BONUS__BULLETS_RADIUS_BY_ASTEROID_SMALL		(BULLET_DEFAULT_RADIUS / 2.0f)
-//count of bullets in loop created by medium asteroid and "powered laser" ability
+// count of bullets in loop created by medium asteroid and "powered laser" ability
 #define SHIP_SUPER_BONUS__BULLETS_IN_LOOP_BY_ASTEROID_MEDIUM	(SHIP_SUPER_BONUS__BULLETS_IN_LOOP_BY_ASTEROID_SMALL * 2)
-//radius of bullets in loop created by medium asteroid and "powered laser" ability
+// radius of bullets in loop created by medium asteroid and "powered laser" ability
 #define SHIP_SUPER_BONUS__BULLETS_RADIUS_BY_ASTEROID_MEDIUM		SHIP_SUPER_BONUS__BULLETS_RADIUS_BY_ASTEROID_SMALL
-//count of bullets in loop created by big asteroid and "powered laser" ability
+// count of bullets in loop created by big asteroid and "powered laser" ability
 #define SHIP_SUPER_BONUS__BULLETS_IN_LOOP_BY_ASTEROID_BIG		(SHIP_SUPER_BONUS__BULLETS_IN_LOOP_BY_ASTEROID_MEDIUM * 2)
-//radius of bullets in loop created by big asteroid and "powered laser" ability
+// radius of bullets in loop created by big asteroid and "powered laser" ability
 #define SHIP_SUPER_BONUS__BULLETS_RADIUS_BY_ASTEROID_BIG		SHIP_SUPER_BONUS__BULLETS_RADIUS_BY_ASTEROID_SMALL
 
-//count of health points of knife created by "long knife" ability
+// count of health points of knife created by "long knife" ability
 #define SHIP_SUPER_BONUS__LONG_KNIFE_HEALTH	10u
 
-//Count of tick in that annihilation area will be existing.
+// Count of tick in that annihilation area will be existing.
 #define SHIP_SUPER_BONUS__ANNIHILATION_AREA_EXIST_PERIOD	600u
 
 #define SHIP_SUPER_BONUS__ANNIHILATORS_IN_LOOP	24
@@ -411,41 +411,41 @@ turrets, mega lasers
 #define SHIP_SUPER_BONUS__ANNIHILATORS_IN_LASER	25
 #define SHIP_SUPER_BONUS__ANNIHILATORS_IN_LASER_DEFAULT_VELOCITY		(BULLET_DEFAULT_VELOCITY * 1.0f)
 
-#define SHIP_SUPER_BONUS__LONG_KNIFES_IN_LOOP	10
+#define SHIP_SUPER_BONUS__LONG_KNIVES_IN_LOOP	10
 
 
-	//ships super bonuses
+	// ships super bonuses
 
-	//threads
+	// threads
 
-//Time (in microseconds) between two physic tiks.
+// Time (in microseconds) between two physic tics.
 #define THREAD_PHYSIC_TIK_PERIOD	(unsigned)(10000.0f * 0.995f)
-//Time (in milliseconds) between two console updates.
+// Time (in milliseconds) between two console updates.
 #define THREAD_INPUT_TIK_PERIOD		10
 
-//shift to data cell
+// shift to data cell
 #define THREAD_PHASE_1		0u
-//shift to data cell
+// shift to data cell
 #define THREAD_PHASE_2		1u
-//cell value
+// cell value
 #define THREAD_COMPLETE		0x01u
-//mask of one cell
+// mask of one cell
 #define THREAD_MASK_CELL	0x03u
-//fill full
+// fill full
 #define THREAD_MASK_FULL	0xFFFFu
-//not fill
+// not fill
 #define THREAD_MASK_NULL	0x0000u
 #define THREAD_NEW_CYCLE	0x0000u
-//shift to data cell
+// shift to data cell
 #define THREAD_0			0u
-//shift to data cell
+// shift to data cell
 #define THREAD_1			2u
-//shift to data cell
+// shift to data cell
 #define THREAD_2			4u
-//shift to data cell
+// shift to data cell
 #define THREAD_3			6u
 
-//template
+// template
 #define THREAD_PHASE_1_COMPLETE	(				\
 	(THREAD_COMPLETE << THREAD_PHASE_1 << THREAD_0)	|	\
 	(THREAD_COMPLETE << THREAD_PHASE_1 << THREAD_1)	|	\
@@ -453,7 +453,7 @@ turrets, mega lasers
 	(THREAD_COMPLETE << THREAD_PHASE_1 << THREAD_3)		\
 	)
 
-//template
+// template
 #define THREAD_PHASE_2_COMPLETE	(				\
 	(THREAD_COMPLETE << THREAD_PHASE_2 << THREAD_0)	|	\
 	(THREAD_COMPLETE << THREAD_PHASE_2 << THREAD_1)	|	\
@@ -461,9 +461,9 @@ turrets, mega lasers
 	(THREAD_COMPLETE << THREAD_PHASE_2 << THREAD_3)		\
 	)
 
-//template
+// template
 #define THREAD_ALL_COMPLETE ((THREAD_COMPLETE << THREAD_PHASE_1) | (THREAD_COMPLETE << THREAD_PHASE_2))
-//template
+// template
 #define THREAD_ALL_PHASE_COMPLETE	(		\
 	(THREAD_ALL_COMPLETE << THREAD_0)	|	\
 	(THREAD_ALL_COMPLETE << THREAD_1)	|	\
@@ -472,4 +472,4 @@ turrets, mega lasers
 	)
 
 
-	//threads
+	// threads

@@ -23,14 +23,14 @@ public:
 	void OpenOptionsMenu();
 	void OpenMainMenu();
 	void OpenPauseMenu();
-	void OpenSheepsSelectMenu();
+	void OpenShipsSelectMenu();
 	void OpenMapPullSelectMenu();
 	void OpenSpawnObjectsSelectMenu();
-	void OpenSheepsControlMenu();
+	void OpenShipsControlMenu();
 
 	void StartMatch();
-	void PauseRaund();
-	void ResumeRaund();
+	void PauseRound();
+	void ResumeRound();
 	void EndRound();
 	void EndMatch();
 	void SelectShip(GameTypes::players_count_t sheep_number, GameTypes::players_count_t team_number);
@@ -81,7 +81,7 @@ public:
 
 	std::vector<GameTypes::players_count_t>* game_p__teams;
 	GameTypes::game_rules_t* game_p__game_rules;
-	 
+
 	Menu** game_p__current_active_menu;
 
 	Menu* game_p__bonus_pull_select_menu;

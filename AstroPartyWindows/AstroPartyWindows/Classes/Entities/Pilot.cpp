@@ -70,7 +70,7 @@ DynamicParticle Pilot::CreateShards(GameTypes::tic_t current_tic)
 		current_tic + PARTICLE_PERIOD_SHARDS_PILOT);
 }
 
-GameTypes::tic_t Pilot::GetRespawnDellay() const
+GameTypes::tic_t Pilot::GetRespawnDelay() const
 {
 	return respawn_timer;
 }

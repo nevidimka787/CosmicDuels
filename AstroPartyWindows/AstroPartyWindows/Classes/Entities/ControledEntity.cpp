@@ -62,7 +62,7 @@ ControlledEntity::ControlledEntity(
 bool ControlledEntity::Collision(const Map::MapData& map)
 {
 	bool collision = false;
-	for (auto& element : map.cyrcles_array)
+	for (auto& element : map.circles_array)
 	{
 		collision |= CollisionWithElement(element);
 	}
@@ -277,7 +277,7 @@ bool ControlledEntity::IsCollision<Laser>(const Laser& laser) const
 	return false;
 }
 
-bool ControlledEntity::IsColectEntity(const DynamicEntity& stored_entity) const
+bool ControlledEntity::IsCollectEntity(const DynamicEntity& stored_entity) const
 {
 	if (IsCollision(stored_entity))
 	{

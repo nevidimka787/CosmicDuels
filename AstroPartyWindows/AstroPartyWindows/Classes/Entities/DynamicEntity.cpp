@@ -136,7 +136,7 @@ bool DynamicEntity::Collision(const Map::Rectangle& rectangle)
 	return false;
 }
 
-bool DynamicEntity::Collision(const Map::Cyrcle& cyrcle)
+bool DynamicEntity::Collision(const Map::Circle& cyrcle)
 {
 	float distance;
 	bool inside;
@@ -222,7 +222,7 @@ bool DynamicEntity::Collision(const Map::Polygon& polygon)
 bool DynamicEntity::Collision(const Map::MapData& map)
 {
 	bool collision = false;
-	for (auto& element : map.cyrcles_array)
+	for (auto& element : map.circles_array)
 	{
 		if (element.exist)
 		{
@@ -629,7 +629,7 @@ bool DynamicEntity::IsCollision<Map::Rectangle>(const Map::Rectangle& rectangle)
 }
 
 template<>
-bool DynamicEntity::IsCollision<Map::Cyrcle>(const Map::Cyrcle& cyrcle) const
+bool DynamicEntity::IsCollision<Map::Circle>(const Map::Circle& cyrcle) const
 {
 	const Segment trace(position, velocity - cyrcle.GetVelocity());
 	const Vec2F& cyrcle_position = cyrcle.GetPosition();
@@ -682,7 +682,7 @@ bool DynamicEntity::IsCollision<Map::Polygon>(const Map::Polygon& polygon) const
 template<>
 bool DynamicEntity::IsCollision<Map::MapData>(const Map::MapData& map) const
 {
-	for (auto& element : map.cyrcles_array)
+	for (auto& element : map.circles_array)
 	{
 		if (!element.exist) continue;
 		if (IsCollision(element)) return true;

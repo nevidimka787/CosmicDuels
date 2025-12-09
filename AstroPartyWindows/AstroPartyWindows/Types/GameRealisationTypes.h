@@ -3,7 +3,7 @@
 
 namespace GameTypes
 {
-	//typedefs
+	// typedefs
 
 #define PLAYERS_COUNT_T_MAX			UINT8_MAX
 #define ENTITIES_COUNT_T_MAX		UINT16_MAX
@@ -21,7 +21,7 @@ namespace GameTypes
 #define SCORE_T_MIN					0ui8
 #define OBJECTS_TYPE_COUNT_T_MIN	0ui8
 
-	//typedefs
+	// typedefs
 
 	typedef uint8_t players_count_t;
 	typedef uint16_t entities_count_t;
@@ -32,18 +32,18 @@ namespace GameTypes
 	typedef int8_t score_t;
 	typedef uint32_t tic_t;
 	typedef uint8_t objects_types_count_t;
-	//Size of element in bytes.
+	// Size of element in bytes.
 	typedef uint16_t element_size_t;
 
 	typedef uint8_t thread_flags_t;
 
 	typedef struct
 	{
-		//Controled entities refer to this array.
+		// Controlled entities refer to this array.
 		std::vector<bool> shoot_flags;
-		//Controled entities refer to this array.
+		// Controlled entities refer to this array.
 		std::vector<bool> rotate_flags;
-		//Controled entities refer to this array.
+		// Controlled entities refer to this array.
 		std::vector<bool> burnout_flags;
 	} control_flags_t;
 }

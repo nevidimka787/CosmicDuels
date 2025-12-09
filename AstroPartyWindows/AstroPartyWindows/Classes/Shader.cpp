@@ -23,7 +23,7 @@ void Shader::Delete()
 	}
 }
 
-bool Shader::Initialisate(const char* vertex_file_name, const char* fragment_file_name)
+bool Shader::Initialize(const char* vertex_file_name, const char* fragment_file_name)
 {
     bool succses_flag = true;
 
@@ -219,10 +219,10 @@ void Shader::SetUniform(const std::string& name, const Line* line) const
 
 void Shader::SetUniform(const std::string& name, const Mat2F& matrix) const
 {
-	float f_matrix[] = 
+	float f_matrix[] =
 	{
 		matrix.a11, matrix.a12,
-		matrix.a21, matrix.a22 
+		matrix.a21, matrix.a22
 	};
 	glUniformMatrix2fv(glGetUniformLocation(id, name.c_str()), 1, false, f_matrix);
 }

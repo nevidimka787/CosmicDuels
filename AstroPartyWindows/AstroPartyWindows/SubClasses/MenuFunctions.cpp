@@ -91,7 +91,7 @@ void MenuFunctions::OpenPauseMenu()
 	(*game_p__current_active_menu)->SetPosition(std::move(Vec2F()));
 }
 
-void MenuFunctions::OpenSheepsSelectMenu()
+void MenuFunctions::OpenShipsSelectMenu()
 {
 	*game_p__current_active_menu = game_p__ships_select_menu;
 
@@ -112,7 +112,7 @@ void MenuFunctions::OpenSpawnObjectsSelectMenu()
 	(*game_p__current_active_menu)->SetPosition(std::move(Vec2F()));
 }
 
-void MenuFunctions::OpenSheepsControlMenu()
+void MenuFunctions::OpenShipsControlMenu()
 {
 	*game_p__current_active_menu = game_p__ships_control_menu;
 
@@ -124,16 +124,16 @@ void MenuFunctions::StartMatch()
 	*game_p__play_match = true;
 }
 
-void MenuFunctions::PauseRaund()
+void MenuFunctions::PauseRound()
 {
 	*game_p__pause_round = true;
 	OpenPauseMenu();
 }
 
-void MenuFunctions::ResumeRaund()
+void MenuFunctions::ResumeRound()
 {
 	*game_p__pause_round = false;
-	OpenSheepsControlMenu();
+	OpenShipsControlMenu();
 }
 
 void MenuFunctions::EndRound()
@@ -277,7 +277,7 @@ void MenuFunctions::MainMenuFunction(Vec2F clk_pos, uint8_t clk_status)
 			switch (current_button->GetId())
 			{
 			case BUTTON_ID__START_MATCH:
-				OpenSheepsSelectMenu();
+				OpenShipsSelectMenu();
 				return;
 			case BUTTON_ID__GO_TO_OPTINS_MENU:
 				OpenOptionsMenu();
@@ -416,7 +416,7 @@ void MenuFunctions::PauseMenuFunction(Vec2F clk_pos, uint8_t clk_status)
 					return;
 				case BUTTON_ID__RESUME_MATCH:
 				default:
-					ResumeRaund();
+					ResumeRound();
 					return;
 				}
 			}

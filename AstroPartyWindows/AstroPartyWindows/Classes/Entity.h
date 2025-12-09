@@ -57,7 +57,7 @@ public:
 	//Getting the distance between two closest points of objects.
 	float GetDistance(const Beam& beam) const;
 	//Getting the distance between two closest points of objects.
-	float GetDistance(const Map::Cyrcle& cyrcle, bool* is_inside = nullptr) const;
+	float GetDistance(const Map::Circle& cyrcle, bool* is_inside = nullptr) const;
 	//Getting the distance between two closest points of objects.
 	float GetDistance(const DecelerationArea& deceler_area) const;
 	//Getting the distance between two closest points of objects.
@@ -83,7 +83,7 @@ public:
 	//If distance between two objects is less then zero, the function return true.
 	bool IsCollision(const Beam& beam) const;
 	//If distance between two objects is less then zero, the function return true.
-	bool IsCollision(const Map::Cyrcle& cyrcle) const;
+	bool IsCollision(const Map::Circle& cyrcle) const;
 	//If distance between two objects is less then zero, the function return true.
 	bool IsCollision(const DecelerationArea& deceler_area) const;
 	//If distance between two objects is less then zero, the function return true.
@@ -178,7 +178,7 @@ public:
 	//use v1 v2 v3 v4 v5
 	//use s1 s2 s3 s4
 	bool Collision(const Map::Rectangle& rectangle);
-	bool Collision(const Map::Cyrcle& cyrcle);
+	bool Collision(const Map::Circle& cyrcle);
 	bool Collision(const Map::Polygon& polygon);
 	bool Collision(const Map::MapData& map);
 	float GetAngularVelocity() const;
@@ -535,7 +535,7 @@ public:
 	//Check collision this heat box.
 	template <typename Type>
 	bool IsCollision(const Type& thing) const;
-	bool IsColectEntity(const DynamicEntity& stored_entity) const;
+	bool IsCollectEntity(const DynamicEntity& stored_entity) const;
 	bool IsSameTeams(const ControlledEntity& second_entity) const;
 	bool IsTooSlow() const;
 	void Set(const ControlledEntity* entity);
@@ -573,7 +573,7 @@ private:
 	//value of the variable will not translate to other entities
 	GameTypes::objects_types_count_t element_type;
 
-	GameTypes::tic_t shoot_cooldown_time = GAME_DELLAY_BETWEEN_SHOOTS;
+	GameTypes::tic_t shoot_cooldown_time = GAME_DELAY_BETWEEN_SHOOTS;
 protected:
 	EngineTypes::Bonus::inventory_t bonus_inventory;
 	EngineTypes::Ship::inventory_t buff_inventory;
@@ -630,7 +630,7 @@ public:
 	// The function return dynamic particle.
 	DynamicParticle CreateBurnoutExaust(GameTypes::tic_t current_tic);
 	// The function return dynamic particle.
-	DynamicParticle CreateEnginExaust(GameTypes::tic_t current_tic);
+	DynamicParticle CreateEnginExhaust(GameTypes::tic_t current_tic);
 	// The function return dynamic particle.
 	DynamicParticle CreateShards(GameTypes::tic_t current_tic);
 	// the function cteare dynamic particle.
@@ -654,16 +654,16 @@ public:
 	//Create pilot
 	Pilot Destroy();
 	int GetBonusInventoryAsBoolList() const;
-	GameTypes::entities_count_t GetBulletsCountInMagasine() const;
+	GameTypes::entities_count_t GetBulletsCountInMagazine() const;
 	GameTypes::entities_count_t GetSizeOfMagazine() const;
 	//The function return number of curent element.
 	//Last number of entity is 1.
-	GameTypes::entities_count_t GetElemntFromList();
-	GameTypes::objects_types_count_t GetTypeOfElemntInLoop() const;
+	GameTypes::entities_count_t GetElementFromList();
+	GameTypes::objects_types_count_t GetTypeOfElementInLoop() const;
 	bool IsHaveBonus(EngineTypes::Bonus::inventory_t bonus) const;
 	bool IsHaveBuff(EngineTypes::Ship::inventory_t buff) const;
 	void IncrementSizeOfMagazine(GameTypes::entities_count_t cells_count = 1);
-	bool IsUnbrakable() const;
+	bool IsUnbreakable() const;
 	Bonus LoseBonus();
 	void Set(const Ship* entity);
 	void Set(
@@ -688,7 +688,7 @@ public:
 		bool exist = true);
 
 	void SetSizeOfMagazine(GameTypes::entities_count_t cells_count = SHIP_DEFAULT_MAGAZINE_SIZE);
-	void SetUnbrakablePeriod(GameTypes::tic_t period);
+	void SetUnbreakablePeriod(GameTypes::tic_t period);
 	//If ship have bonus, the function reduces the amount of this bonus and return true.
 	bool SpendBonus(EngineTypes::Bonus::inventory_t bonus);
 	//The function reduces the amount of this bonus.
@@ -734,7 +734,7 @@ public:
 
 	bool CanRespawn() const;
 	DynamicParticle CreateShards(GameTypes::tic_t current_tic);
-	GameTypes::tic_t GetRespawnDellay() const;
+	GameTypes::tic_t GetRespawnDelay() const;
 	Ship Respawn();
 	void Set(const Pilot* entity);
 	void Set(
@@ -844,7 +844,7 @@ public:
 	//Period between shoots sessions.
 	GameTypes::tic_t inactive_period;
 	//Shoots count in one attack period.
-	EngineTypes::AgressiveEntity::shoots_count_t shoots_count;
+	EngineTypes::AggressiveEntity::shoots_count_t shoots_count;
 	AggressiveEntity();
 	AggressiveEntity(const AggressiveEntity& aggressive_entity);
 	AggressiveEntity(
@@ -854,7 +854,7 @@ public:
 		GameTypes::tic_t attack_dellay = 0,
 		GameTypes::tic_t attack_period = AGGRESSIVE_ENTITY_DEFAULT_ATTACK_PERIOD,
 		GameTypes::tic_t inactive_period = AGGRESSIVE_ENTITY_DEFAULT_INACTIVE_PERIOD,
-		EngineTypes::AgressiveEntity::shoots_count_t shoots_count = AGGRESSIVE_ENTITY_DEFAULT_SHOOTS_COUNT,
+		EngineTypes::AggressiveEntity::shoots_count_t shoots_count = AGGRESSIVE_ENTITY_DEFAULT_SHOOTS_COUNT,
 		bool exist = true);
 
 	bool CanShoot(GameTypes::tic_t current_tic) const;
@@ -867,7 +867,7 @@ public:
 		GameTypes::tic_t attack_dellay = 0,
 		GameTypes::tic_t attack_period = AGGRESSIVE_ENTITY_DEFAULT_ATTACK_PERIOD,
 		GameTypes::tic_t inactive_period = AGGRESSIVE_ENTITY_DEFAULT_INACTIVE_PERIOD,
-		EngineTypes::AgressiveEntity::shoots_count_t shoots_count = AGGRESSIVE_ENTITY_DEFAULT_SHOOTS_COUNT,
+		EngineTypes::AggressiveEntity::shoots_count_t shoots_count = AGGRESSIVE_ENTITY_DEFAULT_SHOOTS_COUNT,
 		bool exist = true);
 
 	void operator=(const AggressiveEntity& entity);
@@ -1020,7 +1020,7 @@ public:
 		GameTypes::tic_t attack_dellay = AGGRESSIVE_ENTITY_DEFAULT_ATTACK_DELAY,
 		GameTypes::tic_t attack_period = AGGRESSIVE_ENTITY_DEFAULT_ATTACK_PERIOD,
 		GameTypes::tic_t inactive_period = AGGRESSIVE_ENTITY_DEFAULT_INACTIVE_PERIOD,
-		EngineTypes::AgressiveEntity::shoots_count_t shoots_count = AGGRESSIVE_ENTITY_DEFAULT_SHOOTS_COUNT,
+		EngineTypes::AggressiveEntity::shoots_count_t shoots_count = AGGRESSIVE_ENTITY_DEFAULT_SHOOTS_COUNT,
 		float radius = TURRET_DEFAULT_RADIUS,
 		bool exist = true);
 
@@ -1033,7 +1033,7 @@ public:
 		GameTypes::tic_t attack_dellay = AGGRESSIVE_ENTITY_DEFAULT_ATTACK_DELAY,
 		GameTypes::tic_t attack_period = AGGRESSIVE_ENTITY_DEFAULT_ATTACK_PERIOD,
 		GameTypes::tic_t inactive_period = AGGRESSIVE_ENTITY_DEFAULT_INACTIVE_PERIOD,
-		EngineTypes::AgressiveEntity::shoots_count_t shoots_count = AGGRESSIVE_ENTITY_DEFAULT_SHOOTS_COUNT,
+		EngineTypes::AggressiveEntity::shoots_count_t shoots_count = AGGRESSIVE_ENTITY_DEFAULT_SHOOTS_COUNT,
 		float radius = TURRET_DEFAULT_RADIUS,
 		bool exist = true);
 

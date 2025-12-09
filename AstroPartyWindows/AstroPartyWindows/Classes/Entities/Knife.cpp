@@ -43,7 +43,7 @@ bool Knife::Collision(Map::MapData& map)
 	const Segment& segment = GetSegment();
 	bool collision = false;
 
-	for (auto& element : map.cyrcles_array)
+	for (auto& element : map.circles_array)
 	{
 		collision |= CollissionWithElement(element, segment);
 		if (health <= 0)

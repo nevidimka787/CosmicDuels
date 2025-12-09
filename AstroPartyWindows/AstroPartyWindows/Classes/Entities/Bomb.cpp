@@ -130,7 +130,7 @@ bool Bomb::CollisionWithElementStatusBoom(MapElementT& element)
 	bool collision = false;
 	if (
 		element.exist &&
-		!(element.Prorerties() & MAP_PROPERTY_UNBREAKABLE) &&
+		!(element.Properties() & MAP_PROPERTY_UNBREAKABLE) &&
 		DynamicEntity::IsCollision(element))
 	{
 		element.exist = false;
@@ -146,7 +146,7 @@ bool Bomb::Collision(Map::MapData& map)
 
 	if (status & BOMB_STATUS_BOOM)
 	{
-		for (auto& element : map.cyrcles_array)
+		for (auto& element : map.circles_array)
 		{
 			collision |= CollisionWithElementStatusBoom(element);
 		}
@@ -161,7 +161,7 @@ bool Bomb::Collision(Map::MapData& map)
 		return collision;
 	}
 
-	for (auto& element : map.cyrcles_array)
+	for (auto& element : map.circles_array)
 	{
 		collision |= CollisionWithElementStatusAnother(element);
 	}

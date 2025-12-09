@@ -5,7 +5,7 @@
 
 namespace EngineTypes
 {
-	namespace AgressiveEntity
+	namespace AggressiveEntity
 	{
 		typedef uint8_t shoots_count_t;
 	}

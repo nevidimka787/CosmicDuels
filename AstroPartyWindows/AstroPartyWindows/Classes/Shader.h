@@ -25,7 +25,7 @@ public:
 
     Shader();
     void Delete();
-    bool Initialisate(const char* vertexPath, const char* fragmentPath);
+    bool Initialize(const char* vertexPath, const char* fragmentPath);
     void Use();
     void SetUniform(const std::string& name, const std::string& text, uint16_t text_length) const;
     void SetUniform(const std::string& name, const std::vector<Vec2F>& vec_array) const;

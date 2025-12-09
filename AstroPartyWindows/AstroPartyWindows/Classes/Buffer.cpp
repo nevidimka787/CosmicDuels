@@ -32,7 +32,7 @@ void StaticBuffer::Draw() const
 	glDrawArrays(GL_TRIANGLES, 0, points_count);
 }
 
-bool StaticBuffer::Initialisate(const Vec2F* points_array, EngineTypes::Buffer::array_length_t array_lenght, bool delete_last_buffer)
+bool StaticBuffer::Initialize(const Vec2F* points_array, EngineTypes::Buffer::array_length_t array_lenght, bool delete_last_buffer)
 {
 	if (delete_last_buffer)
 	{
@@ -63,10 +63,10 @@ bool StaticBuffer::Initialisate(const Vec2F* points_array, EngineTypes::Buffer::
 
 	glBindBuffer(GL_ARRAY_BUFFER, buffer_id);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * array_lenght * 2, vertexes, GL_STATIC_DRAW);
-	
+
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-	
+
 	glBindBuffer(GL_ARRAY_BUFFER, 0);   //unbind buffer
 	glBindVertexArray(0);               //unbind array
 
@@ -75,7 +75,7 @@ bool StaticBuffer::Initialisate(const Vec2F* points_array, EngineTypes::Buffer::
 	return true;
 }
 
-bool StaticBuffer::Initialisate(const Vec2F* points_array, const Vec2F* points_second_array, EngineTypes::Buffer::array_length_t array_lenght, bool delete_last_buffer)
+bool StaticBuffer::Initialize(const Vec2F* points_array, const Vec2F* points_second_array, EngineTypes::Buffer::array_length_t array_lenght, bool delete_last_buffer)
 {
 	if (delete_last_buffer)
 	{
@@ -108,7 +108,7 @@ bool StaticBuffer::Initialisate(const Vec2F* points_array, const Vec2F* points_s
 
 	glBindBuffer(GL_ARRAY_BUFFER, buffer_id);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * array_lenght * 4, vertexes, GL_STATIC_DRAW);
-	
+
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
@@ -144,7 +144,7 @@ FrameBuffer::FrameBuffer()
 	width(0)
 {
 	Vec2F points[6] = {Vec2F(-1.0f), Vec2F(-1.0f, 1.0f), Vec2F(1.0f, -1.0f), Vec2F(1.0f), Vec2F(-1.0f, 1.0f), Vec2F(1.0f, -1.0f)};
-	frame.Initialisate(points, 6);
+	frame.Initialize(points, 6);
 }
 
 void FrameBuffer::Draw()
@@ -159,7 +159,7 @@ void FrameBuffer::Render()
 	glViewport(0, 0, height, width);
 }
 
-bool FrameBuffer::Initialisate(GLuint width, GLuint height, GLuint buffers_count)
+bool FrameBuffer::Initialize(GLuint width, GLuint height, GLuint buffers_count)
 {
 	if (buffers_count == 0)
 	{

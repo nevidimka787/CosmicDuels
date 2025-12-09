@@ -6,7 +6,7 @@
 #include "Math.h"
 #include "../Constants/AllConstants.h"
 #include "../Types/AllTypes.h"
- 
+
 class StaticBuffer
 {
 private:
@@ -18,11 +18,11 @@ public:
 
 	void Delete();
 	void Draw() const;
-	bool Initialisate(
+	bool Initialize(
 		const Vec2F* points_array = nullptr,
 		EngineTypes::Buffer::array_length_t array_length = 0,
 		bool delete_last_buffer = false);
-	bool Initialisate(
+	bool Initialize(
 		const Vec2F* points_array = nullptr,
 		const Vec2F* points_second_array = nullptr,
 		EngineTypes::Buffer::array_length_t array_length = 0,
@@ -49,8 +49,8 @@ public:
 
 	//draw buffer to window
 	void Draw();
-	bool Initialisate(
-		GLuint width, 
+	bool Initialize(
+		GLuint width,
 		GLuint height,
 		GLuint buffers_count = 1);
 	//The function renders this buffer.

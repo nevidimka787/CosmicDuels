@@ -14,7 +14,7 @@ Entity::Entity(
 	const Vec2F& position,
 	float radius,
 	float angle,
-	bool exist) 
+	bool exist)
 	:
 	angle(angle),
 	direction(Vec2F(cosf(angle), -sinf(angle))),
@@ -44,7 +44,7 @@ float Entity::GetDistance(const Beam& beam) const
 	return beam.Distance(position) - radius, 0.0f;
 }
 
-float Entity::GetDistance(const Map::Cyrcle& cyrcle, bool* is_inside) const
+float Entity::GetDistance(const Map::Circle& cyrcle, bool* is_inside) const
 {
 	const Vec2F& cyrcle_position(cyrcle.GetPosition());
 
@@ -57,7 +57,7 @@ float Entity::GetDistance(const Map::Cyrcle& cyrcle, bool* is_inside) const
 		}
 		return -distance - radius;
 	}
-	
+
 	if (is_inside != nullptr)
 	{
 		*is_inside = false;
@@ -169,9 +169,9 @@ Vec2F Entity::GetDirectionNotNormalize() const
 
 float Entity::GetFrameSize(const Entity& entity, float scale) const
 {
-	return 
+	return
 		fmaxf(
-			fabs((entity.position - position).x), 
+			fabs((entity.position - position).x),
 			fabs((entity.position - position).y * scale))
 		+ radius + entity.radius;
 }
@@ -196,7 +196,7 @@ bool Entity::IsCollision(const Beam& beam) const
 	return beam.Distance(position) <= radius;
 }
 
-bool Entity::IsCollision(const Map::Cyrcle& cyrcle) const
+bool Entity::IsCollision(const Map::Circle& cyrcle) const
 {
 	if (cyrcle.exist == false)
 	{
@@ -233,7 +233,7 @@ bool Entity::IsCollision(const Laser& laser) const
 
 bool Entity::IsCollision(const Map::MapData& map) const
 {
-	for (auto& element : map.cyrcles_array)
+	for (auto& element : map.circles_array)
 	{
 		if (IsCollision(element)) return true;
 	}

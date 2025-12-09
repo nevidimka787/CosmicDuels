@@ -19,7 +19,7 @@ Turret::Turret(
 	GameTypes::tic_t attack_dellay,
 	GameTypes::tic_t attack_period,
 	GameTypes::tic_t inactive_period,
-	EngineTypes::AgressiveEntity::shoots_count_t shoots_count,
+	EngineTypes::AggressiveEntity::shoots_count_t shoots_count,
 	float radius,
 	bool exist) :
 	AggressiveEntity(
@@ -72,7 +72,7 @@ void Turret::Set(
 	GameTypes::tic_t attack_dellay,
 	GameTypes::tic_t attack_period,
 	GameTypes::tic_t inactive_period,
-	EngineTypes::AgressiveEntity::shoots_count_t shoots_count,
+	EngineTypes::AggressiveEntity::shoots_count_t shoots_count,
 	float radius,
 	bool exist)
 {

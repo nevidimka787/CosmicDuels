@@ -11,7 +11,7 @@ namespace Map
 {
 	class MapElement;
 	class Rectangle;
-	class Cyrcle;
+	class Circle;
 	class Polygon;
 	class MapData;
 
@@ -41,7 +41,7 @@ namespace Map
 		bool IsCheckCollisionsOutside() const;
 		bool IsUnbreacable() const;
 		void Move(const Vec2F& move_vector);
-		EngineTypes::Map::property_t Prorerties() const;
+		EngineTypes::Map::property_t Properties() const;
 		void RessetVelocity();
 		void SetPosition(const Vec2F& position);
 		void SetProperties(EngineTypes::Map::property_t properties);
@@ -113,14 +113,14 @@ namespace Map
 		~Rectangle();
 	};
 
-	class Cyrcle : public MapElement
+	class Circle : public MapElement
 	{
 	protected:
 		float radius;
 	public:
-		Cyrcle();
-		Cyrcle(const Cyrcle& cyrcle);
-		Cyrcle(
+		Circle();
+		Circle(const Circle& cyrcle);
+		Circle(
 			const Vec2F& position,
 			float radius = CIRCLE_DEFAULT_RADIUS,
 			EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
@@ -142,16 +142,16 @@ namespace Map
 		bool IsCollision(const Segment& segment) const;
 		float GetRadius() const;
 		void SetRadius(float radius);
-		void Set(const Cyrcle* cyrcle);
+		void Set(const Circle* cyrcle);
 		void Set(
 			const Vec2F& position,
 			float radius = CIRCLE_DEFAULT_RADIUS,
 			EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
 			bool exist = true);
 
-		void operator=(const Cyrcle& cyrcle);
+		void operator=(const Circle& cyrcle);
 
-		~Cyrcle();
+		~Circle();
 	};
 
 	/*
@@ -235,16 +235,16 @@ namespace Map
 	{
 	public:
 		std::vector<Rectangle> rectangles_array;
-		std::vector<Cyrcle> cyrcles_array;
+		std::vector<Circle> circles_array;
 		std::vector<Polygon> polygons_array;
 
 		MapData(const MapData& map);
 		MapData(
 			const std::vector<Rectangle>& rectangles_array,
-			const std::vector<Cyrcle>& cyrcles_array,
+			const std::vector<Circle>& circles_array,
 			const std::vector<Polygon>& polygons_array = std::vector<Polygon>());
 		MapData(
-			const std::vector<Cyrcle>& cyrcles_array,
+			const std::vector<Circle>& circles_array,
 			const std::vector<Polygon>& polygons_array = std::vector<Polygon>());
 		MapData(
 			const std::vector<Rectangle>& rectangles_array,
@@ -255,10 +255,10 @@ namespace Map
 		void Set(const MapData* map);
 		void Set(
 			const std::vector<Rectangle>& rectangles_array,
-			const std::vector<Cyrcle>& cyrcles_array,
+			const std::vector<Circle>& circles_array,
 			const std::vector<Polygon>& polygons_array = std::vector<Polygon>());
 		void Set(
-			const std::vector<Cyrcle>& cyrcles_array,
+			const std::vector<Circle>& circles_array,
 			const std::vector<Polygon>& polygons_array = std::vector<Polygon>());
 		void Set(
 			const std::vector<Rectangle>& rectangles_array,

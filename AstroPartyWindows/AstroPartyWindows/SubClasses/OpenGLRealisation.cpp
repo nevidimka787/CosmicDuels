@@ -4,7 +4,7 @@
 #pragma warning(disable : 6011)
 
 OpenGL::OpenGL(int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share, GLFWframebuffersizefun Function, GLFWwindow** window)
-    : cursore_press_position (new Vec2D()), cursore_release_position(new Vec2D()), cursore_last_position(new Vec2D()), cursore_current_position(new Vec2D())
+    : cursor_press_position (new Vec2D()), cursor_release_position(new Vec2D()), cursor_last_position(new Vec2D()), cursor_current_position(new Vec2D())
 {
     update_menu = OPEN_GL_REALIZATION_FRAMES_AFTER_CALLBACK_COUNT;
     flag_update_menu_can_change = true;
@@ -24,7 +24,7 @@ OpenGL::OpenGL(int width, int height, const char* title, GLFWmonitor* monitor, G
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
-//Callback functions
+// Callback functions
 
 void OpenGL::CallMenuFunction(Menu* menu, const Vec2D* glob_clk_pos, uint8_t clk_status)
 {
@@ -119,7 +119,7 @@ void OpenGL::FirstUpdatePlayersFlags(GameTypes::players_count_t player)
         if ((*game_p__double_clk_timers)[player] > 0)
         {
             (game_p__control_flags->burnout_flags)[player] = true;
-            (*game_p__double_clk_timers)[player] = -GAME_BURNOUT_COULDOWN;
+            (*game_p__double_clk_timers)[player] = -GAME_BURNOUT_COOLDOWN;
         }
     }
 }
@@ -159,10 +159,10 @@ void OpenGL::FramebufferSizeCallback(GLFWwindow* window, int width, int height)
 
 void OpenGL::LimitMenuPosition(Menu* menu)
 {
-    const float& egde_y = -menu->GetSize().y - 2.0f / window_scale;
-    if (menu->GetPosition().y > egde_y)
+    const float& edge_y = -menu->GetSize().y - 2.0f / window_scale;
+    if (menu->GetPosition().y > edge_y)
     {
-        menu->SetPosition(Vec2F(0.0f, egde_y));
+        menu->SetPosition(Vec2F(0.0f, edge_y));
     }
     if (menu->GetPosition().y < 0.0f)
     {
@@ -212,11 +212,11 @@ void OpenGL::ProcessInput(GLFWwindow* window)
             game_p__control_flags->shoot_flags,
             *game_p__double_clk_timers,
             game_p__control_flags->burnout_flags);
-#endif //OPEN_GL_REALIZATION__SHIPS_CONTROLLED_BY_KEYBOARD == true
+#endif // OPEN_GL_REALIZATION__SHIPS_CONTROLLED_BY_KEYBOARD == true
 #if  OPEN_GL_REALIZATION__SHIPS_CONTROLLED_BY_SCREEN_BUTTONS == true
-        glfwGetCursorPos(window, &cursore_current_position->x, &cursore_current_position->y);
-        CallControleMenuFunction(*game_p__current_active_menu, cursore_current_position, left_mouse_button_pressed_status);
-#endif //OPEN_GL_REALIZATION__SHIPS_CONTROLLED_BY_SCREEN_BUTTONS == true
+        glfwGetCursorPos(window, &cursor_current_position->x, &cursor_current_position->y);
+        CallControleMenuFunction(*game_p__current_active_menu, cursor_current_position, left_mouse_button_pressed_status);
+#endif // OPEN_GL_REALIZATION__SHIPS_CONTROLLED_BY_SCREEN_BUTTONS == true
     }
     if (glfwGetKey(window, GLFW_KEY_BACKSPACE) == GLFW_PRESS && (button_commands & OPEN_GL_REALIZATION_COMMAND_BACK) == OPEN_GL_REALIZATION_COMMAND_NOTHING)
     {
@@ -236,10 +236,10 @@ void OpenGL::ProcessInput(GLFWwindow* window)
         flag_move_menu = true;
 
         button_commands |= OPEN_GL_REALIZATION_COMMAND_SELECT;
-        glfwGetCursorPos(window, &cursore_press_position->x, &cursore_press_position->y);
-        *cursore_last_position = *cursore_press_position;
+        glfwGetCursorPos(window, &cursor_press_position->x, &cursor_press_position->y);
+        *cursor_last_position = *cursor_press_position;
 
-        CallMenuFunction(*game_p__current_active_menu, cursore_press_position, GLFW_PRESS);
+        CallMenuFunction(*game_p__current_active_menu, cursor_press_position, GLFW_PRESS);
     }
     else if (left_mouse_button_pressed_status == GLFW_RELEASE && (button_commands & OPEN_GL_REALIZATION_COMMAND_SELECT) != OPEN_GL_REALIZATION_COMMAND_NOTHING)
     {
@@ -248,35 +248,35 @@ void OpenGL::ProcessInput(GLFWwindow* window)
         flag_move_menu = false;
 
         button_commands &= OPEN_GL_REALIZATION_COMMAND_FULL - OPEN_GL_REALIZATION_COMMAND_SELECT;
-        glfwGetCursorPos(window, &cursore_release_position->x, &cursore_release_position->y);
-        *cursore_press_position -= *cursore_release_position;
-        if (fabs(cursore_press_position->x) < window_width / 100.0 && fabs(cursore_press_position->y) < window_height / 100.0)
+        glfwGetCursorPos(window, &cursor_release_position->x, &cursor_release_position->y);
+        *cursor_press_position -= *cursor_release_position;
+        if (fabs(cursor_press_position->x) < window_width / 100.0 && fabs(cursor_press_position->y) < window_height / 100.0)
         {
-            CallMenuFunction(*game_p__current_active_menu, cursore_release_position, GLFW_RELEASE);
+            CallMenuFunction(*game_p__current_active_menu, cursor_release_position, GLFW_RELEASE);
         }
         else
         {
-            CallMenuFunction(*game_p__current_active_menu, cursore_release_position, OPEN_GL_REALIZATION_BUTTON_LOST);
+            CallMenuFunction(*game_p__current_active_menu, cursor_release_position, OPEN_GL_REALIZATION_BUTTON_LOST);
         }
     }
     if (flag_move_menu)
     {
-        glfwGetCursorPos(window, &cursore_current_position->x, &cursore_current_position->y);
+        glfwGetCursorPos(window, &cursor_current_position->x, &cursor_current_position->y);
 
-        const auto& move_vector_d = *cursore_current_position - *cursore_last_position;
+        const auto& move_vector_d = *cursor_current_position - *cursor_last_position;
         const auto& move_vector = Vec2F(0.0f, static_cast<float>(move_vector_d.y) / window_height * -2.0f / window_scale);
 
         (*game_p__current_active_menu)->Move(move_vector);
         LimitMenuPosition(*game_p__current_active_menu);
-        *cursore_last_position = *cursore_current_position;
+        *cursor_last_position = *cursor_current_position;
     }
 }
 
-//Callback functions
+// Callback functions
 
 
 
-//Initialisation functions
+// Initialisation functions
 
 GLFWwindow* OpenGL::CreateWindows(int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share, GLFWframebuffersizefun Function)
 {
@@ -308,22 +308,22 @@ void OpenGL::InitBuffers()
     points[4].Set(-1.0f, 1.0f);
     points[5].Set(1.0f, -1.0f);
 
-    annih_area_generator_buffer.Initialisate(points, 6);
-    asteroid_buffer.Initialisate(points, 6);
-    bomb_buffer.Initialisate(points, 6);
-    bonus_buffer.Initialisate(points, 6);
-    bullet_buffer.Initialisate(points, 6);
+    annih_area_generator_buffer.Initialize(points, 6);
+    asteroid_buffer.Initialize(points, 6);
+    bomb_buffer.Initialize(points, 6);
+    bonus_buffer.Initialize(points, 6);
+    bullet_buffer.Initialize(points, 6);
 
-    cyrcle_buffer.Initialisate(points, 6);
-    deceler_area_buffer.Initialisate(points, 6);
-    grav_gen_buffer.Initialisate(points, 6);
-    rectangle_buffer.Initialisate(points, 6);
+    circle_buffer.Initialize(points, 6);
+    deceler_area_buffer.Initialize(points, 6);
+    grav_gen_buffer.Initialize(points, 6);
+    rectangle_buffer.Initialize(points, 6);
 
-    dynamic_particle_buffer.Initialisate(points, 6);
-    particle_buffer.Initialisate(points, 6);
-    portal_buffer.Initialisate(points, 6);
+    dynamic_particle_buffer.Initialize(points, 6);
+    particle_buffer.Initialize(points, 6);
+    portal_buffer.Initialize(points, 6);
 
-    ship_bullet_buffer.Initialisate(points, 6);
+    ship_bullet_buffer.Initialize(points, 6);
 
     points[0].Set(1.0f, 1.0f);
     points[1].Set(0.0f, 1.0f);
@@ -332,9 +332,9 @@ void OpenGL::InitBuffers()
     points[4].Set(0.0f, 1.0f);
     points[5].Set(1.0f, -1.0f);
 
-    laser_buffer.Initialisate(points, 6);
-    mega_laser_buffer.Initialisate(points, 6);
-    polygon_buffer.Initialisate(points, 6);
+    laser_buffer.Initialize(points, 6);
+    mega_laser_buffer.Initialize(points, 6);
+    polygon_buffer.Initialize(points, 6);
 
     points[0].Set(2.0f, 2.0f);
     points[1].Set(-2.0f, 2.0f);
@@ -343,7 +343,7 @@ void OpenGL::InitBuffers()
     points[4].Set(-2.0f, 2.0f);
     points[5].Set(2.0f, -2.0f);
 
-    turret_buffer.Initialisate(points, 6);
+    turret_buffer.Initialize(points, 6);
 
     points[0].Set(1.0f, 1.0f);
     points[1].Set(-1.0f, 1.0f);
@@ -352,7 +352,7 @@ void OpenGL::InitBuffers()
     points[4].Set(-1.0f, 1.0f);
     points[5].Set(1.0f, -1.0f);
 
-    button_buffer.Initialisate(points, 6);
+    button_buffer.Initialize(points, 6);
 
     points[0].Set(1.0f, 0.02f);
     points[1].Set(0.0f, 0.02f);
@@ -361,7 +361,7 @@ void OpenGL::InitBuffers()
     points[4].Set(0.0f, 0.02f);
     points[5].Set(1.0f,-0.02f);
 
-    knife_buffer.Initialisate(points, 6);
+    knife_buffer.Initialize(points, 6);
 
     points[0].Set(sqrt(3.0f) / 4.0f, 0.40f);
     points[1].Set(sqrt(3.0f) / 4.0f, -0.35f);
@@ -380,12 +380,12 @@ void OpenGL::InitBuffers()
         Vec2F(0.0f, 1.0f)
     };
 
-    pilot_buffer.Initialisate(points, t_points, 6);
-    ship_buffer.Initialisate(points, t_points, 6);
+    pilot_buffer.Initialize(points, t_points, 6);
+    ship_buffer.Initialize(points, t_points, 6);
 
-    //InitButtonsBuffers();
+    // InitButtonsBuffers();
 
-    //main_buffer.Initialisate(window_width, window_height);
+    // main_buffer.Initialize(window_width, window_height);
 }
 
 void OpenGL::InitGlad()
@@ -416,79 +416,79 @@ void OpenGL::InitOpenGL()
 
 void OpenGL::InitShaders()
 {
-    annih_area_gen_shader.Initialisate(     "Shaders/Objects/Vertex/AnnihAreaGen.glsl"      ,   "Shaders/Objects/Fragment/AnnihAreaGen.glsl");
-    asteroid_shader.Initialisate(           "Shaders/Objects/Vertex/Asteroid.glsl"          ,   "Shaders/Objects/Fragment/Asteroid.glsl");
-    bomb_shader.Initialisate(               "Shaders/Objects/Vertex/Bomb.glsl"              ,   "Shaders/Objects/Fragment/Bomb.glsl");
-    bonus_shader.Initialisate(              "Shaders/Objects/Vertex/Bonus.glsl"             ,   "Shaders/Objects/Fragment/Bonus.glsl");
-    bullet_shader.Initialisate(             "Shaders/Objects/Vertex/Bullet.glsl"            ,   "Shaders/Objects/Fragment/Bullet.glsl");
-    deceler_area_shader.Initialisate(       "Shaders/Objects/Vertex/Deceler.glsl"           ,   "Shaders/Objects/Fragment/Deceler.glsl");
-    dynamic_particle_shader.Initialisate(   "Shaders/Objects/Vertex/DynamicParticle.glsl"   ,   "Shaders/Objects/Fragment/DynamicParticle.glsl");
-    grav_gen_shader.Initialisate(           "Shaders/Objects/Vertex/GravGen.glsl"           ,   "Shaders/Objects/Fragment/GravGen.glsl");
-    knife_shader.Initialisate(              "Shaders/Objects/Vertex/Knife.glsl"             ,   "Shaders/Objects/Fragment/Knife.glsl");
-    laser_shader.Initialisate(              "Shaders/Objects/Vertex/Laser.glsl"             ,   "Shaders/Objects/Fragment/Laser.glsl");
-    mega_laser_shader.Initialisate(         "Shaders/Objects/Vertex/MegaLaser.glsl"         ,   "Shaders/Objects/Fragment/MegaLaser.glsl");
-    particle_shader.Initialisate(           "Shaders/Objects/Vertex/Particle.glsl"          ,   "Shaders/Objects/Fragment/Particle.glsl");
-    portal_shader.Initialisate(             "Shaders/Objects/Vertex/Portal.glsl"            ,   "Shaders/Objects/Fragment/Portal.glsl");
-    pilot_shader.Initialisate(              "Shaders/Objects/Vertex/Pilot.glsl"             ,   "Shaders/Objects/Fragment/Pilot.glsl");
-    ship_shader.Initialisate(               "Shaders/Objects/Vertex/Ship.glsl"              ,   "Shaders/Objects/Fragment/Ship.glsl");
-    turret_shader.Initialisate(              "Shaders/Objects/Vertex/Turret.glsl"           ,   "Shaders/Objects/Fragment/Turret.glsl");
+    annih_area_gen_shader.Initialize(     "Shaders/Objects/Vertex/AnnihAreaGen.glsl"      ,   "Shaders/Objects/Fragment/AnnihAreaGen.glsl");
+    asteroid_shader.Initialize(           "Shaders/Objects/Vertex/Asteroid.glsl"          ,   "Shaders/Objects/Fragment/Asteroid.glsl");
+    bomb_shader.Initialize(               "Shaders/Objects/Vertex/Bomb.glsl"              ,   "Shaders/Objects/Fragment/Bomb.glsl");
+    bonus_shader.Initialize(              "Shaders/Objects/Vertex/Bonus.glsl"             ,   "Shaders/Objects/Fragment/Bonus.glsl");
+    bullet_shader.Initialize(             "Shaders/Objects/Vertex/Bullet.glsl"            ,   "Shaders/Objects/Fragment/Bullet.glsl");
+    deceler_area_shader.Initialize(       "Shaders/Objects/Vertex/Deceler.glsl"           ,   "Shaders/Objects/Fragment/Deceler.glsl");
+    dynamic_particle_shader.Initialize(   "Shaders/Objects/Vertex/DynamicParticle.glsl"   ,   "Shaders/Objects/Fragment/DynamicParticle.glsl");
+    grav_gen_shader.Initialize(           "Shaders/Objects/Vertex/GravGen.glsl"           ,   "Shaders/Objects/Fragment/GravGen.glsl");
+    knife_shader.Initialize(              "Shaders/Objects/Vertex/Knife.glsl"             ,   "Shaders/Objects/Fragment/Knife.glsl");
+    laser_shader.Initialize(              "Shaders/Objects/Vertex/Laser.glsl"             ,   "Shaders/Objects/Fragment/Laser.glsl");
+    mega_laser_shader.Initialize(         "Shaders/Objects/Vertex/MegaLaser.glsl"         ,   "Shaders/Objects/Fragment/MegaLaser.glsl");
+    particle_shader.Initialize(           "Shaders/Objects/Vertex/Particle.glsl"          ,   "Shaders/Objects/Fragment/Particle.glsl");
+    portal_shader.Initialize(             "Shaders/Objects/Vertex/Portal.glsl"            ,   "Shaders/Objects/Fragment/Portal.glsl");
+    pilot_shader.Initialize(              "Shaders/Objects/Vertex/Pilot.glsl"             ,   "Shaders/Objects/Fragment/Pilot.glsl");
+    ship_shader.Initialize(               "Shaders/Objects/Vertex/Ship.glsl"              ,   "Shaders/Objects/Fragment/Ship.glsl");
+    turret_shader.Initialize(              "Shaders/Objects/Vertex/Turret.glsl"           ,   "Shaders/Objects/Fragment/Turret.glsl");
 
-    rectangle_shader.Initialisate(          "Shaders/Map/Vertex/Rectangle.glsl"             ,   "Shaders/Map/Fragment/Rectangle.glsl");
-    cyrcle_shader.Initialisate(             "Shaders/Map/Vertex/Cyrcle.glsl"                ,   "Shaders/Map/Fragment/Cyrcle.glsl");
-    polygon_shader.Initialisate(            "Shaders/Map/Vertex/Polygon.glsl"               ,   "Shaders/Map/Fragment/Polygon.glsl");
+    rectangle_shader.Initialize(          "Shaders/Map/Vertex/Rectangle.glsl"             ,   "Shaders/Map/Fragment/Rectangle.glsl");
+    circle_shader.Initialize(             "Shaders/Map/Vertex/Circle.glsl"                ,   "Shaders/Map/Fragment/Circle.glsl");
+    polygon_shader.Initialize(            "Shaders/Map/Vertex/Polygon.glsl"               ,   "Shaders/Map/Fragment/Polygon.glsl");
 
-    button_shader.Initialisate(             "Shaders/Menu/Vertex/Button.glsl"               ,   "Shaders/Menu/Fragment/Button.glsl");
-    controler_shader.Initialisate(          "Shaders/Menu/Vertex/Controler.glsl"            ,   "Shaders/Menu/Fragment/Controler.glsl");
+    button_shader.Initialize(             "Shaders/Menu/Vertex/Button.glsl"               ,   "Shaders/Menu/Fragment/Button.glsl");
+    controller_shader.Initialize(         "Shaders/Menu/Vertex/Controller.glsl"           ,   "Shaders/Menu/Fragment/Controller.glsl");
 }
 
 void OpenGL::InitTextures()
 {
-    annih_area_gen_basic_texture.Initialisate("Textures/Entities/AnnihAreaGen/Basic.png", GL_RGBA,    GL_RGBA);
+    annih_area_gen_basic_texture.Initialize("Textures/Entities/AnnihAreaGen/Basic.png", GL_RGBA,    GL_RGBA);
 
-    asteroid_small_texture.Initialisate(    "Textures/Entities/Asteroid/Small.png",     GL_RGBA,    GL_RGBA);
-    asteroid_medium_texture.Initialisate(   "Textures/Entities/Asteroid/Medium.png",    GL_RGBA,    GL_RGBA);
-    asteroid_large_texture.Initialisate(    "Textures/Entities/Asteroid/Large.png",     GL_RGBA,    GL_RGBA);
-    asteroid_sublimation_texture.Initialisate("Textures/Entities/Asteroid/Sublimation.png",GL_RGBA, GL_RGBA);
+    asteroid_small_texture.Initialize(    "Textures/Entities/Asteroid/Small.png",     GL_RGBA,    GL_RGBA);
+    asteroid_medium_texture.Initialize(   "Textures/Entities/Asteroid/Medium.png",    GL_RGBA,    GL_RGBA);
+    asteroid_large_texture.Initialize(    "Textures/Entities/Asteroid/Large.png",     GL_RGBA,    GL_RGBA);
+    asteroid_sublimation_texture.Initialize("Textures/Entities/Asteroid/Sublimation.png",GL_RGBA, GL_RGBA);
 
-    bonus_bomb_texture.Initialisate(    "Textures/Entities/Bonus/Bomb.png",     GL_RGBA,    GL_RGBA);
-    bonus_knife_texture.Initialisate(   "Textures/Entities/Bonus/Knife.png",    GL_RGBA,    GL_RGBA);
-    bonus_laser_texture.Initialisate(   "Textures/Entities/Bonus/Laser.png",    GL_RGBA,    GL_RGBA);
-    bonus_loop_texture.Initialisate(    "Textures/Entities/Bonus/Loop.png",     GL_RGBA,    GL_RGBA);
-    bonus_shield_texture.Initialisate(  "Textures/Entities/Bonus/Shield.png",   GL_RGBA,    GL_RGBA);
-    bonus_stream_texture.Initialisate(  "Textures/Entities/Bonus/Stream.png",   GL_RGBA,    GL_RGBA);
-    bonus_triple_texture.Initialisate(  "Textures/Entities/Bonus/Triple.png",   GL_RGBA,    GL_RGBA);
-    bonus_revers_texture.Initialisate(  "Textures/Entities/Bonus/Revers.png",   GL_RGBA,    GL_RGBA);
+    bonus_bomb_texture.Initialize(    "Textures/Entities/Bonus/Bomb.png",     GL_RGBA,    GL_RGBA);
+    bonus_knife_texture.Initialize(   "Textures/Entities/Bonus/Knife.png",    GL_RGBA,    GL_RGBA);
+    bonus_laser_texture.Initialize(   "Textures/Entities/Bonus/Laser.png",    GL_RGBA,    GL_RGBA);
+    bonus_loop_texture.Initialize(    "Textures/Entities/Bonus/Loop.png",     GL_RGBA,    GL_RGBA);
+    bonus_shield_texture.Initialize(  "Textures/Entities/Bonus/Shield.png",   GL_RGBA,    GL_RGBA);
+    bonus_stream_texture.Initialize(  "Textures/Entities/Bonus/Stream.png",   GL_RGBA,    GL_RGBA);
+    bonus_triple_texture.Initialize(  "Textures/Entities/Bonus/Triple.png",   GL_RGBA,    GL_RGBA);
+    bonus_revers_texture.Initialize(  "Textures/Entities/Bonus/Revers.png",   GL_RGBA,    GL_RGBA);
 
-    bomb_basic_texture.Initialisate(    "Textures/Entities/Bomb/Basic.png",     GL_RGBA,    GL_RGBA);
-    bomb_lighting_texture.Initialisate( "Textures/Entities/Bomb/Lighting.png",  GL_RGBA,    GL_RGBA);
+    bomb_basic_texture.Initialize(    "Textures/Entities/Bomb/Basic.png",     GL_RGBA,    GL_RGBA);
+    bomb_lighting_texture.Initialize( "Textures/Entities/Bomb/Lighting.png",  GL_RGBA,    GL_RGBA);
 
-    bullet_small_texture.Initialisate(  "Textures/Entities/Bullet/Small.png",   GL_RGBA,    GL_RGBA);
-    bullet_medium_texture.Initialisate( "Textures/Entities/Bullet/Medium.png",  GL_RGBA,    GL_RGBA);
-    bullet_large_texture.Initialisate(  "Textures/Entities/Bullet/Large.png",   GL_RGBA,    GL_RGBA);
+    bullet_small_texture.Initialize(  "Textures/Entities/Bullet/Small.png",   GL_RGBA,    GL_RGBA);
+    bullet_medium_texture.Initialize( "Textures/Entities/Bullet/Medium.png",  GL_RGBA,    GL_RGBA);
+    bullet_large_texture.Initialize(  "Textures/Entities/Bullet/Large.png",   GL_RGBA,    GL_RGBA);
 
-    pilot_basic_texture.Initialisate(   "Textures/Entities/Pilot/Basic.png",    GL_RGBA,    GL_RGBA);
+    pilot_basic_texture.Initialize(   "Textures/Entities/Pilot/Basic.png",    GL_RGBA,    GL_RGBA);
 
-    ship_basic_texture.Initialisate(    "Textures/Entities/Ship/Basic.png",     GL_RGBA,    GL_RGBA);
-    ship_triple_texture.Initialisate(   "Textures/Entities/Ship/Triple.png",    GL_RGBA,    GL_RGBA);
+    ship_basic_texture.Initialize(    "Textures/Entities/Ship/Basic.png",     GL_RGBA,    GL_RGBA);
+    ship_triple_texture.Initialize(   "Textures/Entities/Ship/Triple.png",    GL_RGBA,    GL_RGBA);
 
-    turret_basic_texture.Initialisate(  "Textures/Entities/Turret/Basic.png",   GL_RGBA,    GL_RGBA);
+    turret_basic_texture.Initialize(  "Textures/Entities/Turret/Basic.png",   GL_RGBA,    GL_RGBA);
 
-    symbols_texture.Initialisate("Textures/Menu/Buttons/Symbols.bmp");
+    symbols_texture.Initialize("Textures/Menu/Buttons/Symbols.bmp");
 }
 
-//Draw functions
+// Draw functions
 
 void OpenGL::DrawFrame()
 {
-    //glClearColor(0.07f, 0.07f, 0.4f, 1.0f);
-    //glClear(GL_COLOR_BUFFER_BIT);
-    //draw_lock0_mtx.lock();
-    //game_p__input_values_mtx->lock();
+    // glClearColor(0.07f, 0.07f, 0.4f, 1.0f);
+    // glClear(GL_COLOR_BUFFER_BIT);
+    // draw_lock0_mtx.lock();
+    // game_p__input_values_mtx->lock();
 
-    //while (drawing_lock)
-    //{
-        //std::this_thread::sleep_for(std::chrono::microseconds(10));
-    //}
+    // while (drawing_lock)
+    // {
+        // std::this_thread::sleep_for(std::chrono::microseconds(10));
+    // }
 
     if (glfwWindowShouldClose(window))
     {
@@ -496,13 +496,13 @@ void OpenGL::DrawFrame()
         *game_p__play_round = false;
     }
 
-    if (*game_p__flag_all_entities_initialisate == false || *game_p__flag_round_results == true)
+    if (*game_p__flag_all_entities_initialisation == false || *game_p__flag_round_results == true)
     {
         glClearColor(0.1f, 0.1f, 0.5f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
     }
 
-    if (*game_p__flag_all_entities_initialisate == true && *game_p__flag_round_results == false)
+    if (*game_p__flag_all_entities_initialisation == true && *game_p__flag_round_results == false)
     {
         game_p__camera_data_mtx->lock();
         temp__game__camera_position = game_p__camera->GetPosition();
@@ -560,12 +560,12 @@ void OpenGL::DrawFrame()
             DrawBullets();
         }
         game_p__bullets_array_mtx->unlock();
-        game_p__knifes_array_mtx->lock();
-        if (*game_p__knifes_count > 0)
+        game_p__knives_array_mtx->lock();
+        if (*game_p__knives_count > 0)
         {
-            DrawKnifes();
+            DrawKnives();
         }
-        game_p__knifes_array_mtx->unlock();
+        game_p__knives_array_mtx->unlock();
         game_p__lasers_array_mtx->lock();
         if (*game_p__lasers_count > 0)
         {
@@ -621,8 +621,8 @@ void OpenGL::DrawFrame()
 
     DrawCurrentMenu();
 
-    //game_p__input_values_mtx->unlock();
-    //draw_lock0_mtx.unlock();
+    // game_p__input_values_mtx->unlock();
+    // draw_lock0_mtx.unlock();
 }
 
 
@@ -866,7 +866,7 @@ void OpenGL::DrawObject(const Particle& particle, bool update_shader)
     }
 
     particle_shader.SetUniform("position", particle.GetPosition());
-    particle_shader.SetUniform("angle", (particle.GetType() == PARTICLE_TYPE_BACKGROUND) ? (float)*game_p__stuning_timer / (float)GAME_BOMB_STUNING_TIME : particle.GetAngle());
+    particle_shader.SetUniform("angle", (particle.GetType() == PARTICLE_TYPE_BACKGROUND) ? (float)*game_p__stunning_timer / (float)GAME_BOMB_STUNNING_TIME : particle.GetAngle());
     particle_shader.SetUniform("radius", particle.radius);
     particle_shader.SetUniform("type", (int)particle.GetType());
     particle_shader.SetUniform("animation", particle.animation);
@@ -913,7 +913,7 @@ void OpenGL::DrawObject(const Pilot& pilot, bool update_shader)
     pilot_shader.SetUniform("model", pilot.GetModelMatrixPointerConst());
     pilot_shader.SetUniform("team", pilot.GetTeamNumber());
     pilot_shader.SetUniform("player", number_of_player_in_team);
-    pilot_shader.SetUniform("life", (float)pilot.GetRespawnDellay() / (float)PILOT_DEFAULT_RESPAWN_TIMER);
+    pilot_shader.SetUniform("life", (float)pilot.GetRespawnDelay() / (float)PILOT_DEFAULT_RESPAWN_TIMER);
     pilot_buffer.Draw();
 }
 
@@ -922,7 +922,7 @@ void OpenGL::DrawObject(const Ship& ship, bool update_shader)
 #define PLAYER_SHIELD 0x0F00
     if (update_shader)
     {
-        //ship_buffer.Use();//Every draw buffer is resseted.
+        // ship_buffer.Use();// Every draw buffer is ressetted.
         ship_shader.Use();
         ship_shader.SetUniform("scale", window_scale);
         ship_shader.SetUniform("camera_position", temp__game__camera_position);
@@ -943,12 +943,12 @@ void OpenGL::DrawObject(const Ship& ship, bool update_shader)
 
     ship_shader.SetUniform("current_tic", (int)((*game_p__global_timer) & ((1u << 31u) - 1u)));
     ship_shader.SetUniform("inventory", ship.GetBonusInventoryAsBoolList() + ((*game_p__rotation_inverse) ? 256 : 0));
-    ship_shader.SetUniform("bullets_count", ship.GetBulletsCountInMagasine());
+    ship_shader.SetUniform("bullets_count", ship.GetBulletsCountInMagazine());
     ship_shader.SetUniform("magazine_size", ship.GetSizeOfMagazine());
 
-    ship_shader.SetUniform("player", number_of_player_in_team | (ship.IsUnbrakable() ? 0xF000 : 0x0000));
+    ship_shader.SetUniform("player", number_of_player_in_team | (ship.IsUnbreakable() ? 0xF000 : 0x0000));
 
-    ship_shader.SetUniform("type", (int)0);//0 - is ship
+    ship_shader.SetUniform("type", (int)0);// 0 - is ship
 
     if (ship.IsHaveBuff(SHIP_BUFF_TRIPLE))
     {
@@ -969,7 +969,7 @@ void OpenGL::DrawObject(const Ship& ship, bool update_shader)
 
     ship_bullet_buffer.Use();
     ship_shader.SetUniform("position", ship.GetPosition());
-    ship_shader.SetUniform("type", (int)1);//1 - is bullets
+    ship_shader.SetUniform("type", (int)1);// 1 - is bullets
     ship_bullet_buffer.Draw();
 
 
@@ -991,7 +991,7 @@ void OpenGL::DrawObject(const Ship& ship, bool update_shader)
       }
     }
 
-    //ship_buffer.Use();//Every draw buffer is resseted.
+    // ship_buffer.Use();// Every draw buffer is ressetted.
     ship_shader.Use();
     ship_shader.SetUniform("scale", window_scale);
     ship_shader.SetUniform("camera_position", temp__game__camera_position);
@@ -1026,25 +1026,25 @@ void OpenGL::DrawObject(const Map::Rectangle* rectangle, bool update_shader)
         rectangle_shader.SetUniform("camera_position", temp__game__camera_position);
         rectangle_shader.SetUniform("camera_size", temp__game__camera_size);
     }
-    rectangle_shader.SetUniform("properties", rectangle->Prorerties());
+    rectangle_shader.SetUniform("properties", rectangle->Properties());
     rectangle_shader.SetUniform("position",rectangle->GetUpLeftPoint());
     rectangle_shader.SetUniform("point2", rectangle->GetDownRightPoint());
     rectangle_buffer.Draw();
 }
 
-void OpenGL::DrawObject(const Map::Cyrcle* cyrcle, bool update_shader)
+void OpenGL::DrawObject(const Map::Circle* circle, bool update_shader)
 {
     if (update_shader)
     {
-        cyrcle_buffer.Use();
-        cyrcle_shader.SetUniform("scale", window_scale);
-        cyrcle_shader.SetUniform("camera_position", temp__game__camera_position);
-        cyrcle_shader.SetUniform("camera_size", temp__game__camera_size);
+        circle_buffer.Use();
+        circle_shader.SetUniform("scale", window_scale);
+        circle_shader.SetUniform("camera_position", temp__game__camera_position);
+        circle_shader.SetUniform("camera_size", temp__game__camera_size);
     }
-    cyrcle_shader.SetUniform("properties", cyrcle->Prorerties());
-    cyrcle_shader.SetUniform("position", cyrcle->GetPosition());
-    cyrcle_shader.SetUniform("size", cyrcle->GetRadius());
-    cyrcle_buffer.Draw();
+    circle_shader.SetUniform("properties", circle->Properties());
+    circle_shader.SetUniform("position", circle->GetPosition());
+    circle_shader.SetUniform("size", circle->GetRadius());
+    circle_buffer.Draw();
 }
 
 void OpenGL::DrawObject(const Map::Polygon* polygon, bool update_shader)
@@ -1062,7 +1062,7 @@ void OpenGL::DrawObject(const Map::Polygon* polygon, bool update_shader)
     {
         return;
     }
-    polygon_shader.SetUniform("properties", polygon->Prorerties());
+    polygon_shader.SetUniform("properties", polygon->Properties());
     if (p_count > 2 && polygon->IsClosed())
     {
         polygon_shader.SetUniform("side", Segment(polygon->points_array[p_count - 1], polygon->points_array[0], true));
@@ -1122,7 +1122,7 @@ void OpenGL::DrawObject(const Button& button, bool update_shader)
         color = Color3F(0.3f, 0.3f, 0.3f);
     }
 
-    //StaticBuffer buffer = button_buffers.button_buffers[GetButtonIdInArray(&button_buffers, button.GetId())];
+    // StaticBuffer buffer = button_buffers.button_buffers[GetButtonIdInArray(&button_buffers, button.GetId())];
 
     button_shader.SetUniform("position", button.GetPosition());
     button_shader.SetUniform("size", button.GetSize());
@@ -1135,9 +1135,9 @@ void OpenGL::DrawObject(const Button& button, bool update_shader)
     button_buffer.Draw();
 }
 
-//Draw functions
+// Draw functions
 
-//Multydraw functions
+// Multidraw functions
 
 void OpenGL::DrawAnnihAreaGens()
 {
@@ -1262,7 +1262,7 @@ void OpenGL::DrawDynamicParticles()
     DrawObjects(game_p__dynamic_particles, game_p__dynamic_particles_count);
 }
 
-void OpenGL::DrawKnifes()
+void OpenGL::DrawKnives()
 {
     knife_buffer.Use();
     knife_shader.Use();
@@ -1270,7 +1270,7 @@ void OpenGL::DrawKnifes()
     knife_shader.SetUniform("camera_position", temp__game__camera_position);
     knife_shader.SetUniform("camera_size", temp__game__camera_size);
 
-    DrawObjects(game_p__knifes, game_p__knifes_count);
+    DrawObjects(game_p__knives, game_p__knives_count);
 }
 
 void OpenGL::DrawLasers()
@@ -1329,7 +1329,7 @@ void OpenGL::DrawPilots()
 
 void OpenGL::DrawShips()
 {
-    //ship_buffer.Use();//Every draw buffer is resseted.
+    // ship_buffer.Use();// Every draw buffer is ressetted.
     ship_shader.Use();
     ship_shader.SetUniform("scale", window_scale);
     ship_shader.SetUniform("camera_position", temp__game__camera_position);
@@ -1412,15 +1412,15 @@ void OpenGL::DrawIndicatedMap(const Map::MapData& map)
         }
     }
 
-    if (map.cyrcles_array.size() > 0)
+    if (map.circles_array.size() > 0)
     {
-        cyrcle_buffer.Use();
-        cyrcle_shader.Use();
-        cyrcle_shader.SetUniform("scale", window_scale);
-        cyrcle_shader.SetUniform("camera_position", temp__game__camera_position);
-        cyrcle_shader.SetUniform("camera_size", temp__game__camera_size);
+        circle_buffer.Use();
+        circle_shader.Use();
+        circle_shader.SetUniform("scale", window_scale);
+        circle_shader.SetUniform("camera_position", temp__game__camera_position);
+        circle_shader.SetUniform("camera_size", temp__game__camera_size);
 
-        for (const auto& element : map.cyrcles_array)
+        for (const auto& element : map.circles_array)
         {
           if (element.exist) DrawObject(&element);
         }
@@ -1446,8 +1446,8 @@ void OpenGL::DrawIndicatedMenu(const Menu& menu)
 #if OPEN_GL_REALIZATION__SHIPS_CONTROLLED_BY_SCREEN_BUTTONS == true
     if (menu == game_p__ships_control_menu)
     {
-        controler_shader.Use();
-        controler_shader.SetUniform("scale", window_scale);
+        controller_shader.Use();
+        controller_shader.SetUniform("scale", window_scale);
         for (EngineTypes::Menu::buttons_count_t button = 0; button < menu->GetButtonsCount(); button++)
         {
             DrawObject(&menu->current_buttons[button], true);
@@ -1469,9 +1469,9 @@ void OpenGL::DrawIndicatedMenu(const Menu& menu)
 #endif
 }
 
-//Multydraw functions
+// Multidraw functions
 
-//Get data functions
+// Get data functions
 
 bool OpenGL::CanDrawFrame(GLFWwindow* window)
 {
@@ -1483,9 +1483,9 @@ float OpenGL::GetScale()
     return window_scale;
 }
 
-//Get data functions
+// Get data functions
 
-//destructor and free memory functions
+// destructor and free memory functions
 
 void OpenGL::Free()
 {
@@ -1502,7 +1502,7 @@ void OpenGL::FreeBuffers()
     bomb_buffer.Delete();
     bonus_buffer.Delete();
     bullet_buffer.Delete();
-    cyrcle_buffer.Delete();
+    circle_buffer.Delete();
     deceler_area_buffer.Delete();
     dynamic_particle_buffer.Delete();
     grav_gen_buffer.Delete();
@@ -1515,7 +1515,7 @@ void OpenGL::FreeBuffers()
     polygon_buffer.Delete();
     turret_buffer.Delete();
     button_buffer.Delete();
-    button_horisontal_buffer.Delete();
+    button_horizontal_buffer.Delete();
     button_vertical_buffer.Delete();
     knife_buffer.Delete();
     pilot_buffer.Delete();
@@ -1545,10 +1545,10 @@ void OpenGL::FreeShaders()
     ship_shader.Delete();
     turret_shader.Delete();
     rectangle_shader.Delete();
-    cyrcle_shader.Delete();
+    circle_shader.Delete();
     polygon_shader.Delete();
     button_shader.Delete();
-    controler_shader.Delete();
+    controller_shader.Delete();
 }
 
 void OpenGL::FreeTextures()
@@ -1582,4 +1582,4 @@ OpenGL::~OpenGL()
 {
 }
 
-//destructor and free memory functions
+// destructor and free memory functions

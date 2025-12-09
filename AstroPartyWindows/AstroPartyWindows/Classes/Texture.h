@@ -17,7 +17,7 @@ public:
 	Texture2D();
 
 	void Delete();
-	bool Initialisate(
+	bool Initialize(
 		const char* texture_file_name,
 		GLint format = GL_RGB,
 		GLint internal_format = GL_RGB,

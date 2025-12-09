@@ -84,7 +84,7 @@ void MapElement::Move(const Vec2F& move_vector)
 	position += move_vector;
 }
 
-EngineTypes::Map::property_t MapElement::Prorerties() const
+EngineTypes::Map::property_t MapElement::Properties() const
 {
 	return properties;
 }
@@ -483,31 +483,31 @@ Rectangle::~Rectangle()
 {
 }
 
-Cyrcle::Cyrcle() :
+Circle::Circle() :
 	MapElement(),
 	radius(CIRCLE_DEFAULT_RADIUS)
 {
 
 }
 
-Cyrcle::Cyrcle(const Cyrcle& cyrcle) :
+Circle::Circle(const Circle& cyrcle) :
 	MapElement(cyrcle),
 	radius(cyrcle.radius)
 {
 }
 
-Cyrcle::Cyrcle(const Vec2F& position, float radius, EngineTypes::Map::property_t properties, bool exist) :
+Circle::Circle(const Vec2F& position, float radius, EngineTypes::Map::property_t properties, bool exist) :
 	MapElement(position, properties, exist),
 	radius(radius)
 {
 }
 
-bool Cyrcle::IsCollision(const Beam& beam) const
+bool Circle::IsCollision(const Beam& beam) const
 {
 	return beam.Distance(position) < radius;
 }
 
-bool Cyrcle::IsCollision(const Beam& beam, Vec2F* out_position, float* distance_to_out_position) const
+bool Circle::IsCollision(const Beam& beam, Vec2F* out_position, float* distance_to_out_position) const
 {
 	Vec2F neares_point_on_line;
 
@@ -530,7 +530,7 @@ bool Cyrcle::IsCollision(const Beam& beam, Vec2F* out_position, float* distance_
 	return true;
 }
 
-bool Cyrcle::IsCollision(const Beam& beam, Vec2F* out_position, float* distance_to_out_position, Vec2F* perpendicular_direction) const
+bool Circle::IsCollision(const Beam& beam, Vec2F* out_position, float* distance_to_out_position, Vec2F* perpendicular_direction) const
 {
 	Vec2F neares_point_on_line;
 
@@ -555,39 +555,39 @@ bool Cyrcle::IsCollision(const Beam& beam, Vec2F* out_position, float* distance_
 	return true;
 }
 
-bool Cyrcle::IsCollision(const Line& line) const
+bool Circle::IsCollision(const Line& line) const
 {
 	return line.Distance(position) < radius;
 }
 
-bool Cyrcle::IsCollision(const Segment& segment) const
+bool Circle::IsCollision(const Segment& segment) const
 {
 	return segment.Distance(position) < radius;
 }
 
-float Cyrcle::GetRadius() const
+float Circle::GetRadius() const
 {
 	return radius;
 }
 
-void Cyrcle::SetRadius(float radius)
+void Circle::SetRadius(float radius)
 {
 	this->radius = radius;
 }
 
-void Cyrcle::Set(const Cyrcle* cyrcle)
+void Circle::Set(const Circle* cyrcle)
 {
 	MapElement::Set(cyrcle);
 	radius = cyrcle->radius;
 }
 
-void Cyrcle::Set(const Vec2F& position, float radius, EngineTypes::Map::property_t properties, bool exist)
+void Circle::Set(const Vec2F& position, float radius, EngineTypes::Map::property_t properties, bool exist)
 {
 	MapElement::Set(position, properties, exist);
 	this->radius = radius;
 }
 
-void Cyrcle::operator=(const Cyrcle& cyrcle)
+void Circle::operator=(const Circle& cyrcle)
 {
 	exist = cyrcle.exist;
 	last_position = cyrcle.last_position;
@@ -596,7 +596,7 @@ void Cyrcle::operator=(const Cyrcle& cyrcle)
 	properties = cyrcle.properties;
 }
 
-Cyrcle::~Cyrcle()
+Circle::~Circle()
 {
 }
 
@@ -1027,7 +1027,7 @@ Polygon::~Polygon()
 }
 
 MapData::MapData(const MapData& map) :
-	cyrcles_array(map.cyrcles_array),
+	circles_array(map.circles_array),
 	polygons_array(map.polygons_array),
 	rectangles_array(map.rectangles_array)
 {
@@ -1035,18 +1035,18 @@ MapData::MapData(const MapData& map) :
 
 MapData::MapData(
 	const std::vector<Rectangle>& rectangles_array,
-	const std::vector<Cyrcle>& cyrcles_array,
+	const std::vector<Circle>& cyrcles_array,
 	const std::vector<Polygon>& polygons_array) :
-	cyrcles_array(cyrcles_array),
+	circles_array(cyrcles_array),
 	polygons_array(polygons_array),
 	rectangles_array(rectangles_array)
 {
 }
 
 MapData::MapData(
-	const std::vector<Cyrcle>& cyrcles_array,
+	const std::vector<Circle>& cyrcles_array,
 	const std::vector<Polygon>& polygons_array) :
-	cyrcles_array(cyrcles_array),
+	circles_array(cyrcles_array),
 	polygons_array(polygons_array),
 	rectangles_array()
 {
@@ -1055,7 +1055,7 @@ MapData::MapData(
 MapData::MapData(
 	const std::vector<Rectangle>& rectangles_array,
 	const std::vector<Polygon>& polygons_array) :
-	cyrcles_array(),
+	circles_array(),
 	polygons_array(polygons_array),
 	rectangles_array(rectangles_array)
 {
@@ -1063,7 +1063,7 @@ MapData::MapData(
 
 MapData::MapData(
 	const std::vector<Polygon>& polygons_array) :
-	cyrcles_array(),
+	circles_array(),
 	polygons_array(polygons_array),
 	rectangles_array()
 {
@@ -1071,18 +1071,18 @@ MapData::MapData(
 
 void MapData::Set(const MapData* map)
 {
-	cyrcles_array = map->cyrcles_array;
+	circles_array = map->circles_array;
 	polygons_array = map->polygons_array;
 	rectangles_array = map->rectangles_array;
 }
 
 void MapData::Set(
 	const std::vector<Rectangle>& rectangles_array,
-	const std::vector<Cyrcle>& cyrcles_array,
+	const std::vector<Circle>& cyrcles_array,
 	const std::vector<Polygon>& polygons_array)
 {
 	this->rectangles_array = rectangles_array;
-	this->cyrcles_array = cyrcles_array;
+	this->circles_array = circles_array;
 	this->polygons_array = polygons_array;
 }
 
@@ -1091,16 +1091,16 @@ void MapData::Set(
 	const std::vector<Polygon>& polygons_array)
 {
 	this->rectangles_array = rectangles_array;
-	this->cyrcles_array.clear();
+	this->circles_array.clear();
 	this->polygons_array = polygons_array;
 }
 
 void MapData::Set(
-	const std::vector<Cyrcle>& cyrcles_array,
+	const std::vector<Circle>& circles_array,
 	const std::vector<Polygon>& polygons_array)
 {
 	this->rectangles_array.clear();
-	this->cyrcles_array = cyrcles_array;
+	this->circles_array = circles_array;
 	this->polygons_array = polygons_array;
 }
 
@@ -1108,13 +1108,13 @@ void MapData::Set(
 	const std::vector<Polygon>& polygons_array)
 {
 	this->rectangles_array.clear();
-	this->cyrcles_array.clear();
+	this->circles_array.clear();
 	this->polygons_array = polygons_array;
 }
 
 void MapData::operator=(const MapData& map)
 {
-	cyrcles_array = map.cyrcles_array;
+	circles_array = map.circles_array;
 	polygons_array = map.polygons_array;
 	rectangles_array = map.rectangles_array;
 }

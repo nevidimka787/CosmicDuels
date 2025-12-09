@@ -13,7 +13,7 @@ void Texture2D::Delete()
     }
 }
 
-bool Texture2D::Initialisate(const char* texture_file_name, GLint format, GLint internal_format, GLint wrap_s_rule, GLint wrap_t_rule, GLint min_filter_parameter, GLint mag_filter_parameter)
+bool Texture2D::Initialize(const char* texture_file_name, GLint format, GLint internal_format, GLint wrap_s_rule, GLint wrap_t_rule, GLint min_filter_parameter, GLint mag_filter_parameter)
 {
     int width;
     int height;

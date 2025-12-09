@@ -200,7 +200,7 @@ DynamicParticle Ship::CreateBurnoutExaust(GameTypes::tic_t current_tic)
 		current_tic + PARTICLE_PERIOD_EXHAUST_ENGINE);
 }
 
-DynamicParticle Ship::CreateEnginExaust(GameTypes::tic_t current_tic)
+DynamicParticle Ship::CreateEnginExhaust(GameTypes::tic_t current_tic)
 {
 	return DynamicParticle(
 		current_tic,
@@ -315,7 +315,7 @@ bool Ship::CreatingEntities(
 	return true;
 }
 
-GameTypes::entities_count_t Ship::GetElemntFromList()
+GameTypes::entities_count_t Ship::GetElementFromList()
 {
 	if (objects_in_creating_proccess == 0)
 	{
@@ -390,7 +390,7 @@ int Ship::GetBonusInventoryAsBoolList() const
 			((bonus_inventory & (BONUS_KNIFE * BONUS_CELL)) ? (1u << 3u) : 0u));	//third bit is a knife cell
 }
 
-GameTypes::entities_count_t Ship::GetBulletsCountInMagasine() const
+GameTypes::entities_count_t Ship::GetBulletsCountInMagazine() const
 {
 	return bullets_in_magazine;
 }
@@ -400,7 +400,7 @@ GameTypes::entities_count_t Ship::GetSizeOfMagazine() const
 	return magazine_size;
 }
 
-GameTypes::objects_types_count_t Ship::GetTypeOfElemntInLoop() const
+GameTypes::objects_types_count_t Ship::GetTypeOfElementInLoop() const
 {
 	return element_type;
 }
@@ -426,7 +426,7 @@ void Ship::IncrementSizeOfMagazine(GameTypes::entities_count_t cells_count)
 	return;
 }
 
-bool Ship::IsUnbrakable() const
+bool Ship::IsUnbreakable() const
 {
 	return unbrakable;
 }
@@ -504,7 +504,7 @@ void Ship::SetSizeOfMagazine(GameTypes::entities_count_t bullets_count)
 	}
 }
 
-void Ship::SetUnbrakablePeriod(GameTypes::tic_t period)
+void Ship::SetUnbreakablePeriod(GameTypes::tic_t period)
 {
 	unbrakable = period;
 }
