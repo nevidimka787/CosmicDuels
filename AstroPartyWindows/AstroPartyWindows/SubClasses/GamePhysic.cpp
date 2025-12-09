@@ -1299,8 +1299,6 @@ void Game::BombsCollisionsWithBullets()
 		if (!bomb.exist) continue;
 		++bombs_found;
 
-		if (bomb.IsBoom()) continue;
-
 		bullets_array_mtx.lock();
 		GameTypes::entities_count_t bullets_found = 0;
 		for (auto& bullet : bullets)
