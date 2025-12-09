@@ -153,7 +153,7 @@
 // 		return "update";
 // 	case COMMAND__UPDATE_PLAYER_FLAGS:
 // 		return "update_player_flags";
-// 	case COMMNAD__UPDATE_GLOBAL_TIMER:
+// 	case COMMAND__UPDATE_GLOBAL_TIMER:
 // 		return "update_global_timer";
 // 	case COMMAND__NEED_UPDATE:			// 0 args
 // 		return "need_update";
@@ -187,7 +187,7 @@
 // 	case COMMAND__START_ROUND:			return "start_round";
 // 	case COMMAND__UPDATE:				return "update";
 // 	case COMMAND__UPDATE_PLAYER_FLAGS:	return "update_player_flags";
-// 	case COMMNAD__UPDATE_GLOBAL_TIMER:	return "update_global_timer";
+// 	case COMMAND__UPDATE_GLOBAL_TIMER:	return "update_global_timer";
 // 	case COMMAND__NEED_UPDATE:			return "need_update";
 // 	case COMMAND__UPDATE_PLAYER_FLAGS_ON_SERVER: return "update_player_flags_on_server";
 // 	case COMMAND__SET_TEAM:				return "set_team";
