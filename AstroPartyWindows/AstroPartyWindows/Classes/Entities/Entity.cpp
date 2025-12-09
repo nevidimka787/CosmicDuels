@@ -44,11 +44,11 @@ float Entity::GetDistance(const Beam& beam) const
 	return beam.Distance(position) - radius, 0.0f;
 }
 
-float Entity::GetDistance(const Map::Circle& cyrcle, bool* is_inside) const
+float Entity::GetDistance(const Map::Circle& circle, bool* is_inside) const
 {
-	const Vec2F& cyrcle_position(cyrcle.GetPosition());
+	const Vec2F& circle_position(circle.GetPosition());
 
-	float distance = position.Distance(cyrcle_position) - cyrcle.GetRadius();
+	float distance = position.Distance(circle_position) - circle.GetRadius();
 	if (distance < 0.0f)
 	{
 		if (is_inside != nullptr)
@@ -196,14 +196,14 @@ bool Entity::IsCollision(const Beam& beam) const
 	return beam.Distance(position) <= radius;
 }
 
-bool Entity::IsCollision(const Map::Circle& cyrcle) const
+bool Entity::IsCollision(const Map::Circle& circle) const
 {
-	if (cyrcle.exist == false)
+	if (circle.exist == false)
 	{
 		return false;
 	}
-	Vec2F temp = cyrcle.GetPosition();
-	return GetDistance(temp) < radius + cyrcle.GetRadius();
+	Vec2F temp = circle.GetPosition();
+	return GetDistance(temp) < radius + circle.GetRadius();
 }
 
 bool Entity::IsCollision(const DecelerationArea& deceler_area) const

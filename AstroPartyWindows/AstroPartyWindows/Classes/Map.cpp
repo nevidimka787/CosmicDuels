@@ -39,17 +39,17 @@ Vec2F MapElement::GetVelocity() const
 	return position - last_position;
 }
 
-bool MapElement::HasAllProrerties(EngineTypes::Map::property_t obtained_properties) const
+bool MapElement::HasAllProperties(EngineTypes::Map::property_t obtained_properties) const
 {
 	return (properties & obtained_properties) == obtained_properties;
 }
 
-bool MapElement::HasNoProrerties(EngineTypes::Map::property_t obtained_properties) const
+bool MapElement::HasNoProperties(EngineTypes::Map::property_t obtained_properties) const
 {
 	return (~properties & obtained_properties) == obtained_properties;
 }
 
-bool MapElement::HasSomeProrerties(EngineTypes::Map::property_t obtained_properties) const
+bool MapElement::HasSomeProperties(EngineTypes::Map::property_t obtained_properties) const
 {
 	return properties & obtained_properties;
 }
@@ -74,7 +74,7 @@ bool MapElement::IsCheckCollisionsOutside() const
 	return properties & MAP_PROPERTY_COLLIDE_OUTSIDE;
 }
 
-bool MapElement::IsUnbreacable() const
+bool MapElement::IsUnbreakable() const
 {
 	return properties & MAP_PROPERTY_UNBREAKABLE;
 }
@@ -153,14 +153,14 @@ Rectangle::Rectangle(const Segment& diagonal, EngineTypes::Map::property_t prope
 	MapElement(diagonal.point, properties, exist),
 	point2(diagonal.point + diagonal.vector)
 {
-	NormaliseThis();
+	NormalizeThis();
 }
 
 Rectangle::Rectangle(Vec2F point1, Vec2F point2, EngineTypes::Map::property_t properties, bool exist) :
 	MapElement(point1, properties, exist),
 	point2(point2)
 {
-	NormaliseThis();
+	NormalizeThis();
 }
 
 Vec2F Rectangle::GetUpRightPoint() const
@@ -380,7 +380,7 @@ void Rectangle::Move(const Vec2F& move_vector)
 	point2 += move_vector;
 }
 
-Rectangle Rectangle::Normalise() const
+Rectangle Rectangle::Normalize() const
 {
 	//up right point
 	Vec2F temp_point1;
@@ -409,7 +409,7 @@ Rectangle Rectangle::Normalise() const
 		Vec2F(position.x, position.y));
 }
 
-void Rectangle::NormaliseThis()
+void Rectangle::NormalizeThis()
 {
 	//up right point
 	Vec2F temp_point1;
@@ -456,7 +456,7 @@ void Rectangle::Set(const Segment& diagonal, EngineTypes::Map::property_t proper
 	MapElement::Set(diagonal.point, properties, exist);
 	this->point2 = diagonal.SecondPoint();
 
-	NormaliseThis();
+	NormalizeThis();
 }
 
 void Rectangle::SetPosition(const Vec2F& position)
@@ -490,9 +490,9 @@ Circle::Circle() :
 
 }
 
-Circle::Circle(const Circle& cyrcle) :
-	MapElement(cyrcle),
-	radius(cyrcle.radius)
+Circle::Circle(const Circle& circle) :
+	MapElement(circle),
+	radius(circle.radius)
 {
 }
 
@@ -509,21 +509,21 @@ bool Circle::IsCollision(const Beam& beam) const
 
 bool Circle::IsCollision(const Beam& beam, Vec2F* out_position, float* distance_to_out_position) const
 {
-	Vec2F neares_point_on_line;
+	Vec2F nearest_point_on_line;
 
-	float distance = Line(beam.point, beam.vector).Distance(position, &neares_point_on_line);
+	float distance = Line(beam.point, beam.vector).Distance(position, &nearest_point_on_line);
 
 	if (distance > radius)
 	{
 		return false;
 	}
 
-	float sub_vector_length = sqrtf(radius * radius - (neares_point_on_line - position).LengthPow2());
+	float sub_vector_length = sqrtf(radius * radius - (nearest_point_on_line - position).LengthPow2());
 
 	*out_position =
 		(beam.point.Distance(position) > radius) ?
-		(neares_point_on_line - beam.vector.Normalize() * sub_vector_length) :
-		(neares_point_on_line + beam.vector.Normalize() * sub_vector_length);
+		(nearest_point_on_line - beam.vector.Normalize() * sub_vector_length) :
+		(nearest_point_on_line + beam.vector.Normalize() * sub_vector_length);
 
 	*distance_to_out_position = beam.point.Distance(*out_position);
 
@@ -532,21 +532,21 @@ bool Circle::IsCollision(const Beam& beam, Vec2F* out_position, float* distance_
 
 bool Circle::IsCollision(const Beam& beam, Vec2F* out_position, float* distance_to_out_position, Vec2F* perpendicular_direction) const
 {
-	Vec2F neares_point_on_line;
+	Vec2F nearest_point_on_line;
 
-	float distance = Line(beam.point, beam.vector).Distance(position, &neares_point_on_line);
+	float distance = Line(beam.point, beam.vector).Distance(position, &nearest_point_on_line);
 
 	if (distance > radius)
 	{
 		return false;
 	}
 
-	float sub_vector_length = sqrtf(radius * radius - (neares_point_on_line - position).LengthPow2());
+	float sub_vector_length = sqrtf(radius * radius - (nearest_point_on_line - position).LengthPow2());
 
 	*out_position =
 		(beam.point.Distance(position) > radius) ?
-		(neares_point_on_line - beam.vector.Normalize() * sub_vector_length) :
-		(neares_point_on_line + beam.vector.Normalize() * sub_vector_length);
+		(nearest_point_on_line - beam.vector.Normalize() * sub_vector_length) :
+		(nearest_point_on_line + beam.vector.Normalize() * sub_vector_length);
 
 	*distance_to_out_position = beam.point.Distance(*out_position);
 
@@ -575,10 +575,10 @@ void Circle::SetRadius(float radius)
 	this->radius = radius;
 }
 
-void Circle::Set(const Circle* cyrcle)
+void Circle::Set(const Circle* circle)
 {
-	MapElement::Set(cyrcle);
-	radius = cyrcle->radius;
+	MapElement::Set(circle);
+	radius = circle->radius;
 }
 
 void Circle::Set(const Vec2F& position, float radius, EngineTypes::Map::property_t properties, bool exist)
@@ -587,13 +587,13 @@ void Circle::Set(const Vec2F& position, float radius, EngineTypes::Map::property
 	this->radius = radius;
 }
 
-void Circle::operator=(const Circle& cyrcle)
+void Circle::operator=(const Circle& circle)
 {
-	exist = cyrcle.exist;
-	last_position = cyrcle.last_position;
-	position = cyrcle.position;
-	radius = cyrcle.radius;
-	properties = cyrcle.properties;
+	exist = circle.exist;
+	last_position = circle.last_position;
+	position = circle.position;
+	radius = circle.radius;
+	properties = circle.properties;
 }
 
 Circle::~Circle()
@@ -1035,18 +1035,18 @@ MapData::MapData(const MapData& map) :
 
 MapData::MapData(
 	const std::vector<Rectangle>& rectangles_array,
-	const std::vector<Circle>& cyrcles_array,
+	const std::vector<Circle>& circles_array,
 	const std::vector<Polygon>& polygons_array) :
-	circles_array(cyrcles_array),
+	circles_array(circles_array),
 	polygons_array(polygons_array),
 	rectangles_array(rectangles_array)
 {
 }
 
 MapData::MapData(
-	const std::vector<Circle>& cyrcles_array,
+	const std::vector<Circle>& circles_array,
 	const std::vector<Polygon>& polygons_array) :
-	circles_array(cyrcles_array),
+	circles_array(circles_array),
 	polygons_array(polygons_array),
 	rectangles_array()
 {
@@ -1078,7 +1078,7 @@ void MapData::Set(const MapData* map)
 
 void MapData::Set(
 	const std::vector<Rectangle>& rectangles_array,
-	const std::vector<Circle>& cyrcles_array,
+	const std::vector<Circle>& circles_array,
 	const std::vector<Polygon>& polygons_array)
 {
 	this->rectangles_array = rectangles_array;

@@ -32,14 +32,14 @@ namespace Map
 
 		Vec2F GetPosition() const;
 		Vec2F GetVelocity() const;
-		bool HasAllProrerties(EngineTypes::Map::property_t obtained_properties) const;
-		bool HasNoProrerties(EngineTypes::Map::property_t obtained_properties) const;
-		bool HasSomeProrerties(EngineTypes::Map::property_t obtained_properties) const;
+		bool HasAllProperties(EngineTypes::Map::property_t obtained_properties) const;
+		bool HasNoProperties(EngineTypes::Map::property_t obtained_properties) const;
+		bool HasSomeProperties(EngineTypes::Map::property_t obtained_properties) const;
 		bool IsKiller() const;
 		bool IsAggressive() const;
 		bool IsCheckCollisionsInside() const;
 		bool IsCheckCollisionsOutside() const;
-		bool IsUnbreacable() const;
+		bool IsUnbreakable() const;
 		void Move(const Vec2F& move_vector);
 		EngineTypes::Map::property_t Properties() const;
 		void RessetVelocity();
@@ -67,7 +67,7 @@ namespace Map
 			bool exist = true);
 
 	protected:
-		Vec2F point2;//down left point
+		Vec2F point2;// down left point
 
 	public:
 		Rectangle();
@@ -93,10 +93,10 @@ namespace Map
 		bool IsCollision(const Line& line);
 		bool IsCollision(const Segment& segment);
 		void Move(const Vec2F& move_vector);
-		//set point2 as down left point and point1 as up right point
-		Rectangle Normalise() const;
-		//set point2 as down left point and point1 as up right point
-		void NormaliseThis();
+		// set point2 as down left point and point1 as up right point
+		Rectangle Normalize() const;
+		// set point2 as down left point and point1 as up right point
+		void NormalizeThis();
 		// position of rectangle's center
 		Vec2F Position() const;
 		void Set(const Rectangle* patent);
@@ -119,7 +119,7 @@ namespace Map
 		float radius;
 	public:
 		Circle();
-		Circle(const Circle& cyrcle);
+		Circle(const Circle& circle);
 		Circle(
 			const Vec2F& position,
 			float radius = CIRCLE_DEFAULT_RADIUS,
@@ -142,14 +142,14 @@ namespace Map
 		bool IsCollision(const Segment& segment) const;
 		float GetRadius() const;
 		void SetRadius(float radius);
-		void Set(const Circle* cyrcle);
+		void Set(const Circle* circle);
 		void Set(
 			const Vec2F& position,
 			float radius = CIRCLE_DEFAULT_RADIUS,
 			EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
 			bool exist = true);
 
-		void operator=(const Circle& cyrcle);
+		void operator=(const Circle& circle);
 
 		~Circle();
 	};
@@ -188,24 +188,24 @@ namespace Map
 		bool IsCollision(const Beam& beam, Vec2F* out_position, float* distance_to_out_position, Vec2F* perpendicular_vector) const;
 		bool IsCollision(const Line& line) const;
 		bool IsCollision(const Segment& segment) const;
-		//If polygon should update enges then function returns true.
+		// If polygon should update edges then function returns true.
 		bool IsShouldUpdate() const;
-		//The function set flag that indicated that should update edges of the polygon.
+		// The function set flag that indicated that should update edges of the polygon.
 		void ShouldUpdate();
-		//The function return resize velocity.
+		// The function return resize velocity.
 		Vec2F DynamicalProperties() const;
-		//The function returns dynamic properties of the polygon.
-		void DynamicalProperties(float* angular_velocty) const;
-		//The function returns dynamic properties of the polygon.
+		// The function returns dynamic properties of the polygon.
+		void DynamicalProperties(float* angular_velocity) const;
+		// The function returns dynamic properties of the polygon.
 		void DynamicalProperties(Vec2F* velocity) const;
-		//The function returns dynamic properties of the polygon.
-		void DynamicalProperties(float* angular_velocty, Vec2F* resize_velocity) const;
-		//The function returns dynamic properties of the polygon.
+		// The function returns dynamic properties of the polygon.
+		void DynamicalProperties(float* angular_velocity, Vec2F* resize_velocity) const;
+		// The function returns dynamic properties of the polygon.
 		void DynamicalProperties(Vec2F* velocity, Vec2F* resize_velocity) const;
-		//The function returns dynamic properties of the polygon.
-		void DynamicalProperties(Vec2F* velocity, float* angular_velocty) const;
-		//The function returns dynamic properties of the polygon.
-		void DynamicalProperties(Vec2F* velocity, float* angular_velocty, Vec2F* resize_velocity) const;
+		// The function returns dynamic properties of the polygon.
+		void DynamicalProperties(Vec2F* velocity, float* angular_velocity) const;
+		// The function returns dynamic properties of the polygon.
+		void DynamicalProperties(Vec2F* velocity, float* angular_velocity, Vec2F* resize_velocity) const;
 		EngineTypes::Polygon::points_array_length_t PointsCount() const;
 		void Set(const Polygon* parent);
 		void Set(
@@ -218,12 +218,12 @@ namespace Map
 		void SetAngle(float angle);
 		void SetSize(const Vec2F& size);
 		void ToDefault();
-		//The function set local_points by global points, position and angle.
+		// The function set local_points by global points, position and angle.
 		void UpdatePoints();
 		void Update();
-		//The function return velocity of point in the polygon.
+		// The function return velocity of point in the polygon.
 		Vec2F Velocity(const Vec2F& point) const;
-		//The function return velocity of point in the polygon.
+		// The function return velocity of point in the polygon.
 		Vec2F VelocityLocal(const Vec2F& point) const;
 
 		void operator=(const Polygon& polygon);

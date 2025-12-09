@@ -24,7 +24,7 @@ KillerEntity::KillerEntity(
 	GameTypes::players_count_t player_master_team_number,
 	float angle,
 	float angular_velocity,
-	float force_collision_coeffisient,
+	float force_collision_coef,
 	float force_resistance_air_coefficient,
 	bool exist)
 	:
@@ -34,7 +34,7 @@ KillerEntity::KillerEntity(
 		radius,
 		angle,
 		angular_velocity,
-		force_collision_coeffisient,
+		force_collision_coef,
 		force_resistance_air_coefficient,
 		exist),
 	host_number(player_master_number),
@@ -42,14 +42,14 @@ KillerEntity::KillerEntity(
 {
 }
 
-bool KillerEntity::CreatedBy(const ControlledEntity& controled_entity) const
+bool KillerEntity::CreatedBy(const ControlledEntity& controlled_entity) const
 {
-	return host_number == controled_entity.GetPlayerNumber();
+	return host_number == controlled_entity.GetPlayerNumber();
 }
 
-bool KillerEntity::CreatedByTeam(const ControlledEntity & controled_entity) const
+bool KillerEntity::CreatedByTeam(const ControlledEntity & controlled_entity) const
 {
-	return host_team_number == controled_entity.GetTeamNumber();
+	return host_team_number == controlled_entity.GetTeamNumber();
 }
 
 GameTypes::players_count_t KillerEntity::GetHostNumber() const
@@ -83,7 +83,7 @@ void KillerEntity::Set(
 	GameTypes::players_count_t player_master_team_number,
 	float angle,
 	float angular_velocity,
-	float force_collision_coeffisient,
+	float force_collision_coef,
 	float force_resistance_air_coefficient,
 	bool exist)
 {
@@ -92,7 +92,7 @@ void KillerEntity::Set(
 		velocity,
 		radius, angle,
 		angular_velocity,
-		force_collision_coeffisient,
+		force_collision_coef,
 		force_resistance_air_coefficient,
 		exist);
 

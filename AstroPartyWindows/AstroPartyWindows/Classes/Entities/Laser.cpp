@@ -50,7 +50,7 @@ Laser::Laser(
 bool Laser::Collision(Map::MapData& map, Vec2F& nearest_intersect_position, Vec2F& nearest_perpendicular_direction)
 {
 #define MAP_ELEMENT_TYPE__NONE_TYPE	0
-#define MAP_ELEMENT_TYPE__CYRCLE	1
+#define MAP_ELEMENT_TYPE__CIRCLE	1
 #define MAP_ELEMENT_TYPE__POLYGON	2
 #define MAP_ELEMENT_TYPE__RECTANGLE	3
 
@@ -77,7 +77,7 @@ bool Laser::Collision(Map::MapData& map, Vec2F& nearest_intersect_position, Vec2
 				nearest_intersect_position = intersect_position;
 				nearest_perpendicular_direction = perpendicular_position;
 				collision_element_p = &element;
-				element_type = MAP_ELEMENT_TYPE__CYRCLE;
+				element_type = MAP_ELEMENT_TYPE__CIRCLE;
 			}
 		}
 	}
@@ -126,20 +126,20 @@ bool Laser::Collision(Map::MapData& map, Vec2F& nearest_intersect_position, Vec2
 
 	switch (element_type)
 	{
-	case MAP_ELEMENT_TYPE__CYRCLE:
-		if (!((Map::Circle*)collision_element_p)->IsUnbreacable())
+	case MAP_ELEMENT_TYPE__CIRCLE:
+		if (!((Map::Circle*)collision_element_p)->IsUnbreakable())
 		{
 			((Map::Circle*)collision_element_p)->exist = false;
 		}
 		break;
 	case MAP_ELEMENT_TYPE__POLYGON:
-		if (!((Map::Polygon*)collision_element_p)->IsUnbreacable())
+		if (!((Map::Polygon*)collision_element_p)->IsUnbreakable())
 		{
 			((Map::Polygon*)collision_element_p)->exist = false;
 		}
 		break;
 	case MAP_ELEMENT_TYPE__RECTANGLE:
-		if (!((Map::Rectangle*)collision_element_p)->IsUnbreacable())
+		if (!((Map::Rectangle*)collision_element_p)->IsUnbreakable())
 		{
 			((Map::Rectangle*)collision_element_p)->exist = false;
 		}
@@ -153,9 +153,9 @@ bool Laser::IsActive() const
 	return shoot_time > 0;
 }
 
-bool Laser::CreatedBy(const ControlledEntity& controled_entity) const
+bool Laser::CreatedBy(const ControlledEntity& controlled_entity) const
 {
-	return host_number == controled_entity.GetPlayerNumber();
+	return host_number == controlled_entity.GetPlayerNumber();
 }
 
 Segment Laser::GetSegment() const

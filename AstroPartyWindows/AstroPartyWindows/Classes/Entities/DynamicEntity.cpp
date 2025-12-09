@@ -5,7 +5,7 @@
 DynamicEntity::DynamicEntity() :
 	Entity(),
 	angular_velocity(0.0f),
-	force_collision_coeffisient(DEFAULT_FORCE_COLLISION_COEFFICIENT),
+	force_collision_coef(DEFAULT_FORCE_COLLISION_COEFFICIENT),
 	force_resistance_air_coefficient(DEFAULT_FORCE_RESISTANCE_AIR_COEFFICIENT)
 {
 }
@@ -14,7 +14,7 @@ DynamicEntity::DynamicEntity(const DynamicEntity& dynamic_entity) :
 	Entity(dynamic_entity),
 	angular_velocity(dynamic_entity.angular_velocity),
 	force(dynamic_entity.force),
-	force_collision_coeffisient(dynamic_entity.force_collision_coeffisient),
+	force_collision_coef(dynamic_entity.force_collision_coef),
 	force_resistance_air_coefficient(dynamic_entity.force_resistance_air_coefficient),
 	velocity(dynamic_entity.velocity)
 {
@@ -26,7 +26,7 @@ DynamicEntity::DynamicEntity(
 	float radius,
 	float angle,
 	float angular_velocity,
-	float force_collision_coeffisient,
+	float force_collision_coef,
 	float force_resistance_air_coefficient,
 	bool exist)
 	:
@@ -36,7 +36,7 @@ DynamicEntity::DynamicEntity(
 		angle,
 		exist),
 	angular_velocity(angular_velocity),
-	force_collision_coeffisient(force_collision_coeffisient),
+	force_collision_coef(force_collision_coef),
 	force_resistance_air_coefficient(force_resistance_air_coefficient),
 	velocity(velocity)
 {
@@ -57,10 +57,10 @@ void DynamicEntity::AddAngularVelocity(float angular_velocity)
 	this->angular_velocity += angular_velocity;
 }
 
-void DynamicEntity::AddGravityForce(float gravity_coeffisient, const Vec2F& forced_point)
+void DynamicEntity::AddGravityForce(float gravity_coef, const Vec2F& forced_point)
 {
-	Vec2F gvnn = forced_point - position;//grav_vec_not_normalize
-	force += gvnn.Normalize() * gravity_coeffisient / (gvnn.x * gvnn.x + gvnn.y * gvnn.y);
+	Vec2F gv_nn = forced_point - position;// grav_vec_not_normalize
+	force += gv_nn.Normalize() * gravity_coef / (gv_nn.x * gv_nn.x + gv_nn.y * gv_nn.y);
 }
 
 void DynamicEntity::AddVelocity(const Vec2F& velocity)
@@ -136,29 +136,29 @@ bool DynamicEntity::Collision(const Map::Rectangle& rectangle)
 	return false;
 }
 
-bool DynamicEntity::Collision(const Map::Circle& cyrcle)
+bool DynamicEntity::Collision(const Map::Circle& circle)
 {
 	float distance;
 	bool inside;
-	if ((distance = GetDistance(cyrcle, &inside)) > 0.0f)
+	if ((distance = GetDistance(circle, &inside)) > 0.0f)
 	{
 		return false;
 	}
 
-	//from this to cyrcle
-	const Vec2F& collision_direction = cyrcle.GetPosition() - position;
-	const Vec2F& relative_velocisy = velocity - cyrcle.GetVelocity();
+	// from this to circle
+	const Vec2F& collision_direction = circle.GetPosition() - position;
+	const Vec2F& relative_velocity = velocity - circle.GetVelocity();
 	if (inside)
 	{
-		const Vec2F& d_pos = cyrcle.GetPosition() - collision_direction.Normalize() * (cyrcle.GetRadius() - radius - force_collision_coeffisient);
-		velocity = relative_velocisy - relative_velocisy.ProjectSign(position - d_pos) + cyrcle.GetVelocity();
+		const Vec2F& d_pos = circle.GetPosition() - collision_direction.Normalize() * (circle.GetRadius() - radius - force_collision_coef);
+		velocity = relative_velocity - relative_velocity.ProjectSign(position - d_pos) + circle.GetVelocity();
 		force -= force.ProjectSign(position - d_pos);
 		position = d_pos;
 		return true;
 	}
 
-	const Vec2F& d_pos = cyrcle.GetPosition() - collision_direction.Normalize() * (cyrcle.GetRadius() + radius + force_collision_coeffisient);
-	velocity = relative_velocisy - relative_velocisy.ProjectSign(position - d_pos) + cyrcle.GetVelocity();
+	const Vec2F& d_pos = circle.GetPosition() - collision_direction.Normalize() * (circle.GetRadius() + radius + force_collision_coef);
+	velocity = relative_velocity - relative_velocity.ProjectSign(position - d_pos) + circle.GetVelocity();
 	force -= force.ProjectSign(position - d_pos);
 	position = d_pos;
 	return true;
@@ -175,10 +175,10 @@ bool DynamicEntity::Collision(const Map::Polygon& polygon)
 	{
 		return false;
 	}
-	const Segment& treck = GetLastTreck();
+	const Segment& track = GetLastTrack();
 	Segment side = Segment(polygon.points_array.back(), polygon.points_array[0], true);
 	bool collision = false;
-	Vec2F collision_direction;//direction from position to collision point
+	Vec2F collision_direction;// direction from position to collision point
 	float distance;
 
 	Vec2F d_pos;
@@ -186,9 +186,9 @@ bool DynamicEntity::Collision(const Map::Polygon& polygon)
 	if (p_count > 2 && polygon.IsClosed())
 	{
 		distance = side.Distance(position, &collision_direction);
-		if (distance < radius || side.IsIntersection(treck))
+		if (distance < radius || side.IsIntersection(track))
 		{
-			d_pos = (position - collision_direction).Normalize() * (radius - position.Distance(collision_direction) + force_collision_coeffisient);
+			d_pos = (position - collision_direction).Normalize() * (radius - position.Distance(collision_direction) + force_collision_coef);
 			force -= force.ProjectSign(d_pos);
 			position += d_pos;
 			collision_direction -= position;
@@ -204,9 +204,9 @@ bool DynamicEntity::Collision(const Map::Polygon& polygon)
 		side.Set(polygon.points_array[p - 1], polygon.points_array[p], true);
 
 		distance = side.Distance(position, &collision_direction);
-		if (distance < radius || side.IsIntersection(treck))
+		if (distance < radius || side.IsIntersection(track))
 		{
-			d_pos = (position - collision_direction).Normalize() * (radius - position.Distance(collision_direction) + force_collision_coeffisient);
+			d_pos = (position - collision_direction).Normalize() * (radius - position.Distance(collision_direction) + force_collision_coef);
 			force -= force.ProjectSign(d_pos);
 			position += d_pos;
 			collision_direction -= position;
@@ -302,46 +302,46 @@ static bool InsideRectangle(const Vec2F& point_position, const Vec2F& up_right_c
 
 bool DynamicEntity::CollisionCheckPosition(const Map::Rectangle& rectangle, Vec2F& point, Vec2F& force_vector)
 {
-	const auto& up_rigth = rectangle.GetUpRightPoint();
+	const auto& up_right = rectangle.GetUpRightPoint();
 	const auto& down_left = rectangle.GetDownLeftPoint();
-	if (InsideRectangle(position, up_rigth, down_left)) return false;
+	if (InsideRectangle(position, up_right, down_left)) return false;
 
-	const auto& up_left = Vec2F(down_left.x, up_rigth.y);
-	const auto& down_right = Vec2F(up_rigth.x, down_left.y);
-	const auto& up_up_right = Vec2F(up_rigth.x, up_rigth.y + radius);
-	const auto& up_right_right = Vec2F(up_rigth.x + radius, up_rigth.y);
+	const auto& up_left = Vec2F(down_left.x, up_right.y);
+	const auto& down_right = Vec2F(up_right.x, down_left.y);
+	const auto& up_up_right = Vec2F(up_right.x, up_right.y + radius);
+	const auto& up_right_right = Vec2F(up_right.x + radius, up_right.y);
 	const auto& down_down_left = Vec2F(down_left.x, down_left.y - radius);
 	const auto& down_left_left = Vec2F(down_left.x - radius, down_left.y);
 
 	if (InsideRectangle(position, up_up_right, up_left)) // up rectangle
 	{
-		point = Vec2F(position.x, up_up_right.y + force_collision_coeffisient);
+		point = Vec2F(position.x, up_up_right.y + force_collision_coef);
 		force_vector = Vec2F(0.0f, 1.0f);
 		return true;
 	}
 
 	if (InsideRectangle(position, up_right_right, down_right)) // right rectangle
 	{
-		point = Vec2F(up_right_right.x + force_collision_coeffisient, position.y);
+		point = Vec2F(up_right_right.x + force_collision_coef, position.y);
 		force_vector = Vec2F(1.0f, 0.0f);
 		return true;
 	}
 
 	if (InsideRectangle(position, down_right, down_down_left)) // down rectangle
 	{
-		point = Vec2F(position.x, down_down_left.y - force_collision_coeffisient);
+		point = Vec2F(position.x, down_down_left.y - force_collision_coef);
 		force_vector = Vec2F(0.0f, -1.0f);
 		return true;
 	}
 
 	if (InsideRectangle(position, up_left, down_left_left)) // left rectangle
 	{
-		point = Vec2F(down_left_left.x - force_collision_coeffisient, position.y);
+		point = Vec2F(down_left_left.x - force_collision_coef, position.y);
 		force_vector = Vec2F(-1.0f, 0.0f);
 		return true;
 	}
 
-	const auto& up_up_rigt_rigth = up_rigth + radius;
+	const auto& up_up_right_right = up_right + radius;
 	const auto& down_down_left_left = down_left - radius;
 
 	const auto& down_right_right = Vec2F(down_right.x + radius, down_right.y);
@@ -349,35 +349,35 @@ bool DynamicEntity::CollisionCheckPosition(const Map::Rectangle& rectangle, Vec2
 	const auto& up_left_left = Vec2F(down_right.x - radius, down_right.y);
 	const auto& up_up_left = Vec2F(down_right.x, down_right.y + radius);
 
-	if (InsideRectangle(position, up_up_rigt_rigth, up_rigth) && // up right cyrcle
-		position.DistancePow2(up_rigth) < radius * radius)
+	if (InsideRectangle(position, up_up_right_right, up_right) && // up right circle
+		position.DistancePow2(up_right) < radius * radius)
 	{
-		force_vector = (position - up_rigth).Normalize();
-		point = up_rigth + force_vector * (radius + force_collision_coeffisient);
+		force_vector = (position - up_right).Normalize();
+		point = up_right + force_vector * (radius + force_collision_coef);
 		return true;
 	}
 
-	if (InsideRectangle(position, down_right_right, down_down_right) && // down right cyrcle
+	if (InsideRectangle(position, down_right_right, down_down_right) && // down right circle
 		position.DistancePow2(down_right) < radius * radius)
 	{
 		force_vector = (position - down_right).Normalize();
-		point = down_right + force_vector * (radius + force_collision_coeffisient);
+		point = down_right + force_vector * (radius + force_collision_coef);
 		return true;
 	}
 
-	if (InsideRectangle(position, down_left, down_down_left_left) && // down left cyrcle
+	if (InsideRectangle(position, down_left, down_down_left_left) && // down left circle
 		position.DistancePow2(down_left) < radius * radius)
 	{
 		force_vector = (position - down_left).Normalize();
-		point = down_left + force_vector * (radius + force_collision_coeffisient);
+		point = down_left + force_vector * (radius + force_collision_coef);
 		return true;
 	}
 
-	if (InsideRectangle(position, up_up_left, up_left_left) && // up left cyrcle
+	if (InsideRectangle(position, up_up_left, up_left_left) && // up left circle
 		position.DistancePow2(up_left) < radius * radius)
 	{
 		force_vector = (position - up_left).Normalize();
-		point = up_left + force_vector * (radius + force_collision_coeffisient);
+		point = up_left + force_vector * (radius + force_collision_coef);
 		return true;
 	}
 
@@ -388,42 +388,42 @@ bool DynamicEntity::CollisionCheckIntersections(const Map::Rectangle& rectangle,
 {
 	const auto& relative_velocity = velocity - rectangle.GetVelocity();
 
-	const bool& treck_too_short = relative_velocity.LengthPow2() < radius * radius / 100.0f;
-	if (treck_too_short) return false;
+	const bool& track_too_short = relative_velocity.LengthPow2() < radius * radius / 100.0f;
+	if (track_too_short) return false;
 
-	const auto& treck = Segment(position, relative_velocity);
+	const auto& track = Segment(position, relative_velocity);
 	auto side = rectangle.GetUpSide();
 	side.point.y += radius;
-	if (treck.Intersection(side, &intersect_point))
+	if (track.Intersection(side, &intersect_point))
 	{
-		intersect_point += Vec2F(0.0f, force_collision_coeffisient);
+		intersect_point += Vec2F(0.0f, force_collision_coef);
 		force_vector = Vec2F(0.0f, 1.0f);
 		return true;
 	}
 
 	side = rectangle.GetLeftSide();
 	side.point.x -= radius;
-	if (treck.Intersection(side, &intersect_point))
+	if (track.Intersection(side, &intersect_point))
 	{
-		intersect_point -= Vec2F(force_collision_coeffisient, 0.0f);
+		intersect_point -= Vec2F(force_collision_coef, 0.0f);
 		force_vector = Vec2F(-1.0f, 0.0f);
 		return true;
 	}
 
 	side = rectangle.GetDownSide();
 	side.point.y -= radius;
-	if (treck.Intersection(side, &intersect_point))
+	if (track.Intersection(side, &intersect_point))
 	{
-		intersect_point -= Vec2F(0.0f, force_collision_coeffisient);
+		intersect_point -= Vec2F(0.0f, force_collision_coef);
 		force_vector = Vec2F(0.0f, -1.0f);
 		return true;
 	}
 
 	side = rectangle.GetRightSide();
 	side.point.x += radius;
-	if (treck.Intersection(side, &intersect_point))
+	if (track.Intersection(side, &intersect_point))
 	{
-		intersect_point += Vec2F(force_collision_coeffisient, 0.0f);
+		intersect_point += Vec2F(force_collision_coef, 0.0f);
 		force_vector = Vec2F(1.0f, 0.0f);
 		return true;
 	}
@@ -467,7 +467,7 @@ float DynamicEntity::GetAngularVelocity() const
 	return angular_velocity;
 }
 
-Segment DynamicEntity::GetLastTreck() const
+Segment DynamicEntity::GetLastTrack() const
 {
 	return Segment(position, -velocity);
 }
@@ -475,7 +475,7 @@ Segment DynamicEntity::GetLastTreck() const
 Vec2F DynamicEntity::GetCollisionDirection(const Vec2F& point) const
 {
 	Vec2F nearest_point;
-	if (GetTreck().Distance(point, &nearest_point) >= radius)
+	if (GetTrack().Distance(point, &nearest_point) >= radius)
 	{
 		return Vec2F();
 	}
@@ -493,27 +493,27 @@ Vec2F DynamicEntity::GetCollisionDirection(const Vec2F& point, const Vec2F& near
 }
 
 
-Segment DynamicEntity::GetTreck() const
+Segment DynamicEntity::GetTrack() const
 {
 	return Segment(position, velocity);
 }
 
-Segment DynamicEntity::GetTreckDouble() const
+Segment DynamicEntity::GetTrackDouble() const
 {
 	return Segment(position, velocity * 2.0f);
 }
 
-Segment DynamicEntity::GetTreckDoubleRelative(const DynamicEntity& entity) const
+Segment DynamicEntity::GetTrackDoubleRelative(const DynamicEntity& entity) const
 {
 	return Segment(position, (velocity - entity.velocity) * 2.0f);
 }
 
-Segment DynamicEntity::GetTreckRelative(const DynamicEntity& entity) const
+Segment DynamicEntity::GetTrackRelative(const DynamicEntity& entity) const
 {
 	return Segment(position, velocity - entity.velocity);
 }
 
-Segment DynamicEntity::GetTreckRelativeDouble(const DynamicEntity& entity) const
+Segment DynamicEntity::GetTrackRelativeDouble(const DynamicEntity& entity) const
 {
 	return Segment(position, velocity - entity.velocity * 2.0f);
 }
@@ -548,11 +548,11 @@ bool DynamicEntity::IsCollision<DynamicEntity>(const DynamicEntity& entity) cons
 		{
 			return (position + velocity).DistancePow2(entity.position + entity.velocity) < r_sum * r_sum;
 		}
-		return entity.GetTreck().Distance(position + velocity) < radius + entity.radius;
+		return entity.GetTrack().Distance(position + velocity) < radius + entity.radius;
 	}
 	if (entity.velocity.LengthPow2() < entity.radius * entity.radius)
 	{
-		return GetTreck().Distance(entity.position + entity.velocity) < radius + entity.radius;
+		return GetTrack().Distance(entity.position + entity.velocity) < radius + entity.radius;
 	}
 	if ((entity.GetVelocity() - velocity).LengthPow2() < r_sum * r_sum / 16.0f)
 	{
@@ -598,7 +598,7 @@ bool DynamicEntity::IsCollision<Laser>(const Laser& laser) const
 	{
 		return laser.GetSegment().Distance(position) < radius + laser.width;
 	}
-	return laser.GetSegment().Distance(GetTreck()) < radius + laser.width;
+	return laser.GetSegment().Distance(GetTrack()) < radius + laser.width;
 }
 
 template<>
@@ -629,22 +629,22 @@ bool DynamicEntity::IsCollision<Map::Rectangle>(const Map::Rectangle& rectangle)
 }
 
 template<>
-bool DynamicEntity::IsCollision<Map::Circle>(const Map::Circle& cyrcle) const
+bool DynamicEntity::IsCollision<Map::Circle>(const Map::Circle& circle) const
 {
-	const Segment trace(position, velocity - cyrcle.GetVelocity());
-	const Vec2F& cyrcle_position = cyrcle.GetPosition();
-	const float& cyrcle_radius = cyrcle.GetRadius();
+	const Segment trace(position, velocity - circle.GetVelocity());
+	const Vec2F& circle_position = circle.GetPosition();
+	const float& circle_radius = circle.GetRadius();
 
-	bool object_too_far = trace.Distance(cyrcle_position) > cyrcle_radius;
-	bool first_point_inside = trace.point.Distance(cyrcle_position) < cyrcle_radius - radius;
-	bool second_point_inside = trace.SecondPoint().Distance(cyrcle_position) < cyrcle_radius - radius;
+	bool object_too_far = trace.Distance(circle_position) > circle_radius;
+	bool first_point_inside = trace.point.Distance(circle_position) < circle_radius - radius;
+	bool second_point_inside = trace.SecondPoint().Distance(circle_position) < circle_radius - radius;
 
 	return !(object_too_far || first_point_inside && second_point_inside);
 
 	return
-		!(trace.Distance(cyrcle_position) > cyrcle_radius ||
-		trace.point.Distance(cyrcle_position) < cyrcle_radius - radius &&
-		trace.SecondPoint().Distance(cyrcle_position) < cyrcle_radius - radius);
+		!(trace.Distance(circle_position) > circle_radius ||
+		trace.point.Distance(circle_position) < circle_radius - radius &&
+		trace.SecondPoint().Distance(circle_position) < circle_radius - radius);
 }
 
 template<>
@@ -659,7 +659,7 @@ bool DynamicEntity::IsCollision<Map::Polygon>(const Map::Polygon& polygon) const
 	{
 		return false;
 	}
-	Segment treck = GetTreck();
+	Segment track = GetTrack();
 
 	if (p_count > 2 && polygon.IsClosed())
 	{
@@ -711,7 +711,7 @@ bool DynamicEntity::IsTooSlow(const Vec2F& relative_velocity, const float& other
 	return relative_velocity.LengthPow2() < sum_r * sum_r / 16.0f;
 }
 
-//The function updates position and velocity of entity and clears forces' data.
+// The function updates position and velocity of entity and clears forces' data.
 void DynamicEntity::Update()
 {
 	angle += angular_velocity;
@@ -735,7 +735,7 @@ void DynamicEntity::Set(const DynamicEntity* dynamic_entity)
 {
 	Entity::Set(dynamic_entity);
 	angular_velocity = dynamic_entity->angular_velocity;
-	force_collision_coeffisient = dynamic_entity->force_collision_coeffisient;
+	force_collision_coef = dynamic_entity->force_collision_coef;
 	force_resistance_air_coefficient = dynamic_entity->force_resistance_air_coefficient;
 	velocity = dynamic_entity->velocity;
 }
@@ -746,13 +746,13 @@ void DynamicEntity::Set(
 	float radius,
 	float angle,
 	float angular_velocity,
-	float force_collision_coeffisient,
+	float force_collision_coef,
 	float force_resistance_air_coefficient,
 	bool exist)
 {
 	Entity::Set(position, radius, angle, exist);
 	this->force_resistance_air_coefficient = angular_velocity;
-	this->force_collision_coeffisient = force_collision_coeffisient;
+	this->force_collision_coef = force_collision_coef;
 	this->force_resistance_air_coefficient = force_resistance_air_coefficient;
 	this->velocity = velocity;
 }
@@ -762,9 +762,9 @@ void DynamicEntity::SetAngularVelocity(float angular_velocity)
 	this->angular_velocity = angular_velocity;
 }
 
-void DynamicEntity::SetCoefficients(float force_collision_coeffisient, float force_resistance_air_coefficient)
+void DynamicEntity::SetCoefficients(float force_collision_coef, float force_resistance_air_coefficient)
 {
-	this->force_collision_coeffisient = force_collision_coeffisient;
+	this->force_collision_coef = force_collision_coef;
 	this->force_resistance_air_coefficient = force_resistance_air_coefficient;
 }
 
@@ -778,7 +778,7 @@ void DynamicEntity::operator=(const DynamicEntity& dynamic_entity)
 	Entity::operator=(dynamic_entity);
 	angular_velocity = dynamic_entity.angular_velocity;
 	force = dynamic_entity.force;
-	force_collision_coeffisient = dynamic_entity.force_collision_coeffisient;
+	force_collision_coef = dynamic_entity.force_collision_coef;
 	force_resistance_air_coefficient = dynamic_entity.force_resistance_air_coefficient;
 	velocity = dynamic_entity.velocity;
 }

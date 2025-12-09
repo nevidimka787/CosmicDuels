@@ -152,7 +152,7 @@ void Particle::SetAutoPeriod(EngineTypes::Particle::type_t type)
 		this->animation_period = PARTICLE_PERIOD_SHARDS_SHIP;
 		break;
 	default:
-		std::cout << "ERROR::PARTICLE::SET_AUTO_PERIOD::Animation period seted failed. Type of the patricle undeclarates." << std::endl;
+		std::cout << "ERROR::PARTICLE::SET_AUTO_PERIOD::Animation period set fails. The type of the particle id undeclared." << std::endl;
 		exist = false;
 		return;
 	}
@@ -199,7 +199,7 @@ void Particle::SetAutoPostpone(EngineTypes::Particle::type_t type)
 		this->animation_postpone = PARTICLE_POSTPONE_SHARDS_SHIP;
 		break;
 	default:
-		std::cout << "ERROR::PARTICLE::SET_AUTO_POSTPONE::Animation postond seted failed. Type of the patricle undeclarates." << std::endl;
+		std::cout << "ERROR::PARTICLE::SET_AUTO_POSTPONE::Animation posstpone set fails. THe type of the particle is undeclared." << std::endl;
 		exist = false;
 		return;
 	}

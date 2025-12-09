@@ -17,7 +17,7 @@ Bonus::Bonus(bool exist)
 	this->exist = exist;
 }
 
-Bonus::Bonus(const Bonus& bonus) 
+Bonus::Bonus(const Bonus& bonus)
 	:
 	DynamicEntity(bonus),
 	bonus_inventory(bonus.bonus_inventory)
@@ -30,18 +30,18 @@ Bonus::Bonus(
 	EngineTypes::Bonus::inventory_t bonus_inventory,
 	float angle,
 	float angular_velocity,
-	float radius, 
-	float force_collision_coeffisient,
-	float force_resistance_air_coefficient, 
-	bool exist) 
+	float radius,
+	float force_collision_coef,
+	float force_resistance_air_coefficient,
+	bool exist)
 	:
 	DynamicEntity(
 		position,
-		velocity, 
+		velocity,
 		radius,
 		angle,
 		angular_velocity,
-		force_collision_coeffisient,
+		force_collision_coef,
 		force_resistance_air_coefficient,
 		exist),
 	bonus_inventory(bonus_inventory)
@@ -144,7 +144,7 @@ uint8_t Bonus::GetGameRulesCount() const
 
 void Bonus::Set(const Bonus* bonus)
 {
-	DynamicEntity::Set(position, velocity, radius, angle, angular_velocity, force_collision_coeffisient	, force_resistance_air_coefficient, exist);
+	DynamicEntity::Set(position, velocity, radius, angle, angular_velocity, force_collision_coef	, force_resistance_air_coefficient, exist);
 
 	bonus_inventory = bonus->bonus_inventory;
 }
@@ -156,7 +156,7 @@ void Bonus::Set(
 	float angle,
 	float angular_velocity,
 	float radius,
-	float force_collision_coeffisient,
+	float force_collision_coef,
 	float force_resistance_air_coefficient,
 	bool exist)
 {
@@ -166,7 +166,7 @@ void Bonus::Set(
 		radius,
 		angle,
 		angular_velocity,
-		force_collision_coeffisient,
+		force_collision_coef,
 		force_resistance_air_coefficient,
 		exist);
 

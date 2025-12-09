@@ -13,13 +13,13 @@ ControlledEntity::ControlledEntity() :
 	SetDefaultMatrix();
 }
 
-ControlledEntity::ControlledEntity(const ControlledEntity& controled_entity) :
-	DynamicEntity(controled_entity),
-	controle_flags_pointer(controled_entity.controle_flags_pointer),
-	heat_box_vertexes_array(controled_entity.heat_box_vertexes_array),
-	model_matrix(controled_entity.model_matrix),
-	player_number(controled_entity.player_number),
-	player_team_number(controled_entity.player_team_number)
+ControlledEntity::ControlledEntity(const ControlledEntity& controlled_entity) :
+	DynamicEntity(controlled_entity),
+	controle_flags_pointer(controlled_entity.controle_flags_pointer),
+	heat_box_vertexes_array(controlled_entity.heat_box_vertexes_array),
+	model_matrix(controlled_entity.model_matrix),
+	player_number(controlled_entity.player_number),
+	player_team_number(controlled_entity.player_team_number)
 {
 }
 
@@ -32,7 +32,7 @@ ControlledEntity::ControlledEntity(
 	const GameTypes::control_flags_t* controle_flags_pointer,
 	const std::vector<Vec2F>& heat_box_vertexes_array,
 	float angle, float angular_velocity,
-	float force_collision_coeffisient,
+	float force_collision_coef,
 	float force_resistance_air_coefficient,
 	bool exist)
 	:
@@ -42,7 +42,7 @@ ControlledEntity::ControlledEntity(
 		radius,
 		angle,
 		angular_velocity,
-		force_collision_coeffisient,
+		force_collision_coef,
 		force_resistance_air_coefficient,
 		exist),
 	controle_flags_pointer(controle_flags_pointer),
@@ -223,14 +223,14 @@ bool ControlledEntity::IsCollision<DynamicEntity>(const DynamicEntity& entity) c
 	if (relative_velocity.LengthPow2() < sum_radius * sum_radius / 100.0f) return false;
 
 	point2 = heat_box_vertexes_array.back() * model_matrix;
-	const auto& relative_treck = Segment(entity.GetPosition(), relative_velocity);
+	const auto& relative_track = Segment(entity.GetPosition(), relative_velocity);
 	for (const auto& vertex : heat_box_vertexes_array)
 	{
 		const auto point1 = point2;
 		point2 = vertex * model_matrix;
 		const auto& hb_side = Segment(point1, point2, true);
 
-		if (hb_side.Distance(relative_treck) < entity.radius)
+		if (hb_side.Distance(relative_track) < entity.radius)
 		{
 			return true;
 		}
@@ -242,9 +242,9 @@ bool ControlledEntity::IsCollision<DynamicEntity>(const DynamicEntity& entity) c
 template <>
 bool ControlledEntity::IsCollision<Knife>(const Knife& knife) const
 {
-	//Frame of reference set to this entity.
+	// Frame of reference set to this entity.
 	const Segment& segment = knife.GetSegment();
-	//controled entity side
+	// controlled entity side
 	Segment ce_side;
 	auto point2 = heat_box_vertexes_array.back() * model_matrix;
 	for (const auto& vertex : heat_box_vertexes_array)
@@ -261,9 +261,9 @@ bool ControlledEntity::IsCollision<Knife>(const Knife& knife) const
 template <>
 bool ControlledEntity::IsCollision<Laser>(const Laser& laser) const
 {
-	//Frame of reference set to this entity.
+	// Frame of reference set to this entity.
 	const Segment& segment = laser.GetSegment();
-		//controled entity side
+		// controlled entity side
 		Segment ce_side;
 	auto point2 = heat_box_vertexes_array.back() * model_matrix;
 	for (const auto& vertex : heat_box_vertexes_array)
@@ -313,15 +313,15 @@ bool ControlledEntity::IsTooSlow() const
 	return velocity.LengthPow2() < radius * radius / 100.0f;
 }
 
-void ControlledEntity::Set(const ControlledEntity* controled_entity)
+void ControlledEntity::Set(const ControlledEntity* controlled_entity)
 {
-	DynamicEntity::Set(controled_entity);
+	DynamicEntity::Set(controlled_entity);
 
-	controle_flags_pointer = controled_entity->controle_flags_pointer;
-	heat_box_vertexes_array = controled_entity->heat_box_vertexes_array;
-	model_matrix = controled_entity->model_matrix;
-	player_number = controled_entity->player_number;
-	player_team_number = controled_entity->player_team_number;
+	controle_flags_pointer = controlled_entity->controle_flags_pointer;
+	heat_box_vertexes_array = controlled_entity->heat_box_vertexes_array;
+	model_matrix = controlled_entity->model_matrix;
+	player_number = controlled_entity->player_number;
+	player_team_number = controlled_entity->player_team_number;
 }
 
 void ControlledEntity::Set(
@@ -334,7 +334,7 @@ void ControlledEntity::Set(
 	const std::vector<Vec2F>& heat_box_vertexes_array,
 	float angle,
 	float angular_velocity,
-	float force_collision_coeffisient,
+	float force_collision_coef,
 	float force_resistance_air_coefficient,
 	bool exist)
 {
@@ -344,7 +344,7 @@ void ControlledEntity::Set(
 		radius,
 		angle,
 		angular_velocity,
-		force_collision_coeffisient,
+		force_collision_coef,
 		force_resistance_air_coefficient,
 		exist);
 
@@ -388,15 +388,15 @@ void ControlledEntity::UpdateMatrix()
 	model_matrix.ScaleThis(Vec2F(1.0f, 1.0f) * radius);
 }
 
-void ControlledEntity::operator=(const ControlledEntity& controled_entity)
+void ControlledEntity::operator=(const ControlledEntity& controlled_entity)
 {
-	DynamicEntity::operator=(controled_entity);
+	DynamicEntity::operator=(controlled_entity);
 
-	controle_flags_pointer = controled_entity.controle_flags_pointer;
-	heat_box_vertexes_array = controled_entity.heat_box_vertexes_array;
-	model_matrix = controled_entity.model_matrix;
-	player_number = controled_entity.player_number;
-	player_team_number = controled_entity.player_team_number;
+	controle_flags_pointer = controlled_entity.controle_flags_pointer;
+	heat_box_vertexes_array = controlled_entity.heat_box_vertexes_array;
+	model_matrix = controlled_entity.model_matrix;
+	player_number = controlled_entity.player_number;
+	player_team_number = controlled_entity.player_team_number;
 }
 
 ControlledEntity::~ControlledEntity()

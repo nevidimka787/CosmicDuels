@@ -23,10 +23,10 @@ Pilot::Pilot(
 	GameTypes::tic_t respawn_timer,
 	const std::vector<Vec2F>& heat_box_vertexes_array,
 	float angle, EngineTypes::Bonus::inventory_t buffs_bonuses,
-	EngineTypes::Bonus::inventory_t active_baffs,
+	EngineTypes::Bonus::inventory_t active_buffs,
 	float angular_velocity,
 	float radius,
-	float force_collision_coeffisient,
+	float force_collision_coef,
 	float force_resistance_air_coefficient,
 	bool exist)
 	:
@@ -39,7 +39,7 @@ Pilot::Pilot(
 		controle_flags,
 		heat_box_vertexes_array,
 		angle, angular_velocity,
-		force_collision_coeffisient,
+		force_collision_coef,
 		force_resistance_air_coefficient,
 		exist),
 	respawn_timer(respawn_timer)
@@ -60,7 +60,7 @@ DynamicParticle Pilot::CreateShards(GameTypes::tic_t current_tic)
 		radius,
 		angle,
 		angular_velocity,
-		force_collision_coeffisient,
+		force_collision_coef,
 		force_resistance_air_coefficient,
 		PARTICLE_TYPE_SHARDS_PILOT,
 		DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_GRAVITY_GENERATORS | DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_AIR_RESISTANCE,
@@ -103,10 +103,10 @@ void Pilot::Set(
 	const std::vector<Vec2F>& heat_box_vertexes_array,
 	float angle,
 	EngineTypes::Bonus::inventory_t buffs_bonuses,
-	EngineTypes::Bonus::inventory_t active_baffs,
+	EngineTypes::Bonus::inventory_t active_buffs,
 	float angular_velocity,
 	float radius,
-	float force_collision_coeffisient,
+	float force_collision_coef,
 	float force_resistance_air_coefficient,
 	bool exist)
 {
@@ -120,7 +120,7 @@ void Pilot::Set(
 		heat_box_vertexes_array,
 		angle,
 		angular_velocity,
-		force_collision_coeffisient,
+		force_collision_coef,
 		force_resistance_air_coefficient);
 
 	this->respawn_timer = respawn_timer;

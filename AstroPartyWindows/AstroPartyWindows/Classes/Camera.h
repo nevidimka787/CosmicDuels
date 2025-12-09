@@ -20,37 +20,37 @@ class Camera
 {
 private:
 	bool temp_flag = false;
-	//a11 - min.x
-	//a12 - min.y
-	//a21 - max.x
-	//a22 - max.y
+	// a11 - min.x
+	// a12 - min.y
+	// a21 - max.x
+	// a22 - max.y
 	Mat2F temp_limits;
 	Vec2F temp_position;
 
 
-	//Position of the camera.
+	// Position of the camera.
 	Vec2F position;
-	//Maximun and ninimun coordinates that can be show in the camera.
+	// Maximum and minimum coordinates that can be show in the camera.
 	Mat2F hight_limits;
 	Vec2F low_limits;
-	//Scale of the camera.
-	//size.x / size.y
+	// Scale of the camera.
+	// size.x / size.y
 	float scale;
-	//Size of the view area of the camera.
+	// Size of the view area of the camera.
 	float new_view_area_size_x;
 	float view_area_size_x;
 
-	//Use temp_position
-	//Use and change temp flag.
+	// Use temp_position
+	// Use and change temp flag.
 	inline void UpdateLimits();
 public:
-	//How mach space after limits camera can show.
+	// How mach space after limits camera can show.
 	float margin;
-	//0 - not move
-	//1 - momental move
+	// 0 - not move
+	// 1 - instant move (teleportation)
 	float move_velocity_coefficient;
-	//0 - not resize
-	//1 - momental resize
+	// 0 - not resize
+	// 1 - instant resize
 	float resize_velocity_coefficient;
 
 	Camera(const Camera& camera);
@@ -68,7 +68,7 @@ public:
 	Vec2F GetPosition() const;
 	float GetSize() const;
 	float GetScale() const;
-	//All ships and pilots will be show in the camera.
+	// All ships and pilots will be show in the camera.
 	void Focus(
 		const std::vector<Ship>& ships_array,
 		const std::vector<Pilot>& pilots_array,

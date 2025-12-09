@@ -15,7 +15,7 @@ public:
 	float blue;
 
 	Color3F();
-	Color3F(float brite);
+	Color3F(float bright);
 	Color3F(float red, float green, float blue);
 
 	float GetLength() const;
@@ -25,7 +25,7 @@ public:
 	float GetSumOfComponents() const;
 	Color3F Log2() const;
 	void Log2This();
-	void Set(float brite);
+	void Set(float bright);
 	void Set(float red, float green, float blue);
 	Color3F NormalizeAsColor() const;
 	Color3F NormalizeAsVector() const;
@@ -34,12 +34,12 @@ public:
 
 	Color3F operator+(Color3F color) const;
 	Color3F operator-(Color3F color) const;
-	Color3F operator+(float brite) const;
-	Color3F operator-(float brite) const;
+	Color3F operator+(float bright) const;
+	Color3F operator-(float bright) const;
 	void operator+=(Color3F color);
 	void operator-=(Color3F color);
-	void operator+=(float brite);
-	void operator-=(float brite);
+	void operator+=(float bright);
+	void operator-=(float bright);
 	Color3F operator*(Color3F color) const;
 	Color3F operator/(Color3F color) const;
 	Color3F operator*(float value) const;

@@ -18,11 +18,11 @@ DynamicParticle::DynamicParticle() :
 DynamicParticle::DynamicParticle(
 	GameTypes::tic_t current_tic,
 	const Vec2F& position,
-	const Vec2F& velocisy,
+	const Vec2F& velocity,
 	float radius,
 	float angle,
 	float angular_velocity,
-	float force_collision_coeffisient, 
+	float force_collision_coef,
 	float force_resistance_air_coefficient,
 	EngineTypes::Particle::type_t type,
 	EngineTypes::DynamicParticle::property_t properties,
@@ -30,15 +30,15 @@ DynamicParticle::DynamicParticle(
 	GameTypes::tic_t animation_period,
 	GameTypes::tic_t animation_postpone,
 	GameTypes::tic_t finish_tic,
-	bool exist) 
+	bool exist)
 	:
 	DynamicEntity(
 		position,
-		velocisy,
+		velocity,
 		radius,
 		angle,
 		angular_velocity,
-		force_collision_coeffisient, 
+		force_collision_coef,
 		force_resistance_air_coefficient,
 		exist),
 	active(false),

@@ -20,7 +20,7 @@ bool Texture2D::Initialize(const char* texture_file_name, GLint format, GLint in
     int nr_chanels_count;
     stbi_uc* data = stbi_load(texture_file_name, &width, &height, &nr_chanels_count, 0);
 
-    bool succses_flag = true;
+    bool success_flag = true;
 
     glGenTextures(1, &id);
     glBindTexture(GL_TEXTURE_2D, id);
@@ -41,11 +41,11 @@ bool Texture2D::Initialize(const char* texture_file_name, GLint format, GLint in
             << "File: " << texture_file_name << std::endl
             << "Logs: " << std::endl <<
             stbi_failure_reason() << std::endl;
-        succses_flag = false;
+        success_flag = false;
     }
     stbi_image_free((void*)data);
 
-    return succses_flag;
+    return success_flag;
 }
 
 void Texture2D::Use()

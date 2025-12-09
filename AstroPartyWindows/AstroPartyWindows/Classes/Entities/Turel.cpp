@@ -16,7 +16,7 @@ Turret::Turret(const Turret& turret)
 Turret::Turret(
 	const Vec2F& position,
 	float angle,
-	GameTypes::tic_t attack_dellay,
+	GameTypes::tic_t attack_delay,
 	GameTypes::tic_t attack_period,
 	GameTypes::tic_t inactive_period,
 	EngineTypes::AggressiveEntity::shoots_count_t shoots_count,
@@ -26,7 +26,7 @@ Turret::Turret(
 		position,
 		radius,
 		angle,
-		attack_dellay,
+		attack_delay,
 		attack_period,
 		inactive_period,
 		shoots_count,
@@ -51,7 +51,7 @@ DynamicParticle Turret::CreateShards(GameTypes::tic_t current_tic)
 		PARTICLE_POSTPONE_SHARDS_ASTEROID,
 		current_tic + PARTICLE_PERIOD_SHARDS_ASTEROID);
 
-	std::cout << "Turret::CreateShards::Not realisated." << std::endl;
+	std::cout << "Turret::CreateShards::Not realized." << std::endl;
 }
 
 Bullet Turret::Shoot()
@@ -69,14 +69,14 @@ void Turret::Set(const Turret* turret)
 void Turret::Set(
 	const Vec2F& position,
 	float angle,
-	GameTypes::tic_t attack_dellay,
+	GameTypes::tic_t attack_delay,
 	GameTypes::tic_t attack_period,
 	GameTypes::tic_t inactive_period,
 	EngineTypes::AggressiveEntity::shoots_count_t shoots_count,
 	float radius,
 	bool exist)
 {
-	AggressiveEntity::Set(position, radius, angle, attack_dellay, attack_period, inactive_period, shoots_count, exist);
+	AggressiveEntity::Set(position, radius, angle, attack_delay, attack_period, inactive_period, shoots_count, exist);
 }
 
 void Turret::operator=(const Turret& turret)

@@ -54,56 +54,56 @@ public:
 
 	float GetAngle() const;
 	Vec2F GetDirectionNotNormalize() const;
-	//Getting the distance between two closest points of objects.
+	// Getting the distance between two closest points of objects.
 	float GetDistance(const Beam& beam) const;
-	//Getting the distance between two closest points of objects.
-	float GetDistance(const Map::Circle& cyrcle, bool* is_inside = nullptr) const;
-	//Getting the distance between two closest points of objects.
+	// Getting the distance between two closest points of objects.
+	float GetDistance(const Map::Circle& circle, bool* is_inside = nullptr) const;
+	// Getting the distance between two closest points of objects.
 	float GetDistance(const DecelerationArea& deceler_area) const;
-	//Getting the distance between two closest points of objects.
+	// Getting the distance between two closest points of objects.
 	float GetDistance(const DynamicEntity& entity) const;
-	//Getting the distance between two closest points of objects.
+	// Getting the distance between two closest points of objects.
 	float GetDistance(const Entity& entity) const;
-	//Getting the distance between two closest points of objects.
+	// Getting the distance between two closest points of objects.
 	float GetDistance(const Line& line) const;
-	//Getting the distance between two closest points of objects.
+	// Getting the distance between two closest points of objects.
 	float GetDistance(const Map::Polygon& polygon) const;
-	//Getting the distance between two closest points of objects.
+	// Getting the distance between two closest points of objects.
 	float GetDistance(const Map::Rectangle& rectangle) const;
-	//Getting the distance between two closest points of objects.
+	// Getting the distance between two closest points of objects.
 	float GetDistance(const Segment& segment) const;
-	//Getting the distance between two closest points of objects.
+	// Getting the distance between two closest points of objects.
 	float GetDistance(const StaticEntity& entity) const;
-	//Getting the distance between two closest points of objects.
+	// Getting the distance between two closest points of objects.
 	float GetDistance(const Vec2F& point) const;
 	float GetFrameSize(const Entity& entity, float scale) const;
 	Vec2F GetDirection() const;
 	Vec2F GetPosition() const;
 	const Vec2F* GetPositionPointer() const;
-	//If distance between two objects is less then zero, the function return true.
+	// If distance between two objects is less then zero, the function return true.
 	bool IsCollision(const Beam& beam) const;
-	//If distance between two objects is less then zero, the function return true.
-	bool IsCollision(const Map::Circle& cyrcle) const;
-	//If distance between two objects is less then zero, the function return true.
+	// If distance between two objects is less then zero, the function return true.
+	bool IsCollision(const Map::Circle& circle) const;
+	// If distance between two objects is less then zero, the function return true.
 	bool IsCollision(const DecelerationArea& deceler_area) const;
-	//If distance between two objects is less then zero, the function return true.
+	// If distance between two objects is less then zero, the function return true.
 	bool IsCollision(const DynamicEntity& entity) const;
-	//If distance between two objects is less then zero, the function return true.
+	// If distance between two objects is less then zero, the function return true.
 	bool IsCollision(const Entity& entity) const;
-	//If distance between two objects is less then zero, the function return true.
+	// If distance between two objects is less then zero, the function return true.
 	bool IsCollision(const Line& line) const;
 	bool IsCollision(const Laser& laser) const;
-	//If distance between two objects is less then zero, the function return true.
+	// If distance between two objects is less then zero, the function return true.
 	bool IsCollision(const Map::MapData& map) const;
-	//If distance between two objects is less then zero, the function return true.
+	// If distance between two objects is less then zero, the function return true.
 	bool IsCollision(const Map::Polygon& polygon) const;
-	//If distance between two objects is less then zero, the function return true.
+	// If distance between two objects is less then zero, the function return true.
 	bool IsCollision(const Map::Rectangle& rectangle) const;
-	//If distance between two objects is less then zero, the function return true.
+	// If distance between two objects is less then zero, the function return true.
 	bool IsCollision(const Segment& segment) const;
-	//If distance between two objects is less then zero, the function return true.
+	// If distance between two objects is less then zero, the function return true.
 	bool IsCollision(const StaticEntity& entity) const;
-	//If distance between two objects is less then zero, the function return true.
+	// If distance between two objects is less then zero, the function return true.
 	bool IsCollision(const Vec2F& point) const;
 	bool IsInside(const Map::Rectangle& rectangle) const;
 	void Rotate(float angle);
@@ -119,7 +119,7 @@ public:
 	void SetPosition(const Vec2F& position);
 	void UpdateAngle();
 	void UpdateDirection();
-	//need manual call
+	// need manual call
 	void Move(const Vec2F& delta);
 
 	void operator=(const Entity& entity);
@@ -134,17 +134,17 @@ private:
 	bool CollisionOutside(const Map::Rectangle& rectangle);
 	bool CollisionCheckIntersections(const Map::Rectangle& rectangle, Vec2F& new_position, Vec2F& force_vector);
 	bool CollisionCheckPosition(const Map::Rectangle& rectangle, Vec2F& new_position, Vec2F& force_vector);
-	Vec2F GetCollisionDirection(const Vec2F& point, const Vec2F& neares_point) const;
+	Vec2F GetCollisionDirection(const Vec2F& point, const Vec2F& nearest_point) const;
 
 protected:
 	float angular_velocity;
 	Vec2F velocity;
-	//This variable set only by force functions.
+	// This variable set only by force functions.
 	Vec2F force;
 
 public:
-	float force_collision_coeffisient;
-	//the distance the ship will be pushed to the side
+	float force_collision_coef;
+	// the distance the ship will be pushed to the side
 	float force_resistance_air_coefficient;
 	DynamicEntity();
 	DynamicEntity(const DynamicEntity& dynamic_entity);
@@ -154,41 +154,41 @@ public:
 		float radius,
 		float angle = 0.0f,
 		float angular_velocity = 0.0f,
-		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_collision_coef = DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANCE_AIR_COEFFICIENT,
 		bool exist = true);
 
 	void AddForce(const Vec2F& force);
 	void AddForceAlongDirection(float force);
-	void AddAngularVelocity(float angulat_velocity);
-	void AddGravityForce(float gravity_coeffisient, const Vec2F& forced_point);
+	void AddAngularVelocity(float angular_velocity);
+	void AddGravityForce(float gravity_coef, const Vec2F& forced_point);
 	void AddVelocity(const Vec2F& velocity);
-	//The function sets the sum of all forces those affecting to this entity to zero.
+	// The function sets the sum of all forces those affecting to this entity to zero.
 	void ClearForce();
 	/*
 	If objects collide, function will be changing the physical parameters of those objects.
 	*/
-	//use f1
-	//use v1 v2
+	// use f1
+	// use v1 v2
 	bool Collision(DynamicEntity& entity);
-	//use f1
-	//use v1 v2
+	// use f1
+	// use v1 v2
 	bool Collision(const StaticEntity& entity);
-	//use f1 f2
-	//use v1 v2 v3 v4 v5
-	//use s1 s2 s3 s4
+	// use f1 f2
+	// use v1 v2 v3 v4 v5
+	// use s1 s2 s3 s4
 	bool Collision(const Map::Rectangle& rectangle);
-	bool Collision(const Map::Circle& cyrcle);
+	bool Collision(const Map::Circle& circle);
 	bool Collision(const Map::Polygon& polygon);
 	bool Collision(const Map::MapData& map);
 	float GetAngularVelocity() const;
-	Segment GetLastTreck() const;
+	Segment GetLastTrack() const;
 	Vec2F GetCollisionDirection(const Vec2F& point) const;
-	Segment GetTreck() const;
-	Segment GetTreckDouble() const;
-	Segment GetTreckDoubleRelative(const DynamicEntity& entity) const;
-	Segment GetTreckRelative(const DynamicEntity& entity) const;
-	Segment GetTreckRelativeDouble(const DynamicEntity& entity) const;
+	Segment GetTrack() const;
+	Segment GetTrackDouble() const;
+	Segment GetTrackDoubleRelative(const DynamicEntity& entity) const;
+	Segment GetTrackRelative(const DynamicEntity& entity) const;
+	Segment GetTrackRelativeDouble(const DynamicEntity& entity) const;
 	Vec2F GetVelocity() const;
 
 	bool IsTooSlow() const;
@@ -204,13 +204,13 @@ public:
 		float radius,
 		float angle = 0.0f,
 		float angular_velocity = 0.0f,
-		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_collision_coef = DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANCE_AIR_COEFFICIENT,
 		bool exist = true);
 
-	void SetAngularVelocity(float angulat_velocity);
+	void SetAngularVelocity(float angular_velocity);
 	void SetCoefficients(
-		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_collision_coef = DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANCE_AIR_COEFFICIENT);
 	void SetVelocity(const Vec2F& velocity);
 	void Update();
@@ -290,7 +290,7 @@ public:
 		GameTypes::tic_t finish_tic,
 		bool exist = true);
 
-	//If particle active or can be active, then function return true.
+	// If particle active or can be active, then function return true.
 	void Activate(GameTypes::tic_t current_tic);
 	bool CanRemove(GameTypes::tic_t current_tic) const;
 	EngineTypes::Particle::type_t GetType() const;
@@ -322,11 +322,11 @@ public:
 	DynamicParticle(
 		GameTypes::tic_t current_tic,
 		const Vec2F& position,
-		const Vec2F& velocisy,
+		const Vec2F& velocity,
 		float radius,
 		float angle,
 		float angular_velocity,
-		float force_collision_coeffisient,
+		float force_collision_coef,
 		float force_resistance_air_coefficient,
 		EngineTypes::Particle::type_t type,
 		EngineTypes::DynamicParticle::property_t properties,
@@ -362,7 +362,7 @@ public:
 		float angle = 0.0f,
 		float angular_velocity = BONUS_DEFAULT_ANGULAR_VELOCITY,
 		float radius = BONUS_DEFAULT_RADIUS,
-		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_collision_coef = DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		float force_resistance_air_coefficient = BONUS_DEFAULT_FORCE_RESISTANCE_AIR_COEFFICIENT,
 		bool exist = true);
 
@@ -372,9 +372,9 @@ public:
 		bonus type will be passed as a new object,
 		otherwise the function will return 'nullptr'.
 	*/
-	//If bonus collent more then one item then function returns true.
+	// If bonus collent more then one item then function returns true.
 	bool CanDivision() const;
-	//The function returns new bonus that collect one item in the its inventory and remove that item from the inventory of the main bonus.
+	// The function returns new bonus that collect one item in the its inventory and remove that item from the inventory of the main bonus.
 	Bonus Division();
 	EngineTypes::Bonus::inventory_t GetType();
 	uint8_t GetBonusesCount() const;
@@ -388,7 +388,7 @@ public:
 		float angle = 0.0f,
 		float angular_velocity = BONUS_DEFAULT_ANGULAR_VELOCITY,
 		float radius = BONUS_DEFAULT_RADIUS,
-		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_collision_coef = DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANCE_AIR_COEFFICIENT,
 		bool exist = true);
 
@@ -411,7 +411,7 @@ public:
 		EngineTypes::Asteroid::size_t size = ASTEROID_DEFAULT_SIZE,
 		float angle = 0.0f,
 		float angular_velocity = 0.0f,
-		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_collision_coef = DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANCE_AIR_COEFFICIENT,
 		bool exist = true);
 
@@ -434,7 +434,7 @@ public:
 		EngineTypes::Asteroid::size_t size = ASTEROID_DEFAULT_SIZE,
 		float angle = 0.0f,
 		float angular_velocity = 0.0f,
-		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_collision_coef = DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANCE_AIR_COEFFICIENT,
 		bool exist = true);
 
@@ -462,12 +462,12 @@ public:
 		GameTypes::players_count_t player_master_team_number,
 		float angle = 0.0f,
 		float angular_velocity = 0.0f,
-		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_collision_coef = DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANCE_AIR_COEFFICIENT,
 		bool exist = true);
 
-	bool CreatedBy(const ControlledEntity& controled_entity) const;
-	bool CreatedByTeam(const ControlledEntity& controled_entity) const;
+	bool CreatedBy(const ControlledEntity& controlled_entity) const;
+	bool CreatedByTeam(const ControlledEntity& controlled_entity) const;
 	GameTypes::players_count_t GetHostNumber() const;
 	GameTypes::players_count_t GetHostTeamNumber() const;
 	bool SameTeam(const KillerEntity& killer_entity) const;
@@ -480,7 +480,7 @@ public:
 		GameTypes::players_count_t player_master_team_number,
 		float angle = 0.0f,
 		float angular_velocity = 0.0f,
-		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_collision_coef = DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANCE_AIR_COEFFICIENT,
 		bool exist = true);
 
@@ -505,7 +505,7 @@ protected:
 
 public:
 	ControlledEntity();
-	ControlledEntity(const ControlledEntity& controled_entity);
+	ControlledEntity(const ControlledEntity& controlled_entity);
 	ControlledEntity(
 		const Vec2F& position,
 		const Vec2F& velocity,
@@ -516,11 +516,11 @@ public:
 		const std::vector<Vec2F>& heat_box_vertexes_array = std::vector<Vec2F>(),
 		float angle = 0.0f,
 		float angular_velocity = 0.0f,
-		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_collision_coef = DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANCE_AIR_COEFFICIENT,
 		bool exist = true);
 
-	//If map can destroy entity, the functuion return true.
+	// If map can destroy entity, the function returns true.
 	bool Collision(const Map::MapData& map);
 	template<typename MapElementT>
 	bool CollisionWithElement(MapElementT& element);
@@ -532,7 +532,7 @@ public:
 	const Mat3x2F* GetModelMatrixPointerConst() const;
 	GameTypes::players_count_t GetPlayerNumber() const;
 	GameTypes::players_count_t GetTeamNumber() const;
-	//Check collision this heat box.
+	// Check collision this heat box.
 	template <typename Type>
 	bool IsCollision(const Type& thing) const;
 	bool IsCollectEntity(const DynamicEntity& stored_entity) const;
@@ -549,7 +549,7 @@ public:
 		const std::vector<Vec2F>& heat_box_vertexes_array = std::vector<Vec2F>(),
 		float angle = 0.0f,
 		float angular_velocity = 0.0f,
-		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_collision_coef = DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANCE_AIR_COEFFICIENT,
 		bool exist = true);
 
@@ -566,23 +566,23 @@ public:
 class Ship : public ControlledEntity
 {
 private:
-	//Value of the coldown of burnout. If value is zero then the ship can bornout.
+	// Value of the coldown of burnout. If value is zero then the ship can burnout.
 	GameTypes::tic_t burnout_coldown;
-	//Count of objects that ship should generate in next tics.
+	// Count of objects that ship should generate in next tics.
 	GameTypes::entities_count_t objects_in_creating_proccess;
-	//value of the variable will not translate to other entities
+	// value of the variable will not translate to other entities
 	GameTypes::objects_types_count_t element_type;
 
 	GameTypes::tic_t shoot_cooldown_time = GAME_DELAY_BETWEEN_SHOOTS;
 protected:
 	EngineTypes::Bonus::inventory_t bonus_inventory;
 	EngineTypes::Ship::inventory_t buff_inventory;
-	GameTypes::tic_t unbrakable;
+	GameTypes::tic_t unbreakable;
 	GameTypes::tic_t burnout;
 
 	GameTypes::entities_count_t magazine_size;
 	GameTypes::entities_count_t bullets_in_magazine;
-	GameTypes::tic_t reoading_dellay = 0;
+	GameTypes::tic_t reloading_delay = 0;
 public:
 	Ship();
 	Ship(const Ship& ship);
@@ -596,26 +596,26 @@ public:
 		float angle = 0.0f,
 		EngineTypes::Bonus::inventory_t bonus_inventory = BONUS_NOTHING,
 		EngineTypes::Ship::inventory_t buff_inventory = BONUS_NOTHING,
-		GameTypes::tic_t unbrakable = SHIP_DEFAULT_UNBREAKABLE_PERIOD,
+		GameTypes::tic_t unbreakable = SHIP_DEFAULT_UNBREAKABLE_PERIOD,
 		GameTypes::tic_t burnout = 0.0f,
 		GameTypes::tic_t burnout_coldown = SHIP_DEFAULT_BURNOUT_COLDOWN,
 		float angular_velocity = 0.0f,
 		float radius = SHIP_DEFAULT_RADIUS,
-		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_collision_coef = DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANCE_AIR_COEFFICIENT,
 		GameTypes::entities_count_t max_bullets_count = SHIP_DEFAULT_MAGAZINE_SIZE,
 		GameTypes::entities_count_t start_bullets_count = SHIP_DEFAULT_MAGAZINE_SIZE,
 		bool exist = true);
 
-	//If ship have bufs in bonuses invenory,
-	//the function activates all buffs that is in the bonus inventory and return true.
+	// If ship have bufs in bonuses inventory,
+	// the function activates all buffs that is in the bonus inventory and return true.
 	bool ActivateAvailableBuffs();
 	void ActivateBuffNoCheck(EngineTypes::Ship::inventory_t buff);
-	//The function adds one bullet to ship's magazine.
+	// The function adds one bullet to ship's magazine.
 	void AddBullet();
-	//The function adds indicated count of bullets to ship's magazine.
-	void AddBullets(GameTypes::entities_count_t bulles_count);
-	//The function fills ship's magazine with bullets.
+	// The function adds indicated count of bullets to ship's magazine.
+	void AddBullets(GameTypes::entities_count_t bullets_count);
+	// The function fills ship's magazine with bullets.
 	void AddBulletsToMax();
 	EngineTypes::Bonus::inventory_t BonusInfo();
 	void Burnout(
@@ -624,40 +624,40 @@ public:
 		GameTypes::tic_t burnout_period = SHIP_DEFAULT_BURNOUT_PERIOD);
 	bool CanCreatingBullet() const;
 	bool CanCreatingObject() const;
-	//Thw ship loses all buffs, bonuses, and bullets.
+	// Thw ship loses all buffs, bonuses, and bullets.
 	void ClearInventory();
 	Bullet CreateBullet();
 	// The function return dynamic particle.
-	DynamicParticle CreateBurnoutExaust(GameTypes::tic_t current_tic);
+	DynamicParticle CreateBurnoutExhaust(GameTypes::tic_t current_tic);
 	// The function return dynamic particle.
 	DynamicParticle CreateEnginExhaust(GameTypes::tic_t current_tic);
 	// The function return dynamic particle.
 	DynamicParticle CreateShards(GameTypes::tic_t current_tic);
-	// the function cteare dynamic particle.
-	DynamicParticle CreateShootingExaust(GameTypes::tic_t current_tic);
-	//The function does not check for the presence of a bonus.
+	// the function create dynamic particle.
+	DynamicParticle CreateShootingExhaust(GameTypes::tic_t current_tic);
+	// The function does not check for the presence of a bonus.
 	Bullet CreateTriple(uint8_t bullet_number);
-	//The function print data about loop to ship's memory.
-	//If ship already has the data then the function return false
-	//else the function return true.
+	// The function print data about loop to ship's memory.
+	// If ship already has the data then the function return false
+	// else the function return true.
 	bool CreatingEntities(
-		GameTypes::entities_count_t objects_count,	//count of objects in creating loop
-		GameTypes::objects_types_count_t object_type	//type of elemnts in creating loop
+		GameTypes::entities_count_t objects_count,	// count of objects in creating loop
+		GameTypes::objects_types_count_t object_type	// type of elements in creating loop
 	);
-	//The function does not check for the presence of a bonus.
+	// The function does not check for the presence of a bonus.
 	Bomb CreateBomb();
-	//The function does not check for the presence of a bonus.
+	// The function does not check for the presence of a bonus.
 	Laser CreateLaser();
-	//The function does not check for the presence of a bonus.
+	// The function does not check for the presence of a bonus.
 	Knife CreateKnife(uint8_t knife_number);
-	void DecrementSizeOfMagasize(GameTypes::entities_count_t cells_count = 1);
-	//Create pilot
+	void DecrementSizeOfMagazine(GameTypes::entities_count_t cells_count = 1);
+	// Create pilot
 	Pilot Destroy();
 	int GetBonusInventoryAsBoolList() const;
 	GameTypes::entities_count_t GetBulletsCountInMagazine() const;
 	GameTypes::entities_count_t GetSizeOfMagazine() const;
-	//The function return number of curent element.
-	//Last number of entity is 1.
+	// The function return number of curent element.
+	// Last number of entity is 1.
 	GameTypes::entities_count_t GetElementFromList();
 	GameTypes::objects_types_count_t GetTypeOfElementInLoop() const;
 	bool IsHaveBonus(EngineTypes::Bonus::inventory_t bonus) const;
@@ -676,12 +676,12 @@ public:
 		float angle = 0.0f,
 		EngineTypes::Bonus::inventory_t bonus_inventory = BONUS_NOTHING,
 		EngineTypes::Ship::inventory_t buff_inventory = BONUS_NOTHING,
-		GameTypes::tic_t unbrakable = SHIP_DEFAULT_UNBREAKABLE_PERIOD,
+		GameTypes::tic_t unbreakable = SHIP_DEFAULT_UNBREAKABLE_PERIOD,
 		GameTypes::tic_t burnout = 0,
 		GameTypes::tic_t burnout_coldown = SHIP_DEFAULT_BURNOUT_COLDOWN,
 		float angular_velocity = 0.0f,
 		float radius = SHIP_DEFAULT_RADIUS,
-		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_collision_coef = DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANCE_AIR_COEFFICIENT,
 		GameTypes::entities_count_t max_bullets_count = SHIP_DEFAULT_MAGAZINE_SIZE,
 		GameTypes::entities_count_t start_bullets_count = SHIP_DEFAULT_MAGAZINE_SIZE,
@@ -689,13 +689,13 @@ public:
 
 	void SetSizeOfMagazine(GameTypes::entities_count_t cells_count = SHIP_DEFAULT_MAGAZINE_SIZE);
 	void SetUnbreakablePeriod(GameTypes::tic_t period);
-	//If ship have bonus, the function reduces the amount of this bonus and return true.
+	// If ship have bonus, the function reduces the amount of this bonus and return true.
 	bool SpendBonus(EngineTypes::Bonus::inventory_t bonus);
-	//The function reduces the amount of this bonus.
+	// The function reduces the amount of this bonus.
 	void SpendBonusNoCheck(EngineTypes::Bonus::inventory_t bonus);
-	//If ship have buff, the function reduces this buff and return true.
+	// If ship have buff, the function reduces this buff and return true.
 	bool SpendBuff(EngineTypes::Ship::inventory_t bonus);
-	//The function reduces this buff.
+	// The function reduces this buff.
 	void SpendBuffNoCheck(EngineTypes::Ship::inventory_t bonus);
 	void StopCreatingLoop();
 	void TakeBonus(Bonus* bonus, bool as_triple);
@@ -724,10 +724,10 @@ public:
 		const std::vector<Vec2F>& heat_box_vertexes_array = std::vector<Vec2F>(),
 		float angle = 0.0f,
 		EngineTypes::Bonus::inventory_t buffs_bonuses = BONUS_NOTHING,
-		EngineTypes::Bonus::inventory_t active_baffs = BONUS_NOTHING,
+		EngineTypes::Bonus::inventory_t active_buffs = BONUS_NOTHING,
 		float angular_velocity = 0.0f,
 		float radius = PILOT_DEFAULT_RADIUS,
-		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_collision_coef = DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		float force_resistance_air_coefficient = PILOT_DEFAULT_FORCE_RESISTANCE_AIR_COEF,
 		bool exist = true);
 
@@ -747,10 +747,10 @@ public:
 		const std::vector<Vec2F>& heat_box_vertexes_array = std::vector<Vec2F>(),
 		float angle = 0.0f,
 		EngineTypes::Bonus::inventory_t buffs_bonuses = BONUS_NOTHING,
-		EngineTypes::Bonus::inventory_t active_baffs = BONUS_NOTHING,
+		EngineTypes::Bonus::inventory_t active_buffs = BONUS_NOTHING,
 		float angular_velocity = 0.0f,
 		float radius = PILOT_DEFAULT_RADIUS,
-		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_collision_coef = DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		float force_resistance_air_coefficient = PILOT_DEFAULT_FORCE_RESISTANCE_AIR_COEF,
 		bool exist = true);
 
@@ -785,21 +785,21 @@ public:
 		float angle = 0.0f,
 		bool exist = true);
 
-	bool IsCreatedBy(const ControlledEntity& potencial_host) const;
-	bool IsCreatedByTeam(const ControlledEntity& potencial_host) const;
-	//return local angle
+	bool IsCreatedBy(const ControlledEntity& potential_host) const;
+	bool IsCreatedByTeam(const ControlledEntity& potential_host) const;
+	// return local angle
 	float GetAngle() const;
-	//return local direction
+	// return local direction
 	Vec2F GetDirection() const;
 	Vec2F GetGlobalAngle() const;
 	Vec2F GetGlobalPosition() const;
-	//return pointer to host
+	// return pointer to host
 	const ControlledEntity* GetHostP() const;
-	//return local direction
+	// return local direction
 	Vec2F GetNormalizeDirection() const;
 	GameTypes::players_count_t GetPlayerMasterNumber() const;
 	GameTypes::players_count_t GetPlayerMasterTeamNumber() const;
-	//return local position
+	// return local position
 	const Vec2F& GetPosition() const;
 	void Set(const SupportEntity* support_entity);
 	void Set(
@@ -809,20 +809,20 @@ public:
 		float angle = 0.0f,
 		bool exist = true);
 
-	//set local angle
+	// set local angle
 	void SetAngle(float angle);
-	//set local direction
+	// set local direction
 	void SetDirection(Vec2F direction);
-	//set local direction
+	// set local direction
 	void SetDirection(const Vec2F* direction);
 	void SetHost(const ControlledEntity* host);
-	//set local direction
+	// set local direction
 	void SetNotNormalizeDirection(Vec2F direction);
-	//set local direction
+	// set local direction
 	void SetNotNormalizeDirection(const Vec2F* direction);
-	//set local position
+	// set local position
 	void SetPosition(Vec2F position);
-	//set local position
+	// set local position
 	void SetPosition(const Vec2F* position);
 	void Update();
 	void UpdateDirection();
@@ -832,18 +832,18 @@ public:
 	~SupportEntity();
 };
 
-//Killer entity with out host.
+// Killer entity with out host.
 class AggressiveEntity : public StaticEntity
 {
 protected:
-	//Dellay to first attack after math begining.
-	GameTypes::tic_t attack_dellay;
+	// Delay to first attack after math begining.
+	GameTypes::tic_t attack_delay;
 public:
-	//Period of all attack cycle.
+	// Period of all attack cycle.
 	GameTypes::tic_t attack_period;
-	//Period between shoots sessions.
+	// Period between shoots sessions.
 	GameTypes::tic_t inactive_period;
-	//Shoots count in one attack period.
+	// Shoots count in one attack period.
 	EngineTypes::AggressiveEntity::shoots_count_t shoots_count;
 	AggressiveEntity();
 	AggressiveEntity(const AggressiveEntity& aggressive_entity);
@@ -851,20 +851,20 @@ public:
 		const Vec2F& position,
 		float radius,
 		float angle = 0.0f,
-		GameTypes::tic_t attack_dellay = 0,
+		GameTypes::tic_t attack_delay = 0,
 		GameTypes::tic_t attack_period = AGGRESSIVE_ENTITY_DEFAULT_ATTACK_PERIOD,
 		GameTypes::tic_t inactive_period = AGGRESSIVE_ENTITY_DEFAULT_INACTIVE_PERIOD,
 		EngineTypes::AggressiveEntity::shoots_count_t shoots_count = AGGRESSIVE_ENTITY_DEFAULT_SHOOTS_COUNT,
 		bool exist = true);
 
 	bool CanShoot(GameTypes::tic_t current_tic) const;
-	void PostponeAttack(GameTypes::tic_t dellay);
+	void PostponeAttack(GameTypes::tic_t delay);
 	void Set(const AggressiveEntity* entity);
 	void Set(
 		const Vec2F& position,
 		float radius,
 		float angle = 0.0f,
-		GameTypes::tic_t attack_dellay = 0,
+		GameTypes::tic_t attack_delay = 0,
 		GameTypes::tic_t attack_period = AGGRESSIVE_ENTITY_DEFAULT_ATTACK_PERIOD,
 		GameTypes::tic_t inactive_period = AGGRESSIVE_ENTITY_DEFAULT_INACTIVE_PERIOD,
 		EngineTypes::AggressiveEntity::shoots_count_t shoots_count = AGGRESSIVE_ENTITY_DEFAULT_SHOOTS_COUNT,
@@ -907,7 +907,7 @@ public:
 	DecelerationArea(const DecelerationArea& deceleration_area);
 	DecelerationArea(
 		const Vec2F& position,
-		float deseleration_parameter = DECELERATION_AREA_DEFAULT_DECELERATION_COEFFICIENT,
+		float deceleration_parameter = DECELERATION_AREA_DEFAULT_DECELERATION_COEFFICIENT,
 		float radius = DECELERATION_AREA_DEFAULT_RADIUS,
 		float angle = 0.0f,
 		bool exist = true);
@@ -915,7 +915,7 @@ public:
 	void Set(const DecelerationArea* deceleration_area);
 	void Set(
 		const Vec2F& position,
-		float deseleration_parameter = DECELERATION_AREA_DEFAULT_DECELERATION_COEFFICIENT,
+		float deceleration_parameter = DECELERATION_AREA_DEFAULT_DECELERATION_COEFFICIENT,
 		float radius = DECELERATION_AREA_DEFAULT_RADIUS,
 		float angle = 0.0f,
 		bool exist = true);
@@ -984,10 +984,10 @@ public:
 	void Connect(const Vec2F* pointer);
 	void Connect(const Entity* entity);
 
-	//The function create particle on portal position and return it.
+	// The function create particle on portal position and return it.
 	Particle CreateParticles(GameTypes::tic_t current_tic) const;
 
-	//The function create particle on teleport position and return it.
+	// The function create particle on teleport position and return it.
 	Particle CreateParticlesTP(GameTypes::tic_t current_tic, float radius) const;
 	void Disconnect();
 	bool IsConnected() const;
@@ -1017,7 +1017,7 @@ public:
 	Turret(
 		const Vec2F& position,
 		float angle = 0.0f,
-		GameTypes::tic_t attack_dellay = AGGRESSIVE_ENTITY_DEFAULT_ATTACK_DELAY,
+		GameTypes::tic_t attack_delay = AGGRESSIVE_ENTITY_DEFAULT_ATTACK_DELAY,
 		GameTypes::tic_t attack_period = AGGRESSIVE_ENTITY_DEFAULT_ATTACK_PERIOD,
 		GameTypes::tic_t inactive_period = AGGRESSIVE_ENTITY_DEFAULT_INACTIVE_PERIOD,
 		EngineTypes::AggressiveEntity::shoots_count_t shoots_count = AGGRESSIVE_ENTITY_DEFAULT_SHOOTS_COUNT,
@@ -1030,7 +1030,7 @@ public:
 	void Set(
 		const Vec2F& position,
 		float angle = 0.0f,
-		GameTypes::tic_t attack_dellay = AGGRESSIVE_ENTITY_DEFAULT_ATTACK_DELAY,
+		GameTypes::tic_t attack_delay = AGGRESSIVE_ENTITY_DEFAULT_ATTACK_DELAY,
 		GameTypes::tic_t attack_period = AGGRESSIVE_ENTITY_DEFAULT_ATTACK_PERIOD,
 		GameTypes::tic_t inactive_period = AGGRESSIVE_ENTITY_DEFAULT_INACTIVE_PERIOD,
 		EngineTypes::AggressiveEntity::shoots_count_t shoots_count = AGGRESSIVE_ENTITY_DEFAULT_SHOOTS_COUNT,
@@ -1061,7 +1061,7 @@ public:
 		GameTypes::tic_t start_animation_tic = 0,
 		float angle = 0.0f,
 		float angular_velocity = 0.0f,
-		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_collision_coef = DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		float force_resistance_air_coefficient = BOMB_DEFAULT_RESISTANCE_AIR_COEFFICIENT,
 		float radius = BOMB_DEFAULT_RADIUS,
 		EngineTypes::Bomb::status_t status = BOMB_STATUS_INACTIVE,
@@ -1087,7 +1087,7 @@ public:
 	bool IsCreatedByAggressiveTeamNotOnly() const;
 	bool IsCreatedByTeam(const ControlledEntity* host) const;
 	GameTypes::players_count_t GetTeamNumber(const ControlledEntity& not_host) const;
-	//The function return true, if host will be decrrementing score after boom.
+	// The function return true, if host will be decrement score after boom.
 	bool IsAggressiveFor(const ControlledEntity& host) const;
 	void Set(const Bomb* bomb);
 	void Set(
@@ -1098,7 +1098,7 @@ public:
 		GameTypes::tic_t start_animation_tic = 0,
 		float angle = 0.0f,
 		float angular_velocity = 0.0f,
-		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_collision_coef = DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		float force_resistance_air_coefficient = BULLET_DEFAULT_RESISTANCE_AIR_COEFFICIENT,
 		float radius = BOMB_DEFAULT_RADIUS,
 		EngineTypes::Bomb::status_t status = BOMB_STATUS_INACTIVE,
@@ -1130,7 +1130,7 @@ public:
 		bool is_collision_master = true,
 		float angle = 0.0f,
 		float angular_velocity = 0.0f,
-		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_collision_coef = DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		float force_resistance_air_coefficient = BULLET_DEFAULT_RESISTANCE_AIR_COEFFICIENT,
 		float radius = BULLET_DEFAULT_RADIUS,
 		float min_velocity = BULLET_DEFAULT_MIN_VELOCITY,
@@ -1148,7 +1148,7 @@ public:
 		bool is_collision_master = true,
 		float angle = 0.0f,
 		float angular_velocity = 0.0f,
-		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
+		float force_collision_coef = DEFAULT_FORCE_COLLISION_COEFFICIENT,
 		float force_resistance_air_coefficient = BULLET_DEFAULT_RESISTANCE_AIR_COEFFICIENT,
 		float radius = BULLET_DEFAULT_RADIUS,
 		float min_velocity = BULLET_DEFAULT_MIN_VELOCITY,
@@ -1173,12 +1173,12 @@ public:
 		const Segment& local_segment,
 		EngineTypes::Knife::knife_health_t health = KNIFE_DEFAULT_HEALTH,
 		bool exist = true);
-	//The function checks collision between knife and all map's elemnts.
-	//If map element is destructable, this element completes existing.
-	//If after collision health of the knife is zero, the function set its parameter "exist" to false.
+	// The function checks collision between knife and all map's elements.
+	// If map element is destructible, this element completes existing.
+	// If after collision health of the knife is zero, the function set its parameter "exist" to false.
 	bool Collision(Map::MapData& map);
-	template <typename ElemetT>
-	bool CollissionWithElement(ElemetT& element, const Segment& segment);
+	template <typename ElementT>
+	bool CollisionWithElement(ElementT& element, const Segment& segment);
 	Segment GetSegment() const;
 	bool IsCollision(const Line& line) const;
 	bool IsCollision(const Beam& beam) const;
@@ -1189,8 +1189,8 @@ public:
 		const Segment& local_segment,
 		EngineTypes::Knife::knife_health_t health = KNIFE_DEFAULT_HEALTH,
 		bool exist = true);
-	//If health is zero, the function returns false.
-	//Else the function decrements value of health.
+	// If health is zero, the function returns false.
+	// Else the function decrements value of health.
 	bool LoseHealth();
 
 	void operator=(const Knife& knife);
@@ -1206,7 +1206,7 @@ protected:
 public:
 	float width;
 	size_t reflections_count;
-	//if laser destroy powered asredoid and flag is active then will be create loop
+	// if laser destroy powered asteroid and flag is active then will be create loop
 	EngineTypes::Laser::property_t properties;
 
 	Laser();
@@ -1220,11 +1220,11 @@ public:
 		size_t reflection_count = 0,
 		bool exist = true);
 
-	//The function checks collision between knife and all map's elemnts.
-	//If map element is destructable, this element completes existing.
+	// The function checks collision between knife and all map's elements.
+	// If map element is destructible, this element completes existing.
 	bool Collision(Map::MapData& map, Vec2F&  nearest_position, Vec2F& nearest_perpendicular_direction);
 	bool IsActive() const;
-	bool CreatedBy(const ControlledEntity& controled_entity) const;
+	bool CreatedBy(const ControlledEntity& controlled_entity) const;
 	Segment GetSegment() const;
 	GameTypes::tic_t GetLifeTime() const;
 	GameTypes::players_count_t GetPlayerMasterNumber() const;

@@ -11,7 +11,7 @@ Ship::Ship()
 	burnout(0),
 	burnout_coldown(0),
 	magazine_size(0),
-	unbrakable(0),
+	unbreakable(0),
 	objects_in_creating_proccess(0),
 	element_type(GAME_OBJECT_TYPE_NULL)
 {
@@ -26,7 +26,7 @@ Ship::Ship(const Ship& ship)
 	burnout(ship.burnout),
 	burnout_coldown(ship.burnout_coldown),
 	magazine_size(ship.magazine_size),
-	unbrakable(ship.unbrakable),
+	unbreakable(ship.unbreakable),
 	objects_in_creating_proccess(0),
 	element_type(GAME_OBJECT_TYPE_NULL)
 {
@@ -42,12 +42,12 @@ Ship::Ship(
 	float angle,
 	EngineTypes::Bonus::inventory_t bonus_inventory,
 	EngineTypes::Ship::inventory_t buff_inventory,
-	GameTypes::tic_t unbrakable,
+	GameTypes::tic_t unbreakable,
 	GameTypes::tic_t burnout,
 	GameTypes::tic_t burnout_coldown,
 	float angular_velocity,
 	float radius,
-	float force_collision_coeffisient,
+	float force_collision_coef,
 	float force_resistance_air_coefficient,
 	GameTypes::entities_count_t max_bullets_count,
 	GameTypes::entities_count_t start_bullets_count,
@@ -63,7 +63,7 @@ Ship::Ship(
 		heat_box_vertexes_array,
 		angle,
 		angular_velocity,
-		force_collision_coeffisient,
+		force_collision_coef,
 		force_resistance_air_coefficient,
 		exist),
 	bonus_inventory(bonus_inventory),
@@ -72,7 +72,7 @@ Ship::Ship(
 	burnout(burnout),
 	burnout_coldown(burnout_coldown),
 	magazine_size(max_bullets_count),
-	unbrakable(unbrakable),
+	unbreakable(unbreakable),
 	objects_in_creating_proccess(0),
 	element_type(GAME_OBJECT_TYPE_NULL)
 {
@@ -170,7 +170,7 @@ Bullet Ship::CreateBullet()
 
 	AddForceAlongDirection(-SHIP_SHOOT_FORCE);
 	bullets_in_magazine--;
-	reoading_dellay = SHIP_DEFAULT_RELOADING_DELAY;
+	reloading_delay = SHIP_DEFAULT_RELOADING_DELAY;
 
 	return Bullet(
 		position + direction.Normalize() * (radius - BULLET_DEFAULT_RADIUS),
@@ -181,7 +181,7 @@ Bullet Ship::CreateBullet()
 		angle);
 }
 
-DynamicParticle Ship::CreateBurnoutExaust(GameTypes::tic_t current_tic)
+DynamicParticle Ship::CreateBurnoutExhaust(GameTypes::tic_t current_tic)
 {
 	return DynamicParticle(
 		current_tic,
@@ -190,7 +190,7 @@ DynamicParticle Ship::CreateBurnoutExaust(GameTypes::tic_t current_tic)
 		radius,
 		angle,
 		angular_velocity,
-		force_collision_coeffisient,
+		force_collision_coef,
 		force_resistance_air_coefficient,
 		PARTICLE_TYPE_EXHAUST_BURNOUT,
 		DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_AIR_RESISTANCE | DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_MAP,
@@ -209,7 +209,7 @@ DynamicParticle Ship::CreateEnginExhaust(GameTypes::tic_t current_tic)
 		radius,
 		angle,
 		0.0f,
-		force_collision_coeffisient,
+		force_collision_coef,
 		force_resistance_air_coefficient,
 		PARTICLE_TYPE_EXHAUST_ENGINE,
 		DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_AIR_RESISTANCE | DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_MAP,
@@ -229,7 +229,7 @@ DynamicParticle Ship::CreateShards(GameTypes::tic_t current_tic)
 		radius,
 		angle,
 		angular_velocity,
-		force_collision_coeffisient,
+		force_collision_coef,
 		force_resistance_air_coefficient,
 		PARTICLE_TYPE_SHARDS_SHIP,
 		DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_GRAVITY_GENERATORS | DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_AIR_RESISTANCE,
@@ -239,7 +239,7 @@ DynamicParticle Ship::CreateShards(GameTypes::tic_t current_tic)
 		current_tic + PARTICLE_PERIOD_SHARDS_SHIP + PARTICLE_POSTPONE_SHARDS_SHIP);
 }
 
-DynamicParticle Ship::CreateShootingExaust(GameTypes::tic_t current_tic)
+DynamicParticle Ship::CreateShootingExhaust(GameTypes::tic_t current_tic)
 {
 	return DynamicParticle(
 		current_tic,
@@ -248,7 +248,7 @@ DynamicParticle Ship::CreateShootingExaust(GameTypes::tic_t current_tic)
 		radius,
 		angle,
 		angular_velocity,
-		force_collision_coeffisient,
+		force_collision_coef,
 		force_resistance_air_coefficient,
 		PARTICLE_TYPE_EXHAUST_SHOOT,
 		DYNAMIC_PARTICLE_PROPERTY_NULL,
@@ -300,8 +300,8 @@ Bullet Ship::CreateTriple(uint8_t bullet_number)
 }
 
 bool Ship::CreatingEntities(
-	GameTypes::entities_count_t objects_count,	//count of objects in creating loop
-	GameTypes::objects_types_count_t object_type	//type of elemnts in creating loop
+	GameTypes::entities_count_t objects_count,	// count of objects in creating loop
+	GameTypes::objects_types_count_t object_type	// type of elements in creating loop
 )
 {
 	if (this->objects_in_creating_proccess > 0)
@@ -354,7 +354,7 @@ Knife Ship::CreateKnife(uint8_t knife_number)
 	}
 }
 
-void Ship::DecrementSizeOfMagasize(GameTypes::entities_count_t cells_count)
+void Ship::DecrementSizeOfMagazine(GameTypes::entities_count_t cells_count)
 {
 	if (magazine_size >= cells_count)
 	{
@@ -384,10 +384,10 @@ int Ship::GetBonusInventoryAsBoolList() const
 {
 	return
 		(int)(
-			((bonus_inventory & (BONUS_LOOP * BONUS_CELL)) ? (1u << 0u) : 0u) +		//zero bit is a loop cell
-			((bonus_inventory & (BONUS_LASER * BONUS_CELL)) ? (1u << 1u) : 0u) +	//first bit is a laser cell
-			((bonus_inventory & (BONUS_BOMB * BONUS_CELL)) ? (1u << 2u) : 0u) +		//second bit is a bomb cell
-			((bonus_inventory & (BONUS_KNIFE * BONUS_CELL)) ? (1u << 3u) : 0u));	//third bit is a knife cell
+			((bonus_inventory & (BONUS_LOOP * BONUS_CELL)) ? (1u << 0u) : 0u) +		// zero bit is a loop cell
+			((bonus_inventory & (BONUS_LASER * BONUS_CELL)) ? (1u << 1u) : 0u) +	// first bit is a laser cell
+			((bonus_inventory & (BONUS_BOMB * BONUS_CELL)) ? (1u << 2u) : 0u) +		// second bit is a bomb cell
+			((bonus_inventory & (BONUS_KNIFE * BONUS_CELL)) ? (1u << 3u) : 0u));	// third bit is a knife cell
 }
 
 GameTypes::entities_count_t Ship::GetBulletsCountInMagazine() const
@@ -428,7 +428,7 @@ void Ship::IncrementSizeOfMagazine(GameTypes::entities_count_t cells_count)
 
 bool Ship::IsUnbreakable() const
 {
-	return unbrakable;
+	return unbreakable;
 }
 
 Bonus Ship::LoseBonus()
@@ -450,7 +450,7 @@ void Ship::Set(const Ship* ship)
 	burnout = ship->burnout;
 	burnout_coldown = ship->burnout_coldown;
 	magazine_size = ship->magazine_size;
-	unbrakable = ship->unbrakable;
+	unbreakable = ship->unbreakable;
 }
 
 void Ship::Set(
@@ -463,12 +463,12 @@ void Ship::Set(
 	float angle,
 	EngineTypes::Bonus::inventory_t bonus_inventory,
 	EngineTypes::Ship::inventory_t buff_inventory,
-	GameTypes::tic_t unbrakable,
+	GameTypes::tic_t unbreakable,
 	GameTypes::tic_t burnout,
 	GameTypes::tic_t burnout_coldown,
 	float angular_velocity,
 	float radius,
-	float force_collision_coeffisient,
+	float force_collision_coef,
 	float force_resistance_air_coefficient,
 	GameTypes::entities_count_t max_bullets_count,
 	GameTypes::entities_count_t current_bullets_count,
@@ -484,7 +484,7 @@ void Ship::Set(
 		heat_box_vertexes_array,
 		angle,
 		angular_velocity,
-		force_collision_coeffisient,
+		force_collision_coef,
 		force_resistance_air_coefficient);
 
 	this->bonus_inventory = bonus_inventory;
@@ -492,7 +492,7 @@ void Ship::Set(
 	this->burnout = burnout;
 	this->burnout_coldown = burnout_coldown;
 	this->magazine_size = max_bullets_count;
-	this->unbrakable = unbrakable;
+	this->unbreakable = unbreakable;
 }
 
 void Ship::SetSizeOfMagazine(GameTypes::entities_count_t bullets_count)
@@ -506,7 +506,7 @@ void Ship::SetSizeOfMagazine(GameTypes::entities_count_t bullets_count)
 
 void Ship::SetUnbreakablePeriod(GameTypes::tic_t period)
 {
-	unbrakable = period;
+	unbreakable = period;
 }
 
 bool Ship::SpendBonus(EngineTypes::Bonus::inventory_t bonus)
@@ -587,18 +587,18 @@ void Ship::Update()
 		AddForceAlongDirection(SHIP_BURNOUT_FORCE);
 		burnout--;
 	}
-	if (unbrakable > 0)
+	if (unbreakable > 0)
 	{
-		unbrakable--;
+		unbreakable--;
 	}
 	if (burnout_coldown > 0)
 	{
 		burnout_coldown--;
 	}
 
-	if (reoading_dellay > 0)
+	if (reloading_delay > 0)
 	{
-		reoading_dellay--;
+		reloading_delay--;
 	}
 	else
 	{
@@ -606,7 +606,7 @@ void Ship::Update()
 		AddBulletsToMax();
 #else
 		AddBullet();
-		reoading_dellay = SHIP_DEFAULT_RELOADING_PERIOD;
+		reloading_delay = SHIP_DEFAULT_RELOADING_PERIOD;
 #endif
 	}
 
@@ -630,7 +630,7 @@ void Ship::operator=(const Ship& ship)
 	this->burnout = ship.burnout;
 	this->burnout_coldown = ship.burnout_coldown;
 	this->magazine_size = ship.magazine_size;
-	this->unbrakable = ship.unbrakable;
+	this->unbreakable = ship.unbreakable;
 }
 
 Ship::~Ship()

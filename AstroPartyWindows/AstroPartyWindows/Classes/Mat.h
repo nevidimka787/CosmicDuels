@@ -138,11 +138,11 @@ public:
 	//Return project of "projection_vector" to this vector.
 	//If angle between "projection_vector" and this vector more then 90 degrees the function return zero vector.
 	Vec2F ProjectSign(const Vec2F& projection_vector) const;
-	//The function return perpendiculat to posetive rotation.
+	//The function return perpendicular to positive rotation.
 	Vec2F Perpendicular() const;
 	//The function rotate vector on 90 degrees.
 	void PerpendicularThis();
-	//The function return perpendiculat to clockwise.
+	//The function return perpendicular to clockwise.
 	Vec2F PerpendicularClockwise() const;
 	//The function rotate vector on -90 degrees.
 	void PerpendicularClockwiseThis();
@@ -202,7 +202,7 @@ public:
 
 	void Set(double value);
 	void Set(double a11, double a12, double a21, double a22);
-	void Set(const Vec2D& abscisse,  const Vec2D& ardinate);
+	void Set(const Vec2D& abscissa,  const Vec2D& ordinate);
 	void Set(const Mat2D* matrix);
 
 	void operator=(const Mat2D& matrix);
@@ -213,7 +213,7 @@ public:
 class Mat2F
 {
 public:
-	float 
+	float
 		a11, a12,
 		a21, a22;
 
@@ -245,7 +245,7 @@ public:
 
 	void Set(float value);
 	void Set(float a11, float a12, float a21, float a22);
-	void Set(const Vec2F& abscisse,  const Vec2F& ardinate);
+	void Set(const Vec2F& abscissa,  const Vec2F& ordinate);
 	void Set(const Mat2F* matrix);
 
 	void operator=(const Mat2F& matrix);

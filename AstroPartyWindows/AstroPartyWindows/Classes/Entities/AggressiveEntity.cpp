@@ -4,7 +4,7 @@
 
 AggressiveEntity::AggressiveEntity() :
 	StaticEntity(),
-	attack_dellay(0),
+	attack_delay(0),
 	attack_period(AGGRESSIVE_ENTITY_DEFAULT_ATTACK_PERIOD),
 	inactive_period(AGGRESSIVE_ENTITY_DEFAULT_INACTIVE_PERIOD),
 	shoots_count(AGGRESSIVE_ENTITY_DEFAULT_SHOOTS_COUNT)
@@ -14,7 +14,7 @@ AggressiveEntity::AggressiveEntity() :
 AggressiveEntity::AggressiveEntity(const AggressiveEntity& aggressive_entity)
 	:
 	StaticEntity(aggressive_entity),
-	attack_dellay(aggressive_entity.attack_dellay),
+	attack_delay(aggressive_entity.attack_delay),
 	attack_period(aggressive_entity.attack_period),
 	inactive_period(aggressive_entity.inactive_period),
 	shoots_count(aggressive_entity.shoots_count)
@@ -25,7 +25,7 @@ AggressiveEntity::AggressiveEntity(
 	const Vec2F& position,
 	float radius,
 	float angle,
-	GameTypes::tic_t attack_dellay,
+	GameTypes::tic_t attack_delay,
 	GameTypes::tic_t attack_period,
 	GameTypes::tic_t inactive_period,
 	EngineTypes::AggressiveEntity::shoots_count_t shoots_count,
@@ -36,7 +36,7 @@ AggressiveEntity::AggressiveEntity(
 		radius,
 		angle,
 		exist),
-	attack_dellay(attack_dellay),
+	attack_delay(attack_delay),
 	attack_period(attack_period),
 	inactive_period(inactive_period),
 	shoots_count(shoots_count)
@@ -45,11 +45,11 @@ AggressiveEntity::AggressiveEntity(
 
 bool AggressiveEntity::CanShoot(GameTypes::tic_t current_tic) const
 {
-	if (current_tic <= attack_dellay)
+	if (current_tic <= attack_delay)
 	{
 		return false;
 	}
-	GameTypes::tic_t local_tic = (current_tic - attack_dellay) % (attack_period);
+	GameTypes::tic_t local_tic = (current_tic - attack_delay) % (attack_period);
 	GameTypes::tic_t shoot_session_period = attack_period - inactive_period;
 	if (local_tic >= shoot_session_period)
 	{
@@ -70,16 +70,16 @@ bool AggressiveEntity::CanShoot(GameTypes::tic_t current_tic) const
 	return local_tic % time_between_shoots == 0;
 }
 
-void AggressiveEntity::PostponeAttack(GameTypes::tic_t dellay)
+void AggressiveEntity::PostponeAttack(GameTypes::tic_t delay)
 {
-	attack_dellay += dellay;
+	attack_delay += delay;
 }
 
 void AggressiveEntity::Set(const AggressiveEntity* aggressive_entity)
 {
 	StaticEntity::Set(aggressive_entity);
 
-	attack_dellay = aggressive_entity->attack_dellay;
+	attack_delay = aggressive_entity->attack_delay;
 	attack_period = aggressive_entity->attack_period;
 	inactive_period = aggressive_entity->inactive_period;
 	last_position = aggressive_entity->last_position;
@@ -90,7 +90,7 @@ void AggressiveEntity::Set(
 	const Vec2F& position,
 	float radius,
 	float angle,
-	GameTypes::tic_t attack_dellay,
+	GameTypes::tic_t attack_delay,
 	GameTypes::tic_t attack_period,
 	GameTypes::tic_t inactive_period,
 	EngineTypes::AggressiveEntity::shoots_count_t shoots_count,
@@ -98,7 +98,7 @@ void AggressiveEntity::Set(
 {
 	StaticEntity::Set(position, radius, angle, exist);
 
-	this->attack_dellay = attack_dellay;
+	this->attack_delay = attack_delay;
 	this->attack_period = attack_period;
 	UpdateDirection();
 	this->inactive_period = inactive_period;
@@ -110,7 +110,7 @@ void AggressiveEntity::operator=(const AggressiveEntity& aggressive_entity)
 {
 	StaticEntity::operator=(aggressive_entity);
 
-	attack_dellay = aggressive_entity.attack_dellay;
+	attack_delay = aggressive_entity.attack_delay;
 	attack_period = aggressive_entity.attack_period;
 	inactive_period = aggressive_entity.inactive_period;
 	last_position = aggressive_entity.last_position;

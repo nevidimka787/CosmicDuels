@@ -6,10 +6,10 @@
 #pragma warning(disable : 6308)
 #pragma warning(disable : 6386)
 #pragma warning(disable : 6385)
-#pragma warning(disable : 26451)//All integer operations can be overflow. It is absolutly useless warnintg.
+#pragma warning(disable : 26451)//All integer operations can be overflow. It is absolutely useless warnings.
 #pragma warning(disable : 28182)
 
-#define HORISONTAL_VECTOR	Vec2F(1.0f, 0.0f)
+#define HORIZONTAL_VECTOR	Vec2F(1.0f, 0.0f)
 
 Area::Area() : points(std::vector<Vec2F>(0)) {}
 
@@ -34,16 +34,16 @@ bool Area::HavePointInside(const Vec2F& point) const
 		return false;
 	}
 	EngineTypes::Area::points_count_t intersections_count = 0;
-	const Beam& horisontal_beam = Beam(point, HORISONTAL_VECTOR);
+	const Beam& horizontal_beam = Beam(point, HORIZONTAL_VECTOR);
 	Segment temp_segment = Segment(points.back(), points.front(), true);
-	if (temp_segment.IsIntersection(horisontal_beam))
+	if (temp_segment.IsIntersection(horizontal_beam))
 	{
 		++intersections_count;
 	}
 	for (size_t i = 1; i < points.size(); ++i)
 	{
 		temp_segment.Set(points[i - 1u], points[i], true);
-		if (horisontal_beam.IsIntersection(temp_segment))
+		if (horizontal_beam.IsIntersection(temp_segment))
 		{
 			++intersections_count;
 		}
@@ -374,7 +374,7 @@ void Menu::Recalculate()
 }
 
 void Menu::Set(
-	const Vec2F& position, 
+	const Vec2F& position,
 	const Vec2F& size,
 	const std::vector<Button>& buttons)
 {

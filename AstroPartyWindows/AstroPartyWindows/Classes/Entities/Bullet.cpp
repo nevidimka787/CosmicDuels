@@ -26,7 +26,7 @@ Bullet::Bullet(
 	bool is_collision_master,
 	float angle,
 	float angular_velocity,
-	float force_collision_coeffisient,
+	float force_collision_coef,
 	float force_resistance_air_coefficient,
 	float radius, float min_velocity, bool exist)
 	:
@@ -37,7 +37,7 @@ Bullet::Bullet(
 		player_master_number,
 		player_master_team_number,
 		angle, angular_velocity,
-		force_collision_coeffisient,
+		force_collision_coef,
 		force_resistance_air_coefficient,
 		exist),
 	is_ignore((is_collision_master) ? (BULLET_IGNORE_MUSTER | BULLET_IGNORE_KNIVES_OF_MASTER) : BULLET_IGNORE_NOTHING),
@@ -72,7 +72,7 @@ bool Bullet::CollisionWithElement(MapElementT& element)
 		return false;
 	}
 
-	if (!element.IsUnbreacable()) {
+	if (!element.IsUnbreakable()) {
 		element.exist = false;
 	}
 
@@ -95,10 +95,10 @@ void Bullet::Set(
 	bool is_collision_master,
 	float angle,
 	float angular_velocity,
-	float force_collision_coeffisient,
+	float force_collision_coef,
 	float force_resistance_air_coefficient,
 	float radius,
-	float min_velosity,
+	float min_velocity,
 	bool exist)
 {
 	KillerEntity::Set(
@@ -109,7 +109,7 @@ void Bullet::Set(
 		player_master_team_number,
 		angle,
 		angular_velocity,
-		force_collision_coeffisient,
+		force_collision_coef,
 		force_resistance_air_coefficient,
 		exist);
 

@@ -23,7 +23,7 @@ Asteroid::Asteroid(
 	EngineTypes::Asteroid::size_t size,
 	float angle,
 	float angular_velocity,
-	float force_collision_coeffisient,
+	float force_collision_coef,
 	float force_resistance_air_coefficient,
 	bool exist)
 	:
@@ -34,7 +34,7 @@ Asteroid::Asteroid(
 		0.0f,
 		angle,
 		angular_velocity,
-		force_collision_coeffisient,
+		force_collision_coef,
 		force_resistance_air_coefficient,
 		exist),
 	size(size)
@@ -55,7 +55,7 @@ DynamicParticle Asteroid::CreateShards(GameTypes::tic_t current_tic) const
 			radius,
 			angle,
 			angular_velocity,
-			force_collision_coeffisient,
+			force_collision_coef,
 			force_resistance_air_coefficient,
 			PARTICLE_TYPE_SHARDS_ASTEROID_POWERED,
 			DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_GRAVITY_GENERATORS | DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_AIR_RESISTANCE,
@@ -73,7 +73,7 @@ DynamicParticle Asteroid::CreateShards(GameTypes::tic_t current_tic) const
 			radius,
 			angle,
 			angular_velocity,
-			force_collision_coeffisient,
+			force_collision_coef,
 			force_resistance_air_coefficient,
 			PARTICLE_TYPE_SHARDS_ASTEROID_POWERED,
 			DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_GRAVITY_GENERATORS | DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_AIR_RESISTANCE,
@@ -89,7 +89,7 @@ DynamicParticle Asteroid::CreateShards(GameTypes::tic_t current_tic) const
 		radius,
 		angle,
 		angular_velocity,
-		force_collision_coeffisient,
+		force_collision_coef,
 		force_resistance_air_coefficient,
 		PARTICLE_TYPE_SHARDS_ASTEROID,
 		DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_GRAVITY_GENERATORS | DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_AIR_RESISTANCE,
@@ -234,7 +234,7 @@ void Asteroid::Set(const Asteroid* asteroid)
 	direction = asteroid->direction;
 	exist = asteroid->exist;
 	force = asteroid->force;
-	force_collision_coeffisient = asteroid->force_collision_coeffisient;
+	force_collision_coef = asteroid->force_collision_coef;
 	force_resistance_air_coefficient = asteroid->force_resistance_air_coefficient;
 	position = asteroid->position;
 	radius = asteroid->radius;
@@ -249,7 +249,7 @@ void Asteroid::Set(
 	EngineTypes::Asteroid::size_t size,
 	float angle,
 	float angular_velocity,
-	float force_collision_coeffisient,
+	float force_collision_coef,
 	float force_resistance_air_coefficient,
 	bool exist)
 {
@@ -259,7 +259,7 @@ void Asteroid::Set(
 		bonus_inventory,
 		angle, angular_velocity,
 		0.0f,
-		force_collision_coeffisient,
+		force_collision_coef,
 		force_resistance_air_coefficient,
 		exist);
 

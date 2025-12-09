@@ -5,7 +5,7 @@ Color3F::Color3F() : red(0), green(0), blue(0)
 
 }
 
-Color3F::Color3F(float brite) : red(brite), green(brite), blue(brite)
+Color3F::Color3F(float bright) : red(bright), green(bright), blue(bright)
 {
 
 }
@@ -71,11 +71,11 @@ void Color3F::Log2This()
 	blue = -log2f(-blue);
 }
 
-void Color3F::Set(float brite)
+void Color3F::Set(float bright)
 {
-	red = brite;
-	green = brite;
-	blue = brite;
+	red = bright;
+	green = bright;
+	blue = bright;
 }
 
 void Color3F::Set(float red, float green, float blue)

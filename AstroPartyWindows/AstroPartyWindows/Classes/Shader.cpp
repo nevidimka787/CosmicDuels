@@ -25,7 +25,7 @@ void Shader::Delete()
 
 bool Shader::Initialize(const char* vertex_file_name, const char* fragment_file_name)
 {
-    bool succses_flag = true;
+    bool success_flag = true;
 
 	char* vertex_code = nullptr;
 	char* fragment_code = nullptr;
@@ -97,7 +97,7 @@ bool Shader::Initialize(const char* vertex_file_name, const char* fragment_file_
 			<< "File: " << fragment_file_name << std::endl
 			<< "Logs:\n" << info_log << std::endl
 			<< "-----------------------------------------------------------------------" << std::endl << std::endl;
-		succses_flag = false;
+		success_flag = false;
 	}
 
 	fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -111,7 +111,7 @@ bool Shader::Initialize(const char* vertex_file_name, const char* fragment_file_
 			<< "File: " << fragment_file_name << std::endl
 			<< "Logs:\n" << info_log << std::endl
 			<< "-----------------------------------------------------------------------" << std::endl << std::endl;
-		succses_flag = false;
+		success_flag = false;
 	}
 
 	id = glCreateProgram();
@@ -127,7 +127,7 @@ bool Shader::Initialize(const char* vertex_file_name, const char* fragment_file_
 			<< "Fragment file: " << fragment_file_name << std::endl
 			<< "Logs:\n" << info_log << std::endl
 			<< "-----------------------------------------------------------------------" << std::endl << std::endl;
-		succses_flag = false;
+		success_flag = false;
 	}
 
 	glDeleteShader(vertex_shader);
@@ -144,7 +144,7 @@ bool Shader::Initialize(const char* vertex_file_name, const char* fragment_file_
 		free((void*)fragment_code);
 	}
 
-	return succses_flag;
+	return success_flag;
 }
 void Shader::Use()
 {

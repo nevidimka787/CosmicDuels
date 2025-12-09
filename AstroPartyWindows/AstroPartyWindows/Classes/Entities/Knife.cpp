@@ -45,7 +45,7 @@ bool Knife::Collision(Map::MapData& map)
 
 	for (auto& element : map.circles_array)
 	{
-		collision |= CollissionWithElement(element, segment);
+		collision |= CollisionWithElement(element, segment);
 		if (health <= 0)
 		{
 			exist = false;
@@ -54,7 +54,7 @@ bool Knife::Collision(Map::MapData& map)
 	}
 	for (auto& element : map.polygons_array)
 	{
-		collision |= CollissionWithElement(element, segment);
+		collision |= CollisionWithElement(element, segment);
 		if (health <= 0)
 		{
 			exist = false;
@@ -63,7 +63,7 @@ bool Knife::Collision(Map::MapData& map)
 	}
 	for (auto& element : map.rectangles_array)
 	{
-		collision |= CollissionWithElement(element, segment);
+		collision |= CollisionWithElement(element, segment);
 		if (health <= 0)
 		{
 			exist = false;
@@ -73,11 +73,11 @@ bool Knife::Collision(Map::MapData& map)
 	return collision;
 }
 
-template <typename ElemetT>
-bool Knife::CollissionWithElement(ElemetT& element, const Segment& segment)
+template <typename ElementT>
+bool Knife::CollisionWithElement(ElementT& element, const Segment& segment)
 {
 	if (element.exist &&
-		!element.IsUnbreacable() &&
+		!element.IsUnbreakable() &&
 		element.IsCollision(segment))
 	{
 		element.exist = false;

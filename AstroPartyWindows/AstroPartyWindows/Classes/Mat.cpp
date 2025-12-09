@@ -419,7 +419,7 @@ bool Vec2F::operator||(const Vec2F& vector) const
 {
 	return fabs(Mat2F(*this, vector).Determinant()) < 1e-7f;
 
-	return 
+	return
 		x == 0.0 && vector.x == 0.0 ||
 		y == 0.0 && vector.y == 0.0 ||
 		x / y == vector.x / vector.y ||
@@ -713,9 +713,9 @@ Mat2D::Mat2D(const Vec2D& abscissa, const Vec2D& ordinate) :
 }
 
 Mat2D::Mat2D(double a11, double a12, double a21, double a22) :
-	a11(a11), 
-	a12(a12), 
-	a21(a21), 
+	a11(a11),
+	a12(a12),
+	a21(a21),
 	a22(a22)
 {
 }
@@ -789,8 +789,8 @@ Mat2D Mat2D::operator/(double value) const
 void Mat2D::operator/=(double value)
 {
 	a11 /= value;
-	a12 /= value; 
-	a21 /= value; 
+	a12 /= value;
+	a21 /= value;
 	a22 /= value;
 }
 
@@ -854,12 +854,12 @@ void Mat2D::Set(double a11, double a12, double a21, double a22)
 	this->a22 = a22;
 }
 
-void Mat2D::Set(const Vec2D& abscissa, const Vec2D& ordinata)
+void Mat2D::Set(const Vec2D& abscissa, const Vec2D& ordinate)
 {
 	a11 = abscissa.x;
 	a12 = abscissa.y;
-	a21 = ordinata.x;
-	a22 = ordinata.y;
+	a21 = ordinate.x;
+	a22 = ordinate.y;
 }
 
 void Mat2D::Set(const Mat2D* matrix)
@@ -1058,12 +1058,12 @@ void Mat2F::Set(float a11, float a12, float a21, float a22)
 	this->a22 = a22;
 }
 
-void Mat2F::Set(const Vec2F& abscissa, const Vec2F& ordinata)
+void Mat2F::Set(const Vec2F& abscissa, const Vec2F& ordinate)
 {
 	a11 = abscissa.x;
 	a21 = abscissa.y;
-	a12 = ordinata.x;
-	a22 = ordinata.y;
+	a12 = ordinate.x;
+	a22 = ordinate.y;
 }
 
 void Mat2F::Set(const Mat2F* matrix)
@@ -1101,7 +1101,7 @@ Mat3x2D::Mat3x2D(double value) :
 Mat3x2D::Mat3x2D(
 	double a11, double a12, double a13,
 	double a21, double a22, double a23)
-	: 
+	:
 	a11(a11), a12(a12), a13(a13),
 	a21(a21), a22(a22), a23(a23)
 {
@@ -1128,7 +1128,7 @@ void Mat3x2D::operator+=(const Mat3x2D& matrix)
 Mat3x2D Mat3x2D::operator-() const
 {
 	return Mat3x2D(
-		-a11, -a12, -a13, 
+		-a11, -a12, -a13,
 		-a21, -a22, -a23);
 }
 
@@ -1218,7 +1218,7 @@ void Mat3x2D::operator/=(double value)
 
 bool Mat3x2D::operator==(const Mat3x2D& matrix) const
 {
-	return 
+	return
 		a11 == matrix.a11 && a12 == matrix.a12 && a13 == matrix.a13 &&
 		a21 == matrix.a21 && a22 == matrix.a22 && a23 == matrix.a23;
 }
@@ -1483,7 +1483,7 @@ void Mat3x2F::operator*=(const Mat3x2F& matrix)
 {
 	float temp1 = a11 * matrix.a11 + a12 * matrix.a21;
 	float temp2 = a11 * matrix.a12 + a12 * matrix.a22;
-	
+
 	a13 = a11 * matrix.a13 + a12 * matrix.a23 + a13;
 	a11 = temp1;
 	a12 = temp2;
