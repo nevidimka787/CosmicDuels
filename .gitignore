@@ -33,6 +33,7 @@ AstroPartyWindows/AstroPartyWindows/x64/Release/AstroPartyRemakeWindows.ipdb
 AstroPartyWindows/.vs/AstroPartyWindows/FileContentIndex/read.lock
 *.tmp
 *.elf
+*.o
 AstroPartyWindows/AstroPartyWindows/x64/Release/AstroPartyWindows.vcxproj.FileListAbsolute.txt
 x64/
 
