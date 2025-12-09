@@ -3,31 +3,10 @@
         {
             "type": "shell",
             "label": "g++ Debug",
-            "command": "/usr/bin/g++",
-            "args": [
-                "-std=c++17",
-
-                "${workspaceFolder}/AstroPartyWindows/AstroPartyWindows/*.cpp",
-                "${workspaceFolder}/AstroPartyWindows/AstroPartyWindows/*.c",
-                "${workspaceFolder}/AstroPartyWindows/AstroPartyWindows/Classes/*cpp",
-                "${workspaceFolder}/AstroPartyWindows/AstroPartyWindows/Classes/Entities/*cpp",
-                "${workspaceFolder}/AstroPartyWindows/AstroPartyWindows/SubClasses/*cpp",
-
-                "-o",
-                "${workspaceFolder}/AstroPartyWindows/AstroPartyWindows/CosmicDules.elf",
-
-                "-IAstroPartyWindows/ALLIncludes",
-
-                // sudo apt install libglew-dev libglfw3-dev
-                "-lGLEW",
-                "-lglfw",
-                "-lpthread",
-                "-ldl",
-
-                "-g"
-            ],
+            "command": "make",
+            "args": ["-j16"],
             "options": {
-                "cwd": ""
+                "cwd": "${workspaceFolder}"
             }
         },
         {
@@ -44,7 +23,7 @@
                 "${workspaceFolder}/AstroPartyWindows/AstroPartyWindows/SubClasses/*cpp",
 
                 "-o",
-                "${workspaceFolder}/AstroPartyWindows/AstroPartyWindows/CosmicDules.elf",
+                "${workspaceFolder}/AstroPartyWindows/AstroPartyWindows/CosmicDuels.elf",
 
                 "-IAstroPartyWindows/ALLIncludes",
 

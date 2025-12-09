@@ -107,18 +107,6 @@ void Game::PhysicThread0()
 
 	CameraFocusesOnPlayers();
 
-
-	camera_data_mtx.lock();
-	if (camera.move_velocity_coefficient < CAMERA_HIGH_MOVE_VELOCITY)
-	{
-		camera.move_velocity_coefficient *= CAMERA_UPDATE_COEFF_PARAM;
-	}
-	if (camera.resize_velocity_coefficient < CAMERA_HIGH_RESIZE_VELOCITY)
-	{
-		camera.resize_velocity_coefficient *= CAMERA_UPDATE_COEFF_PARAM;
-	}
-	camera_data_mtx.unlock();
-
 	input_values_mtx.lock();
 	for (uint8_t player = 0; player < GAME_PLAYERS_MAX_COUNT; player++)
 	{
@@ -591,6 +579,7 @@ void Game::PollEvents()
 	case MAP_NO_CENTER:			Event10();	return;
 	case MAP_COLLIDER:			Event11();	return;
 	case MAP_KALEIDOSCOPE:		Event12();	return;
+	case MAP_BLACK_HOLE:		Event13();	return;
 	}
 }
 
@@ -607,7 +596,7 @@ void Game::InitLevel()
 	MemorySetDefault();
 
 	current_map_id = GenerateRandomMapId();
-	std::cout << "void Game::InitLevel()::current_map_id=" << current_map_id << std::endl;
+	std::cout << "void Game::InitLevel()::current_map_id=" << (current_map_id = MAP_BLACK_HOLE) << std::endl;
 
 	std::vector<Vec2F> ships_positions = std::vector<Vec2F>(GAME_PLAYERS_MAX_COUNT, Vec2F());
 	std::vector<float> ships_angles = std::vector<float>(GAME_PLAYERS_MAX_COUNT, 0.0f);
@@ -620,6 +609,7 @@ void Game::InitLevel()
 
 	switch (current_map_id)
 	{
+	case MAP_BLACK_HOLE:		CreateMap13(ships_positions, ships_angles);	break;
 	case MAP_KALEIDOSCOPE:		CreateMap12(ships_positions, ships_angles);	break;
 	case MAP_COLLIDER:			CreateMap11(ships_positions, ships_angles);	break;
 	case MAP_NO_CENTER:			CreateMap10(ships_positions, ships_angles);	break;
@@ -980,7 +970,8 @@ void InitMenu_MapPullSelectMenu(Menu& map_pull_select_menu)
 		{ i +  9,	"Portals",			5 },
 		{ i + 10,	"Danger center",	4 },
 		{ i + 11,	"Collider",			5 },
-		{ i + 12,	"Kaleidoscope",		4 }
+		{ i + 12,	"Kaleidoscope",		4 },
+		{ i + 13,	"Black Hole",		5 }
 	};
 
 	const float uy = 0.85f;		// menu up Y

@@ -432,6 +432,9 @@ public:
 	// "Kaleidoscope"
 	void Event12();
 
+	// "Black Hole"
+	void Event13();
+
 	// "Orbit"
 	void CreateMap0(std::vector<Vec2F>& ships_positions, std::vector<float>& ships_angles);
 
@@ -470,6 +473,9 @@ public:
 
 	// "Kaleidoscope"
 	void CreateMap12(std::vector<Vec2F>& ships_positions, std::vector<float>& ships_angles);
+
+	// "Black Hole"
+	void CreateMap13(std::vector<Vec2F>& ships_positions, std::vector<float>& ships_angles);
 
 	void CreateMapRoundResults(GameTypes::players_count_t players_count, GameTypes::score_t max_score, float cell_size);
 

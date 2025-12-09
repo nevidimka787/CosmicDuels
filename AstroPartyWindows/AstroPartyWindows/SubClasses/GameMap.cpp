@@ -946,6 +946,29 @@ void Game::Event12()
 	}
 }
 
+#define MAP_BLACK_HOLE__CIRCLES_COUNT 1
+#define MAP_BLACK_HOLE__CENTER (4.f)
+#define MAP_BLACK_HOLE__SIZE (2.f)
+#define MAP_BLACK_HOLE__PORTALS_COUNT 32
+#define MAP_BLACK_HOLE__PORTALS_IN_RADIUS (0.1f)
+#define MAP_BLACK_HOLE__PORTALS_EX_RADIUS (MAP_BLACK_HOLE__SIZE)
+#define MAP_BLACK_HOLE__PORTALS_RADIUS (PORTAL_DEFAULT_RADIUS * 2.f)
+#define MAP_BLACK_HOLE__GRAV_GENS_COUNT 8
+#define MAP_BLACK_HOLE__GRAV_GENS_EX_RADIUS (MAP_BLACK_HOLE__SIZE + 0.2f)
+#define MAP_BLACK_HOLE__GRAV_GENS_ROTATION_PERIOD_4 400 // period of one quarter of the rotation
+
+#define MAP_BLACK_HOLE__SPAWN_SHIFT (MAP_BLACK_HOLE__SIZE * 0.9f / 2.f)
+void Game::Event13()
+{
+	const Vec2F r_vec(MAP_BLACK_HOLE__GRAV_GENS_EX_RADIUS, 0.f);
+
+	for (size_t ang_i = 0; ang_i < MAP_BLACK_HOLE__GRAV_GENS_COUNT; ++ang_i) {
+		const float loc_ang = ang_i * static_cast<float>(2.f * M_PI / MAP_BLACK_HOLE__GRAV_GENS_COUNT);
+		const float anim_ang = (global_timer % MAP_BLACK_HOLE__GRAV_GENS_ROTATION_PERIOD_4) / static_cast<float>(MAP_BLACK_HOLE__GRAV_GENS_ROTATION_PERIOD_4) * M_PI_2;
+		grav_gens[ang_i].SetPosition(r_vec.RotateClockwise(loc_ang + anim_ang) + MAP_BLACK_HOLE__CENTER);
+	}
+}
+
 void CreateMap0_PlaceTwoCirclesAndGravGen(Game* game_object, std::vector<Map::Circle>& circles, size_t id, const Vec2F& position, float gravity) {
 	circles[id].Set(
 		position,
@@ -2133,6 +2156,60 @@ void Game::CreateMap12(std::vector<Vec2F>& ships_positions, std::vector<float>& 
 
 	camera.SetPosition(Vec2F(MAP_KALEIDOSCOPE__CENTER));
 	camera.SetSize();
+}
+
+void Game::CreateMap13(std::vector<Vec2F>& ships_positions, std::vector<float>& ships_angles)
+{
+	/* Generate map */
+
+	auto circles = std::vector<Map::Circle>(MAP_BLACK_HOLE__CIRCLES_COUNT);
+	circles[0].Set(
+		MAP_BLACK_HOLE__CENTER,
+		MAP_BLACK_HOLE__SIZE,
+		MAP_PROPERTY_UNBREAKABLE
+	);
+
+	map.Set(circles);
+
+	/* Create entities */
+
+
+	for (size_t angle_i = 0; angle_i < MAP_BLACK_HOLE__PORTALS_COUNT; ++angle_i)
+	{
+		const Vec2F r_vec(1.f, 0.f);
+		const Vec2F portal_loc_rot = r_vec.RotateClockwise(2.f * static_cast<float>(M_PI / MAP_BLACK_HOLE__PORTALS_COUNT) * angle_i);
+		const Vec2F portal_glob_pos = Vec2F(MAP_BLACK_HOLE__CENTER) + portal_loc_rot * MAP_BLACK_HOLE__PORTALS_EX_RADIUS;
+
+		const Vec2F dest_glob_pos = Vec2F(MAP_BLACK_HOLE__CENTER) + portal_loc_rot * MAP_BLACK_HOLE__PORTALS_IN_RADIUS;
+
+		AddEntity(Portal(portal_glob_pos, dest_glob_pos, MAP_BLACK_HOLE__PORTALS_RADIUS, 0.f));
+	}
+
+	for (size_t angle_i = 0; angle_i < MAP_BLACK_HOLE__GRAV_GENS_COUNT; ++angle_i)
+	{
+		const Vec2F r_vec(1.f, 0.f);
+		const Vec2F grav_gen_loc_rot = r_vec.RotateClockwise(2.f * static_cast<float>(M_PI / MAP_BLACK_HOLE__GRAV_GENS_COUNT) * angle_i);
+		const Vec2F grav_gen_glob_pos = Vec2F(MAP_BLACK_HOLE__CENTER) + grav_gen_loc_rot * MAP_BLACK_HOLE__GRAV_GENS_EX_RADIUS;
+
+		AddEntity(GravGen(grav_gen_glob_pos, GRAVITY_GENERATOR_DEFAULT_GRAVITY * 2.f, GRAVITY_GENERATOR_DEFAULT_RADIUS / 4.f));
+	}
+
+	/* Configure players */
+
+	ships_positions[0].Set(MAP_BLACK_HOLE__CENTER - MAP_BLACK_HOLE__SPAWN_SHIFT, MAP_BLACK_HOLE__CENTER + MAP_BLACK_HOLE__SPAWN_SHIFT);
+	ships_positions[1].Set(MAP_BLACK_HOLE__CENTER + MAP_BLACK_HOLE__SPAWN_SHIFT, MAP_BLACK_HOLE__CENTER + MAP_BLACK_HOLE__SPAWN_SHIFT);
+	ships_positions[2].Set(MAP_BLACK_HOLE__CENTER + MAP_BLACK_HOLE__SPAWN_SHIFT, MAP_BLACK_HOLE__CENTER - MAP_BLACK_HOLE__SPAWN_SHIFT);
+	ships_positions[3].Set(MAP_BLACK_HOLE__CENTER - MAP_BLACK_HOLE__SPAWN_SHIFT, MAP_BLACK_HOLE__CENTER - MAP_BLACK_HOLE__SPAWN_SHIFT);
+
+	ships_angles[0] = -(float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
+	ships_angles[1] = -(float)M_PI_2 - (float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
+	ships_angles[2] = (float)M_PI_2 + (float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
+	ships_angles[3] = (float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
+
+	camera.SetPosition(MAP_BLACK_HOLE__CENTER);
+	camera.SetCoefficients(CAMERA_DEFAULT_MARGIN, 0.f);
+	camera.SetLowLimits(MAP_BLACK_HOLE__GRAV_GENS_EX_RADIUS, MAP_BLACK_HOLE__GRAV_GENS_EX_RADIUS);
+	camera.SetSize(MAP_BLACK_HOLE__SIZE);
 }
 
 void Game::CreateMapRoundResults(GameTypes::players_count_t players_count, GameTypes::score_t max_score, float cell_size)

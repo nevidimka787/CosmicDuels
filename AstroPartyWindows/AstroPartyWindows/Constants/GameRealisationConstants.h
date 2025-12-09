@@ -138,9 +138,11 @@ turrets, mega lasers
 // map id
 #define MAP_NO_CENTER			10u
 // map id
-#define MAP_COLLIDER				11u
+#define MAP_COLLIDER			11u
 // map id
 #define MAP_KALEIDOSCOPE		12u
+// map id
+#define MAP_BLACK_HOLE			13u
 
 	// map pull
 
@@ -200,7 +202,7 @@ turrets, mega lasers
 // how many times elements will be swapping
 #define GAME_RANDOM_ITERATIONS_COUNT			8u
 // count of maps
-#define GAME_MAPS_COUNT							13u
+#define GAME_MAPS_COUNT							14u
 // count of objects types
 #define GAME_OBJECTS_COUNT						1u
 // count og bonuses types

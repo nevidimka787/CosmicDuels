@@ -292,9 +292,6 @@ void Game::TeleportEntity(const Portal& portal, EntityType& entity)
 	portal.Teleport(entity);
 	AddEntity(portal.CreateParticles(global_timer));
 	AddEntity(portal.CreateParticlesTP(global_timer, 5.0f * entity.radius));
-
-	camera.move_velocity_coefficient = CAMERA_LOW_MOVE_VELOCITY;
-	camera.resize_velocity_coefficient = CAMERA_LOW_RESIZE_VELOCITY;
 }
 template void Game::TeleportEntity<Asteroid>(const Portal& portal, Asteroid& asteroid);
 template void Game::TeleportEntity<Bonus>(const Portal& portal, Bonus& bonus);

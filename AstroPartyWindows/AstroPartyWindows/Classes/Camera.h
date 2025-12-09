@@ -40,10 +40,6 @@ private:
 	float new_view_area_size_x;
 	float view_area_size_x;
 
-	// Use temp_position
-	// Use and change temp flag.
-	inline void UpdateLimits();
-public:
 	// How mach space after limits camera can show.
 	float margin;
 	// 0 - not move
@@ -52,6 +48,12 @@ public:
 	// 0 - not resize
 	// 1 - instant resize
 	float resize_velocity_coefficient;
+
+	// Use temp_position
+	// Use and change temp flag.
+	inline void UpdateLimits();
+
+public:
 
 	Camera(const Camera& camera);
 	Camera(

@@ -24,7 +24,7 @@ Camera::Camera(
 	const Vec2F* position,
 	float size,
 	float scale,
-	float margin, 
+	float margin,
 	float move_velocity_coefficient,
 	float resize_velocity_coefficient,
 	const Mat2F* hight_limits,
@@ -211,7 +211,7 @@ void Camera::Focus(
 	}
 
 	position = (position + pos_buff * move_velocity_coefficient) / (1.0f + move_velocity_coefficient);
-	view_area_size_x = (view_area_size_x + new_view_area_size_x * move_velocity_coefficient) / (1.0f + move_velocity_coefficient);
+	view_area_size_x = (view_area_size_x + new_view_area_size_x * resize_velocity_coefficient) / (1.0f + resize_velocity_coefficient);
 }
 
 void Camera::Set(Camera* camera)
