@@ -426,9 +426,6 @@ void Game::DestroyEntity(const Bomb& destroyer, Ship& entity)
 	AddBonuses(entity);
 	AddEntity(entity.Destroy());
 	RemoveEntity(entity);
-
-	camera.move_velocity_coefficient = CAMERA_LOW_MOVE_VELOCITY;
-	camera.resize_velocity_coefficient = CAMERA_LOW_RESIZE_VELOCITY;
 }
 
 void Game::DestroyEntity(const Bomb& destroyer, Particle& entity)
@@ -456,9 +453,6 @@ void Game::DestroyEntity(const Bomb& destroyer, Pilot& entity)
 	}
 	AddEntity(entity.CreateShards(global_timer));
 	RemoveEntity(entity);
-
-	camera.move_velocity_coefficient = CAMERA_LOW_MOVE_VELOCITY;
-	camera.resize_velocity_coefficient = CAMERA_LOW_RESIZE_VELOCITY;
 }
 
 void Game::DestroyEntity(const Bomb& destroyer, Turret& entity)
@@ -520,9 +514,6 @@ void Game::DestroyEntity(const Bullet& destroyer, Ship& entity)
 	AddBonuses(entity);
 	AddEntity(entity.Destroy());
 	RemoveEntity(entity);
-
-	camera.move_velocity_coefficient = CAMERA_LOW_MOVE_VELOCITY;
-	camera.resize_velocity_coefficient = CAMERA_LOW_RESIZE_VELOCITY;
 }
 
 void Game::DestroyEntity(const Bullet& destroyer, Pilot& entity)
@@ -546,9 +537,6 @@ void Game::DestroyEntity(const Bullet& destroyer, Pilot& entity)
 	AddEntity(entity.CreateShards(global_timer));
 	pilots[entity.GetPlayerNumber()].exist = false;
 	pilots_count--;
-
-	camera.move_velocity_coefficient = CAMERA_LOW_MOVE_VELOCITY;
-	camera.resize_velocity_coefficient = CAMERA_LOW_RESIZE_VELOCITY;
 }
 
 void Game::DestroyEntity(const Knife& destroyer, Asteroid& entity)
@@ -600,9 +588,6 @@ void Game::DestroyEntity(const Knife& destroyer, Ship& entity)
 	AddBonuses(entity);
 	AddEntity(entity.Destroy());
 	RemoveEntity(entity);
-
-	camera.move_velocity_coefficient = CAMERA_LOW_MOVE_VELOCITY;
-	camera.resize_velocity_coefficient = CAMERA_LOW_RESIZE_VELOCITY;
 }
 
 void Game::DestroyEntity(const Knife& destroyer, Pilot& entity)
@@ -626,9 +611,6 @@ void Game::DestroyEntity(const Knife& destroyer, Pilot& entity)
 	AddEntity(entity.CreateShards(global_timer));
 	pilots[entity.GetPlayerNumber()].exist = false;
 	pilots_count--;
-
-	camera.move_velocity_coefficient = CAMERA_LOW_MOVE_VELOCITY;
-	camera.resize_velocity_coefficient = CAMERA_LOW_RESIZE_VELOCITY;
 }
 
 void Game::DestroyEntity(const Knife& destroyer, Turret& entity)
@@ -700,9 +682,6 @@ void Game::DestroyEntity(const Laser& destroyer, Ship& entity)
 	AddBonuses(entity);
 	AddEntity(entity.Destroy());
 	RemoveEntity(entity);
-
-	camera.move_velocity_coefficient = CAMERA_LOW_MOVE_VELOCITY;
-	camera.resize_velocity_coefficient = CAMERA_LOW_RESIZE_VELOCITY;
 }
 
 void Game::DestroyEntity(const Laser& destroyer, Particle& entity)
@@ -731,9 +710,6 @@ void Game::DestroyEntity(const Laser& destroyer, Pilot& entity)
 	AddEntity(entity.CreateShards(global_timer));
 	pilots[entity.GetPlayerNumber()].exist = false;
 	pilots_count--;
-
-	camera.move_velocity_coefficient = CAMERA_LOW_MOVE_VELOCITY;
-	camera.resize_velocity_coefficient = CAMERA_LOW_RESIZE_VELOCITY;
 }
 
 void Game::DestroyEntity(const Laser& destroyer, Turret& entity)
@@ -883,9 +859,6 @@ void Game::SpawnEntity(const Ship& spawner, Pilot& pilot)
 		}
 		AddEntity(pilot.Respawn());
 		RemoveEntity(pilot);
-
-		camera.move_velocity_coefficient = CAMERA_LOW_MOVE_VELOCITY;
-		camera.resize_velocity_coefficient = CAMERA_LOW_RESIZE_VELOCITY;
 	}
 }
 
