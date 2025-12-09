@@ -958,14 +958,31 @@ void Game::Event12()
 #define MAP_BLACK_HOLE__GRAV_GENS_ROTATION_PERIOD_4 400 // period of one quarter of the rotation
 
 #define MAP_BLACK_HOLE__SPAWN_SHIFT (MAP_BLACK_HOLE__SIZE * 0.9f / 2.f)
+
+#define MAP_BLACK_HOLE__ASTEROIDS_RESPAWN_PERIOD 10
+#define MAP_BLACK_HOLE__ASTEROIDS_SPAWN_RADIUS (ASTEROID_RADIUS_BIG * 1.5f)
+
 void Game::Event13()
 {
-	const Vec2F r_vec(MAP_BLACK_HOLE__GRAV_GENS_EX_RADIUS, 0.f);
-
 	for (size_t ang_i = 0; ang_i < MAP_BLACK_HOLE__GRAV_GENS_COUNT; ++ang_i) {
+		const Vec2F r_vec(MAP_BLACK_HOLE__GRAV_GENS_EX_RADIUS, 0.f);
 		const float loc_ang = ang_i * static_cast<float>(2.f * M_PI / MAP_BLACK_HOLE__GRAV_GENS_COUNT);
 		const float anim_ang = (global_timer % MAP_BLACK_HOLE__GRAV_GENS_ROTATION_PERIOD_4) / static_cast<float>(MAP_BLACK_HOLE__GRAV_GENS_ROTATION_PERIOD_4) * M_PI_2;
 		grav_gens[ang_i].SetPosition(r_vec.RotateClockwise(loc_ang + anim_ang) + MAP_BLACK_HOLE__CENTER);
+	}
+
+	if (global_timer % MAP_BLACK_HOLE__ASTEROIDS_RESPAWN_PERIOD == 0) {
+		if (asteroids_count < 12) {
+			Vec2F r_vec(MAP_BLACK_HOLE__ASTEROIDS_SPAWN_RADIUS, 0.f);
+
+			AddEntity(Asteroid(r_vec + MAP_BLACK_HOLE__CENTER, 0.f, GenerateRandomInventory(BONUS_ALL, 0, 2, 1, 2), ASTEROID_SIZE_BIG));
+			r_vec.PerpendicularClockwiseThis();
+			AddEntity(Asteroid(r_vec + MAP_BLACK_HOLE__CENTER, 0.f, GenerateRandomInventory(BONUS_ALL, 0, 2, 1, 2), ASTEROID_SIZE_BIG));
+			r_vec.PerpendicularClockwiseThis();
+			AddEntity(Asteroid(r_vec + MAP_BLACK_HOLE__CENTER, 0.f, GenerateRandomInventory(BONUS_ALL, 0, 2, 1, 2), ASTEROID_SIZE_BIG));
+			r_vec.PerpendicularClockwiseThis();
+			AddEntity(Asteroid(r_vec + MAP_BLACK_HOLE__CENTER, 0.f, GenerateRandomInventory(BONUS_ALL, 0, 2, 1, 2), ASTEROID_SIZE_BIG));
+		}
 	}
 }
 
