@@ -1,0 +1,65 @@
+{
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "g++ Debug",
+            "command": "/usr/bin/g++",
+            "args": [
+                "-std=c++17",
+
+                "${workspaceFolder}/AstroPartyWindows/AstroPartyWindows/*.cpp",
+                "${workspaceFolder}/AstroPartyWindows/AstroPartyWindows/*.c",
+                "${workspaceFolder}/AstroPartyWindows/AstroPartyWindows/Classes/*cpp",
+                "${workspaceFolder}/AstroPartyWindows/AstroPartyWindows/Classes/Entities/*cpp",
+                "${workspaceFolder}/AstroPartyWindows/AstroPartyWindows/SubClasses/*cpp",
+
+                "-o",
+                "${workspaceFolder}/AstroPartyWindows/AstroPartyWindows/CosmicDules.elf",
+
+                "-IAstroPartyWindows/ALLIncludes",
+
+                // sudo apt install libglew-dev libglfw3-dev
+                "-lGLEW",
+                "-lglfw",
+                "-lpthread",
+                "-ldl",
+
+                "-g"
+            ],
+            "options": {
+                "cwd": ""
+            }
+        },
+        {
+            "type": "shell",
+            "label": "g++ Release",
+            "command": "/usr/bin/g++",
+            "args": [
+                "-std=c++17",
+
+                "${workspaceFolder}/AstroPartyWindows/AstroPartyWindows/*.cpp",
+                "${workspaceFolder}/AstroPartyWindows/AstroPartyWindows/*.c",
+                "${workspaceFolder}/AstroPartyWindows/AstroPartyWindows/Classes/*cpp",
+                "${workspaceFolder}/AstroPartyWindows/AstroPartyWindows/Classes/Entities/*cpp",
+                "${workspaceFolder}/AstroPartyWindows/AstroPartyWindows/SubClasses/*cpp",
+
+                "-o",
+                "${workspaceFolder}/AstroPartyWindows/AstroPartyWindows/CosmicDules.elf",
+
+                "-IAstroPartyWindows/ALLIncludes",
+
+                // sudo apt install libglew-dev libglfw3-dev
+                "-lGLEW",
+                "-lglfw",
+                "-lpthread",
+                "-ldl",
+
+                "-O3"
+            ],
+            "options": {
+                "cwd": ""
+            }
+        }
+    ],
+    "version": "2.0.0"
+}
