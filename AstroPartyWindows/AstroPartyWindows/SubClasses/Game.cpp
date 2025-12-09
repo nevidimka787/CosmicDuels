@@ -96,13 +96,13 @@ void Game::PhysicThread0()
 		{
 			PortalsCreateParticles();
 		}
-		PortalsTPEntityes(ships, ships_count, ships_array_mtx);
-		PortalsTPEntityes(asteroids, asteroids_count, asteroids_array_mtx);
-		PortalsTPEntityes(bombs, bombs_count, bombs_array_mtx);
-		PortalsTPEntityes(bonuses, bonuses_count, bonuses_array_mtx);
-		PortalsTPEntityes(bullets, bullets_count, bullets_array_mtx);
-		PortalsTPEntityes(dynamic_particles, dynamic_particles_count, dynamic_particles_array_mtx);
-		PortalsTPEntityes(pilots, pilots_count, pilots_array_mtx);
+		PortalsTPEntities(ships, ships_count, ships_array_mtx);
+		PortalsTPEntities(asteroids, asteroids_count, asteroids_array_mtx);
+		PortalsTPEntities(bombs, bombs_count, bombs_array_mtx);
+		PortalsTPEntities(bonuses, bonuses_count, bonuses_array_mtx);
+		PortalsTPEntities(bullets, bullets_count, bullets_array_mtx);
+		PortalsTPEntities(dynamic_particles, dynamic_particles_count, dynamic_particles_array_mtx);
+		PortalsTPEntities(pilots, pilots_count, pilots_array_mtx);
 	}
 
 	CameraFocusesOnPlayers();

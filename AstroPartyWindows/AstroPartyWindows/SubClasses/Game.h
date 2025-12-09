@@ -62,11 +62,11 @@ public:
 
 	//Current scores of players.
 	std::vector<GameTypes::score_t> scores;
-	//Last scores of plauers. 
+	//Last scores of plauers.
 	std::vector<GameTypes::score_t> last_match_scores;
 	//Id of the current map of the level.
 	GameTypes::maps_count_t current_map_id;
-	
+
 
 	//If player will get end_match_score or high scor then this people will become potencial winner.
 	//This variable is setted by InitMatch function.
@@ -270,104 +270,104 @@ public:
 
 	//Function adds entity to array that store entities of the same type.
 	void AddEntity(const Bonus& new_bonus);
-	
+
 	//Function adds entity to array that store entities of the same type.
 	void AddEntity(const Bullet& new_bullet);
-	
+
 	//Function adds entity to array that store entities of the same type.
 	void AddEntity(const DecelerationArea& new_deceleration_area);
 
 	//Function adds entity to array that store entities of the same type.
 	void AddEntity(const DynamicParticle& new_particle);
-	
+
 	//Function adds entity to array that store entities of the same type.
 	void AddEntity(const GravGen& new_grav_gen);
-	
+
 	//Function adds entity to array that store entities of the same type.
 	void AddEntity(const Knife& new_knife);
-	
+
 	//Function adds entity to array that store entities of the same type.
 	void AddEntity(const Bomb& new_bomb);
-	
+
 	//Function adds entity to array that store entities of the same type.
 	void AddEntity(const Laser& new_lazsr);
-	
+
 	//Function adds entity to array that store entities of the same type.
 	void AddEntity(const Particle& new_particle);
 
 	//Function adds entity to array that store entities of the same type.
 	void AddEntity(const Portal& new_portal);
-	
+
 	//Function adds entity to array that store entities of the same type.
 	void AddEntity(const Pilot& new_pilot);
-	
+
 	//Function adds entity to array that store entities of the same type.
 	void AddEntity(const Ship& new_ship);
-	
+
 	//Function adds entity to array that store entities of the same type.
 	void AddEntity(const Turret& new_lazer);
 
 
 	//Function removes the specified entity from the array.
 	void RemoveEntity(AnnihAreaGen& annih_area_gen);
-	
+
 	//Function removes the specified entity from the array.
 	void RemoveEntity(Asteroid& deleting_asteroid);
 
 	//Function removes the specified entity from the array.
 	void RemoveEntity(Bonus& deleting_bonus);
-	
+
 	//Function removes the specified entity from the array.
 	void RemoveEntity(Bomb& deleting_bomb);
-	
+
 	//Function removes the specified entity from the array.
 	void RemoveEntity(Bullet& deleting_bullet);
-	
+
 	//Function adds entity to array that store entities of the same type.
 	void RemoveEntity(DecelerationArea& new_deceleration_area);
 
 	//Function adds entity to array that store entities of the same type.
 	void RemoveEntity(DynamicParticle& new_deceleration_area);
-	
+
 	//Function adds entity to array that store entities of the same type.
 	void RemoveEntity(GravGen& new_grav_gen);
-	
+
 	//Function removes the specified entity from the array.
 	void RemoveEntity(Knife& deleting_knife);
-	
+
 	//Function removes the specified entity from the array.
 	void RemoveEntity(Laser& deleting_laser);
-	
+
 	//Function removes the specified entity from the array.
 	void RemoveEntity(Particle& deleting_particle);
-	
+
 	//Function removes the specified entity from the array.
 	void RemoveEntity(Pilot& deleting_particle);
-	
+
 	//Function removes the specified entity from the array.
 	void RemoveEntity(Ship& deleting_particle);
-	
+
 	//Function removes the specified entity from the array.
 	void RemoveEntity(Turret& deleting_turret);
 
 
-	
+
 	//The function runs when the object created starts.
 	//The functions nitialisates all arrays this entities.
 	Game();
-	
+
 	//The function runs when the program starts.
 	//The functions nitialisates all arrays this entities.
 	void InitGame();
-	
+
 	//The function runs when the mach starts.
 	//The functions nitialisates all arrays this maps.
 	void InitMatch();
-	
+
 	//The function runs when the level initialisates.
 	//The function generates the map and spawning players.
 	void InitLevel();
-	
+
 	//The function runs when the program starts.
 	//The function creates all nemus objects.
 	void InitMenus();
@@ -377,37 +377,37 @@ public:
 
 	//Team's numbers start from 1.
 	void DecrementPlayersCountInTeam(GameTypes::players_count_t team_number);
-	
+
 	//Team's numbers start from 1.
 	void IncrementPlayersCountInTeam(GameTypes::players_count_t team_number);
-	
+
 	void CheckEndMatch();
 
 	//mtx: camera -> ship -> map
 	void RoundResultsInit();
-	
+
 	//The function show round results.
 	//The function block timer.
 	//If logs not empty, the function return true.
 	bool RoundResults();
 
 	void PollEvents();
-	
+
 	//"Orbit"
 	void Event0();
-	
+
 	//"turret"
 	void Event1();
-	
+
 	//"Grav Gen"
 	void Event2();
-	
+
 	//"Deceleration area"
 	void Event3();
-	
+
 	//"Mega lasers"
 	void Event4();
-	
+
 	//"Dynamical"
 	void Event5();
 
@@ -434,19 +434,19 @@ public:
 
 	//"Orbit"
 	void CreateMap0(std::vector<Vec2F>& ships_positions, std::vector<float>& ships_angles);
-	
+
 	//"turret"
 	void CreateMap1(std::vector<Vec2F>& ships_positions, std::vector<float>& ships_angles);
-	
+
 	//"Grav Gen"
 	void CreateMap2(std::vector<Vec2F>& ships_positions, std::vector<float>& ships_angles);
-	
+
 	//"Deceleration area"
 	void CreateMap3(std::vector<Vec2F>& ships_positions, std::vector<float>& ships_angles);
-	
+
 	//"Mega lasers"
 	void CreateMap4(std::vector<Vec2F>& ships_positions, std::vector<float>& ships_angles);
-	
+
 	//"Dynamical"
 	void CreateMap5(std::vector<Vec2F>& ships_positions, std::vector<float>& ships_angles);
 
@@ -478,11 +478,11 @@ public:
 	//Get space from memory for arrays.
 	//Update values that was linking with arrays.
 	void MemoryLock();
-	
+
 	//Set pbjects in arrays default.
 	//Update values that was linking with arrays.
 	void MemorySetDefault();
-	
+
 	//Delete arrays.
 	//Update values that was linking with arrays.
 	void MemoryFree();
@@ -490,7 +490,7 @@ public:
 	void ClearShipsShootingFlags();
 
 	//Memory functions
-	
+
 
 	//The function calculates forces of collisions between entities in the array.
 	//Use temp_p1 temp_p2
@@ -498,16 +498,16 @@ public:
 	void DynamicEntitiesCollisions(
 		std::vector<EntityType>& entities,
 		GameTypes::entities_count_t entities_count);
-	
+
 	//The function calculates forces of collisions between entities from two arrays.
 	//Use temp_p1 temp_p2
 	template<typename Entity1Type, typename Entity2Type>
 	void DynamicEntitiesCollisions(
 		std::vector<Entity1Type>& entities1,
 		std::vector<Entity2Type>& entities2,
-		GameTypes::entities_count_t entities1_count, 
+		GameTypes::entities_count_t entities1_count,
 		GameTypes::entities_count_t entities2_count);
-	
+
 	//The function calculates forces of collisions between entities in the array and elements of the map.
 	//Use temp_p1
 	template<typename EntityType>
@@ -520,7 +520,7 @@ public:
 		Map::MapData& map,
 		std::vector<Asteroid>& asteroids,
 		GameTypes::entities_count_t asteroid_count);
-	
+
 	//The function calculates forces of collisions between entities in the array and elements of the map.
 	void DynamicEntitiesCollisions(
 		Map::MapData& map,
@@ -532,7 +532,7 @@ public:
 		Map::MapData& map,
 		std::vector<DynamicParticle>& entities,
 		GameTypes::entities_count_t entities_count);
-	
+
 	//The function adds the specified force to all entities in the array.
 	//Use temp_p1 temp_p2
 	template<typename EntityType>
@@ -540,7 +540,7 @@ public:
 		const Vec2F& force,
 		std::vector<EntityType>& entities,
 		GameTypes::entities_count_t entities_count);
-	
+
 	//The function adds forces of the all gravity generators to all entities in the array.
 	//Use temp_p1 temp_p2
 	template<typename EntityType>
@@ -549,7 +549,7 @@ public:
 		GameTypes::map_elements_count_t grav_gens_count,
 		std::vector<EntityType>& entities,
 		GameTypes::entities_count_t entities_count);
-	
+
 	//The function adds forces of the all gravity generators to all entities in the array.
 	//Use temp_p1 temp_p2
 	void DynamicEntitiesAddForce(
@@ -557,7 +557,7 @@ public:
 		GameTypes::map_elements_count_t grav_gens_count,
 		std::vector<Bomb>& entities,
 		GameTypes::entities_count_t entities_count);
-	
+
 	//The function adds forces of the all gravity generators to all entities in the array.
 	//Use temp_p1 temp_p2
 	template<typename EntityType>
@@ -595,7 +595,7 @@ public:
 	17. particle
 	18. dynamic_particle
 	19. log
-	
+
 	//deceler_area -> grav_gen -> camera -> portal -> ship -> pilot -> annih_area_generator -> input_values ->  mega_laser -> laser ->  bomb -> knife -> turret -> bullet -> asteroid -> bonus -> map -> particle -> dynamic_particle -> log
 
 	bomb										bomb chain reaction
@@ -642,7 +642,7 @@ public:
 	pilot -> mega_laser -> log					pilot was destroed by mega_laser
 	ship -> bonus								ship influens to bonus or take it
 	ship -> input_values						ship chekes controled values
-	ship -> input_values -> 
+	ship -> input_values ->
 		laser -> bomb -> knife -> bullet		ship chekes controled values after that it shoots
 	ship -> pilot -> log						ship kill pilot
 	ship -> pilot								ship respawn pilot
@@ -755,7 +755,7 @@ public:
 	//mtx: portal -> asteroid -> particle
 	//t = n * k
 	template<typename Entity_T>
-	void PortalsTPEntityes(std::vector<Entity_T>& entityes, const GameTypes::entities_count_t exist_entityes_count, std::shared_mutex& entity_array_mtx);
+	void PortalsTPEntities(std::vector<Entity_T>& entityes, const GameTypes::entities_count_t exist_entityes_count, std::shared_mutex& entity_array_mtx);
 
 	//mtx: pilot -> input_values
 	//t = n
@@ -887,7 +887,7 @@ public:
 	//mtx: ship
 	//t = n
 	void UpdateShipsPhase2();
-	
+
 	//Update the position and velocity of entity.
 	//mtx: turret
 	//t = n
@@ -968,9 +968,9 @@ public:
 	void DestroyEntity(Particle& entity);
 	//Destroy entity by map.
 	void DestroyEntity(Pilot& entity);
-		
+
 	void DestroySupportEntitiesBy(ControledEntity& produser);
-	
+
 	//The function spawn the ship from the pilot by spawner.
 	//After that the function removes the pilot.
 	void SpawnEntity(const Ship& spawner, Pilot& pilot);
@@ -980,7 +980,7 @@ public:
 	void TeleportEntity(const Portal& portal, EntityType& entity);
 
 	void AddBonuses(Ship& spawner);
-		
+
 	//mtx: annih_area_gen -> bomb
 	void AnnihAreaGenShoot(const AnnihAreaGen& annih_area_gen);
 
@@ -1033,7 +1033,7 @@ public:
 	// The function update inventory template mask using bonus pool menu.
 	void UpdateInventoryTemplateMask();
 
-	// The function return new inventory template 
+	// The function return new inventory template
 	// that doesn't collect bonuses thats weren't in the bonus pool menu.
 	EngineTypes::Bonus::inventory_t CheckBonusPoolMenu(EngineTypes::Bonus::inventory_t inventory_template);
 

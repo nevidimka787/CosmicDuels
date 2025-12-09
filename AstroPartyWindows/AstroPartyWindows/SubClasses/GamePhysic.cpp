@@ -1895,7 +1895,7 @@ void Game::PortalsCreateParticles()
 }
 
 template<typename Entity_T>
-void Game::PortalsTPEntityes(std::vector<Entity_T>& entityes, const GameTypes::entities_count_t exist_entityes_count, std::shared_mutex& entity_array_mtx)
+void Game::PortalsTPEntities(std::vector<Entity_T>& entityes, const GameTypes::entities_count_t exist_entityes_count, std::shared_mutex& entity_array_mtx)
 {
 	portals_array_mtx.lock();
 	for (auto& portal : portals)
@@ -1917,15 +1917,15 @@ void Game::PortalsTPEntityes(std::vector<Entity_T>& entityes, const GameTypes::e
 	}
 	portals_array_mtx.unlock();
 }
-template void Game::PortalsTPEntityes(std::vector<Asteroid>& entityes, const GameTypes::entities_count_t exist_entityes_count, std::shared_mutex& entity_array_mtx);
-template void Game::PortalsTPEntityes(std::vector<Bonus>& entityes, const GameTypes::entities_count_t exist_entityes_count, std::shared_mutex& entity_array_mtx);
-template void Game::PortalsTPEntityes(std::vector<Bullet>& entityes, const GameTypes::entities_count_t exist_entityes_count, std::shared_mutex& entity_array_mtx);
-template void Game::PortalsTPEntityes(std::vector<DynamicParticle>& entityes, const GameTypes::entities_count_t exist_entityes_count, std::shared_mutex& entity_array_mtx);
-template void Game::PortalsTPEntityes(std::vector<Pilot>& entityes, const GameTypes::entities_count_t exist_entityes_count, std::shared_mutex& entity_array_mtx);
-template void Game::PortalsTPEntityes(std::vector<Ship>& entityes, const GameTypes::entities_count_t exist_entityes_count, std::shared_mutex& entity_array_mtx);
+template void Game::PortalsTPEntities(std::vector<Asteroid>& entityes, const GameTypes::entities_count_t exist_entityes_count, std::shared_mutex& entity_array_mtx);
+template void Game::PortalsTPEntities(std::vector<Bonus>& entityes, const GameTypes::entities_count_t exist_entityes_count, std::shared_mutex& entity_array_mtx);
+template void Game::PortalsTPEntities(std::vector<Bullet>& entityes, const GameTypes::entities_count_t exist_entityes_count, std::shared_mutex& entity_array_mtx);
+template void Game::PortalsTPEntities(std::vector<DynamicParticle>& entityes, const GameTypes::entities_count_t exist_entityes_count, std::shared_mutex& entity_array_mtx);
+template void Game::PortalsTPEntities(std::vector<Pilot>& entityes, const GameTypes::entities_count_t exist_entityes_count, std::shared_mutex& entity_array_mtx);
+template void Game::PortalsTPEntities(std::vector<Ship>& entityes, const GameTypes::entities_count_t exist_entityes_count, std::shared_mutex& entity_array_mtx);
 
 template<>
-void Game::PortalsTPEntityes<Bomb>(std::vector<Bomb>& entityes, const GameTypes::entities_count_t exist_entityes_count, std::shared_mutex& entity_array_mtx)
+void Game::PortalsTPEntities<Bomb>(std::vector<Bomb>& entityes, const GameTypes::entities_count_t exist_entityes_count, std::shared_mutex& entity_array_mtx)
 {
 	for (auto& portal : portals)
 	{
@@ -1943,7 +1943,7 @@ void Game::PortalsTPEntityes<Bomb>(std::vector<Bomb>& entityes, const GameTypes:
 		}
 	}
 }
-template void Game::PortalsTPEntityes(std::vector<Bomb>& entityes, const GameTypes::entities_count_t exist_entityes_count, std::shared_mutex& entity_array_mtx);
+template void Game::PortalsTPEntities(std::vector<Bomb>& entityes, const GameTypes::entities_count_t exist_entityes_count, std::shared_mutex& entity_array_mtx);
 
 void Game::PilotsCheckInput()
 {
