@@ -959,7 +959,7 @@ void Game::Event12()
 
 #define MAP_BLACK_HOLE__SPAWN_SHIFT (MAP_BLACK_HOLE__SIZE * 0.9f / 2.f)
 
-#define MAP_BLACK_HOLE__ASTEROIDS_RESPAWN_PERIOD 10
+#define MAP_BLACK_HOLE__ASTEROIDS_RESPAWN_PERIOD 1000
 #define MAP_BLACK_HOLE__ASTEROIDS_SPAWN_RADIUS (ASTEROID_RADIUS_BIG * 1.5f)
 
 void Game::Event13()
@@ -2189,7 +2189,6 @@ void Game::CreateMap13(std::vector<Vec2F>& ships_positions, std::vector<float>& 
 	map.Set(circles);
 
 	/* Create entities */
-
 
 	for (size_t angle_i = 0; angle_i < MAP_BLACK_HOLE__PORTALS_COUNT; ++angle_i)
 	{
