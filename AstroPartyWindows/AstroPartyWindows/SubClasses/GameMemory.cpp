@@ -100,12 +100,12 @@ void Game::AddEntity(const Knife& new_knife)
 {
 	if (new_knife.exist)
 	{
-		for (GameTypes::entities_count_t knife = 0; knife < GAME_KNIFES_MAX_COUNT; knife++)
+		for (GameTypes::entities_count_t knife = 0; knife < GAME_KNIVES_MAX_COUNT; knife++)
 		{
-			if (!knifes[knife].exist)
+			if (!knives[knife].exist)
 			{
-				knifes[knife] = new_knife;
-				knifes_count++;
+				knives[knife] = new_knife;
+				knives_count++;
 				return;
 			}
 		}
@@ -311,15 +311,15 @@ void Game::RemoveEntity(Knife& deleting_knife)
 	if (deleting_knife.exist)
 	{
 		deleting_knife.exist = false;
-		knifes_count--;
+		knives_count--;
 	}
 }
 
-void Game::RemoveEntity(Laser& deleting_lazer)
+void Game::RemoveEntity(Laser& deleting_laser)
 {
-	if (deleting_lazer.exist)
+	if (deleting_laser.exist)
 	{
-		deleting_lazer.exist = false;
+		deleting_laser.exist = false;
 		lasers_count--;
 	}
 }
@@ -505,11 +505,11 @@ void Game::DestroyEntity(const Bullet& destroyer, Ship& entity)
 	}
 	if (!(game_rules && GAME_RULE_NEED_KILL_PILOT))
 	{
-		if (destroyer.CreatedByTeam(entity) || destroyer.GetHostTeamNumber() == AGGRESIVE_ENTITY_HOST_ID)
+		if (destroyer.CreatedByTeam(entity) || destroyer.GetHostTeamNumber() == AGGRESSIVE_ENTITY_HOST_ID)
 		{
 			DecrementScore(entity.GetTeamNumber());
 		}
-		else if (destroyer.GetHostTeamNumber() != AGGRESIVE_ENTITY_HOST_ID)
+		else if (destroyer.GetHostTeamNumber() != AGGRESSIVE_ENTITY_HOST_ID)
 		{
 			IncrementScore(destroyer.GetHostTeamNumber());
 		}
@@ -533,11 +533,11 @@ void Game::DestroyEntity(const Bullet& destroyer, Pilot& entity)
 	}
 	if (game_rules && GAME_RULE_NEED_KILL_PILOT)
 	{
-		if (destroyer.CreatedByTeam(entity) || destroyer.GetHostTeamNumber() == AGGRESIVE_ENTITY_HOST_ID)
+		if (destroyer.CreatedByTeam(entity) || destroyer.GetHostTeamNumber() == AGGRESSIVE_ENTITY_HOST_ID)
 		{
 			DecrementScore(entity.GetTeamNumber());
 		}
-		else if (destroyer.GetHostTeamNumber() != AGGRESIVE_ENTITY_HOST_ID)
+		else if (destroyer.GetHostTeamNumber() != AGGRESSIVE_ENTITY_HOST_ID)
 		{
 			IncrementScore(destroyer.GetHostTeamNumber());
 		}
@@ -826,7 +826,7 @@ void Game::DestroyEntity(Pilot& entity)
 	RemoveEntity(entity);
 }
 
-void Game::DestroySupportEntitiesBy(ControledEntity& produser)
+void Game::DestroySupportEntitiesBy(ControlledEntity& producer)
 {
 	GameTypes::entities_count_t found = 0;
 	for (auto& entity : lasers)
@@ -834,7 +834,7 @@ void Game::DestroySupportEntitiesBy(ControledEntity& produser)
 		if (found >= lasers_count) break;
 		if (!entity.exist) continue;
 
-		if (entity.CreatedBy(produser))
+		if (entity.CreatedBy(producer))
 		{
 			RemoveEntity(entity);
 			continue;
@@ -842,12 +842,12 @@ void Game::DestroySupportEntitiesBy(ControledEntity& produser)
 		++found;
 	}
 	found = 0;
-	for (auto& entity : knifes)
+	for (auto& entity : knives)
 	{
-		if (found >= knifes_count) break;
+		if (found >= knives_count) break;
 		if (!entity.exist) continue;
 
-		if (entity.IsCreatedBy(produser))
+		if (entity.IsCreatedBy(producer))
 		{
 			RemoveEntity(entity);
 			continue;
@@ -860,7 +860,7 @@ void Game::DestroySupportEntitiesBy(ControledEntity& produser)
 		if (found >= annih_area_gens_count) break;
 		if (!entity.exist) continue;
 
-		if (entity.IsCreatedBy(produser))
+		if (entity.IsCreatedBy(producer))
 		{
 			RemoveEntity(entity);
 			continue;
@@ -875,7 +875,7 @@ void Game::SpawnEntity(const Ship& spawner, Pilot& pilot)
 	{
 		return;
 	}
-	if (game_rules & GAME_RULE_FRIEDNLY_SHEEP_CAN_RESTORE)
+	if (game_rules & GAME_RULE_FRIENDLY_SHEEP_CAN_RESTORE)
 	{
 		if (!(game_rules & GAME_RULE_NEED_KILL_PILOT))
 		{
@@ -919,8 +919,8 @@ void Game::MemoryLock()
 	dynamic_particles_count = 0;
 	grav_gens = std::vector<GravGen>(GAME_GRAV_GENS_MAX_COUNT);
 	grav_gens_count = 0;
-	knifes = std::vector<Knife>(GAME_KNIFES_MAX_COUNT);
-	knifes_count = 0;
+	knives = std::vector<Knife>(GAME_KNIVES_MAX_COUNT);
+	knives_count = 0;
 	lasers = std::vector<Laser>(GAME_LASERS_MAX_COUNT);
 	lasers_count = 0;
 	pilots = std::vector<Pilot>(GAME_PLAYERS_MAX_COUNT);
@@ -948,13 +948,13 @@ void Game::MemoryLock()
 void Game::MemorySetDefault()
 {
 	global_timer = 0;
-	stuning_timer = 0;
+	stunning_timer = 0;
 	end_match_tic = 0;
 
 	camera.SetCoefficients();
 	camera.SetHightLimits();
 	camera.SetLowLimits();
-	camera.SetScale(object_p__open_gl_realisation->GetScale());
+	camera.SetScale(object_p__open_gl_realization->GetScale());
 
 	annih_area_gens_count = 0;
 	asteroids_count = 0;
@@ -964,7 +964,7 @@ void Game::MemorySetDefault()
 	deceler_areas_count = 0;
 	dynamic_particles_count = 0;
 	grav_gens_count = 0;
-	knifes_count = 0;
+	knives_count = 0;
 	lasers_count = 0;
 	mega_lasers_count = 0;
 	particles_count = 0;
@@ -1007,9 +1007,9 @@ void Game::MemorySetDefault()
 		{
 			grav_gens[entity].exist = false;
 		}
-		if (entity < GAME_KNIFES_MAX_COUNT && knifes[entity].exist)
+		if (entity < GAME_KNIVES_MAX_COUNT && knives[entity].exist)
 		{
-			knifes[entity].exist = false;
+			knives[entity].exist = false;
 		}
 		if (entity < GAME_LASERS_MAX_COUNT && lasers[entity].exist)
 		{
@@ -1041,7 +1041,7 @@ void Game::MemorySetDefault()
 	}
 
 	current_active_menu = &ships_control_menu;
-	flag_all_entities_initialisate = true;
+	flag_all_entities_initialisation = true;
 	pause_round = false;
 }
 
@@ -1061,8 +1061,8 @@ void Game::MemoryFree()
 	deceler_areas_count = 0;
 	grav_gens.clear();
 	grav_gens_count = 0;
-	knifes.clear();
-	knifes_count = 0;
+	knives.clear();
+	knives_count = 0;
 	lasers.clear();
 	lasers_count = 0;
 	particles.clear();

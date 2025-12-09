@@ -24,7 +24,7 @@ Laser::Laser(const Laser& laser) :
 }
 
 Laser::Laser(
-	const ControledEntity* host,
+	const ControlledEntity* host,
 	const Beam& local_beam,
 	float width,
 	GameTypes::tic_t shoot_time,
@@ -153,7 +153,7 @@ bool Laser::IsActive() const
 	return shoot_time > 0;
 }
 
-bool Laser::CreatedBy(const ControledEntity& controled_entity) const
+bool Laser::CreatedBy(const ControlledEntity& controled_entity) const
 {
 	return host_number == controled_entity.GetPlayerNumber();
 }
@@ -219,7 +219,7 @@ void Laser::Set(const Laser* laser)
 }
 
 void Laser::Set(
-	const ControledEntity* host_p,
+	const ControlledEntity* host_p,
 	const Beam& local_beam,
 	float width,
 	GameTypes::tic_t shoot_time,

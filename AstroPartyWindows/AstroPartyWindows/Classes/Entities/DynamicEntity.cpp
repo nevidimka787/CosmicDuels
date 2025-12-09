@@ -6,7 +6,7 @@ DynamicEntity::DynamicEntity() :
 	Entity(),
 	angular_velocity(0.0f),
 	force_collision_coeffisient(DEFAULT_FORCE_COLLISION_COEFFICIENT),
-	force_resistance_air_coefficient(DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT)
+	force_resistance_air_coefficient(DEFAULT_FORCE_RESISTANCE_AIR_COEFFICIENT)
 {
 }
 
@@ -21,19 +21,19 @@ DynamicEntity::DynamicEntity(const DynamicEntity& dynamic_entity) :
 }
 
 DynamicEntity::DynamicEntity(
-	const Vec2F& position, 
-	const Vec2F& velocity, 
+	const Vec2F& position,
+	const Vec2F& velocity,
 	float radius,
 	float angle,
 	float angular_velocity,
-	float force_collision_coeffisient, 
+	float force_collision_coeffisient,
 	float force_resistance_air_coefficient,
-	bool exist) 
+	bool exist)
 	:
 	Entity(
 		position,
 		radius,
-		angle, 
+		angle,
 		exist),
 	angular_velocity(angular_velocity),
 	force_collision_coeffisient(force_collision_coeffisient),
@@ -572,7 +572,7 @@ bool DynamicEntity::IsCollision<DynamicEntity>(const DynamicEntity& entity) cons
 	const float& dvy = v1y - v2y;
 
 	const float& t_min = // The distance between objects is minimum at this time.
-		((p1x - p2x) * (v1x - v2x) + (p1y - p2y) * (v1y - v2y)) / 
+		((p1x - p2x) * (v1x - v2x) + (p1y - p2y) * (v1y - v2y)) /
 		(dvx * dvx + dvy * dvy);
 
 	const float& dx = (p1x - p2x + (v1x - v2x) * t_min);
@@ -743,7 +743,7 @@ void DynamicEntity::Set(const DynamicEntity* dynamic_entity)
 void DynamicEntity::Set(
 	const Vec2F& position,
 	const Vec2F& velocity,
-	float radius, 
+	float radius,
 	float angle,
 	float angular_velocity,
 	float force_collision_coeffisient,

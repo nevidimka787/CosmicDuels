@@ -1,7 +1,7 @@
 #pragma once
 
 //Count of tiks between pre last ship was killed and match will be completed.
-#define GAME_END_MATCH_DELLAY 100
+#define GAME_END_MATCH_DELAY 100
 
 //Maximum count of tiks between two clicks needed for activated double click event.
 #define GAME_DOUBLE_CLK_TIME	10
@@ -12,7 +12,7 @@
 
 /*
 asteroids, bombs, bonuses, bullets,
-knifes, lasers, particles, ships,
+knives, lasers, particles, ships,
 pilots, players, gravity generators,
 turrets, mega lasers
 */
@@ -49,8 +49,8 @@ turrets, mega lasers
 #define GAME_GRAV_GENS_MAX_COUNT	32
 //The maximum possible count of players on the map.
 #define GAME_PLAYERS_MAX_COUNT		4
-//The maximum possible count of knifes on the map.
-#define GAME_KNIFES_MAX_COUNT		(UINT8_MAX - 1)
+//The maximum possible count of knives on the map.
+#define GAME_KNIVES_MAX_COUNT		(UINT8_MAX - 1)
 //The maximum possible count of lasers on the map.
 #define GAME_LASERS_MAX_COUNT		(UINT8_MAX - 1)
 //The maximum possible count of bombs on the map.
@@ -120,7 +120,7 @@ turrets, mega lasers
 //map id.
 #define MAP_TURRET_ON_CENTER	1u
 //map id.
-#define MAP_CYRCLE_ON_CENTER	2u
+#define MAP_CIRCLE_ON_CENTER	2u
 //map id.
 #define MAP_DECELERATION_AREA	3u
 //map id.
@@ -138,7 +138,7 @@ turrets, mega lasers
 //map id
 #define MAP_NO_CENTER			10u
 //map id
-#define MAP_COLLAIDER				11u
+#define MAP_COLLIDER				11u
 //map id
 #define MAP_KALEIDOSCOPE		12u
 
@@ -173,10 +173,10 @@ turrets, mega lasers
 #define GAME_RULE_PLAYERS_SPAWN_THIS_TRIPLE				(1u << 6u)
 //NOT USE
 #define GAME_RULE_TEAM_PLAY								(1u << 7u)
-//Palyer can kill player from same team. 
+//Palyer can kill player from same team.
 #define GAME_RULE_FRIENDLY_FIRE							(1u << 8u)
 //Player can restor player frome same team.
-#define GAME_RULE_FRIEDNLY_SHEEP_CAN_RESTORE			(1u << 9u)
+#define GAME_RULE_FRIENDLY_SHEEP_CAN_RESTORE			(1u << 9u)
 //If the rule apply then pilots can autorestore and for completing math need kill pilots
 //else pilots can not autorestore and for completing math need kill ships only.
 #define GAME_RULE_NEED_KILL_PILOT						(1u << 10u)
@@ -186,9 +186,9 @@ turrets, mega lasers
 #define GAME_RULE_BONUSES_IS_SPAWNING					(1u << 12u)
 //NOT REALISATED
 #define GAME_RULE_BALANCE_ACTIVE						(1u << 13u)
-//If the rule applys then bullets will be destroed then collision with knifes and knifes will be lossing health
-//else bullets will not collision with knifes.
-#define GAME_RULE_KNIFES_CAN_DESTROY_BULLETS			(1u << 14u)
+//If the rule applys then bullets will be destroed then collision with knives and knives will be lossing health
+//else bullets will not collision with knives.
+#define GAME_RULE_KNIVES_CAN_DESTROY_BULLETS			(1u << 14u)
 
 //game rules activing after start of the game
 #define GAME_RULE_DEFAULT_GAME_RULES (GAME_RULE_PLAYERS_SPAWN_THIS_BONUS | GAME_RULE_NEED_KILL_PILOT | GAME_RULE_BONUSES_IS_SPAWNING)
@@ -211,7 +211,7 @@ turrets, mega lasers
 
 #define GAME_FULL_MATCH_ROUNDS		5
 #define GAME_WINNERS_MATCH_ROUNDS	1
-#define GAME_POUND_RESULTS_MAP_DEFAUL_CELL_SIZE	0.8f
+#define GAME_POUND_RESULTS_MAP_DEFAULT_CELL_SIZE	0.8f
 
 	//matc rules
 
@@ -248,13 +248,13 @@ turrets, mega lasers
 //set gamerule
 #define BUTTON_ID__SET_TRIPLE_BONUSES				14u
 //set gamerule
-#define BUTTON_ID__SET_SPAWN_THIS_TRIPLE_BAFF		15u
+#define BUTTON_ID__SET_SPAWN_THIS_TRIPLE_BUFF		15u
 //set gamerule
-#define BUTTON_ID__SET_SPAWN_THIS_SHIELD_BAFF		16u
+#define BUTTON_ID__SET_SPAWN_THIS_SHIELD_BUFF		16u
 //set gamerule
 #define BUTTON_ID__SET_ACTIVE_BALANCE				17u
 //set gamerule
-#define BUTTON_ID__SET_FRIEDLY_SHEEP_CAN_RESTORE	18u
+#define BUTTON_ID__SET_FRIENDLY_SHEEP_CAN_RESTORE	18u
 //set gamerule
 #define BUTTON_ID__SET_ACTIVE_FRIENDLY_FIRE			19u
 //set gamerule
@@ -262,7 +262,7 @@ turrets, mega lasers
 //set gamerule
 #define BUTTON_ID__SET_NEED_KILL_PILOT				21u
 //set gamerule
-#define BUTTON_ID__SET_KNIFES_CAN_DESTROY_BULLETS	22u
+#define BUTTON_ID__SET_KNIVES_CAN_DESTROY_BULLETS	22u
 
 //menu navigation
 #define BUTTON_ID__GO_TO_SELECT_MAP_MENU			30u
@@ -347,7 +347,7 @@ turrets, mega lasers
 //select map
 #define BUTTON_ID__SELECT_MAP_1	(BUTTON_ID__SELECT_MAP + MAP_TURRET_ON_CENTER)
 //select map
-#define BUTTON_ID__SELECT_MAP_2	(BUTTON_ID__SELECT_MAP + MAP_CYRCLE_ON_CENTER)
+#define BUTTON_ID__SELECT_MAP_2	(BUTTON_ID__SELECT_MAP + MAP_CIRCLE_ON_CENTER)
 //select map
 #define BUTTON_ID__SELECT_MAP_3	(BUTTON_ID__SELECT_MAP + MAP_DECELERATION_AREA)
 //select map
@@ -383,7 +383,7 @@ turrets, mega lasers
 #define SHIP_SUPER_BONUS__BOMBS_LASER_VELOCITY	(BULLET_DEFAULT_VELOCITY * 2.0f)
 //radius of each bomb in one shooted line in "line of bombs" ability
 #define SHIP_SUPER_BONUS__BOMBS_LASER_RADIUS	(BOMB_DEFAULT_RADIUS / 2.0f)
-//count of knifes in loop in "cyrcle knife" ability
+//count of knives in loop in "cyrcle knife" ability
 #define SHIP_SUPER_BONUS__KNIFES_IN_LOOP		16u
 
 //count of bullets in loop created by small asteroid and "powered laser" ability

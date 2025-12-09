@@ -2,14 +2,14 @@
 
 
 
-Asteroid::Asteroid() 
+Asteroid::Asteroid()
 	:
 	Bonus(),
 	size(ASTEROID_DEFAULT_SIZE)
 {
 }
 
-Asteroid::Asteroid(const Asteroid& asteroid) 
+Asteroid::Asteroid(const Asteroid& asteroid)
 	:
 	Bonus(asteroid),
 	size(asteroid.size)
@@ -22,10 +22,10 @@ Asteroid::Asteroid(
 	EngineTypes::Bonus::inventory_t bonus_inventory,
 	EngineTypes::Asteroid::size_t size,
 	float angle,
-	float angular_velocity, 
+	float angular_velocity,
 	float force_collision_coeffisient,
 	float force_resistance_air_coefficient,
-	bool exist) 
+	bool exist)
 	:
 	Bonus(
 		position,
@@ -207,7 +207,7 @@ Asteroid Asteroid::Division()
 		return Asteroid();
 	}
 
-	Vec2F asteroid_velocity = direction.Rotate(((float)rand() / (float)RAND_MAX) * (float)M_PI * 2.0f) * ASTEROID_DEEFAULT_VELOCITY;
+	Vec2F asteroid_velocity = direction.Rotate(((float)rand() / (float)RAND_MAX) * (float)M_PI * 2.0f) * ASTEROID_DEFAULT_VELOCITY;
 
 	return Asteroid(
 		position + asteroid_velocity.Normalize() * radius,
@@ -254,13 +254,13 @@ void Asteroid::Set(
 	bool exist)
 {
 	Bonus::Set(
-		position, 
+		position,
 		velocity,
 		bonus_inventory,
 		angle, angular_velocity,
 		0.0f,
-		force_collision_coeffisient, 
-		force_resistance_air_coefficient, 
+		force_collision_coeffisient,
+		force_resistance_air_coefficient,
 		exist);
 
 	this->size = size;

@@ -17,7 +17,7 @@ AnnihAreaGen::AnnihAreaGen(const AnnihAreaGen& annih_area_generator)
 }
 
 AnnihAreaGen::AnnihAreaGen(
-	const ControledEntity* host,
+	const ControlledEntity* host,
 	const Vec2F& position,
 	EngineTypes::Ship::inventory_t buff_inventory,
 	float radius,

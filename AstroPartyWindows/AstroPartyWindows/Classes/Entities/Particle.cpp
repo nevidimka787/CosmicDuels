@@ -60,12 +60,12 @@ Particle::Particle(
 	GameTypes::tic_t animation_period,
 	GameTypes::tic_t animation_postpone,
 	GameTypes::tic_t finish_tic,
-	bool exist) 
+	bool exist)
 	:
 	Entity(
-		position, 
+		position,
 		radius,
-		angle, 
+		angle,
 		exist),
 	type(type),
 	animation_period(animation_period),
@@ -118,17 +118,17 @@ void Particle::SetAutoPeriod(EngineTypes::Particle::type_t type)
 	case PARTICLE_TYPE_BACKGROUND:
 		this->animation_period = PARTICLE_PERIOD_BACKGROUND;
 		break;
-	case PARTICLE_TYPE_EXAUST_BOMB_BOOM:
-		this->animation_period = PARTICLE_PERIOD_EXAUST_BOMB_BOOM;
+	case PARTICLE_TYPE_EXHAUST_BOMB_BOOM:
+		this->animation_period = PARTICLE_PERIOD_EXHAUST_BOMB_BOOM;
 		break;
-	case PARTICLE_TYPE_EXAUST_BURNOUT:
-		this->animation_period = PARTICLE_PERIOD_EXAUST_BURNOUT;
+	case PARTICLE_TYPE_EXHAUST_BURNOUT:
+		this->animation_period = PARTICLE_PERIOD_EXHAUST_BURNOUT;
 		break;
-	case PARTICLE_TYPE_EXAUST_ENGINE:
-		this->animation_period = PARTICLE_PERIOD_EXAUST_ENGINE;
+	case PARTICLE_TYPE_EXHAUST_ENGINE:
+		this->animation_period = PARTICLE_PERIOD_EXHAUST_ENGINE;
 		break;
-	case PARTICLE_TYPE_EXAUST_SHOOT:
-		this->animation_period = PARTICLE_PERIOD_EXAUST_SHOOT;
+	case PARTICLE_TYPE_EXHAUST_SHOOT:
+		this->animation_period = PARTICLE_PERIOD_EXHAUST_SHOOT;
 		break;
 	case PARTICLE_TYPE_PORTAL_IN:
 		this->animation_period = PARTICLE_PERIOD_PORTAL_IN;
@@ -165,17 +165,17 @@ void Particle::SetAutoPostpone(EngineTypes::Particle::type_t type)
 	case PARTICLE_TYPE_BACKGROUND:
 		this->animation_postpone = PARTICLE_POSTPONE_BACKGROUND;
 		break;
-	case PARTICLE_TYPE_EXAUST_BOMB_BOOM:
-		this->animation_postpone = PARTICLE_POSTPONE_EXAUST_BOMB_BOOM;
+	case PARTICLE_TYPE_EXHAUST_BOMB_BOOM:
+		this->animation_postpone = PARTICLE_POSTPONE_EXHAUST_BOMB_BOOM;
 		break;
-	case PARTICLE_TYPE_EXAUST_BURNOUT:
-		this->animation_postpone = PARTICLE_POSTPONE_EXAUST_BURNOUT;
+	case PARTICLE_TYPE_EXHAUST_BURNOUT:
+		this->animation_postpone = PARTICLE_POSTPONE_EXHAUST_BURNOUT;
 		break;
-	case PARTICLE_TYPE_EXAUST_ENGINE:
-		this->animation_postpone = PARTICLE_POSTPONE_EXAUST_ENGINE;
+	case PARTICLE_TYPE_EXHAUST_ENGINE:
+		this->animation_postpone = PARTICLE_POSTPONE_EXHAUST_ENGINE;
 		break;
-	case PARTICLE_TYPE_EXAUST_SHOOT:
-		this->animation_postpone = PARTICLE_POSTPONE_EXAUST_SHOOT;
+	case PARTICLE_TYPE_EXHAUST_SHOOT:
+		this->animation_postpone = PARTICLE_POSTPONE_EXHAUST_SHOOT;
 		break;
 	case PARTICLE_TYPE_PORTAL_IN:
 		this->animation_postpone = PARTICLE_POSTPONE_PORTAL_IN;

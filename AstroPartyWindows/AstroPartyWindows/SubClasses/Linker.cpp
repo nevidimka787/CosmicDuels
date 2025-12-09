@@ -9,7 +9,7 @@ Linker::Linker(Game* game_object, MenuFunctions* menu_functions_object, OpenGL* 
 	game_object->menu_p__ships_select_buttons = menu_functions_object->ships_select_buttons;
 	game_object->menu_p__start_bonus = &menu_functions_object->start_bonus;
 
-	game_object->object_p__open_gl_realisation = open_gl_object;
+	game_object->object_p__open_gl_realization = open_gl_object;
 
 	//game object
 
@@ -68,15 +68,15 @@ Linker::Linker(Game* game_object, MenuFunctions* menu_functions_object, OpenGL* 
 	open_gl_object->game_p__dynamic_particles = &game_object->dynamic_particles;
 	open_gl_object->game_p__dynamic_particles_array_mtx = &game_object->dynamic_particles_array_mtx;
 	open_gl_object->game_p__dynamic_particles_count = &game_object->dynamic_particles_count;
-	open_gl_object->game_p__flag_all_entities_initialisate = &game_object->flag_all_entities_initialisate;
+	open_gl_object->game_p__flag_all_entities_initialisate = &game_object->flag_all_entities_initialisation;
 	open_gl_object->game_p__flag_round_results = &game_object->flag_round_results;
 	open_gl_object->game_p__global_timer = &game_object->global_timer;
 	open_gl_object->game_p__grav_gens = &game_object->grav_gens;
 	open_gl_object->game_p__grav_gens_array_mtx = &game_object->grav_gens_array_mtx;
 	open_gl_object->game_p__grav_gens_count = &game_object->grav_gens_count;
-	open_gl_object->game_p__knifes = &game_object->knifes;
-	open_gl_object->game_p__knifes_array_mtx = &game_object->knifes_array_mtx;
-	open_gl_object->game_p__knifes_count = &game_object->knifes_count;
+	open_gl_object->game_p__knifes = &game_object->knives;
+	open_gl_object->game_p__knifes_array_mtx = &game_object->knives_array_mtx;
+	open_gl_object->game_p__knifes_count = &game_object->knives_count;
 	open_gl_object->game_p__lasers = &game_object->lasers;
 	open_gl_object->game_p__lasers_array_mtx = &game_object->lasers_array_mtx;
 	open_gl_object->game_p__lasers_count = &game_object->lasers_count;
@@ -103,7 +103,7 @@ Linker::Linker(Game* game_object, MenuFunctions* menu_functions_object, OpenGL* 
 	open_gl_object->game_p__ships_control_menu = &game_object->ships_control_menu;
 	open_gl_object->game_p__ships_count = &game_object->ships_count;
 	open_gl_object->game_p__ships_select_menu = &game_object->ships_select_menu;
-	open_gl_object->game_p__stuning_timer = &game_object->stuning_timer;
+	open_gl_object->game_p__stuning_timer = &game_object->stunning_timer;
 	open_gl_object->game_p__play_match = &game_object->play_match;
 	open_gl_object->game_p__play_round = &game_object->play_round;
 	open_gl_object->game_p__spawning_objects_select_menu = &game_object->objects_pull_menu;

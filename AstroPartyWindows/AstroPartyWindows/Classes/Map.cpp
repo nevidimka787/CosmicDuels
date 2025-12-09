@@ -56,7 +56,7 @@ bool MapElement::HasSomeProrerties(EngineTypes::Map::property_t obtained_propert
 
 bool MapElement::IsAggressive() const
 {
-	return properties & MAP_PROPERTY_AGRESSIVE;
+	return properties & MAP_PROPERTY_AGGRESSIVE;
 }
 
 bool MapElement::IsKiller() const
@@ -76,7 +76,7 @@ bool MapElement::IsCheckCollisionsOutside() const
 
 bool MapElement::IsUnbreacable() const
 {
-	return properties & MAP_PROPERTY_UNBREACABLE;
+	return properties & MAP_PROPERTY_UNBREAKABLE;
 }
 
 void MapElement::Move(const Vec2F& move_vector)
@@ -485,7 +485,7 @@ Rectangle::~Rectangle()
 
 Cyrcle::Cyrcle() :
 	MapElement(),
-	radius(CYRCLE_DEFAULT_RADIUS)
+	radius(CIRCLE_DEFAULT_RADIUS)
 {
 
 }

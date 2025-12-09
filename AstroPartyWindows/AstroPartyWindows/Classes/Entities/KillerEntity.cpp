@@ -26,12 +26,12 @@ KillerEntity::KillerEntity(
 	float angular_velocity,
 	float force_collision_coeffisient,
 	float force_resistance_air_coefficient,
-	bool exist) 
+	bool exist)
 	:
 	DynamicEntity(
 		position,
-		velocity, 
-		radius, 
+		velocity,
+		radius,
 		angle,
 		angular_velocity,
 		force_collision_coeffisient,
@@ -42,12 +42,12 @@ KillerEntity::KillerEntity(
 {
 }
 
-bool KillerEntity::CreatedBy(const ControledEntity& controled_entity) const
+bool KillerEntity::CreatedBy(const ControlledEntity& controled_entity) const
 {
 	return host_number == controled_entity.GetPlayerNumber();
 }
 
-bool KillerEntity::CreatedByTeam(const ControledEntity & controled_entity) const
+bool KillerEntity::CreatedByTeam(const ControlledEntity & controled_entity) const
 {
 	return host_team_number == controled_entity.GetTeamNumber();
 }
@@ -79,12 +79,12 @@ void KillerEntity::Set(
 	const Vec2F& position,
 	const Vec2F& velocity,
 	float radius,
-	GameTypes::players_count_t player_master_number, 
+	GameTypes::players_count_t player_master_number,
 	GameTypes::players_count_t player_master_team_number,
 	float angle,
-	float angular_velocity, 
+	float angular_velocity,
 	float force_collision_coeffisient,
-	float force_resistance_air_coefficient, 
+	float force_resistance_air_coefficient,
 	bool exist)
 {
 	DynamicEntity::Set(

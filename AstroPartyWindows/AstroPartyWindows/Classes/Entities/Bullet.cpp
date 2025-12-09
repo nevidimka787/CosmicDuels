@@ -5,7 +5,7 @@
 Bullet::Bullet()
 	:
 	KillerEntity(),
-	is_ignore(BULLET_IGNORE_MUSTER | BULLET_IGNORE_KNIFES_OF_MASTER),
+	is_ignore(BULLET_IGNORE_MUSTER | BULLET_IGNORE_KNIVES_OF_MASTER),
 	min_velocity(BULLET_DEFAULT_MIN_VELOCITY)
 {
 }
@@ -40,7 +40,7 @@ Bullet::Bullet(
 		force_collision_coeffisient,
 		force_resistance_air_coefficient,
 		exist),
-	is_ignore((is_collision_master) ? (BULLET_IGNORE_MUSTER | BULLET_IGNORE_KNIFES_OF_MASTER) : BULLET_IGNORE_NOTHING),
+	is_ignore((is_collision_master) ? (BULLET_IGNORE_MUSTER | BULLET_IGNORE_KNIVES_OF_MASTER) : BULLET_IGNORE_NOTHING),
 	min_velocity(min_velocity)
 {
 }
@@ -113,7 +113,7 @@ void Bullet::Set(
 		force_resistance_air_coefficient,
 		exist);
 
-	this->is_ignore = (is_collision_master) ? (BULLET_IGNORE_MUSTER | BULLET_IGNORE_KNIFES_OF_MASTER) : BULLET_IGNORE_NOTHING;
+	this->is_ignore = (is_collision_master) ? (BULLET_IGNORE_MUSTER | BULLET_IGNORE_KNIVES_OF_MASTER) : BULLET_IGNORE_NOTHING;
 	this->min_velocity = min_velocity;
 }
 

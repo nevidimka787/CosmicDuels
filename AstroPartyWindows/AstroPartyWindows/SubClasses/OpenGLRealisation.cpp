@@ -6,9 +6,9 @@
 OpenGL::OpenGL(int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share, GLFWframebuffersizefun Function, GLFWwindow** window)
     : cursore_press_position (new Vec2D()), cursore_release_position(new Vec2D()), cursore_last_position(new Vec2D()), cursore_current_position(new Vec2D())
 {
-    update_menu = OPEN_GL_REALISATION_FRAMES_AFTER_CALLBAC_COUNT;
+    update_menu = OPEN_GL_REALIZATION_FRAMES_AFTER_CALLBACK_COUNT;
     flag_update_menu_can_change = true;
-    
+
     InitMemory();
 
     InitOpenGL();
@@ -36,7 +36,7 @@ void OpenGL::CallMenuFunction(Menu* menu, const Vec2D* glob_clk_pos, uint8_t clk
     Vec2F clk_pos = Vec2F(
         ((float)glob_clk_pos->x / window_width - 0.5f) * 2.0f,
         ((float)glob_clk_pos->y / -window_height) * 2.0f / window_scale + 1.0f);
-        
+
     if (menu == game_p__bonus_pull_menu)
     {
         object_p__menu_functions->BonusPullSelectMenuFunction(clk_pos, clk_status);
@@ -113,9 +113,9 @@ void OpenGL::CallControleMenuFunction(Menu* menu, const Vec2D* glob_clk_pos, uin
 void OpenGL::FirstUpdatePlayersFlags(GameTypes::players_count_t player)
 {
     (game_p__control_flags->rotate_flags)[player] = true;
-    if ((button_commands & (OPEN_GL_REALISATION_COMMAND_SHIP_ROTATE << player)) == OPEN_GL_REALISATION_COMMAND_NOTHING)
+    if ((button_commands & (OPEN_GL_REALIZATION_COMMAND_SHIP_ROTATE << player)) == OPEN_GL_REALIZATION_COMMAND_NOTHING)
     {
-        button_commands |= (OPEN_GL_REALISATION_COMMAND_SHIP_ROTATE << player);
+        button_commands |= (OPEN_GL_REALIZATION_COMMAND_SHIP_ROTATE << player);
         if ((*game_p__double_clk_timers)[player] > 0)
         {
             (game_p__control_flags->burnout_flags)[player] = true;
@@ -127,9 +127,9 @@ void OpenGL::FirstUpdatePlayersFlags(GameTypes::players_count_t player)
 void OpenGL::SecondUpdatePlayersFlags(GameTypes::players_count_t player)
 {
     (game_p__control_flags->rotate_flags)[player] = false;
-    if ((button_commands & (OPEN_GL_REALISATION_COMMAND_SHIP_ROTATE << player)) != OPEN_GL_REALISATION_COMMAND_NOTHING)
+    if ((button_commands & (OPEN_GL_REALIZATION_COMMAND_SHIP_ROTATE << player)) != OPEN_GL_REALIZATION_COMMAND_NOTHING)
     {
-        button_commands &= OPEN_GL_REALISATION_COMMAND_FULL - (OPEN_GL_REALISATION_COMMAND_SHIP_ROTATE << player);
+        button_commands &= OPEN_GL_REALIZATION_COMMAND_FULL - (OPEN_GL_REALIZATION_COMMAND_SHIP_ROTATE << player);
         if ((*game_p__double_clk_timers)[player] == 0)
         {
             (*game_p__double_clk_timers)[player] = GAME_DOUBLE_CLK_TIME;
@@ -148,7 +148,7 @@ void OpenGL::FramebufferSizeCallback(GLFWwindow* window, int width, int height)
         width = 1;
     }
 
-    update_menu = OPEN_GL_REALISATION_FRAMES_AFTER_CALLBAC_COUNT;
+    update_menu = OPEN_GL_REALIZATION_FRAMES_AFTER_CALLBACK_COUNT;
     window_height = height;
     window_width = width;
     window_scale = (float)width / (float)height;
@@ -196,7 +196,7 @@ void OpenGL::ProcessInput(GLFWwindow* window)
     }
     if (*game_p__play_round)
     {
-#if OPEN_GL_REALISATION__SHIPS_CONTROLED_BY_KEYBOARD == true
+#if OPEN_GL_REALIZATION__SHIPS_CONTROLLED_BY_KEYBOARD == true
         rotate_key_flags[0] = (glfwGetKey(window, SHIP_0_ROTATE_BUTTON) == GLFW_PRESS) ? true : false;
         rotate_key_flags[1] = (glfwGetKey(window, SHIP_1_ROTATE_BUTTON) == GLFW_PRESS) ? true : false;
         rotate_key_flags[2] = (glfwGetKey(window, SHIP_2_ROTATE_BUTTON) == GLFW_PRESS) ? true : false;
@@ -212,42 +212,42 @@ void OpenGL::ProcessInput(GLFWwindow* window)
             game_p__control_flags->shoot_flags,
             *game_p__double_clk_timers,
             game_p__control_flags->burnout_flags);
-#endif //OPEN_GL_REALISATION__SHIPS_CONTROLED_BY_KEYBOARD == true
-#if  OPEN_GL_REALISATION__SHIPS_CONTROLED_BY_SCREEN_BUTTONS == true
+#endif //OPEN_GL_REALIZATION__SHIPS_CONTROLLED_BY_KEYBOARD == true
+#if  OPEN_GL_REALIZATION__SHIPS_CONTROLLED_BY_SCREEN_BUTTONS == true
         glfwGetCursorPos(window, &cursore_current_position->x, &cursore_current_position->y);
         CallControleMenuFunction(*game_p__current_active_menu, cursore_current_position, left_mouse_button_pressed_status);
-#endif //OPEN_GL_REALISATION__SHIPS_CONTROLED_BY_SCREEN_BUTTONS == true
+#endif //OPEN_GL_REALIZATION__SHIPS_CONTROLLED_BY_SCREEN_BUTTONS == true
     }
-    if (glfwGetKey(window, GLFW_KEY_BACKSPACE) == GLFW_PRESS && (button_commands & OPEN_GL_REALISATION_COMMAND_BACK) == OPEN_GL_REALISATION_COMMAND_NOTHING)
+    if (glfwGetKey(window, GLFW_KEY_BACKSPACE) == GLFW_PRESS && (button_commands & OPEN_GL_REALIZATION_COMMAND_BACK) == OPEN_GL_REALIZATION_COMMAND_NOTHING)
     {
-        update_menu = OPEN_GL_REALISATION_FRAMES_AFTER_CALLBAC_COUNT;
-        button_commands |= OPEN_GL_REALISATION_COMMAND_BACK;
+        update_menu = OPEN_GL_REALIZATION_FRAMES_AFTER_CALLBACK_COUNT;
+        button_commands |= OPEN_GL_REALIZATION_COMMAND_BACK;
         object_p__menu_functions->Back();
     }
-    else if (glfwGetKey(window, GLFW_KEY_BACKSPACE) == GLFW_RELEASE && (button_commands & OPEN_GL_REALISATION_COMMAND_BACK) != OPEN_GL_REALISATION_COMMAND_NOTHING)
+    else if (glfwGetKey(window, GLFW_KEY_BACKSPACE) == GLFW_RELEASE && (button_commands & OPEN_GL_REALIZATION_COMMAND_BACK) != OPEN_GL_REALIZATION_COMMAND_NOTHING)
     {
-        update_menu = OPEN_GL_REALISATION_FRAMES_AFTER_CALLBAC_COUNT;
-        button_commands &= OPEN_GL_REALISATION_COMMAND_FULL - OPEN_GL_REALISATION_COMMAND_BACK;
+        update_menu = OPEN_GL_REALIZATION_FRAMES_AFTER_CALLBACK_COUNT;
+        button_commands &= OPEN_GL_REALIZATION_COMMAND_FULL - OPEN_GL_REALIZATION_COMMAND_BACK;
     }
-    if (left_mouse_button_pressed_status == GLFW_PRESS && (button_commands & OPEN_GL_REALISATION_COMMAND_SELECT) == OPEN_GL_REALISATION_COMMAND_NOTHING)
+    if (left_mouse_button_pressed_status == GLFW_PRESS && (button_commands & OPEN_GL_REALIZATION_COMMAND_SELECT) == OPEN_GL_REALIZATION_COMMAND_NOTHING)
     {
-        update_menu = OPEN_GL_REALISATION_FRAMES_AFTER_CALLBAC_COUNT;
+        update_menu = OPEN_GL_REALIZATION_FRAMES_AFTER_CALLBACK_COUNT;
         flag_update_menu_can_change = false;
         flag_move_menu = true;
 
-        button_commands |= OPEN_GL_REALISATION_COMMAND_SELECT;
+        button_commands |= OPEN_GL_REALIZATION_COMMAND_SELECT;
         glfwGetCursorPos(window, &cursore_press_position->x, &cursore_press_position->y);
         *cursore_last_position = *cursore_press_position;
 
         CallMenuFunction(*game_p__current_active_menu, cursore_press_position, GLFW_PRESS);
     }
-    else if (left_mouse_button_pressed_status == GLFW_RELEASE && (button_commands & OPEN_GL_REALISATION_COMMAND_SELECT) != OPEN_GL_REALISATION_COMMAND_NOTHING)
+    else if (left_mouse_button_pressed_status == GLFW_RELEASE && (button_commands & OPEN_GL_REALIZATION_COMMAND_SELECT) != OPEN_GL_REALIZATION_COMMAND_NOTHING)
     {
-        update_menu = OPEN_GL_REALISATION_FRAMES_AFTER_CALLBAC_COUNT;
+        update_menu = OPEN_GL_REALIZATION_FRAMES_AFTER_CALLBACK_COUNT;
         flag_update_menu_can_change = true;
         flag_move_menu = false;
 
-        button_commands &= OPEN_GL_REALISATION_COMMAND_FULL - OPEN_GL_REALISATION_COMMAND_SELECT;
+        button_commands &= OPEN_GL_REALIZATION_COMMAND_FULL - OPEN_GL_REALIZATION_COMMAND_SELECT;
         glfwGetCursorPos(window, &cursore_release_position->x, &cursore_release_position->y);
         *cursore_press_position -= *cursore_release_position;
         if (fabs(cursore_press_position->x) < window_width / 100.0 && fabs(cursore_press_position->y) < window_height / 100.0)
@@ -256,7 +256,7 @@ void OpenGL::ProcessInput(GLFWwindow* window)
         }
         else
         {
-            CallMenuFunction(*game_p__current_active_menu, cursore_release_position, OPEN_GL_REALISATION_BUTTON_LOST);
+            CallMenuFunction(*game_p__current_active_menu, cursore_release_position, OPEN_GL_REALIZATION_BUTTON_LOST);
         }
     }
     if (flag_move_menu)
@@ -432,11 +432,11 @@ void OpenGL::InitShaders()
     pilot_shader.Initialisate(              "Shaders/Objects/Vertex/Pilot.glsl"             ,   "Shaders/Objects/Fragment/Pilot.glsl");
     ship_shader.Initialisate(               "Shaders/Objects/Vertex/Ship.glsl"              ,   "Shaders/Objects/Fragment/Ship.glsl");
     turret_shader.Initialisate(              "Shaders/Objects/Vertex/Turret.glsl"           ,   "Shaders/Objects/Fragment/Turret.glsl");
-    
+
     rectangle_shader.Initialisate(          "Shaders/Map/Vertex/Rectangle.glsl"             ,   "Shaders/Map/Fragment/Rectangle.glsl");
     cyrcle_shader.Initialisate(             "Shaders/Map/Vertex/Cyrcle.glsl"                ,   "Shaders/Map/Fragment/Cyrcle.glsl");
     polygon_shader.Initialisate(            "Shaders/Map/Vertex/Polygon.glsl"               ,   "Shaders/Map/Fragment/Polygon.glsl");
-    
+
     button_shader.Initialisate(             "Shaders/Menu/Vertex/Button.glsl"               ,   "Shaders/Menu/Fragment/Button.glsl");
     controler_shader.Initialisate(          "Shaders/Menu/Vertex/Controler.glsl"            ,   "Shaders/Menu/Fragment/Controler.glsl");
 }
@@ -1334,7 +1334,7 @@ void OpenGL::DrawShips()
     ship_shader.SetUniform("scale", window_scale);
     ship_shader.SetUniform("camera_position", temp__game__camera_position);
     ship_shader.SetUniform("camera_size", temp__game__camera_size);
-    
+
 
     DrawObjects(game_p__ships, game_p__ships_count);
 }
@@ -1386,7 +1386,7 @@ void OpenGL::DrawCurrentMap()
 
 void OpenGL::DrawCurrentMenu()
 {
-#if OPEN_GL_REALISATION__SHIPS_CONTROLED_BY_SCREEN_BUTTONS == true
+#if OPEN_GL_REALIZATION__SHIPS_CONTROLLED_BY_SCREEN_BUTTONS == true
     if (*game_p__current_active_menu == game_p__pause_menu)
     {
         DrawIndicatedMenu(game_p__ships_control_menu);
@@ -1405,7 +1405,7 @@ void OpenGL::DrawIndicatedMap(const Map::MapData& map)
         rectangle_shader.SetUniform("scale", window_scale);
         rectangle_shader.SetUniform("camera_position", temp__game__camera_position);
         rectangle_shader.SetUniform("camera_size", temp__game__camera_size);
-        
+
         for (const auto& element : map.rectangles_array)
         {
             if (element.exist) DrawObject(&element);
@@ -1425,7 +1425,7 @@ void OpenGL::DrawIndicatedMap(const Map::MapData& map)
           if (element.exist) DrawObject(&element);
         }
     }
-    
+
     if (map.polygons_array.size() > 0)
     {
         polygon_buffer.Use();
@@ -1443,7 +1443,7 @@ void OpenGL::DrawIndicatedMap(const Map::MapData& map)
 
 void OpenGL::DrawIndicatedMenu(const Menu& menu)
 {
-#if OPEN_GL_REALISATION__SHIPS_CONTROLED_BY_SCREEN_BUTTONS == true
+#if OPEN_GL_REALIZATION__SHIPS_CONTROLLED_BY_SCREEN_BUTTONS == true
     if (menu == game_p__ships_control_menu)
     {
         controler_shader.Use();
@@ -1464,7 +1464,7 @@ void OpenGL::DrawIndicatedMenu(const Menu& menu)
         {
             DrawObject(menu.current_buttons[button]);
         }
-#if OPEN_GL_REALISATION__SHIPS_CONTROLED_BY_SCREEN_BUTTONS == true
+#if OPEN_GL_REALIZATION__SHIPS_CONTROLLED_BY_SCREEN_BUTTONS == true
     }
 #endif
 }

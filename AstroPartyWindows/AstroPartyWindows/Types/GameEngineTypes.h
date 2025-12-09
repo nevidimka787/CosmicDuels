@@ -50,7 +50,7 @@ namespace EngineTypes
 		typedef uint8_t text_size_t;
 	}
 
-	namespace ControledEntity
+	namespace ControlledEntity
 	{
 		typedef uint16_t heat_box_vertexes_count_t;
 	}

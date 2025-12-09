@@ -59,7 +59,7 @@ public:
 	//FrameBuffer main_buffer;
 
 	//buffers
-	
+
 	//data
 
 	Vec2F temp__game__camera_position;
@@ -101,7 +101,7 @@ public:
 	Shader dynamic_particle_shader;
 	//The shader use for draw gravity generators.
 	Shader grav_gen_shader;
-	//The shader use for draw knifes.
+	//The shader use for draw knives.
 	Shader knife_shader;
 	//The shader use for draw lasers.
 	Shader laser_shader;
@@ -255,7 +255,7 @@ public:
 	void DrawDecelerationAreas();
 	//The function draw all dynamic particles on the map.
 	void DrawDynamicParticles();
-	//The function draw all knifes on the map.
+	//The function draw all knives on the map.
 	void DrawKnifes();
 	//The function draw all lasers on the map.
 	void DrawLasers();
@@ -338,7 +338,7 @@ public:
 	const GameTypes::entities_count_t* game_p__dynamic_particles_count;
 	//Count of gravity generators on the map.
 	const GameTypes::map_elements_count_t* game_p__grav_gens_count;
-	//Count of knifes on the map.
+	//Count of knives on the map.
 	const GameTypes::entities_count_t* game_p__knifes_count;
 	//Count of lazers on the map.
 	const GameTypes::entities_count_t* game_p__lasers_count;
@@ -369,7 +369,7 @@ public:
 	const std::vector<Bullet>* game_p__bullets;
 	//Array of particles.
 	const std::vector<DynamicParticle>* game_p__dynamic_particles;
-	//Array of knifes.
+	//Array of knives.
 	const std::vector<Knife>* game_p__knifes;
 	//Array of lazers.
 	const std::vector<Laser>* game_p__lasers;

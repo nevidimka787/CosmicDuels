@@ -2,7 +2,7 @@
 
 
 
-Bomb::Bomb() 
+Bomb::Bomb()
 	:
 	KillerEntity(),
 	animation_tic(0),
@@ -12,7 +12,7 @@ Bomb::Bomb()
 {
 }
 
-Bomb::Bomb(const Bomb& bomb) 
+Bomb::Bomb(const Bomb& bomb)
 	:
 	KillerEntity(bomb),
 	activation_period(bomb.activation_period),
@@ -35,17 +35,17 @@ Bomb::Bomb(
 	float radius,
 	EngineTypes::Bomb::status_t status,
 	GameTypes::tic_t activation_period,
-	GameTypes::tic_t blinking_period, 
+	GameTypes::tic_t blinking_period,
 	bool exist)
 	:
 	KillerEntity(
 		position,
 		velocity,
 		radius,
-		master1_team_number, 
+		master1_team_number,
 		master2_team_number,
-		angle, angular_velocity, 
-		force_collision_coeffisient, 
+		angle, angular_velocity,
+		force_collision_coeffisient,
 		force_resistance_air_coefficient,
 		exist),
 	activation_period(activation_period),
@@ -130,7 +130,7 @@ bool Bomb::CollisionWithElementStatusBoom(MapElementT& element)
 	bool collision = false;
 	if (
 		element.exist &&
-		!(element.Prorerties() & MAP_PROPERTY_UNBREACABLE) &&
+		!(element.Prorerties() & MAP_PROPERTY_UNBREAKABLE) &&
 		DynamicEntity::IsCollision(element))
 	{
 		element.exist = false;
@@ -193,45 +193,45 @@ bool Bomb::IsBoom() const
 
 bool Bomb::IsCreatedByAggressiveTeam() const
 {
-	return host_number == AGGRESIVE_ENTITY_HOST_ID || host_team_number == AGGRESIVE_ENTITY_HOST_ID;
+	return host_number == AGGRESSIVE_ENTITY_HOST_ID || host_team_number == AGGRESSIVE_ENTITY_HOST_ID;
 }
 
 bool Bomb::IsCreatedByAggressiveTeamOnly() const
 {
-	return host_number == AGGRESIVE_ENTITY_HOST_ID && host_team_number == AGGRESIVE_ENTITY_HOST_ID;
+	return host_number == AGGRESSIVE_ENTITY_HOST_ID && host_team_number == AGGRESSIVE_ENTITY_HOST_ID;
 }
 
 bool Bomb::IsCreatedByAggressiveTeamNotOnly() const
 {
 	return
-		host_number == AGGRESIVE_ENTITY_HOST_ID && host_team_number != AGGRESIVE_ENTITY_HOST_ID ||
-		host_number != AGGRESIVE_ENTITY_HOST_ID && host_team_number == AGGRESIVE_ENTITY_HOST_ID;
+		host_number == AGGRESSIVE_ENTITY_HOST_ID && host_team_number != AGGRESSIVE_ENTITY_HOST_ID ||
+		host_number != AGGRESSIVE_ENTITY_HOST_ID && host_team_number == AGGRESSIVE_ENTITY_HOST_ID;
 }
 
-bool Bomb::IsCreatedByTeam(const ControledEntity* host) const
+bool Bomb::IsCreatedByTeam(const ControlledEntity* host) const
 {
 	GameTypes::players_count_t host_team = host->GetTeamNumber();
 	return host_team_number == host_team;
 }
 
-GameTypes::players_count_t Bomb::GetTeamNumber(const ControledEntity& not_host) const
+GameTypes::players_count_t Bomb::GetTeamNumber(const ControlledEntity& not_host) const
 {
-	if (host_number == not_host.GetTeamNumber() || host_number == AGGRESIVE_ENTITY_HOST_ID)
+	if (host_number == not_host.GetTeamNumber() || host_number == AGGRESSIVE_ENTITY_HOST_ID)
 	{
 		return host_team_number;
 	}
 	return host_number;
 }
 
-bool Bomb::IsAggressiveFor(const ControledEntity& host) const
+bool Bomb::IsAggressiveFor(const ControlledEntity& host) const
 {
 	GameTypes::players_count_t host_team = host.GetTeamNumber();
 	return
 		host_number == host_team && host_team_number == host_team ||
 		host_number != host_team && host_team_number != host_team && host_number != host_team_number ||
-		host_number == host_team && host_team_number == AGGRESIVE_ENTITY_HOST_ID ||
-		host_number == AGGRESIVE_ENTITY_HOST_ID && host_team_number == host_team ||
-		host_team_number == AGGRESIVE_ENTITY_HOST_ID && host_number == AGGRESIVE_ENTITY_HOST_ID;
+		host_number == host_team && host_team_number == AGGRESSIVE_ENTITY_HOST_ID ||
+		host_number == AGGRESSIVE_ENTITY_HOST_ID && host_team_number == host_team ||
+		host_team_number == AGGRESSIVE_ENTITY_HOST_ID && host_number == AGGRESSIVE_ENTITY_HOST_ID;
 }
 
 void Bomb::Set(const Bomb* bomb)
@@ -245,8 +245,8 @@ void Bomb::Set(const Bomb* bomb)
 }
 
 void Bomb::Set(
-	const Vec2F& position, 
-	const Vec2F& velocity, 
+	const Vec2F& position,
+	const Vec2F& velocity,
 	GameTypes::players_count_t payer_master_number,
 	GameTypes::players_count_t player_master_team_number,
 	GameTypes::tic_t animation_tic,
@@ -289,7 +289,7 @@ void Bomb::Update()
 	{
 		if (status & BOMB_STATUS_ACTIVE)
 		{
-			angular_velocity += BOMB_DEFAULT_ANGULAR_VELOCITY_INCREMENTATION / (float)activation_period;
+			angular_velocity += BOMB_DEFAULT_ANGULAR_VELOCITY_INCREMENT / (float)activation_period;
 		}
 		if (animation_tic == 0)
 		{

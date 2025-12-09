@@ -18,7 +18,7 @@ class AnnihAreaGen;
 class Bomb;
 class Bonus;
 class Bullet;
-class ControledEntity;
+class ControlledEntity;
 class DecelerationArea;
 class DynamicEntity;
 class DynamicParticle;
@@ -155,7 +155,7 @@ public:
 		float angle = 0.0f,
 		float angular_velocity = 0.0f,
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
-		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
+		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANCE_AIR_COEFFICIENT,
 		bool exist = true);
 
 	void AddForce(const Vec2F& force);
@@ -205,13 +205,13 @@ public:
 		float angle = 0.0f,
 		float angular_velocity = 0.0f,
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
-		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
+		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANCE_AIR_COEFFICIENT,
 		bool exist = true);
 
 	void SetAngularVelocity(float angulat_velocity);
 	void SetCoefficients(
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
-		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT);
+		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANCE_AIR_COEFFICIENT);
 	void SetVelocity(const Vec2F& velocity);
 	void Update();
 
@@ -363,7 +363,7 @@ public:
 		float angular_velocity = BONUS_DEFAULT_ANGULAR_VELOCITY,
 		float radius = BONUS_DEFAULT_RADIUS,
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
-		float force_resistance_air_coefficient = BONUS_DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
+		float force_resistance_air_coefficient = BONUS_DEFAULT_FORCE_RESISTANCE_AIR_COEFFICIENT,
 		bool exist = true);
 
 	EngineTypes::Bonus::inventory_t BonusInfo() const;
@@ -389,7 +389,7 @@ public:
 		float angular_velocity = BONUS_DEFAULT_ANGULAR_VELOCITY,
 		float radius = BONUS_DEFAULT_RADIUS,
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
-		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
+		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANCE_AIR_COEFFICIENT,
 		bool exist = true);
 
 	void operator=(const Bonus& entity);
@@ -412,7 +412,7 @@ public:
 		float angle = 0.0f,
 		float angular_velocity = 0.0f,
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
-		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
+		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANCE_AIR_COEFFICIENT,
 		bool exist = true);
 
 	DynamicParticle CreateShards(GameTypes::tic_t current_tic) const;
@@ -435,7 +435,7 @@ public:
 		float angle = 0.0f,
 		float angular_velocity = 0.0f,
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
-		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
+		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANCE_AIR_COEFFICIENT,
 		bool exist = true);
 
 	void UpdateRadius();
@@ -463,11 +463,11 @@ public:
 		float angle = 0.0f,
 		float angular_velocity = 0.0f,
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
-		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
+		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANCE_AIR_COEFFICIENT,
 		bool exist = true);
 
-	bool CreatedBy(const ControledEntity& controled_entity) const;
-	bool CreatedByTeam(const ControledEntity& controled_entity) const;
+	bool CreatedBy(const ControlledEntity& controled_entity) const;
+	bool CreatedByTeam(const ControlledEntity& controled_entity) const;
 	GameTypes::players_count_t GetHostNumber() const;
 	GameTypes::players_count_t GetHostTeamNumber() const;
 	bool SameTeam(const KillerEntity& killer_entity) const;
@@ -481,7 +481,7 @@ public:
 		float angle = 0.0f,
 		float angular_velocity = 0.0f,
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
-		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
+		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANCE_AIR_COEFFICIENT,
 		bool exist = true);
 
 	void operator=(const KillerEntity& killer_entity);
@@ -489,7 +489,7 @@ public:
 	~KillerEntity();
 };
 
-class ControledEntity : public DynamicEntity
+class ControlledEntity : public DynamicEntity
 {
 private:
 	std::vector<Vec2F> heat_box_vertexes_array;
@@ -504,9 +504,9 @@ protected:
 	Mat3x2F* GetModelMatrixPointer();
 
 public:
-	ControledEntity();
-	ControledEntity(const ControledEntity& controled_entity);
-	ControledEntity(
+	ControlledEntity();
+	ControlledEntity(const ControlledEntity& controled_entity);
+	ControlledEntity(
 		const Vec2F& position,
 		const Vec2F& velocity,
 		float radius,
@@ -517,7 +517,7 @@ public:
 		float angle = 0.0f,
 		float angular_velocity = 0.0f,
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
-		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
+		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANCE_AIR_COEFFICIENT,
 		bool exist = true);
 
 	//If map can destroy entity, the functuion return true.
@@ -536,9 +536,9 @@ public:
 	template <typename Type>
 	bool IsCollision(const Type& thing) const;
 	bool IsColectEntity(const DynamicEntity& stored_entity) const;
-	bool IsSameTeams(const ControledEntity& second_entity) const;
+	bool IsSameTeams(const ControlledEntity& second_entity) const;
 	bool IsTooSlow() const;
-	void Set(const ControledEntity* entity);
+	void Set(const ControlledEntity* entity);
 	void Set(
 		const Vec2F& position,
 		const Vec2F& velocity,
@@ -550,7 +550,7 @@ public:
 		float angle = 0.0f,
 		float angular_velocity = 0.0f,
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
-		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
+		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANCE_AIR_COEFFICIENT,
 		bool exist = true);
 
 	bool ShouldDash() const;
@@ -558,12 +558,12 @@ public:
 	bool ShouldShoot() const;
 	void UpdateMatrix();
 
-	void operator=(const ControledEntity& entity);
+	void operator=(const ControlledEntity& entity);
 
-	~ControledEntity();
+	~ControlledEntity();
 };
 
-class Ship : public ControledEntity
+class Ship : public ControlledEntity
 {
 private:
 	//Value of the coldown of burnout. If value is zero then the ship can bornout.
@@ -596,13 +596,13 @@ public:
 		float angle = 0.0f,
 		EngineTypes::Bonus::inventory_t bonus_inventory = BONUS_NOTHING,
 		EngineTypes::Ship::inventory_t buff_inventory = BONUS_NOTHING,
-		GameTypes::tic_t unbrakable = SHIP_DEFAULT_UNBRAKABLE_PERIOD,
+		GameTypes::tic_t unbrakable = SHIP_DEFAULT_UNBREAKABLE_PERIOD,
 		GameTypes::tic_t burnout = 0.0f,
 		GameTypes::tic_t burnout_coldown = SHIP_DEFAULT_BURNOUT_COLDOWN,
 		float angular_velocity = 0.0f,
 		float radius = SHIP_DEFAULT_RADIUS,
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
-		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
+		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANCE_AIR_COEFFICIENT,
 		GameTypes::entities_count_t max_bullets_count = SHIP_DEFAULT_MAGAZINE_SIZE,
 		GameTypes::entities_count_t start_bullets_count = SHIP_DEFAULT_MAGAZINE_SIZE,
 		bool exist = true);
@@ -676,13 +676,13 @@ public:
 		float angle = 0.0f,
 		EngineTypes::Bonus::inventory_t bonus_inventory = BONUS_NOTHING,
 		EngineTypes::Ship::inventory_t buff_inventory = BONUS_NOTHING,
-		GameTypes::tic_t unbrakable = SHIP_DEFAULT_UNBRAKABLE_PERIOD,
+		GameTypes::tic_t unbrakable = SHIP_DEFAULT_UNBREAKABLE_PERIOD,
 		GameTypes::tic_t burnout = 0,
 		GameTypes::tic_t burnout_coldown = SHIP_DEFAULT_BURNOUT_COLDOWN,
 		float angular_velocity = 0.0f,
 		float radius = SHIP_DEFAULT_RADIUS,
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
-		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANSE_AIR_COEFFICIENT,
+		float force_resistance_air_coefficient = DEFAULT_FORCE_RESISTANCE_AIR_COEFFICIENT,
 		GameTypes::entities_count_t max_bullets_count = SHIP_DEFAULT_MAGAZINE_SIZE,
 		GameTypes::entities_count_t start_bullets_count = SHIP_DEFAULT_MAGAZINE_SIZE,
 		bool exist = true);
@@ -707,7 +707,7 @@ public:
 	~Ship();
 };
 
-class Pilot : public ControledEntity
+class Pilot : public ControlledEntity
 {
 protected:
 	GameTypes::tic_t respawn_timer;
@@ -728,7 +728,7 @@ public:
 		float angular_velocity = 0.0f,
 		float radius = PILOT_DEFAULT_RADIUS,
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
-		float force_resistance_air_coefficient = PILOT_DEFAULT_FORCE_RESISTANCE_AIR_COEFFISIENT,
+		float force_resistance_air_coefficient = PILOT_DEFAULT_FORCE_RESISTANCE_AIR_COEF,
 		bool exist = true);
 
 
@@ -751,7 +751,7 @@ public:
 		float angular_velocity = 0.0f,
 		float radius = PILOT_DEFAULT_RADIUS,
 		float force_collision_coeffisient = DEFAULT_FORCE_COLLISION_COEFFICIENT,
-		float force_resistance_air_coefficient = PILOT_DEFAULT_FORCE_RESISTANCE_AIR_COEFFISIENT,
+		float force_resistance_air_coefficient = PILOT_DEFAULT_FORCE_RESISTANCE_AIR_COEF,
 		bool exist = true);
 
 	void Update();
@@ -765,7 +765,7 @@ public:
 class SupportEntity : public StaticEntity
 {
 protected:
-	const ControledEntity* host_p;
+	const ControlledEntity* host_p;
 	const Mat3x2F* host_matrix_p;
 	GameTypes::players_count_t host_number;
 	GameTypes::players_count_t host_team;
@@ -779,14 +779,14 @@ public:
 	SupportEntity();
 	SupportEntity(const SupportEntity& support_entity);
 	SupportEntity(
-		const ControledEntity* host,
+		const ControlledEntity* host,
 		const Vec2F& position,
 		float radius = 0.0f,
 		float angle = 0.0f,
 		bool exist = true);
 
-	bool IsCreatedBy(const ControledEntity& potencial_host) const;
-	bool IsCreatedByTeam(const ControledEntity& potencial_host) const;
+	bool IsCreatedBy(const ControlledEntity& potencial_host) const;
+	bool IsCreatedByTeam(const ControlledEntity& potencial_host) const;
 	//return local angle
 	float GetAngle() const;
 	//return local direction
@@ -794,7 +794,7 @@ public:
 	Vec2F GetGlobalAngle() const;
 	Vec2F GetGlobalPosition() const;
 	//return pointer to host
-	const ControledEntity* GetHostP() const;
+	const ControlledEntity* GetHostP() const;
 	//return local direction
 	Vec2F GetNormalizeDirection() const;
 	GameTypes::players_count_t GetPlayerMasterNumber() const;
@@ -803,7 +803,7 @@ public:
 	const Vec2F& GetPosition() const;
 	void Set(const SupportEntity* support_entity);
 	void Set(
-		const ControledEntity* host,
+		const ControlledEntity* host,
 		const Vec2F& position,
 		float radius = 0.0f,
 		float angle = 0.0f,
@@ -815,7 +815,7 @@ public:
 	void SetDirection(Vec2F direction);
 	//set local direction
 	void SetDirection(const Vec2F* direction);
-	void SetHost(const ControledEntity* host);
+	void SetHost(const ControlledEntity* host);
 	//set local direction
 	void SetNotNormalizeDirection(Vec2F direction);
 	//set local direction
@@ -852,9 +852,9 @@ public:
 		float radius,
 		float angle = 0.0f,
 		GameTypes::tic_t attack_dellay = 0,
-		GameTypes::tic_t attack_period = AGGRESIVE_ENTITY_DEFAULT_ATTACK_PERIOD,
-		GameTypes::tic_t inactive_period = AGGRESIVE_ENTITY_DEFAULT_INACTIVE_PERIOD,
-		EngineTypes::AgressiveEntity::shoots_count_t shoots_count = AGGRESIVE_ENTITY_DEFAULT_SHOOTS_COUNT,
+		GameTypes::tic_t attack_period = AGGRESSIVE_ENTITY_DEFAULT_ATTACK_PERIOD,
+		GameTypes::tic_t inactive_period = AGGRESSIVE_ENTITY_DEFAULT_INACTIVE_PERIOD,
+		EngineTypes::AgressiveEntity::shoots_count_t shoots_count = AGGRESSIVE_ENTITY_DEFAULT_SHOOTS_COUNT,
 		bool exist = true);
 
 	bool CanShoot(GameTypes::tic_t current_tic) const;
@@ -865,9 +865,9 @@ public:
 		float radius,
 		float angle = 0.0f,
 		GameTypes::tic_t attack_dellay = 0,
-		GameTypes::tic_t attack_period = AGGRESIVE_ENTITY_DEFAULT_ATTACK_PERIOD,
-		GameTypes::tic_t inactive_period = AGGRESIVE_ENTITY_DEFAULT_INACTIVE_PERIOD,
-		EngineTypes::AgressiveEntity::shoots_count_t shoots_count = AGGRESIVE_ENTITY_DEFAULT_SHOOTS_COUNT,
+		GameTypes::tic_t attack_period = AGGRESSIVE_ENTITY_DEFAULT_ATTACK_PERIOD,
+		GameTypes::tic_t inactive_period = AGGRESSIVE_ENTITY_DEFAULT_INACTIVE_PERIOD,
+		EngineTypes::AgressiveEntity::shoots_count_t shoots_count = AGGRESSIVE_ENTITY_DEFAULT_SHOOTS_COUNT,
 		bool exist = true);
 
 	void operator=(const AggressiveEntity& entity);
@@ -883,7 +883,7 @@ public:
 	AnnihAreaGen();
 	AnnihAreaGen(const AnnihAreaGen& annih_area_generator);
 	AnnihAreaGen(
-		const ControledEntity* host,
+		const ControlledEntity* host,
 		const Vec2F& position,
 		EngineTypes::Ship::inventory_t buff_inventory,
 		float radius = ANNIH_AREA_GEN_DEFAULT_RADIUS,
@@ -1017,10 +1017,10 @@ public:
 	Turret(
 		const Vec2F& position,
 		float angle = 0.0f,
-		GameTypes::tic_t attack_dellay = AGGRESIVE_ENTITY_DEFAULT_ATTACK_DELLAY,
-		GameTypes::tic_t attack_period = AGGRESIVE_ENTITY_DEFAULT_ATTACK_PERIOD,
-		GameTypes::tic_t inactive_period = AGGRESIVE_ENTITY_DEFAULT_INACTIVE_PERIOD,
-		EngineTypes::AgressiveEntity::shoots_count_t shoots_count = AGGRESIVE_ENTITY_DEFAULT_SHOOTS_COUNT,
+		GameTypes::tic_t attack_dellay = AGGRESSIVE_ENTITY_DEFAULT_ATTACK_DELAY,
+		GameTypes::tic_t attack_period = AGGRESSIVE_ENTITY_DEFAULT_ATTACK_PERIOD,
+		GameTypes::tic_t inactive_period = AGGRESSIVE_ENTITY_DEFAULT_INACTIVE_PERIOD,
+		EngineTypes::AgressiveEntity::shoots_count_t shoots_count = AGGRESSIVE_ENTITY_DEFAULT_SHOOTS_COUNT,
 		float radius = TURRET_DEFAULT_RADIUS,
 		bool exist = true);
 
@@ -1030,10 +1030,10 @@ public:
 	void Set(
 		const Vec2F& position,
 		float angle = 0.0f,
-		GameTypes::tic_t attack_dellay = AGGRESIVE_ENTITY_DEFAULT_ATTACK_DELLAY,
-		GameTypes::tic_t attack_period = AGGRESIVE_ENTITY_DEFAULT_ATTACK_PERIOD,
-		GameTypes::tic_t inactive_period = AGGRESIVE_ENTITY_DEFAULT_INACTIVE_PERIOD,
-		EngineTypes::AgressiveEntity::shoots_count_t shoots_count = AGGRESIVE_ENTITY_DEFAULT_SHOOTS_COUNT,
+		GameTypes::tic_t attack_dellay = AGGRESSIVE_ENTITY_DEFAULT_ATTACK_DELAY,
+		GameTypes::tic_t attack_period = AGGRESSIVE_ENTITY_DEFAULT_ATTACK_PERIOD,
+		GameTypes::tic_t inactive_period = AGGRESSIVE_ENTITY_DEFAULT_INACTIVE_PERIOD,
+		EngineTypes::AgressiveEntity::shoots_count_t shoots_count = AGGRESSIVE_ENTITY_DEFAULT_SHOOTS_COUNT,
 		float radius = TURRET_DEFAULT_RADIUS,
 		bool exist = true);
 
@@ -1085,10 +1085,10 @@ public:
 	bool IsCreatedByAggressiveTeam() const;
 	bool IsCreatedByAggressiveTeamOnly() const;
 	bool IsCreatedByAggressiveTeamNotOnly() const;
-	bool IsCreatedByTeam(const ControledEntity* host) const;
-	GameTypes::players_count_t GetTeamNumber(const ControledEntity& not_host) const;
+	bool IsCreatedByTeam(const ControlledEntity* host) const;
+	GameTypes::players_count_t GetTeamNumber(const ControlledEntity& not_host) const;
 	//The function return true, if host will be decrrementing score after boom.
-	bool IsAggressiveFor(const ControledEntity& host) const;
+	bool IsAggressiveFor(const ControlledEntity& host) const;
 	void Set(const Bomb* bomb);
 	void Set(
 		const Vec2F& position,
@@ -1169,7 +1169,7 @@ public:
 	Knife();
 	Knife(const Knife& knife);
 	Knife(
-		const ControledEntity* host,
+		const ControlledEntity* host,
 		const Segment& local_segment,
 		EngineTypes::Knife::knife_health_t health = KNIFE_DEFAULT_HEALTH,
 		bool exist = true);
@@ -1185,7 +1185,7 @@ public:
 	bool IsCollision(const Segment& segment) const;
 	void Set(const Knife* knife);
 	void Set(
-		const ControledEntity* host_p,
+		const ControlledEntity* host_p,
 		const Segment& local_segment,
 		EngineTypes::Knife::knife_health_t health = KNIFE_DEFAULT_HEALTH,
 		bool exist = true);
@@ -1212,7 +1212,7 @@ public:
 	Laser();
 	Laser(const Laser& laser);
 	Laser(
-		const ControledEntity* host,
+		const ControlledEntity* host,
 		const Beam& local_beam,
 		float width = LASER_DEFAULT_WIDTH,
 		GameTypes::tic_t shoot_time = LASER_DEFAULT_SHOOT_TIME,
@@ -1224,7 +1224,7 @@ public:
 	//If map element is destructable, this element completes existing.
 	bool Collision(Map::MapData& map, Vec2F&  nearest_position, Vec2F& nearest_perpendicular_direction);
 	bool IsActive() const;
-	bool CreatedBy(const ControledEntity& controled_entity) const;
+	bool CreatedBy(const ControlledEntity& controled_entity) const;
 	Segment GetSegment() const;
 	GameTypes::tic_t GetLifeTime() const;
 	GameTypes::players_count_t GetPlayerMasterNumber() const;
@@ -1236,7 +1236,7 @@ public:
 	bool IsCollision(const Segment& segment) const;
 	void Set(const Laser* laser);
 	void Set(
-		const ControledEntity* host_p,
+		const ControlledEntity* host_p,
 		const Beam& local_beam,
 		float width = LASER_DEFAULT_WIDTH,
 		GameTypes::tic_t shoot_time = LASER_DEFAULT_SHOOT_TIME,

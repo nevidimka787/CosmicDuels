@@ -26,7 +26,7 @@ SupportEntity::SupportEntity(const SupportEntity& support_entity) :
 }
 
 SupportEntity::SupportEntity(
-	const ControledEntity* host,
+	const ControlledEntity* host,
 	const Vec2F& position,
 	float radius,
 	float angle,
@@ -48,12 +48,12 @@ SupportEntity::SupportEntity(
 	this->position *= *host_matrix_p;
 }
 
-bool SupportEntity::IsCreatedBy(const ControledEntity& potential_host) const
+bool SupportEntity::IsCreatedBy(const ControlledEntity& potential_host) const
 {
 	return host_number == potential_host.GetPlayerNumber();
 }
 
-bool SupportEntity::IsCreatedByTeam(const ControledEntity& potential_host) const
+bool SupportEntity::IsCreatedByTeam(const ControlledEntity& potential_host) const
 {
 	return host_team == potential_host.GetTeamNumber();
 }
@@ -78,7 +78,7 @@ Vec2F SupportEntity::GetGlobalPosition() const
 	return position;
 }
 
-const ControledEntity* SupportEntity::GetHostP() const
+const ControlledEntity* SupportEntity::GetHostP() const
 {
 	return host_p;
 }
@@ -121,10 +121,10 @@ void SupportEntity::Set(const SupportEntity* support_entity)
 }
 
 void SupportEntity::Set(
-	const ControledEntity* host,
-	const Vec2F& position, 
-	float radius, 
-	float angle, 
+	const ControlledEntity* host,
+	const Vec2F& position,
+	float radius,
+	float angle,
 	bool exist)
 {
 	this->host_p = host;
@@ -171,7 +171,7 @@ void SupportEntity::SetNotNormalizeDirection(const Vec2F* direction)
 	local_direction = *direction;
 }
 
-void SupportEntity::SetHost(const ControledEntity* host)
+void SupportEntity::SetHost(const ControlledEntity* host)
 {
 	host_p = host;
 	host_matrix_p = host->GetModelMatrixPointerConst();

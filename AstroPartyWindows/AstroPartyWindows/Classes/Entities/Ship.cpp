@@ -2,9 +2,9 @@
 
 #include <vector>
 
-Ship::Ship() 
+Ship::Ship()
 	:
-	ControledEntity(),
+	ControlledEntity(),
 	bonus_inventory(BONUS_NOTHING),
 	buff_inventory(BONUS_NOTHING),
 	bullets_in_magazine(0),
@@ -17,9 +17,9 @@ Ship::Ship()
 {
 }
 
-Ship::Ship(const Ship& ship) 
+Ship::Ship(const Ship& ship)
 	:
-	ControledEntity(ship),
+	ControlledEntity(ship),
 	bonus_inventory(ship.bonus_inventory),
 	buff_inventory(ship.buff_inventory),
 	bullets_in_magazine(ship.bullets_in_magazine),
@@ -53,7 +53,7 @@ Ship::Ship(
 	GameTypes::entities_count_t start_bullets_count,
 	bool exist)
 	:
-	ControledEntity(
+	ControlledEntity(
 		position,
 		velocity,
 		radius,
@@ -170,7 +170,7 @@ Bullet Ship::CreateBullet()
 
 	AddForceAlongDirection(-SHIP_SHOOT_FORCE);
 	bullets_in_magazine--;
-	reoading_dellay = SHIP_DEFAULT_REALOADING_DELLAY;
+	reoading_dellay = SHIP_DEFAULT_RELOADING_DELAY;
 
 	return Bullet(
 		position + direction.Normalize() * (radius - BULLET_DEFAULT_RADIUS),
@@ -192,12 +192,12 @@ DynamicParticle Ship::CreateBurnoutExaust(GameTypes::tic_t current_tic)
 		angular_velocity,
 		force_collision_coeffisient,
 		force_resistance_air_coefficient,
-		PARTICLE_TYPE_EXAUST_BURNOUT,
+		PARTICLE_TYPE_EXHAUST_BURNOUT,
 		DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_AIR_RESISTANCE | DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_MAP,
 		GetColor(),
-		PARTICLE_PERIOD_EXAUST_ENGINE,
-		PARTICLE_POSTPONE_EXAUST_ENGINE,
-		current_tic + PARTICLE_PERIOD_EXAUST_ENGINE);
+		PARTICLE_PERIOD_EXHAUST_ENGINE,
+		PARTICLE_POSTPONE_EXHAUST_ENGINE,
+		current_tic + PARTICLE_PERIOD_EXHAUST_ENGINE);
 }
 
 DynamicParticle Ship::CreateEnginExaust(GameTypes::tic_t current_tic)
@@ -211,12 +211,12 @@ DynamicParticle Ship::CreateEnginExaust(GameTypes::tic_t current_tic)
 		0.0f,
 		force_collision_coeffisient,
 		force_resistance_air_coefficient,
-		PARTICLE_TYPE_EXAUST_ENGINE,
+		PARTICLE_TYPE_EXHAUST_ENGINE,
 		DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_AIR_RESISTANCE | DYNAMIC_PARTICLE_PROPERTY_FORCED_BY_MAP,
 		GetColor(),
-		PARTICLE_PERIOD_EXAUST_ENGINE,
-		PARTICLE_POSTPONE_EXAUST_ENGINE,
-		current_tic + PARTICLE_PERIOD_EXAUST_ENGINE);
+		PARTICLE_PERIOD_EXHAUST_ENGINE,
+		PARTICLE_POSTPONE_EXHAUST_ENGINE,
+		current_tic + PARTICLE_PERIOD_EXHAUST_ENGINE);
 }
 
 DynamicParticle Ship::CreateShards(GameTypes::tic_t current_tic)
@@ -250,12 +250,12 @@ DynamicParticle Ship::CreateShootingExaust(GameTypes::tic_t current_tic)
 		angular_velocity,
 		force_collision_coeffisient,
 		force_resistance_air_coefficient,
-		PARTICLE_TYPE_EXAUST_SHOOT,
+		PARTICLE_TYPE_EXHAUST_SHOOT,
 		DYNAMIC_PARTICLE_PROPERTY_NULL,
 		Color3F(1.0f, 1.0f, 0.5f),
-		PARTICLE_PERIOD_EXAUST_SHOOT,
-		PARTICLE_POSTPONE_EXAUST_SHOOT,
-		current_tic + PARTICLE_PERIOD_EXAUST_SHOOT + PARTICLE_POSTPONE_EXAUST_SHOOT);
+		PARTICLE_PERIOD_EXHAUST_SHOOT,
+		PARTICLE_POSTPONE_EXHAUST_SHOOT,
+		current_tic + PARTICLE_PERIOD_EXHAUST_SHOOT + PARTICLE_POSTPONE_EXHAUST_SHOOT);
 }
 
 void Ship::ClearInventory()
@@ -272,7 +272,7 @@ Bullet Ship::CreateTriple(uint8_t bullet_number)
 	{
 		return Bullet();
 	}
-	
+
 	switch (bullet_number)
 	{
 	case 0:
@@ -443,7 +443,7 @@ Bonus Ship::LoseBonus()
 
 void Ship::Set(const Ship* ship)
 {
-	ControledEntity::Set(ship);
+	ControlledEntity::Set(ship);
 
 	bonus_inventory = ship->bonus_inventory;
 	buff_inventory = ship->buff_inventory;
@@ -474,7 +474,7 @@ void Ship::Set(
 	GameTypes::entities_count_t current_bullets_count,
 	bool exist)
 {
-	ControledEntity::Set(
+	ControlledEntity::Set(
 	position,
 		velocity,
 		radius,
@@ -623,7 +623,7 @@ void Ship::UpdateMatrix()
 
 void Ship::operator=(const Ship& ship)
 {
-	ControledEntity::operator=(ship);
+	ControlledEntity::operator=(ship);
 
 	this->bonus_inventory = ship.bonus_inventory;
 	this->buff_inventory = ship.buff_inventory;

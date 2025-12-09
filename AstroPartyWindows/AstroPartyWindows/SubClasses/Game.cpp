@@ -11,7 +11,7 @@
 #pragma warning(disable : 6308)
 #pragma warning(disable : 6385)
 #pragma warning(disable : 6386)
-#pragma warning(disable : 26451)//All integer operations can be overflow. It is absolutly useless warnintg.
+#pragma warning(disable : 26451)//All integer operations can be overflow. It is absolutely useless warning.
 #pragma warning(disable : 26495)
 
 #ifndef M_PI
@@ -29,19 +29,19 @@ void Game::PhysicThread0()
 	{
 		ShipsInfluenceToBonuses();
 		ShipsRespawnOrDestroyPilots();
-		ShipsDestroedByBombsOrActivateBombs();
+		ShipsDestroyedByBombsOrActivateBombs();
 		ShipsCheckInput();
-		ShipsCreateExaust();
-		ShipsDestroedByBullets();
-		ShipsDestroedByKnifes();
-		ShipsDestroedByLasers();
+		ShipsCreateExhaust();
+		ShipsDestroyedByBullets();
+		ShipsDestroyedByKnives();
+		ShipsDestroyedByLasers();
 	}
 
 	if (pilots_count > 0)
 	{
 		PilotsKilledBy(bombs, bombs_count, bombs_array_mtx);
 		PilotsKilledBy(bullets, bullets_count, bullets_array_mtx);
-		PilotsKilledBy(knifes, knifes_count, knifes_array_mtx);
+		PilotsKilledBy(knives, knives_count, knives_array_mtx);
 		PilotsKilledBy(lasers, lasers_count, lasers_array_mtx);
 		PilotsCheckInput();
 		PilotsRespawnAuto();
@@ -51,28 +51,28 @@ void Game::PhysicThread0()
 	{
 		LasersDestroyBonuses();
 		LasersDetonateBombs();
-		LasersDestroyKnifes();
+		LasersDestroyKnives();
 		LasersDestroyAsteroids();
 		LasersDestroyBullets();
 		LasersDestroyTurrets();
 	}
 
-	if (knifes_count > 0)
+	if (knives_count > 0)
 	{
-		if (game_rules & GAME_RULE_KNIFES_CAN_DESTROY_BULLETS)
+		if (game_rules & GAME_RULE_KNIVES_CAN_DESTROY_BULLETS)
 		{
-			KnifesDestroyBullets();
+			KnivesDestroyBullets();
 		}
-		KnifesDestroyAsteroids();
-		KnifesDestroyMap();
-		KnifesDestroyTurrets();
+		KnivesDestroyAsteroids();
+		KnivesDestroyMap();
+		KnivesDestroyTurrets();
 	}
 
 	if (bullets_count > 0)
 	{
 		BombsSpawnedByBulletsAnnihilation();
 		BulletsDestroyAsteroids();
-		BulletsDestroedByMap();
+		BulletsDestroyedByMap();
 	}
 
 	if (bombs_count > 0)
@@ -81,7 +81,7 @@ void Game::PhysicThread0()
 		BombsDestroyAsteroids();
 		BombsDestroyBonuses();
 		BombsCollisionsWithBullets();
-		BombsDestroyKnifes();
+		BombsDestroyKnives();
 		BombsDestroyTurrets();
 	}
 
@@ -249,7 +249,7 @@ void Game::PhysicThread0()
 	UpdatePilotsPhase2();
 	UpdateAsteroidsPhase2();
 	UpdateLasersPhase2();
-	UpdateKnifesPhase2();
+	UpdateKnivesPhase2();
 	UpdateBulletsPhase2();
 	UpdateBonusesPhase2();
 	UpdateBombsPhase2();
@@ -265,9 +265,9 @@ void Game::PhysicThread0()
 	}
 
 	global_timer++;
-	if (stuning_timer > 0)
+	if (stunning_timer > 0)
 	{
-		stuning_timer--;
+		stunning_timer--;
 	}
 }
 
@@ -375,11 +375,11 @@ EngineTypes::Bonus::inventory_t Game::GenerateRandomInventory(
 	GameTypes::objects_types_count_t max_objects_types_count)
 {
 
-	//Bonus loop analys
+	// Bonus loop analysis
 
 	inventory_template = CheckBonusPoolMenu(inventory_template);
 
-	//Objec list analys
+	// Object list analysis
 
 	GameTypes::objects_types_count_t objects_types_count_in_list = 0;
 
@@ -424,7 +424,7 @@ EngineTypes::Bonus::inventory_t Game::GenerateRandomInventory(
 
 	GameTypes::objects_types_count_t objects_types_count = min_objects_types_count + rand() % (max_objects_types_count - min_objects_types_count + 1);
 
-	GameTypes::objects_types_count_t checknig_objects_types_count = 0;
+	GameTypes::objects_types_count_t checking_objects_types_count = 0;
 	GameTypes::objects_types_count_t filling_objects_types_count = 0;
 
 	EngineTypes::Bonus::inventory_t inventory = BONUS_NOTHING;
@@ -433,18 +433,18 @@ EngineTypes::Bonus::inventory_t Game::GenerateRandomInventory(
 	{
 		if (inventory_template & (BONUS_CELL << (cell * 2)))
 		{
-			if (objects_types_count_in_list <= checknig_objects_types_count || objects_types_count_in_list <= filling_objects_types_count)
+			if (objects_types_count_in_list <= checking_objects_types_count || objects_types_count_in_list <= filling_objects_types_count)
 			{
 				break;
 			}
 
-			if (rand() % (objects_types_count_in_list - checknig_objects_types_count) < objects_types_count - filling_objects_types_count)
+			if (rand() % (objects_types_count_in_list - checking_objects_types_count) < objects_types_count - filling_objects_types_count)
 			{
 				filling_objects_types_count++;
 
 				inventory += (min_objects_count + rand() % (max_objects_count - min_objects_count + 1)) << (cell * 2);
 			}
-			checknig_objects_types_count++;
+			checking_objects_types_count++;
 		}
 	}
 
@@ -478,7 +478,7 @@ Game::Game()
 void Game::InitGame()
 {
 	game_rules = GAME_RULE_DEFAULT_GAME_RULES;
-	flag_all_entities_initialisate = false;
+	flag_all_entities_initialisation = false;
 	flag_round_results = false;
 	global_timer = 0;
 
@@ -580,7 +580,7 @@ void Game::PollEvents()
 	{
 	case MAP_ORBIT_MAP:			Event0();	return;
 	case MAP_TURRET_ON_CENTER:	Event1();	return;
-	case MAP_CYRCLE_ON_CENTER:	Event2();	return;
+	case MAP_CIRCLE_ON_CENTER:	Event2();	return;
 	case MAP_DECELERATION_AREA:	Event3();	return;
 	case MAP_MEGA_LASERS:		Event4();	return;
 	case MAP_DYNAMICAL:			Event5();	return;
@@ -589,7 +589,7 @@ void Game::PollEvents()
 	case MAP_BROKEN:			Event8();	return;
 	case MAP_PORTAL:			Event9();	return;
 	case MAP_NO_CENTER:			Event10();	return;
-	case MAP_COLLAIDER:			Event11();	return;
+	case MAP_COLLIDER:			Event11();	return;
 	case MAP_KALEIDOSCOPE:		Event12();	return;
 	}
 }
@@ -621,7 +621,7 @@ void Game::InitLevel()
 	switch (current_map_id)
 	{
 	case MAP_KALEIDOSCOPE:		CreateMap12(ships_positions, ships_angles);	break;
-	case MAP_COLLAIDER:			CreateMap11(ships_positions, ships_angles);	break;
+	case MAP_COLLIDER:			CreateMap11(ships_positions, ships_angles);	break;
 	case MAP_NO_CENTER:			CreateMap10(ships_positions, ships_angles);	break;
 	case MAP_PORTAL:			CreateMap9(ships_positions, ships_angles);	break;
 	case MAP_BROKEN:			CreateMap8(ships_positions, ships_angles);	break;
@@ -630,10 +630,10 @@ void Game::InitLevel()
 	case MAP_DYNAMICAL:			CreateMap5(ships_positions, ships_angles);	break;
 	case MAP_MEGA_LASERS:		CreateMap4(ships_positions, ships_angles);	break;
 	case MAP_DECELERATION_AREA:	CreateMap3(ships_positions, ships_angles);	break;
-	case MAP_CYRCLE_ON_CENTER:	CreateMap2(ships_positions, ships_angles);	break;
+	case MAP_CIRCLE_ON_CENTER:	CreateMap2(ships_positions, ships_angles);	break;
 	case MAP_TURRET_ON_CENTER:	CreateMap1(ships_positions, ships_angles);	break;
 	default:
-		std::cout << "WARNING::Game::InitLevel: Map value is undeclarated. Defaul map is created." << std::endl;
+		std::cout << "WARNING::Game::InitLevel: Map value is undeclared. Default map is created." << std::endl;
 	case MAP_ORBIT_MAP:			CreateMap0(ships_positions, ships_angles);	break;
 	}
 
@@ -680,7 +680,7 @@ void Game::InitLevel()
 
 	for (GameTypes::players_count_t player = 0; player < GAME_PLAYERS_MAX_COUNT; player++)
 	{
-		ships_can_shoot_flags[player] = SHIP_DEFAULT_UNBRAKABLE_PERIOD;
+		ships_can_shoot_flags[player] = SHIP_DEFAULT_UNBREAKABLE_PERIOD;
 		players_in_team[player] = 0;
 		double_clk_timers[player] = 0;
 		control_flags.burnout_flags[player] = false;
@@ -749,34 +749,34 @@ void Game::InitLevel()
 
 			AddEntity(
 				Ship(
-					ships_positions[player],		//position
-					Vec2F(),						//velocity
-					player,							//player number
-					playing_teams[player],			//team number
-					&control_flags,					//controle flags
-					std::vector<Vec2F>(),			//heatbox vertexs array
-					ships_angles[player],			//angle
-					start_bonus,					//bonus inventory
-					BONUS_NOTHING,					//buff inventory
-					300u));							//unbreacable period
+					ships_positions[player],		// position
+					Vec2F(),						// velocity
+					player,							// player number
+					playing_teams[player],			// team number
+					&control_flags,					// controle flags
+					std::vector<Vec2F>(),			// hitbox vertexes array
+					ships_angles[player],			// angle
+					start_bonus,					// bonus inventory
+					BONUS_NOTHING,					// buff inventory
+					300u));							// unbreakable period
 
 			players_count++;
 			IncrementPlayersCountInTeam(playing_teams[player]);
 
-#if OPEN_GL_REALISATION__SHIPS_CONTROLED_BY_SCREEN_BUTTONS == true
+#if OPEN_GL_REALIZATION__SHIPS_CONTROLLED_BY_SCREEN_BUTTONS == true
 
 			Vec2F
-				horisontal_points[3] = { Vec2F(0.0f, 0.0f), Vec2F(1.0f, 0.0f), Vec2F(1.0f / 2.0f) },
+				horizontal_points[3] = { Vec2F(0.0f, 0.0f), Vec2F(1.0f, 0.0f), Vec2F(1.0f / 2.0f) },
 				vertical_points[3] = { Vec2F(0.0f, 0.0f), Vec2F(0.0f, 1.0f), Vec2F(1.0f / 2.0f) };
 			Area
-				shoot_button_area = (player % 1) ? Area(vertical_points, 3) : Area(horisontal_points, 3),
-				rotate_button_area = (player % 1) ? Area(horisontal_points, 3) : Area(vertical_points, 3);
+				shoot_button_area = (player % 1) ? Area(vertical_points, 3) : Area(horizontal_points, 3),
+				rotate_button_area = (player % 1) ? Area(horizontal_points, 3) : Area(vertical_points, 3);
 
 			Button
 				button_shoot = Button(
 					BUTTON_ID__SHIP1_ROTATE + player * 2,
 					buttons_positions[player],
-					Vec2F((player == 0 || player == 3) ? 1.0f : -1.0f, (player == 2 || player == 3) ? 1.0f : -1.0f) * BUTTON_CONTROLER_SIZE,
+					Vec2F((player == 0 || player == 3) ? 1.0f : -1.0f, (player == 2 || player == 3) ? 1.0f : -1.0f) * BUTTON_CONTROLLER_SIZE,
 					&shoot_button_area,
 					"",
 					0,
@@ -784,7 +784,7 @@ void Game::InitLevel()
 				button_rotate = Button(
 					BUTTON_ID__SHIP1_SHOOT + player * 2,
 					buttons_positions[player],
-					Vec2F((player == 0 || player == 3) ? 1.0f : -1.0f, (player == 2 || player == 3) ? 1.0f : -1.0f) * BUTTON_CONTROLER_SIZE,
+					Vec2F((player == 0 || player == 3) ? 1.0f : -1.0f, (player == 2 || player == 3) ? 1.0f : -1.0f) * BUTTON_CONTROLLER_SIZE,
 					&rotate_button_area,
 					"",
 					0,
@@ -792,7 +792,7 @@ void Game::InitLevel()
 
 			ships_control_menu.AddButton(player * 2, &button_shoot);
 			ships_control_menu.AddButton(player * 2, &button_rotate);
-#endif
+#endif // OPEN_GL_REALIZATION__SHIPS_CONTROLLED_BY_SCREEN_BUTTONS == true
 		}
 	}
 
@@ -801,7 +801,7 @@ void Game::InitLevel()
 	ships_control_menu.Recalculate();
 	current_active_menu = &ships_control_menu;
 
-	//ResetAllThreadEvents();
+	// ResetAllThreadEvents();
 }
 
 void InitMenu_MainMenu(Menu& main_menu)
@@ -869,14 +869,14 @@ void InitMenu_OptionsMenu(Menu& options_menu, GameTypes::game_rules_t gr)
 		{ BUTTON_ID__SET_SPAWN_THIS_BONUS,				"Bonuses & buffs",			5 },
 		{ BUTTON_ID__SET_SPAWN_THIS_DIFFERENT_BONUSES,	"Different start bonuses",	5 },
 		{ BUTTON_ID__SET_TRIPLE_BONUSES,				"Triple bonuses",			5 },
-		{ BUTTON_ID__SET_SPAWN_THIS_TRIPLE_BAFF,		"Spawn with triple",		5 },
-		{ BUTTON_ID__SET_SPAWN_THIS_SHIELD_BAFF,		"Spawn with shield",		5 },
+		{ BUTTON_ID__SET_SPAWN_THIS_TRIPLE_BUFF,		"Spawn with triple",		5 },
+		{ BUTTON_ID__SET_SPAWN_THIS_SHIELD_BUFF,		"Spawn with shield",		5 },
 		{ BUTTON_ID__SET_RANDOM_SPAWN,					"Random spawn",				5 },
 		{ BUTTON_ID__SET_RANDOM_SPAWN_DIRECTION,		"Random spawn direction",	5 },
-		{ BUTTON_ID__SET_KNIFES_CAN_DESTROY_BULLETS,	"Knifes destroy bullets",	5 },
+		{ BUTTON_ID__SET_KNIVES_CAN_DESTROY_BULLETS,	"Knives destroy bullets",	5 },
 		{ BUTTON_ID__SET_NEED_KILL_PILOT,				"Must kill pilot",			5 },
-		{ BUTTON_ID__SET_FRIEDLY_SHEEP_CAN_RESTORE,		"Friendly sheeps restore",	5 },
-		{ BUTTON_ID__SET_ACTIVE_FRIENDLY_FIRE,			"Frendly fire",				5 },
+		{ BUTTON_ID__SET_FRIENDLY_SHEEP_CAN_RESTORE,	"Friendly ships restore",	5 },
+		{ BUTTON_ID__SET_ACTIVE_FRIENDLY_FIRE,			"Friendly fire",			5 },
 		{ BUTTON_ID__SET_ACTIVE_BALANCE,				"Auto balance",				5 },
 	};
 
@@ -909,7 +909,7 @@ void InitMenu_CreditMenu(Menu& credit_menu)
 	};
 
 	const std::vector<struct data_t>& data = { // buttons data
-		{"Autonr: Nevidimka787",      7, Vec2F(0.9f, 0.06f) },
+		{"Author: Nevidimka787",      7, Vec2F(0.9f, 0.06f) },
 		{"Game engine: Nevidimka787", 7, Vec2F(0.9f, 0.06f) },
 		{"UI: Nevidimka787",          7, Vec2F(0.9f, 0.06f) },
 		{"Graphic: Nevidimka787",     7, Vec2F(0.9f, 0.06f) },
@@ -979,7 +979,7 @@ void InitMenu_MapPullSelectMenu(Menu& map_pull_select_menu)
 		{ i +  8,	"Stars",			6 },
 		{ i +  9,	"Portals",			5 },
 		{ i + 10,	"Danger center",	4 },
-		{ i + 11,	"Collaider",		5 },
+		{ i + 11,	"Collider",			5 },
 		{ i + 12,	"Kaleidoscope",		4 }
 	};
 
@@ -1201,7 +1201,7 @@ void Game::InitMenus()
 	InitMenu_BonusPullSelectMenu(bonus_pull_select_menu);
 
 
-#if OPEN_GL_REALISATION__SHIPS_CONTROLED_BY_SCREEN_BUTTONS == true
+#if OPEN_GL_REALIZATION__SHIPS_CONTROLLED_BY_SCREEN_BUTTONS == true
 	//ship control menu
 	position.Set(-1.0f, -1.0f);
 	size.Set(2.0f, 2.0f);
@@ -1214,10 +1214,10 @@ void Game::InitMenus()
 void Game::NextLevel()
 {
 	/*
-	If team has 5 or more points this team is seted as potential winner team.
+	If team has 5 or more points this team is set as potential winner team.
 	If count of potential winners more than 1, then math is completed else mach is completed.
 
-	If team has -5 or less points this team is seted as not existing. All players from that team will be not playing in all next rounds.
+	If team has -5 or less points this team is set as not existing. All players from that team will be not playing in all next rounds.
 	If counts of playing teams is 1 or less then the mach is completed.
 	*/
 
@@ -1275,7 +1275,7 @@ void Game::NextLevel()
 
 	GameTypes::players_count_t existing_players_count = 0;
 
-	//Checking loosers.
+	//Checking losers.
  	for (GameTypes::players_count_t player = 0; player < GAME_PLAYERS_MAX_COUNT; player++)
 	{
 		if (playing_teams[player] != SHIPS_SELECT_BUTTONS_NO_TEAM)
@@ -1291,7 +1291,7 @@ void Game::NextLevel()
 void Game::EndMatch()
 {
 	play_match = false;
-	flag_all_entities_initialisate = false;
+	flag_all_entities_initialisation = false;
 
 	MemoryFree();
 
@@ -1316,7 +1316,7 @@ void Game::IncrementPlayersCountInTeam(GameTypes::players_count_t team_number)
 
 void Game::CheckEndMatch()
 {
-	if (end_match_tic) // match will be finised soon
+	if (end_match_tic) // match will be finished soon
 	{
 		if (global_timer > end_match_tic)
 		{
@@ -1332,7 +1332,7 @@ void Game::CheckEndMatch()
 	}
 	if (not_empty_teams_count > 1) return;
 
-	end_match_tic = global_timer + GAME_END_MATCH_DELLAY;
+	end_match_tic = global_timer + GAME_END_MATCH_DELAY;
 
 	std::cout << "Game::CheckEndMatch::End match is detected. End tic: " << end_match_tic << std::endl;
 }
@@ -1357,7 +1357,7 @@ void Game::RoundResultsInit()
 	play_round = false;
 	flag_round_results = true;
 
-	CreateMapRoundResults(players_count, end_match_score, GAME_POUND_RESULTS_MAP_DEFAUL_CELL_SIZE);
+	CreateMapRoundResults(players_count, end_match_score, GAME_POUND_RESULTS_MAP_DEFAULT_CELL_SIZE);
 
 	map_data_mtx.unlock();
 	ships_array_mtx.unlock();
@@ -1383,8 +1383,8 @@ void Game::RoundResultsInit()
 					ships[ship].SetPosition(
 						Vec2F(
 							(float)scores[ships[ship].GetTeamNumber() - 1],
-							up_y - (float)y_pos) * GAME_POUND_RESULTS_MAP_DEFAUL_CELL_SIZE);
-					ships[ship].radius = GAME_POUND_RESULTS_MAP_DEFAUL_CELL_SIZE / 5.0f;
+							up_y - (float)y_pos) * GAME_POUND_RESULTS_MAP_DEFAULT_CELL_SIZE);
+					ships[ship].radius = GAME_POUND_RESULTS_MAP_DEFAULT_CELL_SIZE / 5.0f;
 					ships[ship].SetAngle(0.0f);
 					ships[ship].UpdateMatrix();
 					ships[ship].ClearInventory();
@@ -1439,7 +1439,7 @@ bool Game::RoundResults()
 			{
 				continue;
 			}
-			ship.Move(Vec2F(GAME_POUND_RESULTS_MAP_DEFAUL_CELL_SIZE, 0.0f));
+			ship.Move(Vec2F(GAME_POUND_RESULTS_MAP_DEFAULT_CELL_SIZE, 0.0f));
 			ship.UpdateMatrix();
 			scores[ship.GetTeamNumber() - 1]++;
 			continue;
@@ -1450,7 +1450,7 @@ bool Game::RoundResults()
 			{
 				continue;
 			}
-			ship.Move(Vec2F(-GAME_POUND_RESULTS_MAP_DEFAUL_CELL_SIZE, 0.0f));
+			ship.Move(Vec2F(-GAME_POUND_RESULTS_MAP_DEFAULT_CELL_SIZE, 0.0f));
 			ship.UpdateMatrix();
 			scores[ship.GetTeamNumber() - 1]--;
 			continue;
@@ -1498,7 +1498,7 @@ void Game::MutexesLock()
 	input_values_mtx.lock();
 	lasers_array_mtx.lock();
 	bombs_array_mtx.lock();
-	knifes_array_mtx.lock();
+	knives_array_mtx.lock();
 	turrets_array_mtx.lock();
 	bullets_array_mtx.lock();
 	asteroids_array_mtx.lock();
@@ -1521,7 +1521,7 @@ void Game::MutexesUnlock()
 	input_values_mtx.unlock();
 	lasers_array_mtx.unlock();
 	bombs_array_mtx.unlock();
-	knifes_array_mtx.unlock();
+	knives_array_mtx.unlock();
 	turrets_array_mtx.unlock();
 	bullets_array_mtx.unlock();
 	asteroids_array_mtx.unlock();
@@ -1687,9 +1687,9 @@ void Th_12(std::shared_mutex* mtx_p, bool* return_data)
 	dynamic_particle
 	log
 */
-void Game::DebugLog__CheckMutexeslLock()
+void Game::DebugLog__CheckMutexesLock()
 {
-	loged_shared_mutex tmp_mtx("tmp");
+	logged_shared_mutex tmp_mtx("tmp");
 	tmp_mtx.printLogs();
 
 	std::shared_mutex* mtx_00 = &deceler_areas_array_mtx;
@@ -1702,7 +1702,7 @@ void Game::DebugLog__CheckMutexeslLock()
 	std::shared_mutex* mtx_07 = &input_values_mtx;
 	std::shared_mutex* mtx_08 = &lasers_array_mtx;
 	std::shared_mutex* mtx_09 = &bombs_array_mtx;
-	std::shared_mutex* mtx_0A = &knifes_array_mtx;
+	std::shared_mutex* mtx_0A = &knives_array_mtx;
 	std::shared_mutex* mtx_0B = &turrets_array_mtx;
 	std::shared_mutex* mtx_0C = &bullets_array_mtx;
 	std::shared_mutex* mtx_0D = &asteroids_array_mtx;
@@ -1868,7 +1868,7 @@ end_of_cycle:
 	{
 		printf("unlock\n");
 	}
-	printf("10. Knifes:        ");
+	printf("10. Knives:        ");
 	if (data[0x0A])
 	{
 		printf("lock\n");
@@ -1931,7 +1931,7 @@ end_of_cycle:
 	{
 		printf("unlock\n");
 	}
-	printf("17. Dynam part-es: ");
+	printf("17. Dnm part-es:    ");
 	if (data[0x11])
 	{
 		printf("lock\n");

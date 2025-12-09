@@ -306,7 +306,7 @@ template void Game::TeleportEntity<Pilot>(const Portal& portal, Pilot& pilot);
 
 void Game::AnnihAreaGenShoot(const AnnihAreaGen& annih_area_gen)
 {
-	const ControledEntity* host_p = annih_area_gen.GetHostP();
+	const ControlledEntity* host_p = annih_area_gen.GetHostP();
 	if (host_p->ShouldShoot() && ships_shooting_flags[host_p->GetPlayerNumber()])
 	{
 		AddEntity(annih_area_gen.Shoot());
@@ -416,7 +416,7 @@ void Game::ShipShoot(Ship& ship)
 			return;
 
 		case GAME_OBJECT_TYPE_LOOP_KNIFE:
-			knifes_array_mtx.lock();
+			knives_array_mtx.lock();
 			entity_number = ship.GetElemntFromList() - 1;
 			local_segment.Set(
 				Vec2F(0.5f, 0.0f).Rotate(((float)entity_number + 0.5f) / (float)SHIP_SUPER_BONUS__KNIFES_IN_LOOP * (float)M_PI * 2.0f).Scale(Vec2F(1.0f, sqrtf(2.0f))),
@@ -429,7 +429,7 @@ void Game::ShipShoot(Ship& ship)
 				Vec2F(0.5f, 0.0f).Rotate(-((float)entity_number + 1.5f) / (float)SHIP_SUPER_BONUS__KNIFES_IN_LOOP * (float)M_PI * 2.0f).Scale(Vec2F(1.0f, sqrtf(2.0f))),
 				true);
 			AddEntity(Knife(&ship, local_segment, 1u));
-			knifes_array_mtx.unlock();
+			knives_array_mtx.unlock();
 			return;
 
 		case GAME_OBJECT_TYPE_LOOP_BOMB_KNIFE:
@@ -769,9 +769,9 @@ void Game::ShipShoot_LoopBomb(Ship& ship)
 void Game::ShipShoot_LaserKnife(Ship& ship)
 {
 	const Segment& local_segment = Segment(Vec2F(0.4f, 0.0f), Vec2F(3.0f, 0.0f));
-	knifes_array_mtx.lock();
+	knives_array_mtx.lock();
 	Game::AddEntity(Knife(&ship, local_segment, SHIP_SUPER_BONUS__LONG_KNIFE_HEALTH));
-	knifes_array_mtx.unlock();
+	knives_array_mtx.unlock();
 	ships_can_shoot_flags[ship.GetPlayerNumber()] += GAME_ADD_DELLAY_BONUS_USE + GAME_ADD_DELLAY_COMBO_USE;
 }
 
@@ -804,10 +804,10 @@ void Game::ShipShoot_BombKnife(Ship& ship)
 
 void Game::ShipShoot_Knife(Ship& ship)
 {
-	knifes_array_mtx.lock();
+	knives_array_mtx.lock();
 	Game::AddEntity(ship.CreateKnife(0));
 	Game::AddEntity(ship.CreateKnife(1));
-	knifes_array_mtx.unlock();
+	knives_array_mtx.unlock();
 	ships_can_shoot_flags[ship.GetPlayerNumber()] += GAME_ADD_DELLAY_BONUS_USE;
 }
 
@@ -1032,19 +1032,19 @@ void Game::UpdateGravGensPhase2()
 	grav_gens_array_mtx.unlock();
 }
 
-void Game::UpdateKnifesPhase2()
+void Game::UpdateKnivesPhase2()
 {
-	knifes_array_mtx.lock();
+	knives_array_mtx.lock();
 	GameTypes::entities_count_t found = 0;
-	for (auto& entity : knifes)
+	for (auto& entity : knives)
 	{
-		if (found >= knifes_count) break;
+		if (found >= knives_count) break;
 		if (!entity.exist) continue;
 
 		entity.Update();
 		++found;
 	}
-	knifes_array_mtx.unlock();
+	knives_array_mtx.unlock();
 }
 
 void Game::UpdateLasersPhase2()
@@ -1215,7 +1215,7 @@ void Game::BombsChainReaction()
 			}
 
 			bomb2.Boom();
-			stuning_timer = GAME_BOMB_STUNING_TIME;
+			stunning_timer = GAME_BOMB_STUNING_TIME;
 		}
 	}
 	bombs_array_mtx.unlock();
@@ -1381,7 +1381,7 @@ void Game::BombsSpawnedByBulletsAnnihilation()
 	bombs_array_mtx.unlock();
 }
 
-void Game::BombsDestroyKnifes()
+void Game::BombsDestroyKnives()
 {
 	bombs_array_mtx.lock();
 	GameTypes::entities_count_t bombs_found = 0;
@@ -1393,10 +1393,10 @@ void Game::BombsDestroyKnifes()
 		if (!bomb.IsBoom()) continue;
 
 		GameTypes::entities_count_t knifes_found = 0;
-		knifes_array_mtx.lock();
-		for (auto& knife : knifes)
+		knives_array_mtx.lock();
+		for (auto& knife : knives)
 		{
-			if (knifes_found >= knifes_count) break;
+			if (knifes_found >= knives_count) break;
 			if (!bomb.exist) continue;
 			if (bomb.IsCollision(knife.GetSegment()))
 			{
@@ -1405,7 +1405,7 @@ void Game::BombsDestroyKnifes()
 			}
 			++knifes_found;
 		}
-		knifes_array_mtx.unlock();
+		knives_array_mtx.unlock();
 	}
 	bombs_array_mtx.unlock();
 }
@@ -1475,7 +1475,7 @@ void Game::BulletsDestroyAsteroids()
 	bullets_array_mtx.unlock();
 }
 
-void Game::BulletsDestroedByMap()
+void Game::BulletsDestroyedByMap()
 {
 	bullets_array_mtx.lock();
 	GameTypes::entities_count_t bullets_found = 0;
@@ -1508,13 +1508,13 @@ void Game::CameraFocusesOnPlayers()
 	camera_data_mtx.unlock();
 }
 
-void Game::KnifesDestroyAsteroids()
+void Game::KnivesDestroyAsteroids()
 {
-	knifes_array_mtx.lock();
+	knives_array_mtx.lock();
 	GameTypes::entities_count_t knifes_found = 0;
-	for (auto& knife : knifes)
+	for (auto& knife : knives)
 	{
-		if (knifes_found >= knifes_count) break;
+		if (knifes_found >= knives_count) break;
 		if (!knife.exist) continue;
 
 		asteroids_array_mtx.lock();
@@ -1549,16 +1549,16 @@ void Game::KnifesDestroyAsteroids()
 			++knifes_found;
 		}
 	}
-	knifes_array_mtx.unlock();
+	knives_array_mtx.unlock();
 }
 
-void Game::KnifesDestroyBullets()
+void Game::KnivesDestroyBullets()
 {
-	knifes_array_mtx.lock();
+	knives_array_mtx.lock();
 	GameTypes::entities_count_t knifes_found = 0;
-	for (auto& knife : knifes)
+	for (auto& knife : knives)
 	{
-		if (knifes_found >= knifes_count) break;
+		if (knifes_found >= knives_count) break;
 		if (!knife.exist) continue;
 
 		bullets_array_mtx.lock();
@@ -1584,16 +1584,16 @@ void Game::KnifesDestroyBullets()
 		}
 		bullets_array_mtx.unlock();
 	}
-	knifes_array_mtx.unlock();
+	knives_array_mtx.unlock();
 }
 
-void Game::KnifesDestroyMap()
+void Game::KnivesDestroyMap()
 {
-	knifes_array_mtx.lock();
+	knives_array_mtx.lock();
 	GameTypes::entities_count_t knifes_found = 0;
-	for (auto& knife : knifes)
+	for (auto& knife : knives)
 	{
-		if (knifes_found >= knifes_count) break;
+		if (knifes_found >= knives_count) break;
 		if (!knife.exist) continue;
 
 		map_data_mtx.lock();
@@ -1604,16 +1604,16 @@ void Game::KnifesDestroyMap()
 			++knifes_found;
 		}
 	}
-	knifes_array_mtx.unlock();
+	knives_array_mtx.unlock();
 }
 
-void Game::KnifesDestroyTurrets()
+void Game::KnivesDestroyTurrets()
 {
-	knifes_array_mtx.lock();
+	knives_array_mtx.lock();
 	GameTypes::entities_count_t knifes_found = 0;
-	for (auto& knife : knifes)
+	for (auto& knife : knives)
 	{
-		if (knifes_found >= knifes_count) break;
+		if (knifes_found >= knives_count) break;
 		if (!knife.exist) continue;
 
 		bullets_array_mtx.lock();
@@ -1639,7 +1639,7 @@ void Game::KnifesDestroyTurrets()
 		}
 		bullets_array_mtx.unlock();
 	}
-	knifes_array_mtx.unlock();
+	knives_array_mtx.unlock();
 }
 
 void Game::LasersDestroyAsteroids()
@@ -1746,7 +1746,7 @@ void Game::LasersDetonateBombs()
 			++bombs_found;
 			if (bomb.IsBoom() || !bomb.IsCollision(laser.GetSegment())) continue;
 			bomb.Boom();
-			stuning_timer = GAME_BOMB_STUNING_TIME;
+			stunning_timer = GAME_BOMB_STUNING_TIME;
 		}
 		bombs_array_mtx.unlock();
 	}
@@ -1783,7 +1783,7 @@ void Game::LasersDestroyBullets()
 	lasers_array_mtx.unlock();
 }
 
-void Game::LasersDestroyKnifes()
+void Game::LasersDestroyKnives()
 {
 	lasers_array_mtx.lock();
 	GameTypes::entities_count_t lasers_found = 0;
@@ -1793,11 +1793,11 @@ void Game::LasersDestroyKnifes()
 		if (!laser.exist) continue;
 		++lasers_found;
 
-		knifes_array_mtx.lock();
+		knives_array_mtx.lock();
 		GameTypes::entities_count_t knifes_found = 0;
-		for (auto& knife : knifes)
+		for (auto& knife : knives)
 		{
-			if (knifes_found >= knifes_count) break;
+			if (knifes_found >= knives_count) break;
 			if (!knife.exist) continue;
 
 			if (!knife.IsCollision(laser.GetSegment()))
@@ -1808,7 +1808,7 @@ void Game::LasersDestroyKnifes()
 
 			DestroyEntity(laser, knife);
 		}
-		knifes_array_mtx.unlock();
+		knives_array_mtx.unlock();
 	}
 	lasers_array_mtx.unlock();
 }
@@ -2082,7 +2082,7 @@ void Game::PilotsRespawnAuto()
 	for (auto& pilot : pilots)
 	{
 		if (!pilot.exist || !pilot.CanRespawn()) continue;
-		ships_can_shoot_flags[pilot.GetPlayerNumber()] = SHIP_DEFAULT_UNBRAKABLE_PERIOD;
+		ships_can_shoot_flags[pilot.GetPlayerNumber()] = SHIP_DEFAULT_UNBREAKABLE_PERIOD;
 		AddEntity(pilot.Respawn());
 		RemoveEntity(pilot);
 	}
@@ -2090,9 +2090,9 @@ void Game::PilotsRespawnAuto()
 	ships_array_mtx.unlock();
 }
 
-void Game::ShipsCreateExaust()
+void Game::ShipsCreateExhaust()
 {
-	if ((global_timer % (PARTICLE_PERIOD_EXAUST_ENGINE / 10))) return;
+	if ((global_timer % (PARTICLE_PERIOD_EXHAUST_ENGINE / 10))) return;
 
 	ships_array_mtx.lock();
 	for (auto& ship : ships)
@@ -2134,7 +2134,7 @@ void Game::ShipsInfluenceToBonuses()
 			if (bonus.bonus_inventory & (BONUS_RULE_REVERSE * BONUS_CELL))
 			{
 				rotation_inverse ^= 1;
-				rotate_inverse_chage_tic = global_timer;
+				rotate_inverse_change_tic = global_timer;
 			}
 			if (bonus.bonus_inventory & (BONUS_BUFF_STREAM * BONUS_CELL))
 			{
@@ -2202,7 +2202,7 @@ void Game::ShipsRespawnOrDestroyPilots()
 
 			const bool& same_team = pilot.IsSameTeams(ship);
 			const bool& collision = pilot.IsCollision(static_cast<DynamicEntity>(ship));
-			if (game_rules & GAME_RULE_FRIEDNLY_SHEEP_CAN_RESTORE && same_team && collision)
+			if (game_rules & GAME_RULE_FRIENDLY_SHEEP_CAN_RESTORE && same_team && collision)
 			{
 				SpawnEntity(ship, pilot);
 				continue;
@@ -2221,7 +2221,7 @@ void Game::ShipsRespawnOrDestroyPilots()
 	ships_array_mtx.unlock();
 }
 
-void Game::ShipsDestroedByBombsOrActivateBombs()
+void Game::ShipsDestroyedByBombsOrActivateBombs()
 {
 	ships_array_mtx.lock();
 	for (auto& ship : ships)
@@ -2264,7 +2264,7 @@ void Game::ShipsDestroedByBombsOrActivateBombs()
 	ships_array_mtx.unlock();
 }
 
-void Game::ShipsDestroedByBullets()
+void Game::ShipsDestroyedByBullets()
 {
 	ships_array_mtx.lock();
 	for (auto& ship : ships)
@@ -2307,7 +2307,7 @@ void Game::ShipsDestroedByBullets()
 			}
 			if (ship.IsHaveBuff(SHIP_BUFF_SHIELD))
 			{
-				ship.SetUnbrakablePeriod(SHIP_DEFAULT_UNBRAKABLE_PERIOD);
+				ship.SetUnbrakablePeriod(SHIP_DEFAULT_UNBREAKABLE_PERIOD);
 				ship.SpendBuffNoCheck(SHIP_BUFF_SHIELD);
 				RemoveEntity(bullet); continue;
 			}
@@ -2329,7 +2329,7 @@ void Game::ShipsDestroedByBullets()
 	ships_array_mtx.unlock();
 }
 
-void Game::ShipsDestroedByKnifes()
+void Game::ShipsDestroyedByKnives()
 {
 	ships_array_mtx.lock();
 	for (auto& ship : ships)
@@ -2338,11 +2338,11 @@ void Game::ShipsDestroedByKnifes()
 
 		pilots_array_mtx.lock();
 		annih_area_gens_array_mtx.lock();
-		knifes_array_mtx.lock();
+		knives_array_mtx.lock();
 		GameTypes::entities_count_t knifes_found = 0;
-		for (auto& knife : knifes)
+		for (auto& knife : knives)
 		{
-			if (knifes_found >= knifes_count) break;
+			if (knifes_found >= knives_count) break;
 			if (!knife.exist) continue;
 
 			if (
@@ -2364,14 +2364,14 @@ void Game::ShipsDestroedByKnifes()
 			bonuses_array_mtx.unlock();
 			break;
 		}
-		knifes_array_mtx.unlock();
+		knives_array_mtx.unlock();
 		annih_area_gens_array_mtx.unlock();
 		pilots_array_mtx.unlock();
 	}
 	ships_array_mtx.unlock();
 }
 
-void Game::ShipsDestroedByLasers()
+void Game::ShipsDestroyedByLasers()
 {
 	ships_array_mtx.lock();
 	for (auto& ship : ships)

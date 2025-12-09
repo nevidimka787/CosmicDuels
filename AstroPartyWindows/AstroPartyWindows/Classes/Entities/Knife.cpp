@@ -17,10 +17,10 @@ Knife::Knife(const Knife& knife) :
 }
 
 Knife::Knife(
-	const ControledEntity* host,
+	const ControlledEntity* host,
 	const Segment& local_segment,
 	EngineTypes::Knife::knife_health_t health,
-	bool exist) 
+	bool exist)
 	:
 	SupportEntity(
 		host,
@@ -116,7 +116,7 @@ void Knife::Set(const Knife* knife)
 }
 
 void Knife::Set(
-	const ControledEntity* host_p,
+	const ControlledEntity* host_p,
 	const Segment& local_segment,
 	EngineTypes::Knife::knife_health_t health,
 	bool exist)

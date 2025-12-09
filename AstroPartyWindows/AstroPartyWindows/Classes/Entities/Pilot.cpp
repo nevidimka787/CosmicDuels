@@ -3,13 +3,13 @@
 
 
 Pilot::Pilot() :
-	ControledEntity(),
+	ControlledEntity(),
 	respawn_timer(0)
 {
 }
 
 Pilot::Pilot(const Pilot& pilot) :
-	ControledEntity(pilot),
+	ControlledEntity(pilot),
 	respawn_timer(pilot.respawn_timer)
 {
 }
@@ -30,7 +30,7 @@ Pilot::Pilot(
 	float force_resistance_air_coefficient,
 	bool exist)
 	:
-	ControledEntity(
+	ControlledEntity(
 		position,
 		velocity,
 		radius,
@@ -89,7 +89,7 @@ Ship Pilot::Respawn()
 
 void Pilot::Set(const Pilot* pilot)
 {
-	ControledEntity::Set(pilot);
+	ControlledEntity::Set(pilot);
 	this->respawn_timer = respawn_timer;
 }
 
@@ -110,7 +110,7 @@ void Pilot::Set(
 	float force_resistance_air_coefficient,
 	bool exist)
 {
-	ControledEntity::Set(
+	ControlledEntity::Set(
 		position,
 		velocity,
 		radius,
@@ -146,7 +146,7 @@ void Pilot::UpdateMatrix()
 
 void Pilot::operator=(const Pilot& pilot)
 {
-	ControledEntity::operator=(pilot);
+	ControlledEntity::operator=(pilot);
 	this->respawn_timer = pilot.respawn_timer;
 }
 

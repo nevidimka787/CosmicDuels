@@ -122,7 +122,7 @@ namespace Map
 		Cyrcle(const Cyrcle& cyrcle);
 		Cyrcle(
 			const Vec2F& position,
-			float radius = CYRCLE_DEFAULT_RADIUS,
+			float radius = CIRCLE_DEFAULT_RADIUS,
 			EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
 			bool exist = true);
 
@@ -145,7 +145,7 @@ namespace Map
 		void Set(const Cyrcle* cyrcle);
 		void Set(
 			const Vec2F& position,
-			float radius = CYRCLE_DEFAULT_RADIUS,
+			float radius = CIRCLE_DEFAULT_RADIUS,
 			EngineTypes::Map::property_t properties = MAP_DEFAULT_PROPERTIES,
 			bool exist = true);
 
