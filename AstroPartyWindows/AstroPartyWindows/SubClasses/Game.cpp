@@ -625,6 +625,7 @@ void Game::InitLevel()
 	default:
 		std::cout << "WARNING::Game::InitLevel: Map value is undeclared. Default map is created." << std::endl;
 	case MAP_ORBIT_MAP:			CreateMap0(ships_positions, ships_angles);	break;
+	case MAP_TEST:              CreateMapTest(ships_positions, ships_angles);	break;
 	}
 
 	AddEntity(

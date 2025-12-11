@@ -435,6 +435,8 @@ public:
 	// "Black Hole"
 	void Event13();
 
+	void CreateMapTest(std::vector<Vec2F>& ships_positions, std::vector<float>& ships_angles);
+
 	// "Orbit"
 	void CreateMap0(std::vector<Vec2F>& ships_positions, std::vector<float>& ships_angles);
 

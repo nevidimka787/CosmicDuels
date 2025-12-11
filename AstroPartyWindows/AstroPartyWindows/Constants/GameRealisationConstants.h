@@ -115,6 +115,7 @@ turrets, mega lasers
 
 	// map pull
 
+#define MAP_TEST				(UINT16_MAX)
 // map id.
 #define MAP_ORBIT_MAP			0u
 // map id.

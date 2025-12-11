@@ -986,6 +986,43 @@ void Game::Event13()
 	}
 }
 
+#define MAP_TEST__CENTER (6.f)
+#define MAP_TEST__SIZE (2.f)
+void Game::CreateMapTest(std::vector<Vec2F>& ships_positions, std::vector<float>& ships_angles)
+{
+	const Segment seg(-1.f, 1.f, true);
+
+	auto recangles = std::vector<Map::Rectangle>(9);
+
+	recangles[0].Set(Segment(seg.point * 2.f + MAP_TEST__CENTER, seg.vector * MAP_TEST__SIZE));
+
+	recangles[1].Set(Segment(seg.point + MAP_TEST__CENTER - 0.75f, seg.vector / 8.f), MAP_PROPERTY_COLLIDE_OUTSIDE | MAP_PROPERTY_UNBREAKABLE | MAP_PROPERTY_KILLER | MAP_PROPERTY_AGGRESSIVE);
+	recangles[2].Set(Segment(seg.point + MAP_TEST__CENTER - 0.50f, seg.vector / 8.f), MAP_PROPERTY_COLLIDE_OUTSIDE | MAP_PROPERTY_UNBREAKABLE | MAP_PROPERTY_KILLER                          );
+	recangles[3].Set(Segment(seg.point + MAP_TEST__CENTER - 0.25f, seg.vector / 8.f), MAP_PROPERTY_COLLIDE_OUTSIDE | MAP_PROPERTY_UNBREAKABLE |                       MAP_PROPERTY_AGGRESSIVE);
+	recangles[4].Set(Segment(seg.point + MAP_TEST__CENTER + 0.00f, seg.vector / 8.f), MAP_PROPERTY_COLLIDE_OUTSIDE | MAP_PROPERTY_UNBREAKABLE                                                );
+	recangles[5].Set(Segment(seg.point + MAP_TEST__CENTER + 0.25f, seg.vector / 8.f), MAP_PROPERTY_COLLIDE_OUTSIDE |                            MAP_PROPERTY_KILLER | MAP_PROPERTY_AGGRESSIVE);
+	recangles[6].Set(Segment(seg.point + MAP_TEST__CENTER + 0.50f, seg.vector / 8.f), MAP_PROPERTY_COLLIDE_OUTSIDE |                            MAP_PROPERTY_KILLER                          );
+	recangles[7].Set(Segment(seg.point + MAP_TEST__CENTER + 0.75f, seg.vector / 8.f), MAP_PROPERTY_COLLIDE_OUTSIDE |                                                  MAP_PROPERTY_AGGRESSIVE);
+	recangles[8].Set(Segment(seg.point + MAP_TEST__CENTER + 1.00f, seg.vector / 8.f), MAP_PROPERTY_COLLIDE_OUTSIDE                                                                           );
+
+	map.Set(recangles);
+
+	/* Spawn entities */
+
+	ships_positions[0].Set(MAP_TEST__CENTER - 1.85f, MAP_TEST__CENTER + 1.9f);
+	ships_positions[1].Set(MAP_TEST__CENTER + 1.9f,  MAP_TEST__CENTER + 1.85f);
+	ships_positions[2].Set(MAP_TEST__CENTER + 1.85f, MAP_TEST__CENTER - 1.9f);
+	ships_positions[3].Set(MAP_TEST__CENTER - 1.9f,  MAP_TEST__CENTER - 1.85f);
+
+	ships_angles[0] = -(float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
+	ships_angles[1] = -(float)M_PI_2 - (float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
+	ships_angles[2] = (float)M_PI_2 + (float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
+	ships_angles[3] = (float)M_PI_4 + ALL_MAPS__SPAWN_DELTA_ANGLE;
+
+	camera.SetPosition(Vec2F(MAP_TURRET_ON_CENTER__CENTER_POSITION));
+	camera.SetSize();
+}
+
 void CreateMap0_PlaceTwoCirclesAndGravGen(Game* game_object, std::vector<Map::Circle>& circles, size_t id, const Vec2F& position, float gravity) {
 	circles[id].Set(
 		position,
