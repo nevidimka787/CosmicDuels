@@ -950,12 +950,12 @@ void Game::Event12()
 #define MAP_BLACK_HOLE__CENTER (4.f)
 #define MAP_BLACK_HOLE__SIZE (2.f)
 #define MAP_BLACK_HOLE__PORTALS_COUNT 32
-#define MAP_BLACK_HOLE__PORTALS_IN_RADIUS (0.1f)
-#define MAP_BLACK_HOLE__PORTALS_EX_RADIUS (MAP_BLACK_HOLE__SIZE)
-#define MAP_BLACK_HOLE__PORTALS_RADIUS (PORTAL_DEFAULT_RADIUS * 2.f)
-#define MAP_BLACK_HOLE__GRAV_GENS_COUNT 8
-#define MAP_BLACK_HOLE__GRAV_GENS_EX_RADIUS (MAP_BLACK_HOLE__SIZE + 0.2f)
-#define MAP_BLACK_HOLE__GRAV_GENS_ROTATION_PERIOD_4 400 // period of one quarter of the rotation
+#define MAP_BLACK_HOLE__PORTALS_IN_RADIUS (MAP_BLACK_HOLE__SIZE - PORTAL_DEFAULT_RADIUS - SHIP_DEFAULT_RADIUS * 2.f)
+#define MAP_BLACK_HOLE__PORTALS_EX_RADIUS (MAP_BLACK_HOLE__SIZE + PORTAL_DEFAULT_RADIUS)
+#define MAP_BLACK_HOLE__PORTALS_RADIUS (PORTAL_DEFAULT_RADIUS * 2.2f)
+#define MAP_BLACK_HOLE__GRAV_GENS_COUNT 4
+#define MAP_BLACK_HOLE__GRAV_GENS_EX_RADIUS (MAP_BLACK_HOLE__SIZE + 0.1f)
+#define MAP_BLACK_HOLE__GRAV_GENS_ROTATION_PERIOD_4 800 // period of one quarter of the rotation
 
 #define MAP_BLACK_HOLE__SPAWN_SHIFT (MAP_BLACK_HOLE__SIZE * 0.9f / 2.f)
 
@@ -2196,7 +2196,7 @@ void Game::CreateMap13(std::vector<Vec2F>& ships_positions, std::vector<float>& 
 		const Vec2F portal_loc_rot = r_vec.RotateClockwise(2.f * static_cast<float>(M_PI / MAP_BLACK_HOLE__PORTALS_COUNT) * angle_i);
 		const Vec2F portal_glob_pos = Vec2F(MAP_BLACK_HOLE__CENTER) + portal_loc_rot * MAP_BLACK_HOLE__PORTALS_EX_RADIUS;
 
-		const Vec2F dest_glob_pos = Vec2F(MAP_BLACK_HOLE__CENTER) + portal_loc_rot * MAP_BLACK_HOLE__PORTALS_IN_RADIUS;
+		const Vec2F dest_glob_pos = Vec2F(MAP_BLACK_HOLE__CENTER) + -portal_loc_rot * MAP_BLACK_HOLE__PORTALS_IN_RADIUS;
 
 		AddEntity(Portal(portal_glob_pos, dest_glob_pos, MAP_BLACK_HOLE__PORTALS_RADIUS, 0.f));
 	}
@@ -2207,7 +2207,7 @@ void Game::CreateMap13(std::vector<Vec2F>& ships_positions, std::vector<float>& 
 		const Vec2F grav_gen_loc_rot = r_vec.RotateClockwise(2.f * static_cast<float>(M_PI / MAP_BLACK_HOLE__GRAV_GENS_COUNT) * angle_i);
 		const Vec2F grav_gen_glob_pos = Vec2F(MAP_BLACK_HOLE__CENTER) + grav_gen_loc_rot * MAP_BLACK_HOLE__GRAV_GENS_EX_RADIUS;
 
-		AddEntity(GravGen(grav_gen_glob_pos, GRAVITY_GENERATOR_DEFAULT_GRAVITY * 2.f, GRAVITY_GENERATOR_DEFAULT_RADIUS / 4.f));
+		AddEntity(GravGen(grav_gen_glob_pos, GRAVITY_GENERATOR_DEFAULT_GRAVITY * 4.f, GRAVITY_GENERATOR_DEFAULT_RADIUS / 4.f));
 	}
 
 	/* Configure players */

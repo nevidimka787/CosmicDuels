@@ -83,9 +83,9 @@ turrets, mega lasers
 // Ship's gravitation force.
 #define GAME_SHIP_GRAVITATION_FORCE			0.0001f
 // Sheep's radius of influence.
-#define GAME_SHIP_INFLUENCE_RADIUS_COEF	5.0f
+#define GAME_SHIP_INFLUENCE_RADIUS_COEF		5.0f
 // Default angular velocity of ships.
-#define GAME_SHIP_ANGULAR_VELOCITY				0.03f
+#define GAME_SHIP_ANGULAR_VELOCITY			0.04f
 // Default angular velocity of pilots.
 #define GAME_PILOT_ANGULAR_VELOCITY				GAME_SHIP_ANGULAR_VELOCITY
 
