@@ -93,8 +93,6 @@ public:
 	GameTypes::entities_count_t bombs_count;
 	// Count of turrets on the map.
 	GameTypes::map_elements_count_t turrets_count;
-	// Count of map's lasers on the map.
-	GameTypes::map_elements_count_t mega_lasers_count;
 	// Count of asteroids on the map.
 	GameTypes::entities_count_t asteroids_count;
 	// Count of bonuses on the map.
@@ -591,20 +589,19 @@ public:
 	 5. pilot
 	 6. annih_area_gen
 	 7. input_values
-	 8. mega_laser
-	 9. laser
-	10. bomb
-	11. knife
-	12. turret
-	13. bullet
-	14. asteroid
-	15. bonus
-	16. map
-	17. particle
-	18. dynamic_particle
-	19. log
+	 8. laser
+	 9. bomb
+	10. knife
+	11. turret
+	12. bullet
+	13. asteroid
+	14. bonus
+	15. map
+	16. particle
+	17. dynamic_particle
+	18. log
 
-	// deceler_area -> grav_gen -> camera -> portal -> ship -> pilot -> annih_area_generator -> input_values ->  mega_laser -> laser ->  bomb -> knife -> turret -> bullet -> asteroid -> bonus -> map -> particle -> dynamic_particle -> log
+	// deceler_area -> grav_gen -> camera -> portal -> ship -> pilot -> annih_area_generator -> input_values ->  laser ->  bomb -> knife -> turret -> bullet -> asteroid -> bonus -> map -> particle -> dynamic_particle -> log
 
 	bomb										bomb chain reaction
 	bomb -> asteroid -> bonus					bomb destroys asteroid after that bonus spawns
@@ -629,13 +626,6 @@ public:
 	laser -> knife								laser destroys knife
 	laser -> map								laser destroys map
 	laser -> turret								laser destroys turret
-	mega_laser -> asteroid -> bonus				mega_laser destroys asteroid after that bonus spawns
-	mega_laser -> bomb							mega_laser detonates bomb
-	mega_laser -> bonus							mega_laser destroys bonus
-	mega_laser -> bullet						mega_laser destroys bullet
-	mega_laser -> knife							mega_laser destroys knife
-	mega_laser -> map							mega_laser destroys map
-	mega_laser -> turret							mega_laser destroys turret
 	portal -> asteroid							portal teleported asteroid
 	portal -> bomb								portal teleported bonus
 	portal -> bonus								portal teleported bonus
@@ -647,7 +637,6 @@ public:
 	pilot -> bullet -> log						pilot was destroyed by bullet
 	pilot -> input_values						pilot checks controlled input values
 	pilot -> laser -> log						ship was destroyed by laser
-	pilot -> mega_laser -> log					pilot was destroyed by mega_laser
 	ship -> bonus								ship influences to bonus or take it
 	ship -> input_values						ship checks controlled values
 	ship -> input_values ->
@@ -661,8 +650,6 @@ public:
 					knife -> bonus -> log		ship was destroyed by bullet after that ship's knives destroyed and pilot and bonus spawn
 	ship -> pilot -> laser ->
 					knife -> bonus -> log		ship was destroyed by laser after that ship's knives destroyed and pilot and bonus spawn
-	ship -> pilot -> mega_laser ->
-					knife -> bonus -> log		ship was destroyed by mega_laser after that ship's knives destroyed and pilot and bonus spawn
 	turret -> bullet								turret create bullet
 	*/
 

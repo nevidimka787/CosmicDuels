@@ -1478,7 +1478,7 @@ void Game::ResetThreadDurations()
 
 
 
-//deceler_area -> grav_gen -> camera -> portal -> ship -> pilot -> input_values ->  mega_laser -> laser ->  bomb -> knife -> turret -> bullet -> asteroid -> bonus -> map -> particle -> dynamic_particle -> log
+//deceler_area -> grav_gen -> camera -> portal -> ship -> pilot -> input_values ->  laser ->  bomb -> knife -> turret -> bullet -> asteroid -> bonus -> map -> particle -> dynamic_particle -> log
 void Game::MutexesLock()
 {
 	deceler_areas_array_mtx.lock();
@@ -1501,7 +1501,7 @@ void Game::MutexesLock()
 	log_data_mtx.lock();
 }
 
-//deceler_area -> grav_gen -> camera -> ship -> pilot -> input_values ->  mega_laser -> laser ->  bomb -> knife -> turret -> bullet -> asteroid -> bonus -> map -> particle -> log
+//deceler_area -> grav_gen -> camera -> ship -> pilot -> input_values ->  laser ->  bomb -> knife -> turret -> bullet -> asteroid -> bonus -> map -> particle -> log
 void Game::MutexesUnlock()
 {
 	deceler_areas_array_mtx.unlock();

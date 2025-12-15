@@ -40,7 +40,6 @@ public:
 	StaticBuffer grav_gen_buffer;
 	StaticBuffer knife_buffer;
 	StaticBuffer laser_buffer;
-	StaticBuffer mega_laser_buffer;
 	StaticBuffer particle_buffer;
 	StaticBuffer portal_buffer;
 	StaticBuffer pilot_buffer;
@@ -105,8 +104,6 @@ public:
 	Shader knife_shader;
 	// The shader use for draw lasers.
 	Shader laser_shader;
-	// The shader use for draw mega lasers.
-	Shader mega_laser_shader;
 	// The shader use for draw particles.
 	Shader particle_shader;
 	// The shader use for draw portals.
@@ -210,7 +207,7 @@ public:
 	// The function draw knife.
 	void DrawObject(const Knife& knife, bool update_shader = false);
 	// The function draw laser.
-	void DrawObject(const Laser& mega_laser, bool update_shader = false);
+	void DrawObject(const Laser& laser, bool update_shader = false);
 	// The function draw particle.
 	void DrawObject(const Particle& particle, bool update_shader = false);
 	// The function draw portal.
@@ -342,8 +339,6 @@ public:
 	const GameTypes::entities_count_t* game_p__knives_count;
 	// Count of lasers on the map.
 	const GameTypes::entities_count_t* game_p__lasers_count;
-	// Count of map's lasers on the map.
-	const GameTypes::map_elements_count_t* game_p__mega_lasers_count;
 	// Count of particles on the map.
 	const GameTypes::entities_count_t* game_p__particles_count;
 	// Count of portals on the map.

@@ -317,13 +317,20 @@ void OpenGL::InitBuffers()
     circle_buffer.Initialize(points, 6);
     deceler_area_buffer.Initialize(points, 6);
     grav_gen_buffer.Initialize(points, 6);
-    rectangle_buffer.Initialize(points, 6);
 
     dynamic_particle_buffer.Initialize(points, 6);
     particle_buffer.Initialize(points, 6);
     portal_buffer.Initialize(points, 6);
 
     ship_bullet_buffer.Initialize(points, 6);
+
+    points[0].Set(2.0f, 2.0f);
+    points[1].Set(-2.0f, 2.0f);
+    points[2].Set(2.0f, -2.0f);
+    points[3].Set(-2.0f, -2.0f);
+    points[4].Set(-2.0f, 2.0f);
+    points[5].Set(2.0f, -2.0f);
+    rectangle_buffer.Initialize(points, 6);
 
     points[0].Set(1.0f, 1.0f);
     points[1].Set(0.0f, 1.0f);
@@ -333,7 +340,6 @@ void OpenGL::InitBuffers()
     points[5].Set(1.0f, -1.0f);
 
     laser_buffer.Initialize(points, 6);
-    mega_laser_buffer.Initialize(points, 6);
     polygon_buffer.Initialize(points, 6);
 
     points[0].Set(2.0f, 2.0f);
@@ -426,7 +432,6 @@ void OpenGL::InitShaders()
     grav_gen_shader.Initialize(           "Shaders/Objects/Vertex/GravGen.glsl"           ,   "Shaders/Objects/Fragment/GravGen.glsl");
     knife_shader.Initialize(              "Shaders/Objects/Vertex/Knife.glsl"             ,   "Shaders/Objects/Fragment/Knife.glsl");
     laser_shader.Initialize(              "Shaders/Objects/Vertex/Laser.glsl"             ,   "Shaders/Objects/Fragment/Laser.glsl");
-    mega_laser_shader.Initialize(         "Shaders/Objects/Vertex/MegaLaser.glsl"         ,   "Shaders/Objects/Fragment/MegaLaser.glsl");
     particle_shader.Initialize(           "Shaders/Objects/Vertex/Particle.glsl"          ,   "Shaders/Objects/Fragment/Particle.glsl");
     portal_shader.Initialize(             "Shaders/Objects/Vertex/Portal.glsl"            ,   "Shaders/Objects/Fragment/Portal.glsl");
     pilot_shader.Initialize(              "Shaders/Objects/Vertex/Pilot.glsl"             ,   "Shaders/Objects/Fragment/Pilot.glsl");
@@ -1029,6 +1034,7 @@ void OpenGL::DrawObject(const Map::Rectangle* rectangle, bool update_shader)
     rectangle_shader.SetUniform("properties", rectangle->Properties());
     rectangle_shader.SetUniform("position",rectangle->GetUpLeftPoint());
     rectangle_shader.SetUniform("point2", rectangle->GetDownRightPoint());
+    rectangle_shader.SetUniform("tik", static_cast<int>(*game_p__global_timer));
     rectangle_buffer.Draw();
 }
 
@@ -1511,7 +1517,6 @@ void OpenGL::FreeBuffers()
     portal_buffer.Delete();
     ship_bullet_buffer.Delete();
     laser_buffer.Delete();
-    mega_laser_buffer.Delete();
     polygon_buffer.Delete();
     turret_buffer.Delete();
     button_buffer.Delete();
@@ -1538,7 +1543,6 @@ void OpenGL::FreeShaders()
     grav_gen_shader.Delete();
     knife_shader.Delete();
     laser_shader.Delete();
-    mega_laser_shader.Delete();
     particle_shader.Delete();
     portal_shader.Delete();
     pilot_shader.Delete();

@@ -939,7 +939,6 @@ void Game::MemorySetDefault()
 	grav_gens_count = 0;
 	knives_count = 0;
 	lasers_count = 0;
-	mega_lasers_count = 0;
 	particles_count = 0;
 	portals_count = 0;
 	pilots_count = 0;

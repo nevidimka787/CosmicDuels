@@ -84,7 +84,6 @@ Linker::Linker(Game* game_object, MenuFunctions* menu_functions_object, OpenGL* 
 	open_gl_object->game_p__map = &game_object->map;
 	open_gl_object->game_p__map_data_mtx = &game_object->map_data_mtx;
 	open_gl_object->game_p__map_pull_select_menu = &game_object->map_pull_select_menu;
-	open_gl_object->game_p__mega_lasers_count = &game_object->mega_lasers_count;
 	open_gl_object->game_p__option_menu = &game_object->option_menu;
 	open_gl_object->game_p__particles = &game_object->particles;
 	open_gl_object->game_p__particles_array_mtx = &game_object->particles_array_mtx;
